@@ -3,6 +3,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import os
+from streamlit_sortables import sort_items  # <-- Nuova libreria per il Drag & Drop
 
 # --- GESTIONE PERSISTENZA SU FILE LOCALE ---
 FILE_WATCHLIST = "watchlist.txt"
@@ -15,7 +16,6 @@ def carica_ticker_da_file():
             if ticker_salvati:
                 return ticker_salvati
                 
-    # Default di backup se il file è vuoto o non esiste
     if "watchlist" in st.secrets and "tickers" in st.secrets["watchlist"]:
         return list(st.secrets["watchlist"]["tickers"])
     return ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
@@ -26,7 +26,7 @@ def salva_ticker_su_file(lista_ticker):
         for tkr in lista_ticker:
             f.write(f"{tkr}\n")
 
-# Inizializziamo lo stato della sessione leggendo dal file
+# Inizializziamo lo stato della sessione
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
@@ -44,7 +44,7 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
         nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):", key="txt_nuovo_tkr").upper().strip()
         
     with col_add_btn:
-        st.write("") # Spaziatori visivi
+        st.write("") 
         st.write("") 
         esegui_aggiunta = st.button("Aggiungi alla lista", use_container_width=True)
 
@@ -56,45 +56,31 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
                 if not hist.empty:
                     st.session_state["lista_tickers"].append(nuovo_ticker)
                     salva_ticker_su_file(st.session_state["lista_tickers"])
-                    st.success(f"Aggiunto permanentemente nel file: {nuovo_ticker}")
+                    st.success(f"Aggiunto permanentemente: {nuovo_ticker}")
                     st.rerun()
                 else:
-                    st.error("Ticker non trovato o non scambiato su Yahoo Finance.")
-            except Exception as e:
-                st.error("Errore di rete durante la verifica del ticker.")
+                    st.error("Ticker non trovato su Yahoo Finance.")
+            except:
+                st.error("Errore durante la verifica del ticker.")
         else:
             st.warning("Questo ticker è già presente nella lista.")
                 
     st.markdown("---")
     
-    # 2. Riordino tramite Pulsanti Freccia Compatti e Puliti
-    st.subheader("↕️ Modifica Ordine Posizioni")
-    st.caption("Usa le frecce laterali per spostare l'ordine delle righe.")
+    # 2. DRAG & DROP VERO E PROPRIO (Bello, fluido e moderno)
+    st.subheader("↕️ Trascina per ordinare i titoli")
+    st.caption("Prendi un titolo e trascinalo nella posizione desiderata. L'ordine si salva da solo!")
     
-    lista_corrente = st.session_state["lista_tickers"]
-    modificato = False
+    # Visualizza i blocchi trascinabili verticalmente
+    lista_prima = list(st.session_state["lista_tickers"])
     
-    # Ciclo grafico per la pulsantiera di riordino compattata
-    for i, tkr in enumerate(lista_corrente):
-        # Colonne asimmetriche per stringere i bottoni sulla destra
-        col_name, col_spacer, col_up, col_down = st.columns([6, 2, 1, 1])
-        
-        with col_name:
-            st.markdown(f"**{i+1}. {tkr}**")
-            
-        with col_up:
-            if st.button("🔼", key=f"up_{tkr}_{i}", disabled=(i == 0)):
-                lista_corrente[i], lista_corrente[i-1] = lista_corrente[i-1], lista_corrente[i]
-                modificato = True
-                
-        with col_down:
-            if st.button("🔽", key=f"down_{tkr}_{i}", disabled=(i == len(lista_corrente) - 1)):
-                lista_corrente[i], lista_corrente[i+1] = lista_corrente[i+1], lista_corrente[i]
-                modificato = True
-                
-    if modificato:
-        st.session_state["lista_tickers"] = lista_corrente
-        salva_ticker_su_file(lista_corrente)
+    # Il componente restituisce la lista aggiornata ad ogni movimento
+    lista_dopo = sort_items(lista_prima, direction="vertical", key="drag_drop_watchlist")
+    
+    # Se l'ordine è cambiato rispetto a prima, aggiorniamo il file
+    if lista_dopo != lista_prima:
+        st.session_state["lista_tickers"] = lista_dopo
+        salva_ticker_su_file(lista_dopo)
         st.rerun()
 
 st.markdown("---")
@@ -118,12 +104,9 @@ else:
             df = stock.history(period="7y", interval="1wk")
             if df is None or df.empty or len(df) < 200:
                 return None, None, None
-                
             df['SMA200_W'] = df['Close'].rolling(window=200).mean()
-            
             if 'SMA200_W' not in df or pd.isna(df['SMA200_W'].iloc[-1]):
                 return None, None, None
-                
             px_ult = df['Close'].iloc[-1]
             sma_ult = df['SMA200_W'].iloc[-1]
             dist_pct = ((px_ult - sma_ult) / sma_ult) * 100
@@ -131,12 +114,9 @@ else:
         except:
             return None, None, None
 
-    # Ciclo di rendering protetto da eccezioni strutturali
     for tkr in list(st.session_state["lista_tickers"]):
         try:
             px, sma, dist = calcola_sma200_settimanale(tkr)
-            
-            # Se Yahoo Finance non risponde per questo ticker, saltiamo la riga elegantemente senza bloccare l'applicazione
             if px is None or pd.isna(px):
                 continue
                 
@@ -169,7 +149,5 @@ else:
                     st.rerun()
             
             st.markdown("<hr style='margin:0.5em 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
-        except Exception as single_row_error:
-            # Fallback locale per la singola riga corrotta per evitare interruzioni generali del blocco pg.run()
-            st.caption(f"⚠️ Impossibile elaborare momentaneamente il ticker {tkr}.")
+        except:
             continue
