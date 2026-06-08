@@ -3,11 +3,6 @@ import yfinance as yf
 import pandas as pd
 from pathlib import Path
 
-try:
-    from streamlit_sortables import sort_items
-except Exception:
-    sort_items = None
-
 
 # =========================
 # PROTEZIONE LOGIN
@@ -78,6 +73,26 @@ def rimuovi_duplicati(lista_ticker):
             lista_pulita.append(ticker_pulito)
 
     return lista_pulita
+
+
+def sposta_ticker(lista_ticker, ticker, direzione):
+    lista_nuova = list(lista_ticker)
+
+    if ticker not in lista_nuova:
+        return lista_nuova
+
+    indice = lista_nuova.index(ticker)
+    nuovo_indice = indice + direzione
+
+    if nuovo_indice < 0 or nuovo_indice >= len(lista_nuova):
+        return lista_nuova
+
+    lista_nuova[indice], lista_nuova[nuovo_indice] = (
+        lista_nuova[nuovo_indice],
+        lista_nuova[indice]
+    )
+
+    return lista_nuova
 
 
 def identifica_mercato(ticker):
@@ -249,29 +264,15 @@ def classe_stato(stato):
 
 
 def render_kpi_card(label, value, note):
-    html = f"""
-    <div class="watchlist-kpi-card">
-        <div class="watchlist-kpi-label">{label}</div>
-        <div class="watchlist-kpi-value">{value}</div>
-        <div class="watchlist-kpi-note">{note}</div>
-    </div>
-    """
+    html = (
+        '<div class="watchlist-kpi-card">'
+        f'<div class="watchlist-kpi-label">{label}</div>'
+        f'<div class="watchlist-kpi-value">{value}</div>'
+        f'<div class="watchlist-kpi-note">{note}</div>'
+        '</div>'
+    )
 
     st.markdown(html, unsafe_allow_html=True)
-
-
-def crea_label_ordinamento(item):
-    ticker = item["ticker"]
-    mercato_label, _ = identifica_mercato(ticker)
-
-    if not item["valido"]:
-        return f"⋮⋮  {ticker}  ·  {mercato_label}  ·  dati non disponibili"
-
-    prezzo = formatta_prezzo(item["prezzo"])
-    distanza = formatta_percentuale(item["distanza"])
-    stato = item["stato"]
-
-    return f"⋮⋮  {ticker}  ·  {mercato_label}  ·  {prezzo}  ·  {distanza}  ·  {stato}"
 
 
 def render_ticker_card(item):
@@ -299,53 +300,47 @@ def render_ticker_card(item):
         stato = item["stato"]
         stato_class = classe_stato(stato)
 
-    html = f"""
-    <div class="watchlist-card">
-        <div class="watchlist-card-top">
-            <div class="watchlist-card-left">
-                <div class="drag-handle">⋮⋮</div>
-                <div class="watchlist-symbol-block">
-                    <div class="watchlist-ticker-symbol">{ticker}</div>
-                    <div class="watchlist-ticker-subtitle">
-                        Simbolo Yahoo Finance · Watchlist operativa
-                    </div>
-                </div>
-            </div>
-
-            <div class="watchlist-card-right">
-                <span class="market-badge {mercato_classe}">{mercato_label}</span>
-                <span class="status-pill {stato_class}">{stato}</span>
-            </div>
-        </div>
-
-        <div class="watchlist-card-metrics">
-            <div class="metric-box">
-                <div class="metric-label">Prezzo</div>
-                <div class="metric-value watchlist-price">{prezzo_str}</div>
-            </div>
-
-            <div class="metric-box">
-                <div class="metric-label">SMA 200D</div>
-                <div class="metric-value-small">{sma_str}</div>
-            </div>
-
-            <div class="metric-box">
-                <div class="metric-label">Distanza</div>
-                <div class="metric-value {distanza_class}">{distanza_str}</div>
-            </div>
-
-            <div class="metric-box">
-                <div class="metric-label">Rendimento 1Y</div>
-                <div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>
-            </div>
-
-            <div class="metric-box">
-                <div class="metric-label">Mercato</div>
-                <div class="metric-value-small">{mercato_label}</div>
-            </div>
-        </div>
-    </div>
-    """
+    html = (
+        '<div class="watchlist-card">'
+            '<div class="watchlist-card-top">'
+                '<div class="watchlist-card-left">'
+                    '<div class="drag-handle">⋮⋮</div>'
+                    '<div class="watchlist-symbol-block">'
+                        f'<div class="watchlist-ticker-symbol">{ticker}</div>'
+                        '<div class="watchlist-ticker-subtitle">'
+                            'Simbolo Yahoo Finance · Watchlist operativa'
+                        '</div>'
+                    '</div>'
+                '</div>'
+                '<div class="watchlist-card-right">'
+                    f'<span class="market-badge {mercato_classe}">{mercato_label}</span>'
+                    f'<span class="status-pill {stato_class}">{stato}</span>'
+                '</div>'
+            '</div>'
+            '<div class="watchlist-card-metrics">'
+                '<div class="metric-box">'
+                    '<div class="metric-label">Prezzo</div>'
+                    f'<div class="metric-value watchlist-price">{prezzo_str}</div>'
+                '</div>'
+                '<div class="metric-box">'
+                    '<div class="metric-label">SMA 200D</div>'
+                    f'<div class="metric-value-small">{sma_str}</div>'
+                '</div>'
+                '<div class="metric-box">'
+                    '<div class="metric-label">Distanza</div>'
+                    f'<div class="metric-value {distanza_class}">{distanza_str}</div>'
+                '</div>'
+                '<div class="metric-box">'
+                    '<div class="metric-label">Rendimento 1Y</div>'
+                    f'<div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>'
+                '</div>'
+                '<div class="metric-box">'
+                    '<div class="metric-label">Mercato</div>'
+                    f'<div class="metric-value-small">{mercato_label}</div>'
+                '</div>'
+            '</div>'
+        '</div>'
+    )
 
     st.markdown(html, unsafe_allow_html=True)
 
@@ -370,7 +365,7 @@ st.markdown(
         <div class="watchlist-title">Watchlist Operativa</div>
         <div class="watchlist-subtitle">
             Card finanziarie ordinate, leggibili e ottimizzate anche per smartphone.
-            Trascina le card per cambiare l'ordine, apri il grafico dal pulsante 📈
+            Usa i pulsanti Su/Giù per modificare l'ordine, apri il grafico dal pulsante 📈
             o rimuovi un ticker con 🗑️.
         </div>
     </div>
@@ -541,64 +536,6 @@ with kpi_4:
 
 
 # =========================
-# ORDINAMENTO CARD
-# =========================
-
-st.markdown(
-    """
-    <div class="watchlist-sort-panel">
-        <div class="watchlist-sort-title">Ordina card Watchlist</div>
-        <div class="watchlist-sort-subtitle">
-            Trascina gli elementi qui sotto per cambiare l'ordine delle card.
-            L'ordine viene salvato in watchlist.txt.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-if sort_items is not None:
-    label_per_ticker = {}
-    ticker_per_label = {}
-
-    for item in risultati:
-        ticker = item["ticker"]
-        label = crea_label_ordinamento(item)
-
-        label_per_ticker[ticker] = label
-        ticker_per_label[label] = ticker
-
-    lista_label_prima = [
-        label_per_ticker[ticker]
-        for ticker in st.session_state["lista_tickers"]
-        if ticker in label_per_ticker
-    ]
-
-    lista_label_dopo = sort_items(
-        lista_label_prima,
-        direction="vertical",
-        key="drag_drop_watchlist_cards"
-    )
-
-    if lista_label_dopo and lista_label_dopo != lista_label_prima:
-        nuova_lista_ticker = [
-            ticker_per_label[label]
-            for label in lista_label_dopo
-            if label in ticker_per_label
-        ]
-
-        st.session_state["lista_tickers"] = rimuovi_duplicati(nuova_lista_ticker)
-        salva_ticker_su_file(st.session_state["lista_tickers"])
-        st.success("Ordine watchlist aggiornato.")
-        st.rerun()
-else:
-    st.info(
-        "Ordinamento drag & drop non disponibile. "
-        "Verifica che streamlit-sortables sia presente in requirements.txt."
-    )
-
-
-# =========================
 # CARD OPERATIVE
 # =========================
 
@@ -608,7 +545,7 @@ st.markdown(
         <div class="watchlist-toolbar-title">Card operative</div>
         <div class="watchlist-toolbar-subtitle">
             Ogni card mostra prezzo, SMA 200D, distanza dalla media,
-            stato tecnico e rendimento 1Y.
+            stato tecnico e rendimento 1Y. L'ordine si modifica con Su/Giù.
         </div>
     </div>
     """,
@@ -620,7 +557,7 @@ risultati_per_ticker = {
     for item in risultati
 }
 
-for ticker in st.session_state["lista_tickers"]:
+for ticker in list(st.session_state["lista_tickers"]):
     if ticker not in risultati_per_ticker:
         continue
 
@@ -628,7 +565,29 @@ for ticker in st.session_state["lista_tickers"]:
 
     render_ticker_card(item)
 
-    col_grafico, col_elimina, col_spazio = st.columns([1.2, 1.2, 3.6])
+    col_su, col_giu, col_grafico, col_elimina, col_spazio = st.columns(
+        [0.8, 0.8, 1.2, 1.2, 3.2]
+    )
+
+    with col_su:
+        if st.button("⬆️", key=f"up_{ticker}"):
+            st.session_state["lista_tickers"] = sposta_ticker(
+                st.session_state["lista_tickers"],
+                ticker,
+                -1
+            )
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
+
+    with col_giu:
+        if st.button("⬇️", key=f"down_{ticker}"):
+            st.session_state["lista_tickers"] = sposta_ticker(
+                st.session_state["lista_tickers"],
+                ticker,
+                1
+            )
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
 
     with col_grafico:
         if st.button("📈 Grafico", key=f"graf_{ticker}"):
