@@ -4,14 +4,14 @@ import os
 import pandas as pd
 from streamlit_sortables import sort_items
 
-# --- PROTEZIONE TOTALE ---
+# --- PROTEZIONE ---
 if not st.session_state.get("authenticated", False):
     st.error("Accesso non autorizzato.")
     if st.button("Torna al Login"):
         st.switch_page("main.py")
     st.stop()
 
-# --- CARICAMENTO CSS ---
+# --- CSS ---
 def local_css(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -20,7 +20,7 @@ def local_css(file_path):
 local_css("css/global.css")
 local_css("css/dashboard.css")
 
-# --- LOGICA DATI ---
+# --- LOGICA ---
 FILE_WATCHLIST = "watchlist.txt"
 
 def carica_ticker_da_file():
@@ -62,11 +62,11 @@ for tkr in list(st.session_state["lista_tickers"]):
         hist = stock.history(period="2y", interval="1wk")
         if hist.empty: continue
         
-        # Converte in float per evitare errori
+        # Converte esplicitamente in float per evitare errori
         px = float(hist['Close'].iloc[-1])
         sma_val = hist['Close'].rolling(200).mean().iloc[-1]
         
-        # Gestione valori mancanti (NaN)
+        # Gestione NaN (se il titolo ha meno di 200 settimane di dati)
         if pd.isna(sma_val):
             sma_str = "N/D"
             dist_str = "N/D"
@@ -79,7 +79,7 @@ for tkr in list(st.session_state["lista_tickers"]):
         with cols[0]:
             if st.button("📈", key=f"graf_{tkr}"):
                 st.session_state['ticker_selezionato'] = tkr
-                st.switch_page("pages/grafico.py") # CORRETTO: usa pages/
+                st.switch_page("pages/grafico.py")
         with cols[1]: st.markdown(f"**{tkr}**")
         with cols[2]: st.markdown(f"$ {px:.2f}")
         with cols[3]: st.markdown(sma_str)
