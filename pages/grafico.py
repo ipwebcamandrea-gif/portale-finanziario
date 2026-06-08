@@ -305,8 +305,8 @@ if ticker is None:
         "Apri questa pagina dalla Watchlist usando il pulsante 📈."
     )
 
-    if st.button("⬅️ Torna alla Watchlist"):
-        st.switch_page("pages/watchlist.py")
+    if st.button("⬅️ Torna al Cockpit"):
+        st.switch_page("pages/dashboard.py")
 
     st.stop()
 
@@ -360,8 +360,8 @@ with col_tipo:
 with col_back:
     st.write("")
     st.write("")
-    if st.button("⬅️ Torna alla Watchlist"):
-        st.switch_page("pages/watchlist.py")
+    if st.button("⬅️ Torna al Cockpit"):
+        st.switch_page("pages/dashboard.py")
 
 
 mappa_periodi = {
@@ -395,8 +395,8 @@ if data.empty:
         unsafe_allow_html=True
     )
 
-    if st.button("⬅️ Torna alla Watchlist", key="back_no_data"):
-        st.switch_page("pages/watchlist.py")
+    if st.button("⬅️ Torna al Cockpit", key="back_no_data"):
+        st.switch_page("pages/dashboard.py")
 
     st.stop()
 
