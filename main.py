@@ -19,6 +19,7 @@ with st.container():
     password = st.text_input("Password", type="password")
     
     if st.button("Entra nella Dashboard"):
+        # Qui mettiamo le credenziali (usa 'admin' o i tuoi segreti)
         if user == "admin" and password == "admin": 
             st.session_state['authenticated'] = True
             st.switch_page("pagine/dashboard.py")
