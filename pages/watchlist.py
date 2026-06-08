@@ -108,7 +108,7 @@ def identifica_mercato(ticker):
 
 
 # =========================
-# FUNZIONI DATI FINANZIARI
+# FUNZIONI DATI FINANZIARI WEEKLY
 # =========================
 
 def valore_float(valore):
@@ -127,9 +127,13 @@ def valore_float(valore):
 
 
 @st.cache_data(ttl=900, show_spinner=False)
-def scarica_dati_ticker(ticker):
+def scarica_dati_ticker_weekly(ticker):
     stock = yf.Ticker(ticker)
-    hist = stock.history(period="2y", interval="1d")
+
+    hist = stock.history(
+        period="5y",
+        interval="1wk"
+    )
 
     if hist is None or hist.empty:
         return pd.DataFrame()
@@ -142,15 +146,15 @@ def scarica_dati_ticker(ticker):
     return hist
 
 
-def calcola_rendimento(hist, giorni):
+def calcola_rendimento_weekly(hist, settimane):
     if hist is None or hist.empty:
         return None
 
-    if len(hist) <= giorni:
+    if len(hist) <= settimane:
         return None
 
     prezzo_attuale = valore_float(hist["Close"].iloc[-1])
-    prezzo_passato = valore_float(hist["Close"].iloc[-giorni])
+    prezzo_passato = valore_float(hist["Close"].iloc[-settimane])
 
     if prezzo_attuale is None or prezzo_passato is None:
         return None
@@ -162,7 +166,7 @@ def calcola_rendimento(hist, giorni):
 
 
 def calcola_metriche(ticker):
-    hist = scarica_dati_ticker(ticker)
+    hist = scarica_dati_ticker_weekly(ticker)
 
     if hist.empty:
         return None
@@ -172,30 +176,30 @@ def calcola_metriche(ticker):
     if prezzo is None:
         return None
 
-    sma_200 = valore_float(hist["Close"].rolling(200).mean().iloc[-1])
+    sma_200w = valore_float(hist["Close"].rolling(200).mean().iloc[-1])
 
-    if sma_200 is None:
+    if sma_200w is None:
         distanza = None
         stato = "N/D"
     else:
-        distanza = ((prezzo - sma_200) / sma_200) * 100
+        distanza = ((prezzo - sma_200w) / sma_200w) * 100
 
         if distanza > 0:
-            stato = "Sopra SMA"
+            stato = "Sopra SMA 200W"
         elif distanza < 0:
-            stato = "Sotto SMA"
+            stato = "Sotto SMA 200W"
         else:
-            stato = "In linea"
+            stato = "In linea SMA 200W"
 
-    rendimento_1y = calcola_rendimento(hist, 252)
+    rendimento_52w = calcola_rendimento_weekly(hist, 52)
 
     return {
         "ticker": ticker,
         "prezzo": prezzo,
-        "sma_200": sma_200,
+        "sma_200w": sma_200w,
         "distanza": distanza,
         "stato": stato,
-        "rendimento_1y": rendimento_1y
+        "rendimento_52w": rendimento_52w
     }
 
 
@@ -210,10 +214,10 @@ def costruisci_metriche_watchlist(lista_ticker):
                 "ticker": ticker,
                 "valido": False,
                 "prezzo": None,
-                "sma_200": None,
+                "sma_200w": None,
                 "distanza": None,
                 "stato": "N/D",
-                "rendimento_1y": None
+                "rendimento_52w": None
             })
         else:
             metriche["valido"] = True
@@ -254,13 +258,23 @@ def classe_valore(valore):
 
 
 def classe_stato(stato):
-    if stato == "Sopra SMA":
+    if stato == "Sopra SMA 200W":
         return "status-positive"
 
-    if stato == "Sotto SMA":
+    if stato == "Sotto SMA 200W":
         return "status-negative"
 
     return "status-neutral"
+
+
+def classe_card(item):
+    if not item["valido"]:
+        return ""
+
+    if item["stato"] == "Sotto SMA 200W":
+        return "watchlist-card-warning"
+
+    return ""
 
 
 def render_kpi_card(label, value, note):
@@ -278,37 +292,38 @@ def render_kpi_card(label, value, note):
 def render_ticker_card(item):
     ticker = item["ticker"]
     mercato_label, mercato_classe = identifica_mercato(ticker)
+    card_extra_class = classe_card(item)
 
     if not item["valido"]:
         prezzo_str = "N/D"
         sma_str = "N/D"
         distanza_str = "N/D"
-        rendimento_1y_str = "N/D"
+        rendimento_52w_str = "N/D"
         distanza_class = "neutral"
-        rendimento_1y_class = "neutral"
+        rendimento_52w_class = "neutral"
         stato = "N/D"
         stato_class = "status-neutral"
     else:
         prezzo_str = formatta_prezzo(item["prezzo"])
-        sma_str = formatta_prezzo(item["sma_200"])
+        sma_str = formatta_prezzo(item["sma_200w"])
         distanza_str = formatta_percentuale(item["distanza"])
-        rendimento_1y_str = formatta_percentuale(item["rendimento_1y"])
+        rendimento_52w_str = formatta_percentuale(item["rendimento_52w"])
 
         distanza_class = classe_valore(item["distanza"])
-        rendimento_1y_class = classe_valore(item["rendimento_1y"])
+        rendimento_52w_class = classe_valore(item["rendimento_52w"])
 
         stato = item["stato"]
         stato_class = classe_stato(stato)
 
     html = (
-        '<div class="watchlist-card">'
+        f'<div class="watchlist-card {card_extra_class}">'
             '<div class="watchlist-card-top">'
                 '<div class="watchlist-card-left">'
                     '<div class="drag-handle">⋮⋮</div>'
                     '<div class="watchlist-symbol-block">'
                         f'<div class="watchlist-ticker-symbol">{ticker}</div>'
                         '<div class="watchlist-ticker-subtitle">'
-                            'Simbolo Yahoo Finance · Watchlist operativa'
+                            'Timeframe weekly · Logica SMA 200W'
                         '</div>'
                     '</div>'
                 '</div>'
@@ -323,16 +338,16 @@ def render_ticker_card(item):
                     f'<div class="metric-value watchlist-price">{prezzo_str}</div>'
                 '</div>'
                 '<div class="metric-box">'
-                    '<div class="metric-label">SMA 200D</div>'
+                    '<div class="metric-label">SMA 200W</div>'
                     f'<div class="metric-value-small">{sma_str}</div>'
                 '</div>'
                 '<div class="metric-box">'
-                    '<div class="metric-label">Distanza</div>'
+                    '<div class="metric-label">Distanza SMA 200W</div>'
                     f'<div class="metric-value {distanza_class}">{distanza_str}</div>'
                 '</div>'
                 '<div class="metric-box">'
-                    '<div class="metric-label">Rendimento 1Y</div>'
-                    f'<div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>'
+                    '<div class="metric-label">Rendimento 52W</div>'
+                    f'<div class="metric-value {rendimento_52w_class}">{rendimento_52w_str}</div>'
                 '</div>'
                 '<div class="metric-box">'
                     '<div class="metric-label">Mercato</div>'
@@ -364,9 +379,9 @@ st.markdown(
     <div class="watchlist-header">
         <div class="watchlist-title">Watchlist Operativa</div>
         <div class="watchlist-subtitle">
-            Card finanziarie ordinate, leggibili e ottimizzate anche per smartphone.
-            Usa i pulsanti Su/Giù per modificare l'ordine, apri il grafico dal pulsante 📈
-            o rimuovi un ticker con 🗑️.
+            Monitoraggio weekly dei ticker con prezzo, SMA 200W, distanza dalla media,
+            stato tecnico e rendimento a 52 settimane. Le card arancioni indicano
+            titoli sotto la SMA 200W.
         </div>
     </div>
     """,
@@ -454,7 +469,7 @@ if not st.session_state["lista_tickers"]:
     )
     st.stop()
 
-with st.spinner("Aggiornamento dati finanziari in corso..."):
+with st.spinner("Aggiornamento dati weekly in corso..."):
     risultati = costruisci_metriche_watchlist(
         st.session_state["lista_tickers"]
     )
@@ -465,12 +480,12 @@ ticker_non_validi = ticker_totali - ticker_validi
 
 sopra_sma = len([
     item for item in risultati
-    if item["valido"] and item["stato"] == "Sopra SMA"
+    if item["valido"] and item["stato"] == "Sopra SMA 200W"
 ])
 
 sotto_sma = len([
     item for item in risultati
-    if item["valido"] and item["stato"] == "Sotto SMA"
+    if item["valido"] and item["stato"] == "Sotto SMA 200W"
 ])
 
 validi_con_distanza = [
@@ -501,9 +516,9 @@ with kpi_1:
 
 with kpi_2:
     render_kpi_card(
-        "Sopra SMA 200D",
+        "Sopra SMA 200W",
         sopra_sma,
-        f"{sotto_sma} sotto SMA 200D"
+        f"{sotto_sma} sotto SMA 200W"
     )
 
 with kpi_3:
@@ -542,10 +557,10 @@ with kpi_4:
 st.markdown(
     """
     <div class="watchlist-toolbar">
-        <div class="watchlist-toolbar-title">Card operative</div>
+        <div class="watchlist-toolbar-title">Card operative weekly</div>
         <div class="watchlist-toolbar-subtitle">
-            Ogni card mostra prezzo, SMA 200D, distanza dalla media,
-            stato tecnico e rendimento 1Y. L'ordine si modifica con Su/Giù.
+            Ogni card mostra prezzo, SMA 200W, distanza dalla SMA 200W,
+            stato tecnico e rendimento 52W. Le card arancioni sono sotto SMA 200W.
         </div>
     </div>
     """,
