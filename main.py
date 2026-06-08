@@ -1,55 +1,71 @@
 import streamlit as st
+import os
 
-# Configurazione della pagina (deve essere la primissima istruzione Streamlit)
-st.set_page_config(
-    page_title="Portale Finanziario",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# --- FUNZIONE DI CARICAMENTO CSS ---
+def local_css(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# --- FUNZIONE DI AUTENTICAZIONE ---
-def check_password():
-    """Restituisce True se l'utente ha inserito le credenziali corrette."""
-    
-    # Se l'utente è già loggato, restituisce True direttamente
-    if st.session_state.get("password_correct", False):
-        return True
+# Carichiamo lo stile globale che abbiamo già creato
+local_css("css/global.css")
 
-    # Mostra il form di login gestito con st.form per intercettare l'autofill del browser
-    st.subheader("🔒 Accesso Riservato")
-    
-    with st.form("login_form", clear_on_submit=False):
-        username_input = st.text_input("Username", autocomplete="username")
-        password_input = st.text_input("Password", type="password", autocomplete="current-password")
-        submit_button = st.form_submit_button("Accedi", use_container_width=True)
-        
-        if submit_button:
-            # Recuperiamo le credenziali salvate nei Secrets di Streamlit
-            if "credentials" in st.secrets and "usernames" in st.secrets["credentials"]:
-                secrets_users = st.secrets["credentials"]["usernames"]
-                
-                # Controllo se l'username esiste e se la password corrisponde
-                if username_input in secrets_users and secrets_users[username_input] == password_input:
-                    st.session_state["password_correct"] = True
-                    st.rerun()
-                else:
-                    st.error("😕 Username o Password errati.")
-            else:
-                st.error("🛠️ Errore di configurazione: credenziali non trovate nei Secrets.")
+# --- CSS SPECIFICO PER LA PAGINA DI ACCESSO ---
+st.markdown("""
+<style>
+    .welcome-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 100px;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        text-align: center;
+        background: linear-gradient(90deg, #26a69a, #00b0ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+        color: #8a99ad;
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+    }
+    .login-box {
+        background-color: #161a25;
+        padding: 40px;
+        border-radius: 12px;
+        border: 1px solid #222632;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-    return False
+# --- LAYOUT PAGINA ---
+st.markdown('<div class="welcome-container">', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">FinancePortal 2026</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-subtitle">Monitoraggio professionale, riordino intelligente.</div>', unsafe_allow_html=True)
 
-# --- CONTROLLO ACCESSO ---
-if check_password():
-    # Pagina visibile nel menu
-    page_dashboard = st.Page("pagine/dashboard.py", title="Dashboard Watchlist", icon="📊")
+# Contenitore Login
+with st.container():
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    st.subheader("Accedi al sistema")
     
-    # La pagina grafico rimane accessibile tramite st.switch_page ma sparisce completamente dal menu laterale
-    page_grafico = st.Page("pagine/grafico.py", title="Analisi Grafica Avanzata", icon="📈")
+    # Esempio di autenticazione semplice
+    user = st.text_input("Username", placeholder="Inserisci username")
+    password = st.text_input("Password", type="password", placeholder="Inserisci password")
     
-    # Passiamo entrambe le pagine alla navigazione con l'opzione nascosta
-    pg = st.navigation([page_dashboard, page_grafico], position="hidden")
+    if st.button("Entra nella Dashboard", use_container_width=True):
+        if user == "admin" and password == "admin": # Cambia con i tuoi credenziali/secrets
+            st.session_state['authenticated'] = True
+            st.switch_page("pagine/dashboard.py")
+        else:
+            st.error("Credenziali non valide")
     
-    # Avvia la navigazione dell'app
-    pg.run()
+    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
