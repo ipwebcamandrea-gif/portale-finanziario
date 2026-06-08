@@ -35,7 +35,7 @@ with st.container():
             if user.strip() == "admin" and password.strip() == "Pippolo001+1": 
                 st.session_state["authenticated"] = True
                 # Questa funzione parte SOLO se le credenziali sono giuste
-                st.switch_page("pagine/dashboard.py")
+                st.switch_page("pages/dashboard.py")
             else:
                 st.session_state["authenticated"] = False
                 st.error("Credenziali non valide")
