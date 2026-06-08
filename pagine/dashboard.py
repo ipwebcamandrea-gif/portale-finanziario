@@ -2,26 +2,34 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import os
 
-# --- GESTIONE COSTRUZIONE E PERSISTENZA DELLA LISTA (DATABASE CLOUD) ---
-# Proviamo a leggere la lista permanente salvata nel database di Streamlit
+# --- GESTIONE PERSISTENZA SU FILE LOCALE ---
+FILE_WATCHLIST = "watchlist.txt"
+
+def carica_ticker_da_file():
+    """Legge i ticker dal file locale. Se il file non esiste, usa quelli di default."""
+    if os.path.exists(FILE_WATCHLIST):
+        with open(FILE_WATCHLIST, "r", encoding="utf-8") as f:
+            # Legge le righe, pulisce gli spazi e rimuove righe vuote
+            ticker_salvati = [line.strip().upper() for line in f.readlines() if line.strip()]
+            if ticker_salvati:
+                return ticker_salvati
+                
+    # Default di backup se il file è vuoto o non esiste
+    if "watchlist" in st.secrets and "tickers" in st.secrets["watchlist"]:
+        return list(st.secrets["watchlist"]["tickers"])
+    return ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
+
+def salva_ticker_su_file(lista_ticker):
+    """Scrive la lista aggiornata nel file locale."""
+    with open(FILE_WATCHLIST, "w", encoding="utf-8") as f:
+        for tkr in lista_ticker:
+            f.write(f"{tkr}\n")
+
+# Inizializziamo lo stato della sessione leggendo dal file
 if "lista_tickers" not in st.session_state:
-    try:
-        # Carica la lista salvata sul cloud (se esiste)
-        lista_salvata = st.experimental_kv.get("watchlist_permanente")
-        if lista_salvata is not None and isinstance(lista_salvata, list):
-            st.session_state["lista_tickers"] = lista_salvata
-        else:
-            # Se il database è vuoto, carichiamo i titoli di default dai Secrets o standard
-            if "watchlist" in st.secrets and "tickers" in st.secrets["watchlist"]:
-                st.session_state["lista_tickers"] = list(st.secrets["watchlist"]["tickers"])
-            else:
-                st.session_state["lista_tickers"] = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
-            # Salviamo la lista iniziale nel database cloud
-            st.experimental_kv.set("watchlist_permanente", st.session_state["lista_tickers"])
-    except:
-        # Fallback di sicurezza in caso lo storage non sia ancora pronto
-        st.session_state["lista_tickers"] = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
+    st.session_state["lista_tickers"] = carica_ticker_da_file()
 
 st.title("📊 Monitoraggio Watchlist Magnifici 7")
 st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente.")
@@ -32,20 +40,20 @@ with st.expander("🛠️ Gestisci i titoli della Watchlist (Modifiche Permanent
     with col_add_input:
         nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):").upper().strip()
     with col_add_btn:
-        st.write("") # Spaziatori
+        st.write("") # Spaziatori visivi
         st.write("") 
         if st.button("➕ Aggiungi", use_container_width=True):
             if nuovo_ticker:
                 if nuovo_ticker not in st.session_state["lista_tickers"]:
                     try:
-                        # Verifica se esiste su Yahoo Finance
+                        # Verifica reale su Yahoo Finance
                         t = yf.Ticker(nuovo_ticker)
                         hist = t.history(period="1wk")
                         if not hist.empty:
-                            # 1. Aggiungi alla sessione corrente
+                            # 1. Aggiorna la memoria di lavoro
                             st.session_state["lista_tickers"].append(nuovo_ticker)
-                            # 2. Salva permanentemente nel database Cloud
-                            st.experimental_kv.set("watchlist_permanente", st.session_state["lista_tickers"])
+                            # 2. Scrivi sul file permanente
+                            salva_ticker_su_file(st.session_state["lista_tickers"])
                             st.success(f"Aggiunto permanentemente: {nuovo_ticker}")
                             st.rerun()
                         else:
@@ -113,10 +121,10 @@ else:
                 
             with row_cols[5]:
                 if st.button("🗑️", key=f"btn_del_{tkr}"):
-                    # 1. Rimuovi dalla sessione corrente
+                    # 1. Rimuovi dalla memoria di lavoro
                     st.session_state["lista_tickers"].remove(tkr)
-                    # 2. Aggiorna permanentemente il database Cloud
-                    st.experimental_kv.set("watchlist_permanente", st.session_state["lista_tickers"])
+                    # 2. Aggiorna il file permanente salvando la nuova lista
+                    salva_ticker_su_file(st.session_state["lista_tickers"])
                     st.toast(f"Rimosso permanentemente {tkr}.")
                     st.rerun()
             
