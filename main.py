@@ -12,13 +12,19 @@ st.set_page_config(
 def check_password():
     """Restituisce True se l'utente ha inserito le credenziali corrette."""
     
-    def login_form():
-        """Mostra il form di login con Username e Password."""
-        st.subheader("🔒 Accesso Riservato")
-        username_input = st.text_input("Username", key="login_username")
-        password_input = st.text_input("Password", type="password", key="login_password")
+    # Se l'utente è già loggato, restituisce True direttamente
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Mostra il form di login gestito con st.form per intercettare l'autofill del browser
+    st.subheader("🔒 Accesso Riservato")
+    
+    with st.form("login_form", clear_on_submit=False):
+        username_input = st.text_input("Username", autocomplete="username")
+        password_input = st.text_input("Password", type="password", autocomplete="current-password")
+        submit_button = st.form_submit_button("Accedi", use_container_width=True)
         
-        if st.button("Accedi", use_container_width=True):
+        if submit_button:
             # Recuperiamo le credenziali salvate nei Secrets di Streamlit
             if "credentials" in st.secrets and "usernames" in st.secrets["credentials"]:
                 secrets_users = st.secrets["credentials"]["usernames"]
@@ -32,12 +38,6 @@ def check_password():
             else:
                 st.error("🛠️ Errore di configurazione: credenziali non trovate nei Secrets.")
 
-    # Se l'utente è già loggato, restituisce True direttamente
-    if st.session_state.get("password_correct", False):
-        return True
-
-    # Altrimenti mostra il form e blocca il resto dell'app
-    login_form()
     return False
 
 # --- CONTROLLO ACCESSO ---
@@ -45,11 +45,10 @@ if check_password():
     # Pagina visibile nel menu
     page_dashboard = st.Page("pagine/dashboard.py", title="Dashboard Watchlist", icon="📊")
     
-    # MODO CORRETTO DI NASCONDERE LA PAGINA: Usiamo position="hidden"
-    # La pagina grafico rimane accessibile tramite st.switch_page ma sparisce completamente dal menu laterale!
+    # La pagina grafico rimane accessibile tramite st.switch_page ma sparisce completamente dal menu laterale
     page_grafico = st.Page("pagine/grafico.py", title="Analisi Grafica Avanzata", icon="📈")
     
-    # Passiamo entrambe le pagine alla navigazione in modo che Streamlit le riconosca entrambe ufficialmente
+    # Passiamo entrambe le pagine alla navigazione con l'opzione nascosta
     pg = st.navigation([page_dashboard, page_grafico], position="hidden")
     
     # Avvia la navigazione dell'app
