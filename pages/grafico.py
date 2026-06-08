@@ -21,21 +21,26 @@ ticker = st.session_state.get('ticker_selezionato', 'AAPL')
 st.markdown(f'<div class="main-title">Analisi Quantitativa: {ticker}</div>', unsafe_allow_html=True)
 
 if st.button("⬅️ Torna alla Dashboard"):
-    st.switch_page("pages/dashboard.py") # CORRETTO: pages/
+    st.switch_page("pages/dashboard.py") # CORRETTO
 
 # Analisi Dati
 try:
     data = yf.download(ticker, period="2y", interval="1d")
     if not data.empty:
+        # CONVERSIONE A FLOAT FORZATA (risolve l'errore Series.format)
+        prezzo = float(data['Close'].iloc[-1])
+        max_52w = float(data['High'].tail(252).max())
+        min_52w = float(data['Low'].tail(252).min())
+        
         # Metriche
         m1, m2, m3 = st.columns(3)
-        m1.metric("Prezzo", f"${data['Close'].iloc[-1]:.2f}")
-        m2.metric("Max 52W", f"${data['High'].tail(252).max():.2f}")
-        m3.metric("Min 52W", f"${data['Low'].tail(252).min():.2f}")
+        m1.metric("Prezzo", f"${prezzo:.2f}")
+        m2.metric("Max 52W", f"${max_52w:.2f}")
+        m3.metric("Min 52W", f"${min_52w:.2f}")
         
         # Grafico
         fig = go.Figure(data=[go.Candlestick(x=data.index, open=data['Open'], high=data['High'], low=data['Low'], close=data['Close'])])
-        fig.update_layout(template="plotly_dark", height=600, margin=dict(l=10, r=10, t=10, b=10))
+        fig.update_layout(template="plotly_dark", height=600)
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.error("Dati non disponibili.")
