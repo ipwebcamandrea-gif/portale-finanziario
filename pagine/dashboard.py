@@ -11,7 +11,6 @@ def carica_ticker_da_file():
     """Legge i ticker dal file locale. Se il file non esiste, usa quelli di default."""
     if os.path.exists(FILE_WATCHLIST):
         with open(FILE_WATCHLIST, "r", encoding="utf-8") as f:
-            # Legge le righe, pulisce gli spazi e rimuove righe vuote
             ticker_salvati = [line.strip().upper() for line in f.readlines() if line.strip()]
             if ticker_salvati:
                 return ticker_salvati
@@ -22,7 +21,7 @@ def carica_ticker_da_file():
     return ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
 
 def salva_ticker_su_file(lista_ticker):
-    """Scrive la lista aggiornata nel file locale."""
+    """Scrive la lista ordinata nel file locale."""
     with open(FILE_WATCHLIST, "w", encoding="utf-8") as f:
         for tkr in lista_ticker:
             f.write(f"{tkr}\n")
@@ -34,25 +33,25 @@ if "lista_tickers" not in st.session_state:
 st.title("📊 Monitoraggio Watchlist Magnifici 7")
 st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente.")
 
-# --- SEZIONE GESTIONE TICKER (AGGIUNGI) ---
-with st.expander("🛠️ Gestisci i titoli della Watchlist (Modifiche Permanenti)", expanded=False):
+# --- SEZIONE GESTIONE E RIORDINO TICKER ---
+with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti)", expanded=False):
+    
+    # 1. Tab per aggiungere nuovi elementi
+    st.subheader("➕ Aggiungi un nuovo titolo")
     col_add_input, col_add_btn = st.columns([7, 3])
     with col_add_input:
-        nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):").upper().strip()
+        nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):", key="txt_nuovo_tkr").upper().strip()
     with col_add_btn:
         st.write("") # Spaziatori visivi
         st.write("") 
-        if st.button("➕ Aggiungi", use_container_width=True):
+        if st.button("Aggiungi alla lista", use_container_width=True):
             if nuovo_ticker:
                 if nuovo_ticker not in st.session_state["lista_tickers"]:
                     try:
-                        # Verifica reale su Yahoo Finance
                         t = yf.Ticker(nuovo_ticker)
                         hist = t.history(period="1wk")
                         if not hist.empty:
-                            # 1. Aggiorna la memoria di lavoro
                             st.session_state["lista_tickers"].append(nuovo_ticker)
-                            # 2. Scrivi sul file permanente
                             salva_ticker_su_file(st.session_state["lista_tickers"])
                             st.success(f"Aggiunto permanentemente: {nuovo_ticker}")
                             st.rerun()
@@ -64,13 +63,39 @@ with st.expander("🛠️ Gestisci i titoli della Watchlist (Modifiche Permanent
                     st.warning("Questo ticker è già presente nella lista.")
             else:
                 st.warning("Inserisci un testo valido.")
+                
+    st.markdown("---")
+    
+    # 2. Strumento di Riordino Drag & Drop / Spostamento
+    st.subheader("↕️ Cambia l'ordine dei titoli")
+    st.caption("Trascina le righe tenendo premuto il quadratino a sinistra oppure usa le frecce per riordinare la tabella.")
+    
+    # Creiamo un piccolo DataFrame di supporto per l'editor di riordino
+    df_ordinamento = pd.DataFrame({"Ticker": st.session_state["lista_tickers"]})
+    
+    # Mostriamo il data_editor che permette di spostare e riordinare le righe
+    df_ordinato = st.data_editor(
+        df_ordinamento,
+        num_rows="fixed", # Blocchiamo il numero di righe per usare l'ordinamento nativo
+        use_container_width=True,
+        disabled=["Ticker"], # Impediamo la modifica del testo, vogliamo solo spostare le righe
+        key="editor_riordino"
+    )
+    
+    # Pulsante per salvare la nuova sequenza scelta dall'utente
+    if st.button("💾 Salva Nuovo Ordine", use_container_width=True, type="primary"):
+        nuova_lista = df_ordinato["Ticker"].tolist()
+        st.session_state["lista_tickers"] = nuova_lista
+        salva_ticker_su_file(nuova_lista)
+        st.success("Nuovo ordine salvato con successo!")
+        st.rerun()
 
 st.markdown("---")
 
 if not st.session_state["lista_tickers"]:
     st.info("La tua watchlist è vuota. Aggiungi un ticker usando il box sopra per iniziare.")
 else:
-    # --- COSTRUZIONE TABELLA ---
+    # --- COSTRUZIONE TABELLA FINANZIARIA ---
     header_cols = st.columns([1, 2, 2, 2, 2, 1])
     with header_cols[0]: st.markdown("**GRAFICO**")
     with header_cols[1]: st.markdown("**TICKER**")
@@ -121,9 +146,7 @@ else:
                 
             with row_cols[5]:
                 if st.button("🗑️", key=f"btn_del_{tkr}"):
-                    # 1. Rimuovi dalla memoria di lavoro
                     st.session_state["lista_tickers"].remove(tkr)
-                    # 2. Aggiorna il file permanente salvando la nuova lista
                     salva_ticker_su_file(st.session_state["lista_tickers"])
                     st.toast(f"Rimosso permanentemente {tkr}.")
                     st.rerun()
