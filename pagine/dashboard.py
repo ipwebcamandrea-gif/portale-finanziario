@@ -77,4 +77,4 @@ for i, riga in df_watchlist.iterrows():
         if col_btn_act.button("Vedi Grafico", key=f"btn_{riga['Ticker']}", use_container_width=True):
             st.session_state['ticker_selezionato'] = riga['Ticker']
             st.switch_page("pagine/grafico.py")
-    st.markdown("<div style='margin-bottom: -10px;'></div>", unsafe_value=True)
+    st.markdown("<div style='margin-bottom: -10px;'></div>", unsafe_allow_html=True)
