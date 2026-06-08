@@ -1,5 +1,5 @@
 /* =========================
-   WATCHLIST PAGE
+   WATCHLIST OPERATIVA PAGE
    ========================= */
 
 .watchlist-header {
@@ -7,11 +7,11 @@
 }
 
 .watchlist-title {
-    font-size: 2.4rem;
+    font-size: 2.55rem;
     font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -0.04em;
-    background: linear-gradient(90deg, #00b0ff, #26a69a);
+    line-height: 1.08;
+    letter-spacing: -0.05em;
+    background: linear-gradient(90deg, #00b0ff, #26a69a, #8e7dff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.35rem;
@@ -20,14 +20,50 @@
 .watchlist-subtitle {
     color: var(--text-muted);
     font-size: 1rem;
+    line-height: 1.5;
     margin-bottom: 1.2rem;
+    max-width: 900px;
 }
 
 /* =========================
-   ACTION PANEL
+   KPI CARDS
    ========================= */
 
-.watchlist-panel {
+.watchlist-kpi-card {
+    background: linear-gradient(180deg, #171b27 0%, #121622 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.watchlist-kpi-label {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.45rem;
+}
+
+.watchlist-kpi-value {
+    color: var(--text-main);
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+.watchlist-kpi-note {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+}
+
+/* =========================
+   CONFIG PANEL
+   ========================= */
+
+.watchlist-config-panel {
     background-color: var(--bg-panel);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
@@ -35,73 +71,121 @@
     margin: 1rem 0 1.2rem 0;
 }
 
-.watchlist-panel-title {
-    font-size: 1rem;
-    font-weight: 800;
+.watchlist-config-title {
     color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 900;
     margin-bottom: 0.25rem;
 }
 
-.watchlist-panel-subtitle {
-    font-size: 0.85rem;
+.watchlist-config-subtitle {
     color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
 }
 
 /* =========================
-   TICKER LIST
+   TOOLBAR
    ========================= */
 
-.watchlist-list-card {
+.watchlist-toolbar {
     background-color: var(--bg-panel);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
-    padding: 0.9rem;
-    margin-top: 1rem;
+    padding: 1rem;
+    margin: 1.2rem 0 1rem 0;
 }
 
-.watchlist-list-title {
-    font-size: 1rem;
-    font-weight: 800;
+.watchlist-toolbar-title {
     color: var(--text-main);
-    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 0.25rem;
 }
 
-.watchlist-row {
+.watchlist-toolbar-subtitle {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+/* =========================
+   TABLE HEADER
+   ========================= */
+
+.watchlist-table-header {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+/* =========================
+   WATCHLIST ROWS
+   ========================= */
+
+.watchlist-row-card {
     background-color: #111722;
-    border: 1px solid rgba(42, 46, 57, 0.85);
+    border: 1px solid rgba(42, 46, 57, 0.88);
     border-radius: var(--radius-md);
-    padding: 0.75rem 0.85rem;
-    margin-bottom: 0.6rem;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 0.55rem;
 }
 
 .watchlist-ticker-symbol {
     color: var(--text-main);
-    font-size: 1rem;
     font-weight: 900;
     letter-spacing: -0.02em;
 }
 
-.watchlist-ticker-note {
+.watchlist-price {
+    color: var(--text-soft);
+    font-weight: 800;
+}
+
+.watchlist-muted {
     color: var(--text-muted);
-    font-size: 0.82rem;
-    margin-top: 0.15rem;
+    font-weight: 650;
+}
+
+.watchlist-error {
+    color: var(--accent-red);
+    font-weight: 800;
 }
 
 /* =========================
-   EMPTY STATE
+   STATUS PILLS
    ========================= */
 
-.watchlist-empty {
-    background-color: var(--bg-panel);
-    border: 1px dashed var(--border-soft);
-    border-radius: var(--radius-lg);
-    padding: 1.2rem;
+.status-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.18rem 0.55rem;
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.status-positive {
+    color: #26a69a;
+    background-color: rgba(38, 166, 154, 0.12);
+    border: 1px solid rgba(38, 166, 154, 0.35);
+}
+
+.status-negative {
+    color: #ef5350;
+    background-color: rgba(239, 83, 80, 0.12);
+    border: 1px solid rgba(239, 83, 80, 0.35);
+}
+
+.status-neutral {
     color: var(--text-muted);
-    text-align: center;
+    background-color: rgba(138, 153, 173, 0.12);
+    border: 1px solid rgba(138, 153, 173, 0.28);
 }
 
 /* =========================
-   INFO BADGES
+   MARKET BADGES
    ========================= */
 
 .market-badge {
@@ -109,8 +193,7 @@
     border-radius: 999px;
     padding: 0.16rem 0.55rem;
     font-size: 0.72rem;
-    font-weight: 800;
-    margin-top: 0.25rem;
+    font-weight: 900;
 }
 
 .market-italy {
@@ -132,20 +215,61 @@
 }
 
 /* =========================
+   SORTABLE ITEMS
+   ========================= */
+
+div.stColContainer div div div div[style*="background-color"] {
+    background: #1e222d !important;
+    border: 1px solid #2a2e39 !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    cursor: grab !important;
+    font-weight: 700 !important;
+}
+
+/* =========================
+   EMPTY STATE
+   ========================= */
+
+.watchlist-empty {
+    background-color: var(--bg-panel);
+    border: 1px dashed var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 1.2rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* =========================
    RESPONSIVE
    ========================= */
 
-@media (max-width: 700px) {
+@media (max-width: 1100px) {
+    .watchlist-title {
+        font-size: 2.2rem;
+    }
+
+    .watchlist-kpi-value {
+        font-size: 1.42rem;
+    }
+}
+
+@media (max-width: 760px) {
     .watchlist-title {
         font-size: 1.9rem;
     }
 
-    .watchlist-panel,
-    .watchlist-list-card {
+    .watchlist-subtitle {
+        font-size: 0.92rem;
+    }
+
+    .watchlist-config-panel,
+    .watchlist-toolbar,
+    .watchlist-kpi-card {
         padding: 0.75rem;
     }
 
-    .watchlist-row {
-        padding: 0.65rem;
+    .watchlist-table-header {
+        font-size: 0.68rem;
     }
 }
