@@ -33,10 +33,8 @@ GRAFICO_CSS = ROOT_DIR / "css" / "grafico.css"
 def local_css(file_path):
     if file_path.exists():
         with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(
-                f"<style>{file.read()}</style>",
-                unsafe_allow_html=True
-            )
+            css = file.read()
+            st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
 local_css(GLOBAL_CSS)
@@ -49,17 +47,17 @@ local_css(GRAFICO_CSS)
 
 def normalizza_dataframe_yfinance(data):
     if isinstance(data.columns, pd.MultiIndex):
-        level_0 = list(data.columns.get_level_values(0))
-        level_1 = list(data.columns.get_level_values(1))
+        livelli_0 = list(data.columns.get_level_values(0))
+        livelli_1 = list(data.columns.get_level_values(1))
 
-        if "Close" in level_0:
+        if "Close" in livelli_0:
             data.columns = data.columns.get_level_values(0)
-        elif "Close" in level_1:
+        elif "Close" in livelli_1:
             data.columns = data.columns.get_level_values(1)
         else:
             data.columns = [
-                "_".join([str(x) for x in col if str(x) != ""])
-                for col in data.columns
+                "_".join([str(elemento) for elemento in colonna if str(elemento) != ""])
+                for colonna in data.columns
             ]
 
     return data
@@ -204,31 +202,6 @@ def formatta_percentuale(valore):
     return f"{valore:.2f} %"
 
 
-def classe_valore(valore):
-    if valore is None:
-        return "neutral"
-
-    if valore > 0:
-        return "positive"
-
-    if valore < 0:
-        return "negative"
-
-    return "neutral"
-
-
-def render_kpi_card(label, value, note="", css_class=""):
-    html = (
-        '<div class="grafico-kpi-card">'
-        f'<div class="grafico-kpi-label">{label}</div>'
-        f'<div class="grafico-kpi-value {css_class}">{value}</div>'
-        f'<div class="grafico-kpi-note">{note}</div>'
-        '</div>'
-    )
-
-    st.markdown(html, unsafe_allow_html=True)
-
-
 # =========================
 # GRAFICO
 # =========================
@@ -260,7 +233,6 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
-    # WMA 21 weekly - bianca
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -273,7 +245,6 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
-    # WMA 50 weekly - verde
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -286,7 +257,6 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
-    # WMA 200 weekly - blu
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -299,7 +269,6 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
-    # EMA 200 weekly - gialla
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -312,7 +281,6 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
-    # SMA 200 weekly - arancione
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -402,17 +370,18 @@ if ticker is None:
     st.stop()
 
 
-header_html = (
-    '<div class="grafico-header">'
-    f'<div class="grafico-title">Analisi Weekly: {ticker}</div>'
-    '<div class="grafico-subtitle">'
-    'Vista unica a 10 anni su timeframe weekly con WMA 21W, WMA 50W, '
-    'WMA 200W, EMA 200W e SMA 200W.'
-    '</div>'
-    '</div>'
+st.markdown(
+    f"""
+    <div class="grafico-header">
+        <div class="grafico-title">Analisi Weekly: {ticker}</div>
+        <div class="grafico-subtitle">
+            Vista a 10 anni su timeframe weekly con WMA 21W, WMA 50W,
+            WMA 200W, EMA 200W e SMA 200W.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
-
-st.markdown(header_html, unsafe_allow_html=True)
 
 
 # =========================
@@ -426,16 +395,7 @@ with col_back:
         st.switch_page("pages/dashboard.py")
 
 with col_info:
-    info_html = (
-        '<div class="grafico-control-panel">'
-        '<div class="grafico-control-title">Vista grafico</div>'
-        '<div class="grafico-control-subtitle">'
-        'Timeframe weekly · Periodo fisso 10 anni · Medie mobili weekly.'
-        '</div>'
-        '</div>'
-    )
-
-    st.markdown(info_html, unsafe_allow_html=True)
+    st.info("Timeframe weekly · Periodo fisso 10 anni · Medie mobili weekly")
 
 
 # =========================
@@ -452,17 +412,10 @@ if errore_download:
     )
 
 if data.empty:
-    errore_html = (
-        '<div class="grafico-status-card">'
-        '<div class="grafico-status-title">Dati non disponibili</div>'
-        f'<div class="grafico-status-text">'
-        f'Non sono stati trovati dati validi per il ticker {ticker}. '
-        'Controlla il simbolo nella Watchlist.'
-        '</div>'
-        '</div>'
+    st.error(
+        f"Non sono stati trovati dati validi per il ticker {ticker}. "
+        "Controlla il simbolo nella Watchlist."
     )
-
-    st.markdown(errore_html, unsafe_allow_html=True)
 
     if st.button("⬅️ Torna al Cockpit", key="back_no_data"):
         st.switch_page("pages/dashboard.py")
@@ -482,68 +435,54 @@ metriche = calcola_metriche(data)
 kpi_1, kpi_2, kpi_3, kpi_4 = st.columns(4)
 
 with kpi_1:
-    render_kpi_card(
+    st.metric(
         "Prezzo attuale",
-        formatta_numero(metriche["prezzo"]),
-        "Ultima chiusura weekly"
+        formatta_numero(metriche["prezzo"])
     )
 
 with kpi_2:
-    render_kpi_card(
+    st.metric(
         "SMA 200W",
-        formatta_numero(metriche["sma_200w"]),
-        "Media mobile semplice weekly"
+        formatta_numero(metriche["sma_200w"])
     )
 
 with kpi_3:
-    distanza = metriche["distanza_sma_200w"]
-
-    render_kpi_card(
+    st.metric(
         "Distanza SMA 200W",
-        formatta_percentuale(distanza),
-        "Prezzo vs SMA 200W",
-        classe_valore(distanza)
+        formatta_percentuale(metriche["distanza_sma_200w"])
     )
 
 with kpi_4:
-    rendimento_52w = metriche["rendimento_52w"]
-
-    render_kpi_card(
+    st.metric(
         "Rendimento 52W",
-        formatta_percentuale(rendimento_52w),
-        "Ultime 52 settimane",
-        classe_valore(rendimento_52w)
+        formatta_percentuale(metriche["rendimento_52w"])
     )
 
 
 kpi_5, kpi_6, kpi_7, kpi_8 = st.columns(4)
 
 with kpi_5:
-    render_kpi_card(
+    st.metric(
         "WMA 21W",
-        formatta_numero(metriche["wma_21w"]),
-        "Linea bianca"
+        formatta_numero(metriche["wma_21w"])
     )
 
 with kpi_6:
-    render_kpi_card(
+    st.metric(
         "WMA 50W",
-        formatta_numero(metriche["wma_50w"]),
-        "Linea verde"
+        formatta_numero(metriche["wma_50w"])
     )
 
 with kpi_7:
-    render_kpi_card(
+    st.metric(
         "WMA 200W",
-        formatta_numero(metriche["wma_200w"]),
-        "Linea blu"
+        formatta_numero(metriche["wma_200w"])
     )
 
 with kpi_8:
-    render_kpi_card(
+    st.metric(
         "EMA 200W",
-        formatta_numero(metriche["ema_200w"]),
-        "Linea gialla"
+        formatta_numero(metriche["ema_200w"])
     )
 
 
@@ -551,17 +490,7 @@ with kpi_8:
 # GRAFICO
 # =========================
 
-chart_html = (
-    '<div class="grafico-chart-card">'
-    '<div class="grafico-section-title">Grafico tecnico weekly</div>'
-    '<div class="grafico-section-subtitle">'
-    'Candele weekly a 10 anni con WMA 21W, WMA 50W, WMA 200W, '
-    'EMA 200W e SMA 200W.'
-    '</div>'
-    '</div>'
-)
-
-st.markdown(chart_html, unsafe_allow_html=True)
+st.subheader("Grafico tecnico weekly")
 
 fig = crea_grafico_weekly(data, ticker)
 st.plotly_chart(fig, use_container_width=True)
@@ -579,4 +508,3 @@ st.download_button(
     file_name=f"{ticker}_weekly_10y.csv",
     mime="text/csv"
 )
-``
