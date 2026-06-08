@@ -3,78 +3,101 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-# Configurazione Ticker e Parametri Fissi
-tickers = ["AAPL", "MSFT", "AMZN", "GOOGL", "BRK-B", "NVDA", "META"]
-SOGLIA_FISSA = 0.10  # 10%
+# Configurazione della lista dei Magnifici 7
+TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA']
 
-@st.cache_data(ttl=60)
-def elabora_dati_titolo(ticker):
-    """Scarica lo storico ed estrae l'ultimo record calcolando la SMA 200W."""
-    stock = yf.Ticker(ticker)
-    hist = stock.history(period="max", interval="1wk")
-    if hist.empty or len(hist) < 200:
-        return None
-    hist.index = hist.index.tz_localize(None)
-    hist['SMA_200_W'] = hist['Close'].rolling(window=200).mean()
-    return hist.iloc[-1]
+def calcola_distanze():
+    dati_finali = []
+    
+    for t in TICKERS:
+        try:
+            stock = yf.Ticker(t)
+            # Scarichiamo lo storico settimanale (ci serve per la SMA 200W)
+            df = stock.history(period="max", interval="1wk")
+            
+            if len(df) >= 200:
+                # Calcolo della Media Mobile Semplice a 200 settimane
+                df['SMA200_W'] = df['Close'].rolling(window=200).mean()
+                
+                prezzo_corrente = df['Close'].iloc[-1]
+                sma200_w = df['SMA200_W'].iloc[-1]
+                
+                # Calcolo della distanza percentuale
+                distanza = ((prezzo_corrente - sma200_w) / sma200_w) * 100
+                
+                dati_finali.append({
+                    'Ticker': t,
+                    'Prezzo Corrente': f"$ {prezzo_corrente:.2f}",
+                    'SMA 200W': f"$ {sma200_w:.2f}",
+                    'Distanza %': distanza, # Mantenuto numerico per la formattazione colore
+                    'raw_ticker': t
+                })
+        except Exception as e:
+            pass
+            
+    return dati_finali
 
+# --- INTERFACCIA DELLA DASHBOARD ---
 st.title("📊 Monitoraggio Watchlist Magnifici 7")
-st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente in background.")
-
-# Tabella dati calcolati
-lista_record = []
-for t in tickers:
-    try:
-        ultimo_record = elabora_dati_titolo(t)
-        if ultimo_record is not None:
-            prezzo_corrente = ultimo_record['Close']
-            sma_200_w = ultimo_record['SMA_200_W']
-            distanza = (prezzo_corrente - sma_200_w) / sma_200_w
-            trigger_vicinanza = abs(distanza) <= SOGLIA_FISSA
-            
-            lista_record.append({
-                "Ticker": t,
-                "Prezzo Attuale": prezzo_corrente,
-                "SMA 200 W": sma_200_w,
-                "Distanza %": distanza * 100,
-                "Trigger": trigger_vicinanza
-            })
-    except Exception:
-        continue
-
-df_watchlist = pd.DataFrame(lista_record)
-
-# Visualizzazione custom a righe larghe (Sfrutta l'intera larghezza dello schermo del PC/Mobile)
-st.markdown("---")
-# Intestazione Tabella spaziosa
-head_col1, head_col2, head_col3, head_col4 = st.columns([1.5, 2.5, 2.5, 2.5])
-head_col1.markdown("**TICKER**")
-head_col2.markdown("**PREZZO CORRENTE**")
-head_col3.markdown("**SMA 200W**")
-head_col4.markdown("**DISTANZA % / AZIONE**")
+st.write("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente in background.")
 st.markdown("---")
 
-for i, riga in df_watchlist.iterrows():
-    # Evidenziazione condizionale se sotto soglia 10%
-    container_stile = st.container()
-    with container_stile:
-        col1, col2, col3, col4 = st.columns([1.5, 2.5, 2.5, 2.5])
+# Recupero dei dati aggiornati
+lista_titoli = calcola_distanze()
+
+if lista_titoli:
+    # Intestazione della tabella con l'icona a sinistra
+    col_icona, col_tk, col_pr, col_sma, col_dist = st.columns([0.8, 1.2, 2.0, 2.0, 2.5])
+    
+    with col_icona:
+        st.markdown("**GRAFICO**")
+    with col_tk:
+        st.markdown("**TICKER**")
+    with col_pr:
+        st.markdown("**PREZZO CORRENTE**")
+    with col_sma:
+        st.markdown("**SMA 200W**")
+    with col_dist:
+        st.markdown("**DISTANZA % / AZIONE**")
         
-        # Colore ticker basato sul trigger
-        if riga['Trigger']:
-            col1.markdown(f"🚨 **{riga['Ticker']}** *(Sotto Soglia)*")
-        else:
-            col1.markdown(f"**{riga['Ticker']}**")
+    st.markdown("---")
+
+    # Ciclo per popolare le righe della tabella
+    for riga in lista_titoli:
+        c_icona, c_tk, c_pr, c_sma, c_dist = st.columns([0.8, 1.2, 2.0, 2.0, 2.5])
+        
+        # 1. Pulsante icona a sinistra per aprire il grafico dedicato
+        with c_icona:
+            if st.button("📊", key=f"btn_{riga['raw_ticker']}"):
+                st.session_state['ticker_selezionato'] = riga['raw_ticker']
+                st.switch_page("pagine/grafico.py")
+                
+        # 2. Informazioni sul Ticker
+        with c_tk:
+            st.markdown(f"**{riga['Ticker']}**")
             
-        col2.markdown(f"$ {riga['Prezzo Attuale']:.2f}")
-        col3.markdown(f"$ {riga['SMA 200 W']:.2f}")
-        
-        # Allineamento bottone e percentuale nello stesso blocco visivo
-        col_btn_txt, col_btn_act = col4.columns([1.2, 1.3])
-        col_btn_txt.markdown(f"**{riga['Distanza %']:+.2f} %**")
-        
-        # Bottone interattivo per cambiare pagina e iniettare il ticker nello stato di sessione
-        if col_btn_act.button("Vedi Grafico", key=f"btn_{riga['Ticker']}", use_container_width=True):
-            st.session_state['ticker_selezionato'] = riga['Ticker']
-            st.switch_page("pagine/grafico.py")
-    st.markdown("<div style='margin-bottom: -10px;'></div>", unsafe_allow_html=True)
+        # 3. Prezzo Corrente
+        with c_pr:
+            st.markdown(riga['Prezzo Corrente'])
+            
+        # 4. Valore della SMA200W
+        with c_sma:
+            st.markdown(riga['SMA 200W'])
+            
+        # 5. Distanza percentuale con colore dinamico (Verde se sopra la media, Rosso se sotto)
+        with c_dist:
+            valore_dist = riga['Distanza %']
+            if valore_dist >= 0:
+                colore = "#26a69a" # Verde trading
+                segno = "+"
+            else:
+                colore = "#ef5350" # Rosso trading
+                segno = ""
+                
+            st.markdown(f"<span style='color:{colore}; font-weight:bold;'>{segno}{valore_dist:.2f} %</span>", unsafe_allow_html=True)
+            
+        # Spazio di separazione millimetrico tra le righe
+        st.markdown("<div style='margin-bottom: -10px;'></div>", unsafe_allow_html=True)
+        st.markdown("---")
+else:
+    st.error("Impossibile recuperare i dati finanziari da Yahoo Finance al momento.")
