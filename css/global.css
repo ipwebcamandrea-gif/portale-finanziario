@@ -1,1 +1,5 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+html, body, [data-testid="stAppViewContainer"] { background-color: #0e1117; color: #fff; font-family: 'Inter', sans-serif; }
+.login-box { background-color: #161a25; padding: 40px; border-radius: 12px; border: 1px solid #222632; text-align: center; }
+.hero-title { font-size: 3rem; font-weight: 800; margin-bottom: 20px; color: #00b0ff; text-align: center; }
+.stButton > button { border-radius: 6px; background-color: #1c2030; color: #fff; border: 1px solid #2a2e39; }
