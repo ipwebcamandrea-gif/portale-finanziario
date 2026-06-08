@@ -3,14 +3,14 @@ import yfinance as yf
 import os
 from streamlit_sortables import sort_items
 
-# --- SICUREZZA ASSOLUTA: DEVE ESSERE QUI ---
+# --- SICUREZZA: PRIMA COSA ASSOLUTA ---
 if not st.session_state.get('authenticated', False):
     st.error("Accesso non autorizzato. Torna alla home.")
     if st.button("Torna al Login"):
         st.switch_page("main.py")
-    st.stop() # FERMA TUTTO E NON CARICARE NULLA SE NON SEI LOGGATO
+    st.stop()
 
-# Caricamento Stili
+# --- CARICAMENTO STILI ---
 def local_css(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -36,27 +36,28 @@ if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
 st.markdown('<div class="main-title">Monitoraggio Globale Watchlist</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Analisi quantitativa e distanze metriche dalla SMA 200 Settimanale</div>', unsafe_allow_html=True)
 
-# Gestione Watchlist
-with st.expander("🛠️ Configura Watchlist", expanded=False):
-    nuovo_ticker = st.text_input("Inserisci Ticker:").upper().strip()
-    if st.button("Aggiungi"):
+# Gestione Watchlist (Expander)
+with st.expander("🛠️ Configura Watchlist & Drag-and-Drop", expanded=False):
+    nuovo_ticker = st.text_input("Aggiungi Ticker:", key="txt_add").upper().strip()
+    if st.button("Aggiungi alla lista"):
         if nuovo_ticker and nuovo_ticker not in st.session_state["lista_tickers"]:
             st.session_state["lista_tickers"].append(nuovo_ticker)
             salva_ticker_su_file(st.session_state["lista_tickers"])
             st.rerun()
 
     lista_prima = list(st.session_state["lista_tickers"])
-    lista_dopo = sort_items(lista_prima, direction="vertical", key="drag_drop_watchlist")
+    lista_dopo = sort_items(lista_prima, direction="vertical", key="drag_drop")
     if lista_dopo != lista_prima:
         st.session_state["lista_tickers"] = lista_dopo
         salva_ticker_su_file(lista_dopo)
         st.rerun()
 
 # Rendering Tabella
+st.markdown("---")
 for tkr in list(st.session_state["lista_tickers"]):
     try:
-        # Recupero dati con yfinance
         stock = yf.Ticker(tkr)
         hist = stock.history(period="2y", interval="1wk")
         if hist.empty: continue
