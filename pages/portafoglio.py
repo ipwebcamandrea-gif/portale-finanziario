@@ -1,9 +1,5 @@
 import streamlit as st
-from pathlib import Path
-
-
-# =========================
-# PROTEZIONE LOGIN
+from pathlib importfrom pathlib import Path
 # =========================
 
 if not st.session_state.get("authenticated", False):
@@ -155,5 +151,8 @@ st.markdown(
 
 st.markdown("---")
 
-if st.button("⬅️ Torna alla Dashboard"):
+if st.button("⬅️ Torna al Cockpit"):
     st.switch_page("pages/dashboard.py")
+
+
+# =========================
