@@ -297,14 +297,27 @@ def crea_grafico(data, ticker, tipo_grafico):
 # TICKER / HEADER
 # =========================
 
-ticker = st.session_state.get("ticker_selezionato", "AAPL")
+ticker = st.session_state.get("ticker_selezionato", None)
+
+if ticker is None:
+    st.warning(
+        "Nessun ticker selezionato. "
+        "Apri questa pagina dalla Watchlist usando il pulsante 📈."
+    )
+
+    if st.button("⬅️ Torna alla Watchlist"):
+        st.switch_page("pages/watchlist.py")
+
+    st.stop()
+
 
 st.markdown(
     f"""
     <div class="grafico-header">
         <div class="grafico-title">Analisi Quantitativa: {ticker}</div>
         <div class="grafico-subtitle">
-            Grafico tecnico con SMA 50, SMA 200, volume e rendimenti principali.
+            Dettaglio tecnico aperto dalla Watchlist. Include SMA 50, SMA 200,
+            volume, rendimento e download dati.
         </div>
     </div>
     """,
@@ -347,8 +360,8 @@ with col_tipo:
 with col_back:
     st.write("")
     st.write("")
-    if st.button("⬅️ Torna alla Dashboard"):
-        st.switch_page("pages/dashboard.py")
+    if st.button("⬅️ Torna alla Watchlist"):
+        st.switch_page("pages/watchlist.py")
 
 
 mappa_periodi = {
@@ -375,12 +388,16 @@ if data.empty:
             <div class="grafico-status-title">Dati non disponibili</div>
             <div class="grafico-status-text">
                 Non sono stati trovati dati validi per il ticker {ticker}.
-                Controlla il simbolo nella watchlist.
+                Controlla il simbolo nella Watchlist.
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
+
+    if st.button("⬅️ Torna alla Watchlist", key="back_no_data"):
+        st.switch_page("pages/watchlist.py")
+
     st.stop()
 
 
