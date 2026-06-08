@@ -36,7 +36,7 @@ st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano au
 # --- SEZIONE GESTIONE E RIORDINO TICKER ---
 with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti)", expanded=False):
     
-    # 1. Tab per aggiungere nuovi elementi
+    # 1. Sezione per aggiungere nuovi elementi
     st.subheader("➕ Aggiungi un nuovo titolo")
     col_add_input, col_add_btn = st.columns([7, 3])
     with col_add_input:
@@ -66,29 +66,27 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
                 
     st.markdown("---")
     
-    # 2. Strumento di Riordino Drag & Drop / Spostamento
-    st.subheader("↕️ Cambia l'ordine dei titoli")
-    st.caption("Trascina le righe tenendo premuto il quadratino a sinistra oppure usa le frecce per riordinare la tabella.")
+    # 2. Strumento di Riordino Visivo tramite Multiselect
+    st.subheader("↕️ Configura l'ordine dei titoli")
+    st.caption("Fai click sui titoli nell'ordine esatto in cui desideri vederli apparire in tabella. Puoi anche rimuoverli cliccando sulla 'x'.")
     
-    # Creiamo un piccolo DataFrame di supporto per l'editor di riordino
-    df_ordinamento = pd.DataFrame({"Ticker": st.session_state["lista_tickers"]})
-    
-    # Mostriamo il data_editor che permette di spostare e riordinare le righe
-    df_ordinato = st.data_editor(
-        df_ordinamento,
-        num_rows="fixed", # Blocchiamo il numero di righe per usare l'ordinamento nativo
-        use_container_width=True,
-        disabled=["Ticker"], # Impediamo la modifica del testo, vogliamo solo spostare le righe
-        key="editor_riordino"
+    # Questo selettore permette di ridefinire la lista semplicemente cliccando i nomi nell'ordine voluto
+    lista_riordinata = st.multiselect(
+        "Disponi i titoli nell'ordine preferito:",
+        options=st.session_state["lista_tickers"], # Tutte le opzioni disponibili
+        default=st.session_state["lista_tickers"], # L'ordine attuale di partenza
+        key="selettore_ordine"
     )
     
     # Pulsante per salvare la nuova sequenza scelta dall'utente
     if st.button("💾 Salva Nuovo Ordine", use_container_width=True, type="primary"):
-        nuova_lista = df_ordinato["Ticker"].tolist()
-        st.session_state["lista_tickers"] = nuova_lista
-        salva_ticker_su_file(nuova_lista)
-        st.success("Nuovo ordine salvato con successo!")
-        st.rerun()
+        if lista_riordinata:
+            st.session_state["lista_tickers"] = lista_riordinata
+            salva_ticker_su_file(lista_riordinata)
+            st.success("Nuovo ordine salvato con successo!")
+            st.rerun()
+        else:
+            st.error("La lista non può essere completamente vuota al salvataggio dello schema.")
 
 st.markdown("---")
 
