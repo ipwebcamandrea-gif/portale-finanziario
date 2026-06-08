@@ -181,8 +181,6 @@ def calcola_metriche(ticker):
         else:
             stato = "In linea"
 
-    rendimento_1m = calcola_rendimento(hist, 21)
-    rendimento_6m = calcola_rendimento(hist, 126)
     rendimento_1y = calcola_rendimento(hist, 252)
 
     return {
@@ -191,8 +189,6 @@ def calcola_metriche(ticker):
         "sma_200": sma_200,
         "distanza": distanza,
         "stato": stato,
-        "rendimento_1m": rendimento_1m,
-        "rendimento_6m": rendimento_6m,
         "rendimento_1y": rendimento_1y
     }
 
@@ -211,8 +207,6 @@ def costruisci_metriche_watchlist(lista_ticker):
                 "sma_200": None,
                 "distanza": None,
                 "stato": "N/D",
-                "rendimento_1m": None,
-                "rendimento_6m": None,
                 "rendimento_1y": None
             })
         else:
@@ -223,7 +217,7 @@ def costruisci_metriche_watchlist(lista_ticker):
 
 
 # =========================
-# FUNZIONI FORMATTAZIONE
+# FORMATTAZIONE
 # =========================
 
 def formatta_prezzo(valore):
@@ -277,7 +271,7 @@ def render_kpi_card(label, value, note):
 
 
 # =========================
-# INIZIALIZZAZIONE SESSIONE
+# SESSIONE
 # =========================
 
 if "lista_tickers" not in st.session_state:
@@ -305,7 +299,7 @@ st.markdown(
 
 
 # =========================
-# NAVIGAZIONE ALTA
+# NAVIGAZIONE
 # =========================
 
 col_nav_1, col_nav_2, col_nav_3 = st.columns([1.2, 1.2, 3])
@@ -324,19 +318,6 @@ with col_nav_2:
 # =========================
 
 with st.expander("🛠️ Configura Watchlist", expanded=False):
-    st.markdown(
-        """
-        <div class="watchlist-config-panel">
-            <div class="watchlist-config-title">Gestione ticker</div>
-            <div class="watchlist-config-subtitle">
-                Aggiungi nuovi simboli Yahoo Finance, rimuovi quelli non necessari
-                o modifica l'ordine della lista.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     nuovo_ticker = st.text_input(
         "Aggiungi Ticker:",
         placeholder="Esempio: AAPL, NVDA, SWDA.MI",
@@ -346,10 +327,8 @@ with st.expander("🛠️ Configura Watchlist", expanded=False):
     if st.button("Aggiungi alla lista"):
         if not nuovo_ticker:
             st.warning("Inserisci un ticker valido.")
-
         elif nuovo_ticker in st.session_state["lista_tickers"]:
             st.warning(f"{nuovo_ticker} è già presente nella watchlist.")
-
         else:
             st.session_state["lista_tickers"].append(nuovo_ticker)
             st.session_state["lista_tickers"] = rimuovi_duplicati(
@@ -431,7 +410,7 @@ if validi_con_distanza:
 
 
 # =========================
-# KPI CARDS
+# KPI
 # =========================
 
 kpi_1, kpi_2, kpi_3, kpi_4 = st.columns(4)
@@ -465,3 +444,114 @@ with kpi_3:
         )
 
 with kpi_4:
+    if peggiore is not None:
+        render_kpi_card(
+            "Peggiore distanza",
+            peggiore["ticker"],
+            formatta_percentuale(peggiore["distanza"])
+        )
+    else:
+        render_kpi_card(
+            "Peggiore distanza",
+            "N/D",
+            "Dati non disponibili"
+        )
+
+
+# =========================
+# TABELLA
+# =========================
+
+st.markdown(
+    """
+    <div class="watchlist-toolbar">
+        <div class="watchlist-toolbar-title">Ticker monitorati</div>
+        <div class="watchlist-toolbar-subtitle">
+            Clicca su 📈 per aprire il grafico dettagliato del singolo ticker.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+header = st.columns([0.8, 1.4, 1.1, 1.3, 1.3, 1.3, 1.1, 1.2, 0.8])
+
+header[0].markdown('<div class="watchlist-table-header">Grafico</div>', unsafe_allow_html=True)
+header[1].markdown('<div class="watchlist-table-header">Ticker</div>', unsafe_allow_html=True)
+header[2].markdown('<div class="watchlist-table-header">Mercato</div>', unsafe_allow_html=True)
+header[3].markdown('<div class="watchlist-table-header">Prezzo</div>', unsafe_allow_html=True)
+header[4].markdown('<div class="watchlist-table-header">SMA 200D</div>', unsafe_allow_html=True)
+header[5].markdown('<div class="watchlist-table-header">Distanza</div>', unsafe_allow_html=True)
+header[6].markdown('<div class="watchlist-table-header">Stato</div>', unsafe_allow_html=True)
+header[7].markdown('<div class="watchlist-table-header">1Y</div>', unsafe_allow_html=True)
+header[8].markdown('<div class="watchlist-table-header">Elimina</div>', unsafe_allow_html=True)
+
+st.divider()
+
+for item in risultati:
+    ticker = item["ticker"]
+    mercato = identifica_mercato(ticker)
+
+    cols = st.columns([0.8, 1.4, 1.1, 1.3, 1.3, 1.3, 1.1, 1.2, 0.8])
+
+    if cols[0].button("📈", key=f"graf_{ticker}"):
+        st.session_state["ticker_selezionato"] = ticker
+        st.switch_page("pages/grafico.py")
+
+    cols[1].markdown(
+        f'<div class="watchlist-ticker-symbol">{ticker}</div>',
+        unsafe_allow_html=True
+    )
+
+    cols[2].markdown(
+        f'<span class="market-badge {mercato["classe"]}">{mercato["label"]}</span>',
+        unsafe_allow_html=True
+    )
+
+    if not item["valido"]:
+        cols[3].markdown('<span class="watchlist-error">N/D</span>', unsafe_allow_html=True)
+        cols[4].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
+        cols[5].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
+        cols[6].markdown('<span class="status-pill status-neutral">N/D</span>', unsafe_allow_html=True)
+        cols[7].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
+    else:
+        prezzo_str = formatta_prezzo(item["prezzo"])
+        sma_str = formatta_prezzo(item["sma_200"])
+        distanza_str = formatta_percentuale(item["distanza"])
+        rendimento_1y_str = formatta_percentuale(item["rendimento_1y"])
+
+        distanza_class = classe_valore(item["distanza"])
+        rendimento_1y_class = classe_valore(item["rendimento_1y"])
+        stato_class = classe_stato(item["stato"])
+
+        cols[3].markdown(
+            f'<span class="watchlist-price">{prezzo_str}</span>',
+            unsafe_allow_html=True
+        )
+
+        cols[4].markdown(
+            f'<span class="watchlist-muted">{sma_str}</span>',
+            unsafe_allow_html=True
+        )
+
+        cols[5].markdown(
+            f'<span class="{distanza_class}">{distanza_str}</span>',
+            unsafe_allow_html=True
+        )
+
+        cols[6].markdown(
+            f'<span class="status-pill {stato_class}">{item["stato"]}</span>',
+            unsafe_allow_html=True
+        )
+
+        cols[7].markdown(
+            f'<span class="{rendimento_1y_class}">{rendimento_1y_str}</span>',
+            unsafe_allow_html=True
+        )
+
+    if cols[8].button("🗑️", key=f"del_{ticker}"):
+        st.session_state["lista_tickers"].remove(ticker)
+        salva_ticker_su_file(st.session_state["lista_tickers"])
+        st.rerun()
+
+    st.divider()
