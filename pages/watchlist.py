@@ -302,15 +302,11 @@ st.markdown(
 # NAVIGAZIONE
 # =========================
 
-col_nav_1, col_nav_2, col_nav_3 = st.columns([1.2, 1.2, 3])
+col_nav_1, col_nav_2 = st.columns([1.2, 4.8])
 
 with col_nav_1:
     if st.button("⬅️ Cockpit"):
         st.switch_page("pages/dashboard.py")
-
-with col_nav_2:
-    if st.button("💼 Portafoglio"):
-        st.switch_page("pages/portafoglio.py")
 
 
 # =========================
@@ -509,11 +505,26 @@ for item in risultati:
     )
 
     if not item["valido"]:
-        cols[3].markdown('<span class="watchlist-error">N/D</span>', unsafe_allow_html=True)
-        cols[4].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
-        cols[5].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
-        cols[6].markdown('<span class="status-pill status-neutral">N/D</span>', unsafe_allow_html=True)
-        cols[7].markdown('<span class="watchlist-muted">N/D</span>', unsafe_allow_html=True)
+        cols[3].markdown(
+            '<span class="watchlist-error">N/D</span>',
+            unsafe_allow_html=True
+        )
+        cols[4].markdown(
+            '<span class="watchlist-muted">N/D</span>',
+            unsafe_allow_html=True
+        )
+        cols[5].markdown(
+            '<span class="watchlist-muted">N/D</span>',
+            unsafe_allow_html=True
+        )
+        cols[6].markdown(
+            '<span class="status-pill status-neutral">N/D</span>',
+            unsafe_allow_html=True
+        )
+        cols[7].markdown(
+            '<span class="watchlist-muted">N/D</span>',
+            unsafe_allow_html=True
+        )
     else:
         prezzo_str = formatta_prezzo(item["prezzo"])
         sma_str = formatta_prezzo(item["sma_200"])
