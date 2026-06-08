@@ -3,13 +3,14 @@ import yfinance as yf
 import os
 from streamlit_sortables import sort_items
 
-# --- CONTROLLO ACCESSO: DEVE ESSERE QUI, SUBITO DOPO GLI IMPORT ---
+# --- SICUREZZA ASSOLUTA: DEVE ESSERE QUI ---
 if not st.session_state.get('authenticated', False):
     st.error("Accesso non autorizzato. Torna alla home.")
-    if st.button("Torna al Login"): st.switch_page("main.py")
-    st.stop() # FERMA IL CARICAMENTO DELLA PAGINA SE NON SEI LOGGATO
+    if st.button("Torna al Login"):
+        st.switch_page("main.py")
+    st.stop() # FERMA TUTTO E NON CARICARE NULLA SE NON SEI LOGGATO
 
-# --- CARICAMENTO STILI ---
+# Caricamento Stili
 def local_css(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -18,7 +19,7 @@ def local_css(file_path):
 local_css("css/global.css")
 local_css("css/dashboard.css")
 
-# --- LOGICA DATI (Tutto questo gira solo se sei autenticato) ---
+# --- LOGICA DATI ---
 FILE_WATCHLIST = "watchlist.txt"
 
 def carica_ticker_da_file():
@@ -34,4 +35,50 @@ def salva_ticker_su_file(lista_ticker):
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
-# ... (resto della logica che avevamo definito)
+st.markdown('<div class="main-title">Monitoraggio Globale Watchlist</div>', unsafe_allow_html=True)
+
+# Gestione Watchlist
+with st.expander("🛠️ Configura Watchlist", expanded=False):
+    nuovo_ticker = st.text_input("Inserisci Ticker:").upper().strip()
+    if st.button("Aggiungi"):
+        if nuovo_ticker and nuovo_ticker not in st.session_state["lista_tickers"]:
+            st.session_state["lista_tickers"].append(nuovo_ticker)
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
+
+    lista_prima = list(st.session_state["lista_tickers"])
+    lista_dopo = sort_items(lista_prima, direction="vertical", key="drag_drop_watchlist")
+    if lista_dopo != lista_prima:
+        st.session_state["lista_tickers"] = lista_dopo
+        salva_ticker_su_file(lista_dopo)
+        st.rerun()
+
+# Rendering Tabella
+for tkr in list(st.session_state["lista_tickers"]):
+    try:
+        # Recupero dati con yfinance
+        stock = yf.Ticker(tkr)
+        hist = stock.history(period="2y", interval="1wk")
+        if hist.empty: continue
+        
+        px = hist['Close'].iloc[-1]
+        sma = hist['Close'].rolling(200).mean().iloc[-1]
+        dist = ((px - sma) / sma) * 100
+        
+        cols = st.columns([1, 2, 2, 2, 2, 1])
+        with cols[0]:
+            if st.button("📈", key=f"graf_{tkr}"):
+                st.session_state['ticker_selezionato'] = tkr
+                st.switch_page("pagine/grafico.py")
+        with cols[1]: st.markdown(f"**{tkr}**")
+        with cols[2]: st.markdown(f"$ {px:.2f}")
+        with cols[3]: st.markdown(f"$ {sma:.2f}")
+        with cols[4]: st.markdown(f"{dist:.2f} %")
+        with cols[5]:
+            if st.button("🗑️", key=f"del_{tkr}"):
+                st.session_state["lista_tickers"].remove(tkr)
+                salva_ticker_su_file(st.session_state["lista_tickers"])
+                st.rerun()
+        st.divider()
+    except Exception:
+        continue
