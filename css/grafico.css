@@ -1,9 +1,12 @@
-/* css/grafico.css */
+/* =========================
+   GRAFICO STYLE
+   ========================= */
 
 @media (max-width: 992px) {
     [data-testid="stSidebar"] {
         display: none !important;
     }
+
     [data-testid="stSidebarCollapseButton"] {
         display: none !important;
     }
