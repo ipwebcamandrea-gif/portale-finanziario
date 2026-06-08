@@ -40,7 +40,7 @@ local_css(DASHBOARD_CSS)
 
 
 # =========================
-# FUNZIONI DI SUPPORTO
+# FUNZIONI
 # =========================
 
 def carica_ticker_da_file():
@@ -68,21 +68,8 @@ def render_status_card(label, value, note):
     )
 
 
-def render_menu_card(icon, title, text, accent_class=""):
-    st.markdown(
-        f"""
-        <div class="cockpit-card {accent_class}">
-            <div class="cockpit-card-icon">{icon}</div>
-            <div class="cockpit-card-title">{title}</div>
-            <div class="cockpit-card-text">{text}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
 # =========================
-# DATI BASE COCKPIT
+# DATI BASE
 # =========================
 
 lista_ticker = carica_ticker_da_file()
@@ -103,7 +90,7 @@ st.markdown(
         <div class="main-title">Portafoglio Cockpit</div>
         <div class="subtitle">
             Centro di controllo del monitor finanziario. Da qui puoi aprire la Watchlist,
-            consultare il tuo Portafoglio e gestire la sessione di lavoro.
+            consultare il Portafoglio e gestire la sessione.
         </div>
     </div>
     """,
@@ -112,7 +99,7 @@ st.markdown(
 
 
 # =========================
-# STATUS STRIP
+# STATUS
 # =========================
 
 col_status_1, col_status_2, col_status_3 = st.columns(3)
@@ -128,7 +115,7 @@ with col_status_2:
     render_status_card(
         "Versione",
         "V1.1",
-        "Ambiente di sviluppo su dev-v1.1.0"
+        "Branch dev-v1.1.0"
     )
 
 with col_status_3:
@@ -143,48 +130,48 @@ with col_status_3:
 # MENU PRINCIPALE
 # =========================
 
-st.markdown("")
+st.markdown(
+    """
+    <div class="cockpit-info-panel">
+        <div class="cockpit-info-title">Menu principale</div>
+        <div class="cockpit-info-text">
+            Usa le card qui sotto per navigare. Il grafico dettaglio non è nel menu:
+            si apre solo dalla Watchlist tramite il pulsante 📈 sul singolo ticker.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 col_watchlist, col_portafoglio, col_logout = st.columns(3)
 
 with col_watchlist:
-    render_menu_card(
-        "📊",
-        "Watchlist",
-        "Apri la lista dei ticker monitorati, controlla prezzi, SMA 200D, stato tecnico e grafici.",
-        "cockpit-card-accent-green"
-    )
-
-    if st.button("Apri Watchlist", key="btn_open_watchlist"):
+    if st.button(
+        "📊  Watchlist\n\nPrezzi, SMA 200D, stato tecnico e grafici.",
+        key="card_watchlist",
+        use_container_width=True
+    ):
         st.switch_page("pages/watchlist.py")
 
-
 with col_portafoglio:
-    render_menu_card(
-        "💼",
-        "Portafoglio",
-        "Consulta l'area dedicata alle posizioni reali. La sezione è pronta per gli sviluppi successivi.",
-        "cockpit-card-accent-yellow"
-    )
-
-    if st.button("Apri Portafoglio", key="btn_open_portafoglio"):
+    if st.button(
+        "💼  Portafoglio\n\nArea dedicata alle posizioni reali.",
+        key="card_portafoglio",
+        use_container_width=True
+    ):
         st.switch_page("pages/portafoglio.py")
 
-
 with col_logout:
-    render_menu_card(
-        "🚪",
-        "Logout",
-        "Chiudi la sessione corrente e torna alla schermata di accesso.",
-        "cockpit-card-accent-red"
-    )
-
-    if st.button("Esci", key="btn_open_logout"):
+    if st.button(
+        "🚪  Logout\n\nChiudi la sessione e torna al login.",
+        key="card_logout",
+        use_container_width=True
+    ):
         st.switch_page("pages/logout.py")
 
 
 # =========================
-# INFO PANEL
+# INFO
 # =========================
 
 st.markdown(
@@ -192,9 +179,8 @@ st.markdown(
     <div class="cockpit-info-panel">
         <div class="cockpit-info-title">Navigazione semplificata</div>
         <div class="cockpit-info-text">
-            Il menu laterale automatico di Streamlit è stato nascosto.
-            La navigazione principale ora passa da questo cockpit, mentre il grafico dettagliato
-            resta accessibile solo dal pulsante 📈 del singolo ticker nella Watchlist.
+            Il menu laterale automatico di Streamlit è nascosto. La navigazione principale
+            passa dal Cockpit, mentre le pagine operative gestiscono i propri ritorni.
         </div>
     </div>
     """,
