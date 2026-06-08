@@ -70,7 +70,7 @@ def scarica_dati_weekly(ticker):
     try:
         data = yf.download(
             ticker,
-            period="5y",
+            period="10y",
             interval="1wk",
             progress=False,
             auto_adjust=False,
@@ -238,9 +238,9 @@ def crea_grafico_weekly(data, ticker):
         rows=2,
         cols=1,
         shared_xaxes=True,
-        vertical_spacing=0.04,
-        row_heights=[0.76, 0.24],
-        subplot_titles=(f"{ticker} - Weekly 5 anni", "Volume weekly")
+        vertical_spacing=0.035,
+        row_heights=[0.78, 0.22],
+        subplot_titles=(f"{ticker} - Weekly 10 anni", "Volume weekly")
     )
 
     fig.add_trace(
@@ -250,12 +250,17 @@ def crea_grafico_weekly(data, ticker):
             high=data["High"],
             low=data["Low"],
             close=data["Close"],
-            name=ticker
+            name=ticker,
+            increasing_line_color="#00c087",
+            decreasing_line_color="#ff4d4d",
+            increasing_fillcolor="#00c087",
+            decreasing_fillcolor="#ff4d4d"
         ),
         row=1,
         col=1
     )
 
+    # WMA 21 weekly - bianca
     fig.add_trace(
         go.Scatter(
             x=data.index,
@@ -268,49 +273,53 @@ def crea_grafico_weekly(data, ticker):
         col=1
     )
 
+    # WMA 50 weekly - verde
     fig.add_trace(
         go.Scatter(
             x=data.index,
             y=data["WMA50W"],
             mode="lines",
             name="WMA 50W",
-            line=dict(color="#26a69a", width=1.9)
+            line=dict(color="#26a69a", width=2.0)
         ),
         row=1,
         col=1
     )
 
+    # WMA 200 weekly - blu
     fig.add_trace(
         go.Scatter(
             x=data.index,
             y=data["WMA200W"],
             mode="lines",
             name="WMA 200W",
-            line=dict(color="#00b0ff", width=2.1)
+            line=dict(color="#2962ff", width=2.2)
         ),
         row=1,
         col=1
     )
 
+    # EMA 200 weekly - gialla
     fig.add_trace(
         go.Scatter(
             x=data.index,
             y=data["EMA200W"],
             mode="lines",
             name="EMA 200W",
-            line=dict(color="#f5c542", width=2.0)
+            line=dict(color="#ffeb3b", width=2.1)
         ),
         row=1,
         col=1
     )
 
+    # SMA 200 weekly - arancione
     fig.add_trace(
         go.Scatter(
             x=data.index,
             y=data["SMA200W"],
             mode="lines",
             name="SMA 200W",
-            line=dict(color="#ff9800", width=2.2)
+            line=dict(color="#ff9800", width=2.3)
         ),
         row=1,
         col=1
@@ -322,7 +331,7 @@ def crea_grafico_weekly(data, ticker):
                 x=data.index,
                 y=data["Volume"],
                 name="Volume",
-                opacity=0.45,
+                opacity=0.42,
                 marker_color="#5f6b7a"
             ),
             row=2,
@@ -331,20 +340,46 @@ def crea_grafico_weekly(data, ticker):
 
     fig.update_layout(
         template="plotly_dark",
-        height=760,
-        margin=dict(l=10, r=10, t=55, b=10),
+        height=820,
+        margin=dict(l=10, r=55, t=60, b=10),
         xaxis_rangeslider_visible=False,
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.03,
+            y=1.035,
             xanchor="right",
             x=1
-        )
+        ),
+        hovermode="x unified",
+        plot_bgcolor="#0e1117",
+        paper_bgcolor="#0e1117"
     )
 
-    fig.update_yaxes(title_text="Prezzo", row=1, col=1)
-    fig.update_yaxes(title_text="Volume", row=2, col=1)
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.06)",
+        zeroline=False
+    )
+
+    fig.update_yaxes(
+        title_text="Prezzo",
+        row=1,
+        col=1,
+        side="right",
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.06)",
+        zeroline=False
+    )
+
+    fig.update_yaxes(
+        title_text="Volume",
+        row=2,
+        col=1,
+        side="right",
+        showgrid=True,
+        gridcolor="rgba(255,255,255,0.05)",
+        zeroline=False
+    )
 
     return fig
 
@@ -371,7 +406,7 @@ header_html = (
     '<div class="grafico-header">'
     f'<div class="grafico-title">Analisi Weekly: {ticker}</div>'
     '<div class="grafico-subtitle">'
-    'Vista unica a 5 anni su timeframe weekly con WMA 21W, WMA 50W, '
+    'Vista unica a 10 anni su timeframe weekly con WMA 21W, WMA 50W, '
     'WMA 200W, EMA 200W e SMA 200W.'
     '</div>'
     '</div>'
@@ -395,7 +430,7 @@ with col_info:
         '<div class="grafico-control-panel">'
         '<div class="grafico-control-title">Vista grafico</div>'
         '<div class="grafico-control-subtitle">'
-        'Timeframe weekly · Periodo fisso 5 anni · Medie mobili weekly.'
+        'Timeframe weekly · Periodo fisso 10 anni · Medie mobili weekly.'
         '</div>'
         '</div>'
     )
@@ -407,7 +442,7 @@ with col_info:
 # DOWNLOAD DATI
 # =========================
 
-with st.spinner(f"Caricamento dati weekly a 5 anni per {ticker}..."):
+with st.spinner(f"Caricamento dati weekly a 10 anni per {ticker}..."):
     data, errore_download = scarica_dati_weekly(ticker)
 
 if errore_download:
@@ -520,7 +555,7 @@ chart_html = (
     '<div class="grafico-chart-card">'
     '<div class="grafico-section-title">Grafico tecnico weekly</div>'
     '<div class="grafico-section-subtitle">'
-    'Candele weekly a 5 anni con WMA 21W, WMA 50W, WMA 200W, '
+    'Candele weekly a 10 anni con WMA 21W, WMA 50W, WMA 200W, '
     'EMA 200W e SMA 200W.'
     '</div>'
     '</div>'
@@ -541,6 +576,7 @@ csv_data = data.to_csv(index=True).encode("utf-8")
 st.download_button(
     label="⬇️ Scarica dati weekly CSV",
     data=csv_data,
-    file_name=f"{ticker}_weekly_5y.csv",
+    file_name=f"{ticker}_weekly_10y.csv",
     mime="text/csv"
 )
+``
