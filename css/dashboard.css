@@ -1,3 +1,73 @@
-.main-title { font-size: 2.4rem; font-weight: 700; background: linear-gradient(90deg, #26a69a, #00b0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-.subtitle { color: #8a99ad; margin-bottom: 30px; }
-div.stColContainer div div div div[style*="background-color"] { background: #1e222d !important; border: 1px solid #2a2e39 !important; border-radius: 6px !important; color: #fff !important; cursor: grab !important; }
+/* =========================
+   DASHBOARD STYLE
+   ========================= */
+
+.main-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #26a69a, #00b0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    color: #8a99ad;
+    margin-bottom: 30px;
+}
+
+/* =========================
+   SORTABLE / DRAG ITEMS
+   ========================= */
+
+div.stColContainer div div div div[style*="background-color"] {
+    background: #1e222d !important;
+    border: 1px solid #2a2e39 !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    cursor: grab !important;
+}
+
+/* =========================
+   WATCHLIST ROWS
+   ========================= */
+
+.watchlist-row {
+    background-color: #161a25;
+    border: 1px solid #2a2e39;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+
+.watchlist-ticker {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.watchlist-value {
+    color: #d7dde8;
+}
+
+.watchlist-muted {
+    color: #8a99ad;
+}
+
+/* =========================
+   POSITIVE / NEGATIVE COLORS
+   ========================= */
+
+.positive {
+    color: #26a69a;
+    font-weight: 600;
+}
+
+.negative {
+    color: #ef5350;
+    font-weight: 600;
+}
+
+.neutral {
+    color: #8a99ad;
+    font-weight: 600;
+}
