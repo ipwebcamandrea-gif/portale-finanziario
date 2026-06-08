@@ -6,16 +6,19 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
 
-# --- CARICAMENTO FILE CSS DALLA CARTELLA DEDICATA ---
-# Punta direttamente alla nuova cartella 'css' nella root del progetto
+# --- CARICAMENTO FILE CSS IN MODO SICURO ---
 css_path = os.path.join("css", "grafico.css")
 
 if os.path.exists(css_path):
-    with open(css_path, "r") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    try:
+        with open(css_path, "r", encoding="utf-8") as f:
+            css_content = f.read()
+            st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+    except Exception as e:
+        # Se c'è un problema di lettura, scrive un log invisibile senza bloccare la pagina
+        pass
 
 # --- LOGICA DELLA PAGINA GRAFICO ---
-# Recupero dinamico dal click sulla dashboard, di default carica Microsoft (MSFT)
 ticker = st.session_state.get('ticker_selezionato', 'MSFT')
 
 st.title(f"📈 Analisi Tecnica Avanzata: {ticker}")
@@ -96,15 +99,40 @@ if len(df_chart) >= 200:
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['EMA200'], line=dict(color='yellow', width=1.2), name='EMA 200'), row=1, col=1, secondary_y=False)
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['SMA200'], line=dict(color='orange', width=2), name='SMA 200 W'), row=1, col=1, secondary_y=False)
     
-    # Linee Orizzontali di Riferimento (Max/Min e QUOTAZIONE ATTUALE)
+    # Linee Orizzontali di Riferimento
     fig.add_trace(go.Scatter(x=[df_plot.index[0], df_plot.index[-1]], y=[max_52w, max_52w], line=dict(color='#ff3399', width=1.5, dash='dash'), name='Max 52W'), row=1, col=1)
     fig.add_trace(go.Scatter(x=[df_plot.index[0], df_plot.index[-1]], y=[min_52w, min_52w], line=dict(color='#33ccff', width=1.5, dash='dash'), name='Min 52W'), row=1, col=1)
-    
-    # Quotazione corrente tratteggiata sottile ad alta visibilità
     fig.add_trace(go.Scatter(x=[df_plot.index[0], df_plot.index[-1]], y=[prezzo_ult, prezzo_ult], line=dict(color='#e0e0e0', width=1.5, dash='dot'), name='Quota Corrente'), row=1, col=1)
     
-    # Etichette di quota laterali destre (Evitano la sovrapposizione sul titolo del grafico)
+    # Etichette di quota laterali destre
     fig.add_annotation(x=df_plot.index[-1], y=prezzo_ult, text=f"Corrente: {prezzo_ult:.2f}", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="black"), bgcolor="#e0e0e0", row=1, col=1)
     fig.add_annotation(x=df_plot.index[-1], y=sma200_ult, text=f"SMA200: {sma200_ult:.2f} ({dist_sma200:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="black"), bgcolor="orange", row=1, col=1)
     fig.add_annotation(x=df_plot.index[-1], y=max_52w, text=f"Max52W: {max_52w:.2f} ({dist_max52w:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="white"), bgcolor="#ff3399", row=1, col=1)
-    fig.add_annotation(x=df_plot.index[-1], y=min_52w, text=f"Min52W: {min_52w:.2f} ({dist_min52w:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="black"),
+    fig.add_annotation(x=df_plot.index[-1], y=min_52w, text=f"Min52W: {min_52w:.2f} ({dist_min52w:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="black"), bgcolor="#33ccff", row=1, col=1)
+    
+    # Volumi
+    colori_volumi = ['rgba(38, 166, 154, 0.15)' if c >= o else 'rgba(239, 83, 80, 0.15)' for c, o in zip(df_plot['Close'], df_plot['Open'])]
+    fig.add_trace(go.Bar(x=df_plot.index, y=df_plot['Volume'], marker_color=colori_volumi, name="Volume", showlegend=False), row=1, col=1, secondary_y=True)
+    
+    # Sotto-Riquadro 2: Stoch RSI
+    fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['StochRSI_K'], line=dict(color='#17a2b8', width=1.5), name="Stoch RSI %K"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['StochRSI_D'], line=dict(color='#ffc107', width=1.2), name="Stoch RSI %D"), row=2, col=1)
+    
+    # Sotto-Riquadro 3: MACD
+    fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD'], line=dict(color='#007bff', width=1.5), name="MACD"), row=3, col=1)
+    fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD_Signal'], line=dict(color='#dc3545', width=1.5), name="Signal"), row=3, col=1)
+    colori_macd_hist = ['#26a69a' if v >= 0 else '#ef5350' for v in df_plot['MACD_Hist']]
+    fig.add_trace(go.Bar(x=df_plot.index, y=df_plot['MACD_Hist'], marker_color=colori_macd_hist, name='Hist'), row=3, col=1)
+    
+    # Layout finale pulito Stile Dark
+    fig.update_layout(
+        template="plotly_dark", height=850, xaxis_rangeslider_visible=False,
+        margin=dict(l=10, r=160, t=25, b=10), paper_bgcolor='#131722', plot_bgcolor='#131722',
+        showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font=dict(size=10)),
+        hovermode="x unified"
+    )
+    fig.update_yaxes(range=[0, df_plot['Volume'].max() * 4], showgrid=False, showticklabels=False, row=1, col=1, secondary_y=True)
+    
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Storico insufficiente su questo titolo per estrarre la media a 200 settimane.")
