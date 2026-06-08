@@ -1,60 +1,7 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-from pathlib import Path
-
-try:
-    from streamlit_sortables import sort_items
-except Exception:
-    sort_items = None
-
-
-# =========================
-# PROTEZIONE LOGIN
-# =========================
-
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
-
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-
-    st.stop()
-
-
-# =========================
-# CONFIGURAZIONE FILE / CSS
-# =========================
-
-ROOT_DIR = Path(__file__).resolve().parent.parent
-WATCHLIST_FILE = ROOT_DIR / "watchlist.txt"
-
-GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
-WATCHLIST_CSS = ROOT_DIR / "css" / "watchlist.css"
-
-
-def local_css(file_path):
-    if file_path.exists():
-        with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(
-                f"<style>{file.read()}</style>",
-                unsafe_allow_html=True
-            )
-
-
-local_css(GLOBAL_CSS)
-local_css(WATCHLIST_CSS)
-
-
-# =========================
-# FUNZIONI WATCHLIST
-# =========================
-
-def carica_ticker_da_file():
-    if WATCHLIST_FILE.exists():
-        with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
-            return [
-                line.strip().upper()
+from pathlib import Path line.strip().upper()from pathlib import Path
                 for line in file.readlines()
                 if line.strip()
             ]
@@ -270,6 +217,100 @@ def render_kpi_card(label, value, note):
     )
 
 
+def crea_label_ordinamento(item):
+    ticker = item["ticker"]
+    mercato = identifica_mercato(ticker)["label"]
+
+    if not item["valido"]:
+        return f"⋮⋮  {ticker}  ·  {mercato}  ·  dati non disponibili"
+
+    prezzo = formatta_prezzo(item["prezzo"])
+    distanza = formatta_percentuale(item["distanza"])
+    stato = item["stato"]
+
+    return f"⋮⋮  {ticker}  ·  {mercato}  ·  {prezzo}  ·  {distanza}  ·  {stato}"
+
+
+def render_ticker_card(item):
+    ticker = item["ticker"]
+    mercato = identifica_mercato(ticker)
+
+    mercato_label = mercato["label"]
+    mercato_classe = mercato["classe"]
+
+    if not item["valido"]:
+        prezzo_str = "N/D"
+        sma_str = "N/D"
+        distanza_str = "N/D"
+        rendimento_1y_str = "N/D"
+        distanza_class = "neutral"
+        rendimento_1y_class = "neutral"
+        stato = "N/D"
+        stato_class = "status-neutral"
+    else:
+        prezzo_str = formatta_prezzo(item["prezzo"])
+        sma_str = formatta_prezzo(item["sma_200"])
+        distanza_str = formatta_percentuale(item["distanza"])
+        rendimento_1y_str = formatta_percentuale(item["rendimento_1y"])
+
+        distanza_class = classe_valore(item["distanza"])
+        rendimento_1y_class = classe_valore(item["rendimento_1y"])
+
+        stato = item["stato"]
+        stato_class = classe_stato(stato)
+
+    st.markdown(
+        f"""
+        <div class="watchlist-card">
+            <div class="watchlist-card-top">
+                <div class="watchlist-card-left">
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="watchlist-symbol-block">
+                        <div class="watchlist-ticker-symbol">{ticker}</div>
+                        <div class="watchlist-ticker-subtitle">
+                            Simbolo Yahoo Finance · Watchlist operativa
+                        </div>
+                    </div>
+                </div>
+
+                <div class="watchlist-card-right">
+                    <span class="market-badge {mercato_classe}">{mercato_label}</span>
+                    <span class="status-pill {stato_class}">{stato}</span>
+                </div>
+            </div>
+
+            <div class="watchlist-card-metrics">
+                <div class="metric-box">
+                    <div class="metric-label">Prezzo</div>
+                    <div class="metric-value watchlist-price">{prezzo_str}</div>
+                </div>
+
+                <div class="metric-box">
+                    <div class="metric-label">SMA 200D</div>
+                    <div class="metric-value-small">{sma_str}</div>
+                </div>
+
+                <div class="metric-box">
+                    <div class="metric-label">Distanza</div>
+                    <div class="metric-value {distanza_class}">{distanza_str}</div>
+                </div>
+
+                <div class="metric-box">
+                    <div class="metric-label">Rendimento 1Y</div>
+                    <div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>
+                </div>
+
+                <div class="metric-box">
+                    <div class="metric-label">Mercato</div>
+                    <div class="metric-value-small">{mercato_label}</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 # =========================
 # SESSIONE
 # =========================
@@ -289,8 +330,9 @@ st.markdown(
     <div class="watchlist-header">
         <div class="watchlist-title">Watchlist Operativa</div>
         <div class="watchlist-subtitle">
-            Monitoraggio dei ticker con prezzo, SMA 200 giorni, distanza dalla media,
-            stato tecnico e rendimento annuale. Il grafico dettaglio si apre dal pulsante 📈.
+            Card finanziarie ordinate, leggibili e ottimizzate anche per smartphone.
+            Trascina le card per cambiare l'ordine, apri il grafico dal pulsante 📈
+            o rimuovi un ticker con 🗑️.
         </div>
     </div>
     """,
@@ -301,6 +343,18 @@ st.markdown(
 # =========================
 # NAVIGAZIONE
 # =========================
+
+st.markdown(
+    """
+    <div class="watchlist-topbar">
+        <div class="watchlist-topbar-title">Navigazione</div>
+        <div class="watchlist-topbar-text">
+            Torna al Cockpit per aprire Portafoglio o Logout. Il grafico si apre solo dalla card ticker.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 col_nav_1, col_nav_2 = st.columns([1.2, 4.8])
 
@@ -314,6 +368,18 @@ with col_nav_1:
 # =========================
 
 with st.expander("🛠️ Configura Watchlist", expanded=False):
+    st.markdown(
+        """
+        <div class="watchlist-config-panel">
+            <div class="watchlist-config-title">Gestione ticker</div>
+            <div class="watchlist-config-subtitle">
+                Aggiungi nuovi simboli Yahoo Finance. La lista viene salvata in watchlist.txt.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     nuovo_ticker = st.text_input(
         "Aggiungi Ticker:",
         placeholder="Esempio: AAPL, NVDA, SWDA.MI",
@@ -333,27 +399,6 @@ with st.expander("🛠️ Configura Watchlist", expanded=False):
             salva_ticker_su_file(st.session_state["lista_tickers"])
             st.success(f"{nuovo_ticker} aggiunto alla watchlist.")
             st.rerun()
-
-    st.markdown("#### Ordina ticker")
-
-    lista_prima = list(st.session_state["lista_tickers"])
-
-    if sort_items is not None:
-        lista_dopo = sort_items(
-            lista_prima,
-            direction="vertical",
-            key="drag_drop_watchlist"
-        )
-
-        if lista_dopo and lista_dopo != lista_prima:
-            st.session_state["lista_tickers"] = rimuovi_duplicati(lista_dopo)
-            salva_ticker_su_file(st.session_state["lista_tickers"])
-            st.rerun()
-    else:
-        st.info(
-            "Ordinamento drag & drop non disponibile. "
-            "Verifica che streamlit-sortables sia presente in requirements.txt."
-        )
 
 
 # =========================
@@ -455,114 +500,155 @@ with kpi_4:
 
 
 # =========================
-# TABELLA
+# ORDINAMENTO CARD
 # =========================
 
 st.markdown(
     """
-    <div class="watchlist-toolbar">
-        <div class="watchlist-toolbar-title">Ticker monitorati</div>
-        <div class="watchlist-toolbar-subtitle">
-            Clicca su 📈 per aprire il grafico dettagliato del singolo ticker.
+    <div class="watchlist-sort-panel">
+        <div class="watchlist-sort-title">Ordina card Watchlist</div>
+        <div class="watchlist-sort-subtitle">
+            Trascina gli elementi qui sotto per cambiare l'ordine delle card.
+            L'ordine viene salvato in watchlist.txt.
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-header = st.columns([0.8, 1.4, 1.1, 1.3, 1.3, 1.3, 1.1, 1.2, 0.8])
+if sort_items is not None:
+    label_per_ticker = {}
+    ticker_per_label = {}
 
-header[0].markdown('<div class="watchlist-table-header">Grafico</div>', unsafe_allow_html=True)
-header[1].markdown('<div class="watchlist-table-header">Ticker</div>', unsafe_allow_html=True)
-header[2].markdown('<div class="watchlist-table-header">Mercato</div>', unsafe_allow_html=True)
-header[3].markdown('<div class="watchlist-table-header">Prezzo</div>', unsafe_allow_html=True)
-header[4].markdown('<div class="watchlist-table-header">SMA 200D</div>', unsafe_allow_html=True)
-header[5].markdown('<div class="watchlist-table-header">Distanza</div>', unsafe_allow_html=True)
-header[6].markdown('<div class="watchlist-table-header">Stato</div>', unsafe_allow_html=True)
-header[7].markdown('<div class="watchlist-table-header">1Y</div>', unsafe_allow_html=True)
-header[8].markdown('<div class="watchlist-table-header">Elimina</div>', unsafe_allow_html=True)
+    for item in risultati:
+        ticker = item["ticker"]
+        label = crea_label_ordinamento(item)
 
-st.divider()
+        label_per_ticker[ticker] = label
+        ticker_per_label[label] = ticker
 
-for item in risultati:
-    ticker = item["ticker"]
-    mercato = identifica_mercato(ticker)
+    lista_label_prima = [
+        label_per_ticker[ticker]
+        for ticker in st.session_state["lista_tickers"]
+        if ticker in label_per_ticker
+    ]
 
-    cols = st.columns([0.8, 1.4, 1.1, 1.3, 1.3, 1.3, 1.1, 1.2, 0.8])
-
-    if cols[0].button("📈", key=f"graf_{ticker}"):
-        st.session_state["ticker_selezionato"] = ticker
-        st.switch_page("pages/grafico.py")
-
-    cols[1].markdown(
-        f'<div class="watchlist-ticker-symbol">{ticker}</div>',
-        unsafe_allow_html=True
+    lista_label_dopo = sort_items(
+        lista_label_prima,
+        direction="vertical",
+        key="drag_drop_watchlist_cards"
     )
 
-    cols[2].markdown(
-        f'<span class="market-badge {mercato["classe"]}">{mercato["label"]}</span>',
-        unsafe_allow_html=True
-    )
+    if lista_label_dopo and lista_label_dopo != lista_label_prima:
+        nuova_lista_ticker = [
+            ticker_per_label[label]
+            for label in lista_label_dopo
+            if label in ticker_per_label
+        ]
 
-    if not item["valido"]:
-        cols[3].markdown(
-            '<span class="watchlist-error">N/D</span>',
-            unsafe_allow_html=True
-        )
-        cols[4].markdown(
-            '<span class="watchlist-muted">N/D</span>',
-            unsafe_allow_html=True
-        )
-        cols[5].markdown(
-            '<span class="watchlist-muted">N/D</span>',
-            unsafe_allow_html=True
-        )
-        cols[6].markdown(
-            '<span class="status-pill status-neutral">N/D</span>',
-            unsafe_allow_html=True
-        )
-        cols[7].markdown(
-            '<span class="watchlist-muted">N/D</span>',
-            unsafe_allow_html=True
-        )
-    else:
-        prezzo_str = formatta_prezzo(item["prezzo"])
-        sma_str = formatta_prezzo(item["sma_200"])
-        distanza_str = formatta_percentuale(item["distanza"])
-        rendimento_1y_str = formatta_percentuale(item["rendimento_1y"])
-
-        distanza_class = classe_valore(item["distanza"])
-        rendimento_1y_class = classe_valore(item["rendimento_1y"])
-        stato_class = classe_stato(item["stato"])
-
-        cols[3].markdown(
-            f'<span class="watchlist-price">{prezzo_str}</span>',
-            unsafe_allow_html=True
-        )
-
-        cols[4].markdown(
-            f'<span class="watchlist-muted">{sma_str}</span>',
-            unsafe_allow_html=True
-        )
-
-        cols[5].markdown(
-            f'<span class="{distanza_class}">{distanza_str}</span>',
-            unsafe_allow_html=True
-        )
-
-        cols[6].markdown(
-            f'<span class="status-pill {stato_class}">{item["stato"]}</span>',
-            unsafe_allow_html=True
-        )
-
-        cols[7].markdown(
-            f'<span class="{rendimento_1y_class}">{rendimento_1y_str}</span>',
-            unsafe_allow_html=True
-        )
-
-    if cols[8].button("🗑️", key=f"del_{ticker}"):
-        st.session_state["lista_tickers"].remove(ticker)
+        st.session_state["lista_tickers"] = rimuovi_duplicati(nuova_lista_ticker)
         salva_ticker_su_file(st.session_state["lista_tickers"])
+        st.success("Ordine watchlist aggiornato.")
         st.rerun()
+else:
+    st.info(
+        "Ordinamento drag & drop non disponibile. "
+        "Verifica che streamlit-sortables sia presente in requirements.txt."
+    )
 
-    st.divider()
+
+# =========================
+# CARD OPERATIVE
+# =========================
+
+st.markdown(
+    """
+    <div class="watchlist-toolbar">
+        <div class="watchlist-toolbar-title">Card operative</div>
+        <div class="watchlist-toolbar-subtitle">
+            Ogni card mostra prezzo, SMA 200D, distanza dalla media, stato tecnico e rendimento 1Y.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+risultati_per_ticker = {
+    item["ticker"]: item
+    for item in risultati
+}
+
+for ticker in st.session_state["lista_tickers"]:
+    if ticker not in risultati_per_ticker:
+        continue
+
+    item = risultati_per_ticker[ticker]
+
+    render_ticker_card(item)
+
+    col_grafico, col_elimina, col_spazio = st.columns([1.2, 1.2, 3.6])
+
+    with col_grafico:
+        if st.button("📈 Grafico", key=f"graf_{ticker}"):
+            st.session_state["ticker_selezionato"] = ticker
+            st.switch_page("pages/grafico.py")
+
+    with col_elimina:
+        if st.button("🗑️ Elimina", key=f"del_{ticker}"):
+            st.session_state["lista_tickers"].remove(ticker)
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
+
+    st.markdown("")
+
+try:
+    from streamlit_sortables import sort_items
+except Exception:
+    sort_items = None
+
+
+# =========================
+# PROTEZIONE LOGIN
+# =========================
+
+if not st.session_state.get("authenticated", False):
+    st.error("Accesso non autorizzato.")
+
+    if st.button("Torna al Login"):
+        st.switch_page("main.py")
+
+    st.stop()
+
+
+# =========================
+# CONFIGURAZIONE FILE / CSS
+# =========================
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+WATCHLIST_FILE = ROOT_DIR / "watchlist.txt"
+
+GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
+WATCHLIST_CSS = ROOT_DIR / "css" / "watchlist.css"
+
+
+def local_css(file_path):
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as file:
+            st.markdown(
+                f"<style>{file.read()}</style>",
+                unsafe_allow_html=True
+            )
+
+
+local_css(GLOBAL_CSS)
+local_css(WATCHLIST_CSS)
+
+
+# =========================
+# FUNZIONI WATCHLIST
+# =========================
+
+def carica_ticker_da_file():
+    if WATCHLIST_FILE.exists():
+        with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
+            return [
