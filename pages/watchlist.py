@@ -126,24 +126,79 @@ def valore_float(valore):
     return float(valore)
 
 
+def normalizza_colonne_yfinance(data):
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(-1)
+
+    return data
+
+
 @st.cache_data(ttl=900, show_spinner=False)
-def scarica_dati_ticker_weekly(ticker):
-    stock = yf.Ticker(ticker)
+def scarica_dati_weekly_batch(lista_ticker_tuple):
+    """
+    Scarica i dati weekly in batch per ridurre il rischio di rate limit.
+    Se Yahoo/YFinance limita le richieste, la funzione non fa crashare l'app.
+    """
+    lista_ticker = list(lista_ticker_tuple)
 
-    hist = stock.history(
-        period="5y",
-        interval="1wk"
-    )
+    if not lista_ticker:
+        return {}, None
 
-    if hist is None or hist.empty:
-        return pd.DataFrame()
+    try:
+        data = yf.download(
+            tickers=lista_ticker,
+            period="5y",
+            interval="1wk",
+            group_by="ticker",
+            auto_adjust=False,
+            progress=False,
+            threads=False
+        )
 
-    if "Close" not in hist.columns:
-        return pd.DataFrame()
+    except Exception as errore:
+        return {}, str(errore)
 
-    hist = hist.dropna(subset=["Close"])
+    dati_per_ticker = {}
 
-    return hist
+    if data is None or data.empty:
+        return dati_per_ticker, None
+
+    # Caso 1 ticker singolo
+    if len(lista_ticker) == 1:
+        ticker = lista_ticker[0]
+        df = data.copy()
+
+        if isinstance(df.columns, pd.MultiIndex):
+            try:
+                if ticker in df.columns.get_level_values(0):
+                    df = df[ticker].copy()
+                else:
+                    df = normalizza_colonne_yfinance(df)
+            except Exception:
+                df = normalizza_colonne_yfinance(df)
+
+        if "Close" in df.columns:
+            df = df.dropna(subset=["Close"])
+            dati_per_ticker[ticker] = df
+
+        return dati_per_ticker, None
+
+    # Caso più ticker
+    if isinstance(data.columns, pd.MultiIndex):
+        livello_zero = list(data.columns.get_level_values(0))
+
+        for ticker in lista_ticker:
+            try:
+                if ticker in livello_zero:
+                    df = data[ticker].copy()
+
+                    if "Close" in df.columns:
+                        df = df.dropna(subset=["Close"])
+                        dati_per_ticker[ticker] = df
+            except Exception:
+                continue
+
+    return dati_per_ticker, None
 
 
 def calcola_rendimento_weekly(hist, settimane):
@@ -165,10 +220,11 @@ def calcola_rendimento_weekly(hist, settimane):
     return ((prezzo_attuale - prezzo_passato) / prezzo_passato) * 100
 
 
-def calcola_metriche(ticker):
-    hist = scarica_dati_ticker_weekly(ticker)
+def calcola_metriche_da_storico(ticker, hist):
+    if hist is None or hist.empty:
+        return None
 
-    if hist.empty:
+    if "Close" not in hist.columns:
         return None
 
     prezzo = valore_float(hist["Close"].iloc[-1])
@@ -204,10 +260,15 @@ def calcola_metriche(ticker):
 
 
 def costruisci_metriche_watchlist(lista_ticker):
+    dati_per_ticker, errore_download = scarica_dati_weekly_batch(
+        tuple(lista_ticker)
+    )
+
     risultati = []
 
     for ticker in lista_ticker:
-        metriche = calcola_metriche(ticker)
+        hist = dati_per_ticker.get(ticker, pd.DataFrame())
+        metriche = calcola_metriche_da_storico(ticker, hist)
 
         if metriche is None:
             risultati.append({
@@ -223,7 +284,7 @@ def costruisci_metriche_watchlist(lista_ticker):
             metriche["valido"] = True
             risultati.append(metriche)
 
-    return risultati
+    return risultati, errore_download
 
 
 # =========================
@@ -470,8 +531,15 @@ if not st.session_state["lista_tickers"]:
     st.stop()
 
 with st.spinner("Aggiornamento dati weekly in corso..."):
-    risultati = costruisci_metriche_watchlist(
+    risultati, errore_download = costruisci_metriche_watchlist(
         st.session_state["lista_tickers"]
+    )
+
+if errore_download:
+    st.warning(
+        "Yahoo Finance/YFinance ha limitato temporaneamente le richieste. "
+        "La pagina resta attiva, ma alcuni dati possono apparire come N/D. "
+        "Riprova tra qualche minuto o usa il reboot dell'app se necessario."
     )
 
 ticker_totali = len(risultati)
