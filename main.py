@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-# --- CORREZIONE: Inizializziamo solo se NON esiste già ---
+# Inizializzazione sessione
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
@@ -17,16 +17,21 @@ with st.container():
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     st.subheader("Accedi al sistema")
     
+    # Campi di input
     user = st.text_input("Username")
     password = st.text_input("Password", type="password")
     
+    # Bottone
     if st.button("Entra nella Dashboard"):
-        # Se le credenziali sono corrette, impostiamo a True
-        if user == "admin" and password == "admin": 
+        # DEBUG: Stampiamo cosa stiamo confrontando
+        st.write(f"DEBUG - Input: User='{user}', Pass='{password}'")
+        
+        # Logica con .strip() per eliminare spazi accidentali che spesso causano questo errore
+        if user.strip() == "admin" and password.strip() == "admin": 
             st.session_state["authenticated"] = True
+            st.write("DEBUG - Credenziali OK, reindirizzamento...")
             st.switch_page("pagine/dashboard.py")
         else:
-            # Qui invece possiamo forzare False se qualcuno sbaglia password
             st.session_state["authenticated"] = False
             st.error("Credenziali non valide")
     
