@@ -1,0 +1,27 @@
+/* Stile e font globale per l'intero portale finanziario */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif;
+    background-color: #0e1117;
+}
+
+/* Reset e pulizia layout di base */
+[data-testid="stHeader"] {
+    background-color: rgba(14, 17, 23, 0);
+}
+
+/* Stile per i bottoni standard di Streamlit (Grafico ed Elimina) */
+.stButton > button {
+    border-radius: 6px !important;
+    border: 1px solid #2a2e39 !important;
+    background-color: #1c2030 !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.stButton > button:hover {
+    border-color: #00b0ff !important;
+    color: #00b0ff !important;
+    background-color: #1e2638 !important;
+}
