@@ -56,6 +56,12 @@ MACD_FAST = 12
 MACD_SLOW = 26
 MACD_SIGNAL = 9
 
+LINREG_LENGTH = 100
+LINREG_SOURCE = "Close"
+LINREG_UPPER_DEV = 2
+LINREG_LOWER_DEV = 2
+LINREG_FORWARD_WEEKS = 156
+
 # =========================
 # DATA FUNCTIONS
 # =========================
@@ -117,6 +123,13 @@ def valore_float(valore):
     return float(valore)
 
 
+def ultimo_punto_valido(data, colonna):
+    serie = data[colonna].dropna()
+    if serie.empty:
+        return None, None
+    return serie.index[-1], float(serie.iloc[-1])
+
+
 def calcola_wma(serie, periodo):
     pesi = np.arange(1, periodo + 1)
     return serie.rolling(periodo).apply(lambda valori: np.dot(valori, pesi) / pesi.sum(), raw=True)
@@ -175,11 +188,52 @@ def formatta_numero(valore):
     return f"{valore:.2f}"
 
 
-def ultimo_punto_valido(data, colonna):
-    serie = data[colonna].dropna()
-    if serie.empty:
-        return None, None
-    return serie.index[-1], float(serie.iloc[-1])
+# =========================
+# LIN REG CHANNEL
+# =========================
+
+
+def calcola_linreg_channel(data):
+    if LINREG_SOURCE not in data.columns:
+        return None
+
+    serie = data[LINREG_SOURCE].dropna()
+
+    if len(serie) < LINREG_LENGTH:
+        return None
+
+    finestra = serie.iloc[-LINREG_LENGTH:]
+    x = np.arange(LINREG_LENGTH)
+    y = finestra.values.astype(float)
+
+    slope, intercept = np.polyfit(x, y, 1)
+    fitted = slope * x + intercept
+    residui = y - fitted
+    deviazione = float(np.nanstd(residui))
+
+    x_esteso = np.arange(LINREG_LENGTH + LINREG_FORWARD_WEEKS + 1)
+    centro = slope * x_esteso + intercept
+    upper = centro + (LINREG_UPPER_DEV * deviazione)
+    lower = centro - (LINREG_LOWER_DEV * deviazione)
+
+    date_reali = list(finestra.index)
+    ultima_data = finestra.index[-1]
+    date_future = [ultima_data + pd.Timedelta(weeks=i) for i in range(1, LINREG_FORWARD_WEEKS + 2)]
+    date_canale = date_reali + date_future
+
+    return pd.DataFrame(
+        {
+            "Upper": upper,
+            "Center": centro,
+            "Lower": lower
+        },
+        index=pd.Index(date_canale)
+    )
+
+
+# =========================
+# LABELS
+# =========================
 
 
 def aggiungi_label_media(fig, data, colonna, testo, colore):
@@ -208,6 +262,7 @@ def aggiungi_label_media(fig, data, colonna, testo, colore):
         col=1
     )
 
+
 # =========================
 # CHART
 # =========================
@@ -215,6 +270,8 @@ def aggiungi_label_media(fig, data, colonna, testo, colore):
 
 def crea_grafico_weekly(data, ticker):
     colori_macd_hist = ["#26a69a" if valore >= 0 else "#ef5350" for valore in data["MACD_HIST"].fillna(0)]
+    linreg = calcola_linreg_channel(data)
+
     fig = make_subplots(
         rows=4,
         cols=1,
@@ -228,6 +285,11 @@ def crea_grafico_weekly(data, ticker):
             "MACD Weekly (12,26,9)"
         )
     )
+
+    if linreg is not None:
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Upper"], mode="lines", name="LinReg Upper", line=dict(color="#2962ff", width=1.4), opacity=0.95), row=1, col=1)
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Center"], mode="lines", name="LinReg 100 close 2 2", line=dict(color="#ff3b3b", width=1.3), fill="tonexty", fillcolor="rgba(41, 98, 255, 0.15)", opacity=0.95), row=1, col=1)
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Lower"], mode="lines", name="LinReg Lower", line=dict(color="#2962ff", width=1.4), fill="tonexty", fillcolor="rgba(255, 59, 59, 0.14)", opacity=0.95), row=1, col=1)
 
     fig.add_trace(go.Candlestick(x=data.index, open=data["Open"], high=data["High"], low=data["Low"], close=data["Close"], name=ticker, increasing_line_color="#00c087", decreasing_line_color="#ff4d4d", increasing_fillcolor="#00c087", decreasing_fillcolor="#ff4d4d"), row=1, col=1)
     fig.add_trace(go.Scatter(x=data.index, y=data["WMA21W"], mode="lines", name="WMA 21W", line=dict(color="#ffffff", width=1.8)), row=1, col=1)
@@ -256,7 +318,7 @@ def crea_grafico_weekly(data, ticker):
     fig.add_hline(y=0, line_width=1, line_dash="dot", line_color="#8a99ad", row=4, col=1)
 
     x_min = data.index.min()
-    x_max = data.index.max() + pd.Timedelta(weeks=32)
+    x_max = data.index.max() + pd.Timedelta(weeks=170)
 
     fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=120, t=70, b=10), xaxis_rangeslider_visible=False, legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1), hovermode="x unified", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117")
     fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
@@ -280,7 +342,7 @@ if ticker is None:
     st.stop()
 
 st.title("Analisi Weekly: " + ticker)
-st.caption("Vista weekly a 10 anni con medie mobili, Stoch RSI (20,5,5) e MACD weekly standard (12,26,9).")
+st.caption("Vista weekly a 10 anni con medie mobili, LinReg 100 close 2 2, Stoch RSI (20,5,5) e MACD weekly standard (12,26,9).")
 
 col_back, col_info = st.columns([1.2, 4.8])
 
@@ -289,7 +351,7 @@ with col_back:
         st.switch_page("pages/dashboard.py")
 
 with col_info:
-    st.info("Timeframe weekly | Periodo fisso 10 anni | Stoch RSI (20,5,5) | MACD weekly standard (12,26,9)")
+    st.info("Timeframe weekly | Periodo fisso 10 anni | LinReg 100 close 2 2 | Stoch RSI (20,5,5) | MACD weekly standard (12,26,9)")
 
 with st.spinner("Caricamento dati weekly a 10 anni per " + ticker + "..."):
     data, errore_download = scarica_dati_weekly(ticker)
