@@ -129,22 +129,81 @@ def calcola_metriche(ticker):
     sma_200 = valore_float(hist["Close"].rolling(200).mean().iloc[-1])
 
     if sma_200 is None:
-        return {
-            "ticker": ticker,
-            "prezzo": prezzo,
-            "sma_200": None,
-            "distanza": None
-        }
+        distanza = None
+        stato = "N/D"
+    else:
+        distanza = ((prezzo - sma_200) / sma_200) * 100
 
-    distanza = ((prezzo - sma_200) / sma_200) * 100
+        if distanza > 0:
+            stato = "Sopra SMA"
+        elif distanza < 0:
+            stato = "Sotto SMA"
+        else:
+            stato = "In linea"
+
+    rendimento_1m = calcola_rendimento(hist, 21)
+    rendimento_6m = calcola_rendimento(hist, 126)
+    rendimento_1y = calcola_rendimento(hist, 252)
 
     return {
         "ticker": ticker,
         "prezzo": prezzo,
         "sma_200": sma_200,
-        "distanza": distanza
+        "distanza": distanza,
+        "stato": stato,
+        "rendimento_1m": rendimento_1m,
+        "rendimento_6m": rendimento_6m,
+        "rendimento_1y": rendimento_1y
     }
 
+
+def calcola_rendimento(hist, giorni):
+    if hist is None or hist.empty:
+        return None
+
+    if len(hist) <= giorni:
+        return None
+
+    prezzo_attuale = valore_float(hist["Close"].iloc[-1])
+    prezzo_passato = valore_float(hist["Close"].iloc[-giorni])
+
+    if prezzo_attuale is None or prezzo_passato is None:
+        return None
+
+    if prezzo_passato == 0:
+        return None
+
+    return ((prezzo_attuale - prezzo_passato) / prezzo_passato) * 100
+
+
+def costruisci_metriche_watchlist(lista_ticker):
+    risultati = []
+
+    for ticker in lista_ticker:
+        metriche = calcola_metriche(ticker)
+
+        if metriche is None:
+            risultati.append({
+                "ticker": ticker,
+                "valido": False,
+                "prezzo": None,
+                "sma_200": None,
+                "distanza": None,
+                "stato": "N/D",
+                "rendimento_1m": None,
+                "rendimento_6m": None,
+                "rendimento_1y": None
+            })
+        else:
+            metriche["valido"] = True
+            risultati.append(metriche)
+
+    return risultati
+
+
+# =========================
+# FUNZIONI FORMATTAZIONE
+# =========================
 
 def formatta_prezzo(valore):
     if valore is None:
@@ -160,7 +219,7 @@ def formatta_percentuale(valore):
     return f"{valore:.2f} %"
 
 
-def classe_distanza(valore):
+def classe_valore(valore):
     if valore is None:
         return "neutral"
 
@@ -171,6 +230,29 @@ def classe_distanza(valore):
         return "negative"
 
     return "neutral"
+
+
+def classe_stato(stato):
+    if stato == "Sopra SMA":
+        return "status-positive"
+
+    if stato == "Sotto SMA":
+        return "status-negative"
+
+    return "status-neutral"
+
+
+def render_kpi_card(label, value, note):
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value">{value}</div>
+            <div class="kpi-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # =========================
@@ -188,12 +270,14 @@ if "lista_tickers" not in st.session_state:
 # =========================
 
 st.markdown(
-    '<div class="main-title">Monitoraggio Globale Watchlist</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    '<div class="subtitle">Prezzi, media mobile a 200 giorni e distanza percentuale dalla media.</div>',
+    """
+    <div class="dashboard-header">
+        <div class="main-title">Monitoraggio Globale Watchlist</div>
+        <div class="subtitle">
+            Dashboard V1.1 · Prezzi, SMA 200 giorni, stato tecnico e rendimenti principali.
+        </div>
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
@@ -263,7 +347,7 @@ with col_nav_2:
 
 
 # =========================
-# TABELLA WATCHLIST
+# DATI DASHBOARD
 # =========================
 
 st.markdown("---")
@@ -272,68 +356,178 @@ if not st.session_state["lista_tickers"]:
     st.info("La watchlist è vuota. Aggiungi almeno un ticker.")
     st.stop()
 
+with st.spinner("Aggiornamento dati finanziari in corso..."):
+    risultati = costruisci_metriche_watchlist(
+        st.session_state["lista_tickers"]
+    )
 
-header = st.columns([1, 2, 2, 2, 2, 1])
+ticker_totali = len(risultati)
+ticker_validi = len([item for item in risultati if item["valido"]])
+ticker_non_validi = ticker_totali - ticker_validi
 
-header[0].markdown("**Grafico**")
-header[1].markdown("**Ticker**")
-header[2].markdown("**Prezzo**")
-header[3].markdown("**SMA 200D**")
-header[4].markdown("**Distanza**")
-header[5].markdown("**Elimina**")
+sopra_sma = len([
+    item for item in risultati
+    if item["valido"] and item["stato"] == "Sopra SMA"
+])
+
+sotto_sma = len([
+    item for item in risultati
+    if item["valido"] and item["stato"] == "Sotto SMA"
+])
+
+validi_con_distanza = [
+    item for item in risultati
+    if item["valido"] and item["distanza"] is not None
+]
+
+migliore = None
+peggiore = None
+
+if validi_con_distanza:
+    migliore = max(validi_con_distanza, key=lambda item: item["distanza"])
+    peggiore = min(validi_con_distanza, key=lambda item: item["distanza"])
+
+
+# =========================
+# KPI CARDS
+# =========================
+
+kpi_1, kpi_2, kpi_3, kpi_4 = st.columns(4)
+
+with kpi_1:
+    render_kpi_card(
+        "Ticker totali",
+        ticker_totali,
+        f"{ticker_validi} validi · {ticker_non_validi} non disponibili"
+    )
+
+with kpi_2:
+    render_kpi_card(
+        "Sopra SMA 200D",
+        sopra_sma,
+        f"{sotto_sma} sotto SMA 200D"
+    )
+
+with kpi_3:
+    if migliore is not None:
+        render_kpi_card(
+            "Migliore distanza",
+            migliore["ticker"],
+            formatta_percentuale(migliore["distanza"])
+        )
+    else:
+        render_kpi_card(
+            "Migliore distanza",
+            "N/D",
+            "Dati non disponibili"
+        )
+
+with kpi_4:
+    if peggiore is not None:
+        render_kpi_card(
+            "Peggiore distanza",
+            peggiore["ticker"],
+            formatta_percentuale(peggiore["distanza"])
+        )
+    else:
+        render_kpi_card(
+            "Peggiore distanza",
+            "N/D",
+            "Dati non disponibili"
+        )
+
+
+# =========================
+# TABELLA WATCHLIST
+# =========================
+
+st.markdown(
+    """
+    <div class="dashboard-toolbar">
+        <div class="toolbar-title">Watchlist operativa</div>
+        <div class="toolbar-subtitle">
+            Clicca su 📈 per aprire il grafico dettagliato del titolo.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+header = st.columns([0.8, 1.5, 1.4, 1.4, 1.4, 1.4, 1.2, 0.8])
+
+header[0].markdown('<div class="table-header">Grafico</div>', unsafe_allow_html=True)
+header[1].markdown('<div class="table-header">Ticker</div>', unsafe_allow_html=True)
+header[2].markdown('<div class="table-header">Prezzo</div>', unsafe_allow_html=True)
+header[3].markdown('<div class="table-header">SMA 200D</div>', unsafe_allow_html=True)
+header[4].markdown('<div class="table-header">Distanza</div>', unsafe_allow_html=True)
+header[5].markdown('<div class="table-header">Stato</div>', unsafe_allow_html=True)
+header[6].markdown('<div class="table-header">1Y</div>', unsafe_allow_html=True)
+header[7].markdown('<div class="table-header">Elimina</div>', unsafe_allow_html=True)
 
 st.divider()
 
 
-for ticker in list(st.session_state["lista_tickers"]):
-    try:
-        metriche = calcola_metriche(ticker)
+for item in risultati:
+    ticker = item["ticker"]
+    cols = st.columns([0.8, 1.5, 1.4, 1.4, 1.4, 1.4, 1.2, 0.8])
 
-        cols = st.columns([1, 2, 2, 2, 2, 1])
+    if cols[0].button("📈", key=f"graf_{ticker}"):
+        st.session_state["ticker_selezionato"] = ticker
+        st.switch_page("pages/grafico.py")
 
-        if metriche is None:
-            cols[0].write("")
-            cols[1].markdown(f"**{ticker}**")
-            cols[2].warning("N/D")
-            cols[3].write("N/D")
-            cols[4].write("N/D")
+    cols[1].markdown(
+        f'<div class="watchlist-ticker">{ticker}</div>',
+        unsafe_allow_html=True
+    )
 
-            if cols[5].button("🗑️", key=f"del_{ticker}"):
-                st.session_state["lista_tickers"].remove(ticker)
-                salva_ticker_su_file(st.session_state["lista_tickers"])
-                st.rerun()
+    if not item["valido"]:
+        cols[2].warning("N/D")
+        cols[3].write("N/D")
+        cols[4].write("N/D")
+        cols[5].markdown(
+            '<span class="status-pill status-neutral">N/D</span>',
+            unsafe_allow_html=True
+        )
+        cols[6].write("N/D")
 
-            st.divider()
-            continue
+    else:
+        prezzo_str = formatta_prezzo(item["prezzo"])
+        sma_str = formatta_prezzo(item["sma_200"])
+        distanza_str = formatta_percentuale(item["distanza"])
+        rendimento_1y_str = formatta_percentuale(item["rendimento_1y"])
 
-        prezzo = metriche["prezzo"]
-        sma_200 = metriche["sma_200"]
-        distanza = metriche["distanza"]
+        distanza_class = classe_valore(item["distanza"])
+        rendimento_1y_class = classe_valore(item["rendimento_1y"])
+        stato_class = classe_stato(item["stato"])
 
-        prezzo_str = formatta_prezzo(prezzo)
-        sma_str = formatta_prezzo(sma_200)
-        distanza_str = formatta_percentuale(distanza)
-        distanza_class = classe_distanza(distanza)
+        cols[2].markdown(
+            f'<div class="watchlist-price">{prezzo_str}</div>',
+            unsafe_allow_html=True
+        )
 
-        if cols[0].button("📈", key=f"graf_{ticker}"):
-            st.session_state["ticker_selezionato"] = ticker
-            st.switch_page("pages/grafico.py")
+        cols[3].markdown(
+            f'<div class="watchlist-muted">{sma_str}</div>',
+            unsafe_allow_html=True
+        )
 
-        cols[1].markdown(f"**{ticker}**")
-        cols[2].markdown(prezzo_str)
-        cols[3].markdown(sma_str)
         cols[4].markdown(
             f'<span class="{distanza_class}">{distanza_str}</span>',
             unsafe_allow_html=True
         )
 
-        if cols[5].button("🗑️", key=f"del_{ticker}"):
-            st.session_state["lista_tickers"].remove(ticker)
-            salva_ticker_su_file(st.session_state["lista_tickers"])
-            st.rerun()
+        cols[5].markdown(
+            f'<span class="status-pill {stato_class}">{item["stato"]}</span>',
+            unsafe_allow_html=True
+        )
 
-        st.divider()
+        cols[6].markdown(
+            f'<span class="{rendimento_1y_class}">{rendimento_1y_str}</span>',
+            unsafe_allow_html=True
+        )
 
-    except Exception as errore:
-        st.warning(f"Errore su {ticker}: {errore}")
-        continue
+    if cols[7].button("🗑️", key=f"del_{ticker}"):
+        st.session_state["lista_tickers"].remove(ticker)
+        salva_ticker_su_file(st.session_state["lista_tickers"])
+        st.rerun()
+
+    st.divider()
