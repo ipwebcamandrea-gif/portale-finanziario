@@ -1,7 +1,60 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-from pathlib import Path line.strip().upper()from pathlib import Path
+from pathlib import Path
+
+try:
+    from streamlit_sortables import sort_items
+except Exception:
+    sort_items = None
+
+
+# =========================
+# PROTEZIONE LOGIN
+# =========================
+
+if not st.session_state.get("authenticated", False):
+    st.error("Accesso non autorizzato.")
+
+    if st.button("Torna al Login"):
+        st.switch_page("main.py")
+
+    st.stop()
+
+
+# =========================
+# CONFIGURAZIONE FILE / CSS
+# =========================
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+WATCHLIST_FILE = ROOT_DIR / "watchlist.txt"
+
+GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
+WATCHLIST_CSS = ROOT_DIR / "css" / "watchlist.css"
+
+
+def local_css(file_path):
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as file:
+            st.markdown(
+                f"<style>{file.read()}</style>",
+                unsafe_allow_html=True
+            )
+
+
+local_css(GLOBAL_CSS)
+local_css(WATCHLIST_CSS)
+
+
+# =========================
+# FUNZIONI WATCHLIST
+# =========================
+
+def carica_ticker_da_file():
+    if WATCHLIST_FILE.exists():
+        with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
+            return [
+                line.strip().upper()
                 for line in file.readlines()
                 if line.strip()
             ]
@@ -31,21 +84,12 @@ def identifica_mercato(ticker):
     ticker = ticker.upper().strip()
 
     if ticker.endswith(".MI"):
-        return {
-            "label": "Italia",
-            "classe": "market-italy"
-        }
+        return "Italia", "market-italy"
 
     if "." not in ticker:
-        return {
-            "label": "USA",
-            "classe": "market-usa"
-        }
+        return "USA", "market-usa"
 
-    return {
-        "label": "Altro",
-        "classe": "market-other"
-    }
+    return "Altro", "market-other"
 
 
 # =========================
@@ -205,38 +249,34 @@ def classe_stato(stato):
 
 
 def render_kpi_card(label, value, note):
-    st.markdown(
-        f"""
-        <div class="watchlist-kpi-card">
-            <div class="watchlist-kpi-label">{label}</div>
-            <div class="watchlist-kpi-value">{value}</div>
-            <div class="watchlist-kpi-note">{note}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    html = f"""
+    <div class="watchlist-kpi-card">
+        <div class="watchlist-kpi-label">{label}</div>
+        <div class="watchlist-kpi-value">{value}</div>
+        <div class="watchlist-kpi-note">{note}</div>
+    </div>
+    """
+
+    st.markdown(html, unsafe_allow_html=True)
 
 
 def crea_label_ordinamento(item):
     ticker = item["ticker"]
-    mercato = identifica_mercato(ticker)["label"]
+    mercato_label, _ = identifica_mercato(ticker)
 
     if not item["valido"]:
-        return f"⋮⋮  {ticker}  ·  {mercato}  ·  dati non disponibili"
+        return f"⋮⋮  {ticker}  ·  {mercato_label}  ·  dati non disponibili"
 
     prezzo = formatta_prezzo(item["prezzo"])
     distanza = formatta_percentuale(item["distanza"])
     stato = item["stato"]
 
-    return f"⋮⋮  {ticker}  ·  {mercato}  ·  {prezzo}  ·  {distanza}  ·  {stato}"
+    return f"⋮⋮  {ticker}  ·  {mercato_label}  ·  {prezzo}  ·  {distanza}  ·  {stato}"
 
 
 def render_ticker_card(item):
     ticker = item["ticker"]
-    mercato = identifica_mercato(ticker)
-
-    mercato_label = mercato["label"]
-    mercato_classe = mercato["classe"]
+    mercato_label, mercato_classe = identifica_mercato(ticker)
 
     if not item["valido"]:
         prezzo_str = "N/D"
@@ -259,56 +299,55 @@ def render_ticker_card(item):
         stato = item["stato"]
         stato_class = classe_stato(stato)
 
-    st.markdown(
-        f"""
-        <div class="watchlist-card">
-            <div class="watchlist-card-top">
-                <div class="watchlist-card-left">
-                    <div class="drag-handle">⋮⋮</div>
-                    <div class="watchlist-symbol-block">
-                        <div class="watchlist-ticker-symbol">{ticker}</div>
-                        <div class="watchlist-ticker-subtitle">
-                            Simbolo Yahoo Finance · Watchlist operativa
-                        </div>
+    html = f"""
+    <div class="watchlist-card">
+        <div class="watchlist-card-top">
+            <div class="watchlist-card-left">
+                <div class="drag-handle">⋮⋮</div>
+                <div class="watchlist-symbol-block">
+                    <div class="watchlist-ticker-symbol">{ticker}</div>
+                    <div class="watchlist-ticker-subtitle">
+                        Simbolo Yahoo Finance · Watchlist operativa
                     </div>
                 </div>
-
-                <div class="watchlist-card-right">
-                    <span class="market-badge {mercato_classe}">{mercato_label}</span>
-                    <span class="status-pill {stato_class}">{stato}</span>
-                </div>
             </div>
 
-            <div class="watchlist-card-metrics">
-                <div class="metric-box">
-                    <div class="metric-label">Prezzo</div>
-                    <div class="metric-value watchlist-price">{prezzo_str}</div>
-                </div>
-
-                <div class="metric-box">
-                    <div class="metric-label">SMA 200D</div>
-                    <div class="metric-value-small">{sma_str}</div>
-                </div>
-
-                <div class="metric-box">
-                    <div class="metric-label">Distanza</div>
-                    <div class="metric-value {distanza_class}">{distanza_str}</div>
-                </div>
-
-                <div class="metric-box">
-                    <div class="metric-label">Rendimento 1Y</div>
-                    <div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>
-                </div>
-
-                <div class="metric-box">
-                    <div class="metric-label">Mercato</div>
-                    <div class="metric-value-small">{mercato_label}</div>
-                </div>
+            <div class="watchlist-card-right">
+                <span class="market-badge {mercato_classe}">{mercato_label}</span>
+                <span class="status-pill {stato_class}">{stato}</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+
+        <div class="watchlist-card-metrics">
+            <div class="metric-box">
+                <div class="metric-label">Prezzo</div>
+                <div class="metric-value watchlist-price">{prezzo_str}</div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">SMA 200D</div>
+                <div class="metric-value-small">{sma_str}</div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Distanza</div>
+                <div class="metric-value {distanza_class}">{distanza_str}</div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Rendimento 1Y</div>
+                <div class="metric-value {rendimento_1y_class}">{rendimento_1y_str}</div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Mercato</div>
+                <div class="metric-value-small">{mercato_label}</div>
+            </div>
+        </div>
+    </div>
+    """
+
+    st.markdown(html, unsafe_allow_html=True)
 
 
 # =========================
@@ -349,7 +388,8 @@ st.markdown(
     <div class="watchlist-topbar">
         <div class="watchlist-topbar-title">Navigazione</div>
         <div class="watchlist-topbar-text">
-            Torna al Cockpit per aprire Portafoglio o Logout. Il grafico si apre solo dalla card ticker.
+            Torna al Cockpit per aprire Portafoglio o Logout.
+            Il grafico si apre solo dalla card ticker.
         </div>
     </div>
     """,
@@ -373,7 +413,8 @@ with st.expander("🛠️ Configura Watchlist", expanded=False):
         <div class="watchlist-config-panel">
             <div class="watchlist-config-title">Gestione ticker</div>
             <div class="watchlist-config-subtitle">
-                Aggiungi nuovi simboli Yahoo Finance. La lista viene salvata in watchlist.txt.
+                Aggiungi nuovi simboli Yahoo Finance.
+                La lista viene salvata in watchlist.txt.
             </div>
         </div>
         """,
@@ -566,7 +607,8 @@ st.markdown(
     <div class="watchlist-toolbar">
         <div class="watchlist-toolbar-title">Card operative</div>
         <div class="watchlist-toolbar-subtitle">
-            Ogni card mostra prezzo, SMA 200D, distanza dalla media, stato tecnico e rendimento 1Y.
+            Ogni card mostra prezzo, SMA 200D, distanza dalla media,
+            stato tecnico e rendimento 1Y.
         </div>
     </div>
     """,
@@ -600,55 +642,3 @@ for ticker in st.session_state["lista_tickers"]:
             st.rerun()
 
     st.markdown("")
-
-try:
-    from streamlit_sortables import sort_items
-except Exception:
-    sort_items = None
-
-
-# =========================
-# PROTEZIONE LOGIN
-# =========================
-
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
-
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-
-    st.stop()
-
-
-# =========================
-# CONFIGURAZIONE FILE / CSS
-# =========================
-
-ROOT_DIR = Path(__file__).resolve().parent.parent
-WATCHLIST_FILE = ROOT_DIR / "watchlist.txt"
-
-GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
-WATCHLIST_CSS = ROOT_DIR / "css" / "watchlist.css"
-
-
-def local_css(file_path):
-    if file_path.exists():
-        with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(
-                f"<style>{file.read()}</style>",
-                unsafe_allow_html=True
-            )
-
-
-local_css(GLOBAL_CSS)
-local_css(WATCHLIST_CSS)
-
-
-# =========================
-# FUNZIONI WATCHLIST
-# =========================
-
-def carica_ticker_da_file():
-    if WATCHLIST_FILE.exists():
-        with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
-            return [
