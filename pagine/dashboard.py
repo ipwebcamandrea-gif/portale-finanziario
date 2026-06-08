@@ -3,7 +3,18 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import os
-from streamlit_sortables import sort_items  # <-- Nuova libreria per il Drag & Drop
+from streamlit_sortables import sort_items
+
+# --- FUNZIONE DI CARICAMENTO CSS DEDICATO (PERCORSO ROOT) ---
+def local_css(file_path):
+    """Legge un file CSS locale dalla root e lo inietta nell'app Streamlit"""
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Carichiamo i file di stile direttamente dalla cartella css nella root
+local_css("css/global.css")
+local_css("css/dashboard.css")
 
 # --- GESTIONE PERSISTENZA SU FILE LOCALE ---
 FILE_WATCHLIST = "watchlist.txt"
@@ -26,26 +37,24 @@ def salva_ticker_su_file(lista_ticker):
         for tkr in lista_ticker:
             f.write(f"{tkr}\n")
 
-# Inizializziamo lo stato della sessione
+# Inizializziamo lo stato della sessione leggendo dal file
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
-st.title("📊 Monitoraggio Watchlist Magnifici 7")
-st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente.")
+# Intestazione della pagina con classi CSS dedicate
+st.markdown('<div class="main-title">Monitoraggio Globale Watchlist</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Analisi quantitativa e distanze metriche dalla SMA 200 Settimanale</div>', unsafe_allow_html=True)
 
 # --- SEZIONE GESTIONE E RIORDINO TICKER ---
-with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti)", expanded=False):
+with st.expander("🛠️ Configurazione Watchlist & Drag-and-Drop", expanded=False):
     
-    # 1. Sezione per aggiungere nuovi elementi
-    st.subheader("➕ Aggiungi un nuovo titolo")
+    st.markdown("### ➕ Inserisci un nuovo asset")
     col_add_input, col_add_btn = st.columns([7, 3])
     
     with col_add_input:
-        nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):", key="txt_nuovo_tkr").upper().strip()
+        nuovo_ticker = st.text_input("Simbolo del ticker (Yahoo Finance):", key="txt_nuovo_tkr", label_visibility="collapsed").upper().strip()
         
     with col_add_btn:
-        st.write("") 
-        st.write("") 
         esegui_aggiunta = st.button("Aggiungi alla lista", use_container_width=True)
 
     if esegui_aggiunta and nuovo_ticker:
@@ -56,47 +65,46 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
                 if not hist.empty:
                     st.session_state["lista_tickers"].append(nuovo_ticker)
                     salva_ticker_su_file(st.session_state["lista_tickers"])
-                    st.success(f"Aggiunto permanentemente: {nuovo_ticker}")
+                    st.success(f"Portato dentro: {nuovo_ticker}")
                     st.rerun()
                 else:
-                    st.error("Ticker non trovato su Yahoo Finance.")
+                    st.error("Ticker non trovato o non valido su Yahoo Finance.")
             except:
-                st.error("Errore durante la verifica del ticker.")
+                st.error("Errore di comunicazione durante la verifica.")
         else:
             st.warning("Questo ticker è già presente nella lista.")
                 
     st.markdown("---")
     
-    # 2. DRAG & DROP VERO E PROPRIO (Bello, fluido e moderno)
-    st.subheader("↕️ Trascina per ordinare i titoli")
-    st.caption("Prendi un titolo e trascinalo nella posizione desiderata. L'ordine si salva da solo!")
+    st.markdown("### ↕️ Organizza Sequenza")
+    st.caption("Sposta i blocchi trascinandoli verticalmente. La griglia sotto seguirà l'ordine in tempo reale.")
     
-    # Visualizza i blocchi trascinabili verticalmente
     lista_prima = list(st.session_state["lista_tickers"])
     
-    # Il componente restituisce la lista aggiornata ad ogni movimento
+    # Il componente restituisce la lista aggiornata ad ogni movimento (stilizzato via dashboard.css)
     lista_dopo = sort_items(lista_prima, direction="vertical", key="drag_drop_watchlist")
     
-    # Se l'ordine è cambiato rispetto a prima, aggiorniamo il file
     if lista_dopo != lista_prima:
         st.session_state["lista_tickers"] = lista_dopo
         salva_ticker_su_file(lista_dopo)
         st.rerun()
 
-st.markdown("---")
+st.markdown(" ")
 
-# --- COSTRUZIONE TABELLA FINANZIARIA ---
+# --- COSTRUZIONE TABELLA FINANZIARIA PRO ---
 if not st.session_state["lista_tickers"]:
-    st.info("La tua watchlist è vuota. Aggiungi un ticker usando il box sopra per iniziare.")
+    st.info("La tua watchlist è attualmente vuota. Espandi il pannello sopra per aggiungere titoli.")
 else:
+    # Intestazioni di colonna stilizzate
     header_cols = st.columns([1, 2, 2, 2, 2, 1])
-    with header_cols[0]: st.markdown("**GRAFICO**")
-    with header_cols[1]: st.markdown("**TICKER**")
-    with header_cols[2]: st.markdown("**PREZZO CORRENTE**")
-    with header_cols[3]: st.markdown("**SMA 200W**")
-    with header_cols[4]: st.markdown("**DISTANZA % / AZIONE**")
-    with header_cols[5]: st.markdown("**ELIMINA**")
-    st.markdown("---")
+    with header_cols[0]: st.markdown('<div class="table-header">Grafico</div>', unsafe_allow_html=True)
+    with header_cols[1]: st.markdown('<div class="table-header">Ticker</div>', unsafe_allow_html=True)
+    with header_cols[2]: st.markdown('<div class="table-header">Prezzo</div>', unsafe_allow_html=True)
+    with header_cols[3]: st.markdown('<div class="table-header">SMA 200W</div>', unsafe_allow_html=True)
+    with header_cols[4]: st.markdown('<div class="table-header">Distanza %</div>', unsafe_allow_html=True)
+    with header_cols[5]: st.markdown('<div class="table-header">Azione</div>', unsafe_allow_html=True)
+    
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
     def calcola_sma200_settimanale(ticker_name):
         try:
@@ -114,40 +122,50 @@ else:
         except:
             return None, None, None
 
+    # Ciclo di rendering protetto da eccezioni strutturali
     for tkr in list(st.session_state["lista_tickers"]):
         try:
             px, sma, dist = calcola_sma200_settimanale(tkr)
+            
+            # Se Yahoo Finance fallisce, saltiamo la riga elegantemente senza rompere la pagina
             if px is None or pd.isna(px):
                 continue
                 
             row_cols = st.columns([1, 2, 2, 2, 2, 1])
             
+            # 1) Bottone apertura Grafico Avanzato
             with row_cols[0]:
                 if st.button("📈", key=f"btn_graf_{tkr}"):
                     st.session_state['ticker_selezionato'] = tkr
                     st.switch_page("pagine/grafico.py")
             
+            # 2) Simbolo Ticker
             with row_cols[1]:
-                st.markdown(f"**{tkr}**")
+                st.markdown(f"<div style='padding-top:5px; font-weight:700; color:#ffffff;'>{tkr}</div>", unsafe_allow_html=True)
                 
+            # 3) Ultimo Prezzo Disponibile
             with row_cols[2]:
-                st.markdown(f"$ {px:.2f}")
+                st.markdown(f"<div style='padding-top:5px; color:#e0e3eb;'>$ {px:.2f}</div>", unsafe_allow_html=True)
                 
+            # 4) Valore di Sostegno SMA200
             with row_cols[3]:
-                st.markdown(f"$ {sma:.2f}")
+                st.markdown(f"<div style='padding-top:5px; color:#b2b5be;'>$ {sma:.2f}</div>", unsafe_allow_html=True)
                 
+            # 5) Distanza Percentuale Colorata (Verde / Rosso TradingView)
             with row_cols[4]:
                 colore = "#26a69a" if dist >= 0 else "#ef5350"
                 segno = "+" if dist > 0 else ""
-                st.markdown(f"<span style='color:{colore}; font-weight:bold;'>{segno}{dist:.2f} %</span>", unsafe_allow_html=True)
+                st.markdown(f"<div style='padding-top:5px; color:{colore}; font-weight:700;'>{segno}{dist:.2f} %</div>", unsafe_allow_html=True)
                 
+            # 6) Bottone Cancella asset
             with row_cols[5]:
                 if st.button("🗑️", key=f"btn_del_{tkr}"):
                     st.session_state["lista_tickers"].remove(tkr)
                     salva_ticker_su_file(st.session_state["lista_tickers"])
-                    st.toast(f"Rimosso permanentemente {tkr}.")
+                    st.toast(f"Rimosso {tkr}.")
                     st.rerun()
             
-            st.markdown("<hr style='margin:0.5em 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
+            # Divisore grafico sottile e moderno inserito tra i blocchi
+            st.markdown("<hr style='margin:0.6em 0; border-top: 1px solid #222632;'>", unsafe_allow_html=True)
         except:
             continue
