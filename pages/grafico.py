@@ -204,7 +204,6 @@ def calcola_linreg_channel(data):
         return None
 
     serie = data[LINREG_SOURCE].dropna()
-
     if len(serie) < LINREG_LENGTH:
         return None
 
@@ -346,6 +345,22 @@ def crea_grafico_weekly(data, ticker):
         fig.add_hline(y=min_52w, line_width=1.2, line_dash="dash", line_color="#26a69a", row=1, col=1)
         aggiungi_label_orizzontale(fig, min_52w, "MIN 52W", "#26a69a", label_x)
 
+    # Invisible helper trace for minimal cursor readout.
+    # This avoids the big popup with all indicators but still shows exact date/close.
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data["Close"],
+            mode="markers",
+            name="Cursore",
+            marker=dict(size=8, color="rgba(255,255,255,0)"),
+            showlegend=False,
+            hovertemplate="Data: %{x|%d/%m/%Y}<br>Prezzo: %{y:.2f}<extra></extra>"
+        ),
+        row=1,
+        col=1
+    )
+
     if "Volume" in data.columns:
         fig.add_trace(go.Bar(x=data.index, y=data["Volume"], name="Volume", opacity=0.42, marker_color="#5f6b7a", hoverinfo="skip"), row=2, col=1)
 
@@ -362,10 +377,10 @@ def crea_grafico_weekly(data, ticker):
     x_min = data.index.min()
     x_max = data.index.max() + pd.Timedelta(weeks=X_EXTRA_WEEKS)
 
-    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=170, t=70, b=10), xaxis_rangeslider_visible=False, hovermode=False, plot_bgcolor="#0e1117", paper_bgcolor="#0e1117", legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1))
+    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=170, t=70, b=10), xaxis_rangeslider_visible=False, hovermode="closest", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117", legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1))
 
-    fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.45)", spikethickness=1, spikedash="dot", spikemode="across", spikesnap="cursor")
-    fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.45)", spikethickness=1, spikedash="dot", spikesnap="cursor")
+    fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.55)", spikethickness=1, spikedash="dot", spikemode="across", spikesnap="cursor")
+    fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.55)", spikethickness=1, spikedash="dot", spikesnap="cursor")
     fig.update_yaxes(title_text="Volume", row=2, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="Stoch RSI", row=3, col=1, side="right", range=[0, 100], showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="MACD", row=4, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
@@ -394,7 +409,7 @@ with col_back:
         st.switch_page("pages/dashboard.py")
 
 with col_info:
-    st.info("Popup disattivato | Crosshair attivo | Label medie piu a destra | Max/Min 52W tratteggiati")
+    st.info("Crosshair tratteggiato | Popup ridotto a Data/Prezzo | Label medie piu a destra | Max/Min 52W tratteggiati")
 
 with st.spinner("Caricamento dati weekly a 10 anni per " + ticker + "..."):
     data, errore_download = scarica_dati_weekly(ticker)
