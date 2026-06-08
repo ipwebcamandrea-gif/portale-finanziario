@@ -1,6 +1,119 @@
 import streamlit as st
 import yfinance as yf
-import plotly.graph_objects as stoch_rsi, k, dimport plotly.graph_objects as go
+import plotly.graph_objects asOCH_RSI_RSI_LENGTH = 20import plotly.graph_objects as go
+STOCH_RSI_LENGTH = 20
+STOCH_RSI_K = 5
+STOCH_RSI_D = 5
+
+MACD_FAST = 12
+MACD_SLOW = 26
+MACD_SIGNAL = 9
+
+
+# =========================
+# FUNZIONI DATI
+# =========================
+
+def normalizza_dataframe_yfinance(data):
+    if isinstance(data.columns, pd.MultiIndex):
+        livello_0 = list(data.columns.get_level_values(0))
+        livello_1 = list(data.columns.get_level_values(1))
+
+        if "Close" in livello_0:
+            data.columns = data.columns.get_level_values(0)
+        elif "Close" in livello_1:
+            data.columns = data.columns.get_level_values(1)
+        else:
+            nuove_colonne = []
+            for colonna in data.columns:
+                parti = [str(elemento) for elemento in colonna if str(elemento) != ""]
+                nuove_colonne.append("_".join(parti))
+            data.columns = nuove_colonne
+
+    return data
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def scarica_dati_weekly(ticker):
+    try:
+        data = yf.download(
+            ticker,
+            period=PERIODO_DATI,
+            interval=INTERVALLO_DATI,
+            progress=False,
+            auto_adjust=False,
+            threads=False
+        )
+    except Exception as errore:
+        return pd.DataFrame(), str(errore)
+
+    if data is None or data.empty:
+        return pd.DataFrame(), None
+
+    data = normalizza_dataframe_yfinance(data)
+
+    colonne_richieste = ["Open", "High", "Low", "Close"]
+
+    for colonna in colonne_richieste:
+        if colonna not in data.columns:
+            return pd.DataFrame(), None
+
+    data = data.dropna(subset=colonne_richieste)
+
+    return data, None
+
+
+def valore_float(valore):
+    if isinstance(valore, pd.Series):
+        valore = valore.dropna()
+
+        if valore.empty:
+            return None
+
+        valore = valore.iloc[0]
+
+    if pd.isna(valore):
+        return None
+
+    return float(valore)
+
+
+def calcola_wma(serie, periodo):
+    pesi = np.arange(1, periodo + 1)
+
+    return serie.rolling(periodo).apply(
+        lambda valori: np.dot(valori, pesi) / pesi.sum(),
+        raw=True
+    )
+
+
+def calcola_rsi(serie, periodo):
+    delta = serie.diff()
+    guadagni = delta.clip(lower=0)
+    perdite = -delta.clip(upper=0)
+
+    media_guadagni = guadagni.ewm(alpha=1 / periodo, adjust=False).mean()
+    media_perdite = perdite.ewm(alpha=1 / periodo, adjust=False).mean()
+
+    rs = media_guadagni / media_perdite.replace(0, np.nan)
+    rsi = 100 - (100 / (1 + rs))
+
+    return rsi
+
+
+def calcola_stoch_rsi(serie_close):
+    rsi = calcola_rsi(serie_close, STOCH_RSI_RSI_LENGTH)
+
+    rsi_min = rsi.rolling(STOCH_RSI_LENGTH).min()
+    rsi_max = rsi.rolling(STOCH_RSI_LENGTH).max()
+
+    stoch_rsi = ((rsi - rsi_min) / (rsi_max - rsi_min)) * 100
+    stoch_rsi = stoch_rsi.replace([np.inf, -np.inf], np.nan)
+
+    k = stoch_rsi.rolling(STOCH_RSI_K).mean()
+    d = k.rolling(STOCH_RSI_D).mean()
+
+    return k, d
 
 
 def calcola_macd(serie_close):
@@ -23,9 +136,7 @@ def prepara_indicatori_weekly(data):
     data_plot["EMA200W"] = data_plot["Close"].ewm(span=EMA_200, adjust=False).mean()
     data_plot["SMA200W"] = data_plot["Close"].rolling(SMA_200).mean()
 
-    rsi, stoch_rsi, stoch_k, stoch_d = calcola_stoch_rsi(data_plot["Close"])
-    data_plot["RSI20W"] = rsi
-    data_plot["STOCH_RSI"] = stoch_rsi
+    stoch_k, stoch_d = calcola_stoch_rsi(data_plot["Close"])
     data_plot["STOCH_RSI_K"] = stoch_k
     data_plot["STOCH_RSI_D"] = stoch_d
 
@@ -58,13 +169,7 @@ def calcola_rendimento(data, settimane):
 
 def calcola_metriche(data):
     prezzo = valore_float(data["Close"].iloc[-1])
-
-    wma_21w = valore_float(data["WMA21W"].iloc[-1])
-    wma_50w = valore_float(data["WMA50W"].iloc[-1])
-    wma_200w = valore_float(data["WMA200W"].iloc[-1])
-    ema_200w = valore_float(data["EMA200W"].iloc[-1])
     sma_200w = valore_float(data["SMA200W"].iloc[-1])
-
     stoch_k = valore_float(data["STOCH_RSI_K"].iloc[-1])
     stoch_d = valore_float(data["STOCH_RSI_D"].iloc[-1])
     macd = valore_float(data["MACD"].iloc[-1])
@@ -79,10 +184,6 @@ def calcola_metriche(data):
 
     return {
         "prezzo": prezzo,
-        "wma_21w": wma_21w,
-        "wma_50w": wma_50w,
-        "wma_200w": wma_200w,
-        "ema_200w": ema_200w,
         "sma_200w": sma_200w,
         "distanza_sma_200w": distanza_sma_200w,
         "rendimento_52w": rendimento_52w,
@@ -116,7 +217,7 @@ def formatta_percentuale(valore):
 # =========================
 
 def crea_grafico_weekly(data, ticker):
-    colori_hist = [
+    colori_macd_hist = [
         "#26a69a" if valore >= 0 else "#ef5350"
         for valore in data["MACD_HIST"].fillna(0)
     ]
@@ -230,7 +331,7 @@ def crea_grafico_weekly(data, ticker):
             x=data.index,
             y=data["STOCH_RSI_K"],
             mode="lines",
-            name=f"Stoch RSI K {STOCH_RSI_K}",
+            name="Stoch RSI K",
             line=dict(color="#ffffff", width=1.6)
         ),
         row=3,
@@ -242,22 +343,37 @@ def crea_grafico_weekly(data, ticker):
             x=data.index,
             y=data["STOCH_RSI_D"],
             mode="lines",
-            name=f"Stoch RSI D {STOCH_RSI_D}",
+            name="Stoch RSI D",
             line=dict(color="#f5c542", width=1.6)
         ),
         row=3,
         col=1
     )
 
-    fig.add_hline(y=80, line_width=1, line_dash="dot", line_color="#8a99ad", row=3, col=1)
-    fig.add_hline(y=20, line_width=1, line_dash="dot", line_color="#8a99ad", row=3, col=1)
+    fig.add_hline(
+        y=80,
+        line_width=1,
+        line_dash="dot",
+        line_color="#8a99ad",
+        row=3,
+        col=1
+    )
+
+    fig.add_hline(
+        y=20,
+        line_width=1,
+        line_dash="dot",
+        line_color="#8a99ad",
+        row=3,
+        col=1
+    )
 
     fig.add_trace(
         go.Bar(
             x=data.index,
             y=data["MACD_HIST"],
             name="MACD Histogram",
-            marker_color=colori_hist,
+            marker_color=colori_macd_hist,
             opacity=0.55
         ),
         row=4,
@@ -269,7 +385,7 @@ def crea_grafico_weekly(data, ticker):
             x=data.index,
             y=data["MACD"],
             mode="lines",
-            name=f"MACD {MACD_FAST}-{MACD_SLOW}",
+            name="MACD",
             line=dict(color="#00b0ff", width=1.8)
         ),
         row=4,
@@ -281,14 +397,21 @@ def crea_grafico_weekly(data, ticker):
             x=data.index,
             y=data["MACD_SIGNAL"],
             mode="lines",
-            name=f"Signal {MACD_SIGNAL}",
+            name="Signal",
             line=dict(color="#ff9800", width=1.7)
         ),
         row=4,
         col=1
     )
 
-    fig.add_hline(y=0, line_width=1, line_dash="dot", line_color="#8a99ad", row=4, col=1)
+    fig.add_hline(
+        y=0,
+        line_width=1,
+        line_dash="dot",
+        line_color="#8a99ad",
+        row=4,
+        col=1
+    )
 
     fig.update_layout(
         template="plotly_dark",
@@ -366,26 +489,19 @@ ticker = st.session_state.get("ticker_selezionato", None)
 if ticker is None:
     st.warning(
         "Nessun ticker selezionato. "
-        "Apri questa pagina dalla Watchlist usando il pulsante 📈."
+        "Apri questa pagina dalla Watchlist usando il pulsante grafico."
     )
 
-    if st.button("⬅️ Torna al Cockpit"):
+    if st.button("Torna al Cockpit"):
         st.switch_page("pages/dashboard.py")
 
     st.stop()
 
 
-st.markdown(
-    f"""
-    <div class="grafico-header">
-        <div class="grafico-title">Analisi Weekly: {ticker}</div>
-        <div class="grafico-subtitle">
-            Vista a 10 anni su timeframe weekly con medie mobili, Stoch RSI (20,5,5)
-            e MACD weekly standard (12,26,9).
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
+st.title(f"Analisi Weekly: {ticker}")
+st.caption(
+    "Vista weekly a 10 anni con medie mobili, "
+    "Stoch RSI (20,5,5) e MACD weekly standard (12,26,9)."
 )
 
 
@@ -396,13 +512,13 @@ st.markdown(
 col_back, col_info = st.columns([1.2, 4.8])
 
 with col_back:
-    if st.button("⬅️ Torna al Cockpit"):
+    if st.button("Torna al Cockpit"):
         st.switch_page("pages/dashboard.py")
 
 with col_info:
     st.info(
-        "Timeframe weekly · Periodo fisso 10 anni · "
-        "Stoch RSI (20,5,5) · MACD weekly standard (12,26,9)"
+        "Timeframe weekly | Periodo fisso 10 anni | "
+        "Stoch RSI (20,5,5) | MACD weekly standard (12,26,9)"
     )
 
 
@@ -425,7 +541,7 @@ if data.empty:
         "Controlla il simbolo nella Watchlist."
     )
 
-    if st.button("⬅️ Torna al Cockpit", key="back_no_data"):
+    if st.button("Torna al Cockpit", key="back_no_data"):
         st.switch_page("pages/dashboard.py")
 
     st.stop()
@@ -478,7 +594,7 @@ st.plotly_chart(fig, use_container_width=True)
 csv_data = data.to_csv(index=True).encode("utf-8")
 
 st.download_button(
-    label="⬇️ Scarica dati weekly CSV",
+    label="Scarica dati weekly CSV",
     data=csv_data,
     file_name=f"{ticker}_weekly_10y.csv",
     mime="text/csv"
@@ -507,7 +623,6 @@ if not st.session_state.get("authenticated", False):
 # =========================
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 GRAFICO_CSS = ROOT_DIR / "css" / "grafico.css"
 
@@ -524,7 +639,7 @@ local_css(GRAFICO_CSS)
 
 
 # =========================
-# PARAMETRI INDICATORI
+# PARAMETRI GRAFICO
 # =========================
 
 PERIODO_DATI = "10y"
@@ -535,116 +650,4 @@ WMA_50 = 50
 WMA_200 = 200
 EMA_200 = 200
 SMA_200 = 200
-
-STOCH_RSI_RSI_LENGTH = 20
-STOCH_RSI_LENGTH = 20
-STOCH_RSI_K = 5
-STOCH_RSI_D = 5
-
-MACD_FAST = 12
-MACD_SLOW = 26
-MACD_SIGNAL = 9
-
-
-# =========================
-# FUNZIONI DATI
-# =========================
-
-def normalizza_dataframe_yfinance(data):
-    if isinstance(data.columns, pd.MultiIndex):
-        livelli_0 = list(data.columns.get_level_values(0))
-        livelli_1 = list(data.columns.get_level_values(1))
-
-        if "Close" in livelli_0:
-            data.columns = data.columns.get_level_values(0)
-        elif "Close" in livelli_1:
-            data.columns = data.columns.get_level_values(1)
-        else:
-            data.columns = [
-                "_".join([str(elemento) for elemento in colonna if str(elemento) != ""])
-                for colonna in data.columns
-            ]
-
-    return data
-
-
-@st.cache_data(ttl=900, show_spinner=False)
-def scarica_dati_weekly(ticker):
-    try:
-        data = yf.download(
-            ticker,
-            period=PERIODO_DATI,
-            interval=INTERVALLO_DATI,
-            progress=False,
-            auto_adjust=False,
-            threads=False
-        )
-    except Exception as errore:
-        return pd.DataFrame(), str(errore)
-
-    if data is None or data.empty:
-        return pd.DataFrame(), None
-
-    data = normalizza_dataframe_yfinance(data)
-
-    colonne_richieste = ["Open", "High", "Low", "Close"]
-
-    for colonna in colonne_richieste:
-        if colonna not in data.columns:
-            return pd.DataFrame(), None
-
-    data = data.dropna(subset=colonne_richieste)
-
-    return data, None
-
-
-def valore_float(valore):
-    if isinstance(valore, pd.Series):
-        valore = valore.dropna()
-
-        if valore.empty:
-            return None
-
-        valore = valore.iloc[0]
-
-    if pd.isna(valore):
-        return None
-
-    return float(valore)
-
-
-def calcola_wma(serie, periodo):
-    pesi = np.arange(1, periodo + 1)
-
-    return serie.rolling(periodo).apply(
-        lambda valori: np.dot(valori, pesi) / pesi.sum(),
-        raw=True
-    )
-
-
-def calcola_rsi(serie, periodo):
-    delta = serie.diff()
-    guadagni = delta.clip(lower=0)
-    perdite = -delta.clip(upper=0)
-
-    media_guadagni = guadagni.ewm(alpha=1 / periodo, adjust=False).mean()
-    media_perdite = perdite.ewm(alpha=1 / periodo, adjust=False).mean()
-
-    rs = media_guadagni / media_perdite.replace(0, np.nan)
-    rsi = 100 - (100 / (1 + rs))
-
-    return rsi
-
-
-def calcola_stoch_rsi(serie_close):
-    rsi = calcola_rsi(serie_close, STOCH_RSI_RSI_LENGTH)
-
-    rsi_min = rsi.rolling(STOCH_RSI_LENGTH).min()
-    rsi_max = rsi.rolling(STOCH_RSI_LENGTH).max()
-
-    stoch_rsi = ((rsi - rsi_min) / (rsi_max - rsi_min)) * 100
-    stoch_rsi = stoch_rsi.replace([np.inf, -np.inf], np.nan)
-
-    k = stoch_rsi.rolling(STOCH_RSI_K).mean()
-    d = k.rolling(STOCH_RSI_D).mean()
 
