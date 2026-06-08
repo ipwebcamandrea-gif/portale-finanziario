@@ -30,7 +30,7 @@ def salva_ticker_su_file(lista_ticker):
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
-st.title("📊 Monitoraggio Watchlist")
+st.title("📊 Monitoraggio Watchlist Magnifici 7")
 st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente.")
 
 # --- SEZIONE GESTIONE E RIORDINO TICKER ---
@@ -39,62 +39,59 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
     # 1. Sezione per aggiungere nuovi elementi
     st.subheader("➕ Aggiungi un nuovo titolo")
     col_add_input, col_add_btn = st.columns([7, 3])
+    
     with col_add_input:
         nuovo_ticker = st.text_input("Inserisci un nuovo Ticker (es. NFLX, BRK-B):", key="txt_nuovo_tkr").upper().strip()
+        
     with col_add_btn:
         st.write("") # Spaziatori visivi
         st.write("") 
-        if st.button("Aggiungi alla lista", use_container_width=True):
-            if nuovo_ticker:
-                if nuovo_ticker not in st.session_state["lista_tickers"]:
-                    try:
-                        t = yf.Ticker(nuovo_ticker)
-                        hist = t.history(period="1wk")
-                        if not hist.empty:
-                            st.session_state["lista_tickers"].append(nuovo_ticker)
-                            salva_ticker_su_file(st.session_state["lista_tickers"])
-                            st.success(f"Aggiunto permanentemente: {nuovo_ticker}")
-                            st.rerun()
-                        else:
-                            st.error("Ticker non trovato su Yahoo Finance.")
-                    except:
-                        st.error("Errore durante la verifica del ticker.")
+        esegui_aggiunta = st.button("Aggiungi alla lista", use_container_width=True)
+
+    if esegui_aggiunta and nuovo_ticker:
+        if nuovo_ticker not in st.session_state["lista_tickers"]:
+            try:
+                t = yf.Ticker(nuovo_ticker)
+                hist = t.history(period="1wk")
+                if not hist.empty:
+                    st.session_state["lista_tickers"].append(nuovo_ticker)
+                    salva_ticker_su_file(st.session_state["lista_tickers"])
+                    st.success(f"Aggiunto permanentemente nel file: {nuovo_ticker}")
+                    st.rerun()
                 else:
-                    st.warning("Questo ticker è già presente nella lista.")
-            else:
-                st.warning("Inserisci un testo valido.")
+                    st.error("Ticker non trovato o non scambiato su Yahoo Finance.")
+            except Exception as e:
+                st.error("Errore di rete durante la verifica del ticker.")
+        else:
+            st.warning("Questo ticker è già presente nella lista.")
                 
     st.markdown("---")
     
-    # 2. Riordino tramite Pulsanti Freccia (Indistruttibile su Mobile e PC)
+    # 2. Riordino tramite Pulsanti Freccia Compatti e Puliti
     st.subheader("↕️ Modifica Ordine Posizioni")
-    st.caption("Usa le frecce per spostare i titoli su o giù nella tabella.")
+    st.caption("Usa le frecce laterali per spostare l'ordine delle righe.")
     
     lista_corrente = st.session_state["lista_tickers"]
     modificato = False
     
-    # Ciclo per creare una riga di comando per ogni ticker nell'expander
+    # Ciclo grafico per la pulsantiera di riordino compattata
     for i, tkr in enumerate(lista_corrente):
-        col_name, col_up, col_down = st.columns([6, 2, 2])
+        # Colonne asimmetriche per stringere i bottoni sulla destra
+        col_name, col_spacer, col_up, col_down = st.columns([6, 2, 1, 1])
         
         with col_name:
             st.markdown(f"**{i+1}. {tkr}**")
             
         with col_up:
-            # Disattiviamo il tasto "Su" per il primo elemento della lista
-            if st.button("🔼", key=f"up_{tkr}_{i}", disabled=(i == 0), use_container_width=True):
-                # Scambia l'elemento attuale con quello precedente
+            if st.button("🔼", key=f"up_{tkr}_{i}", disabled=(i == 0)):
                 lista_corrente[i], lista_corrente[i-1] = lista_corrente[i-1], lista_corrente[i]
                 modificato = True
                 
         with col_down:
-            # Disattiviamo il tasto "Giù" per l'ultimo elemento della lista
-            if st.button("🔽", key=f"down_{tkr}_{i}", disabled=(i == len(lista_corrente) - 1), use_container_width=True):
-                # Scambia l'elemento attuale con quello successivo
+            if st.button("🔽", key=f"down_{tkr}_{i}", disabled=(i == len(lista_corrente) - 1)):
                 lista_corrente[i], lista_corrente[i+1] = lista_corrente[i+1], lista_corrente[i]
                 modificato = True
                 
-    # Se l'utente ha premuto una freccia, salviamo subito e rinfreschiamo l'interfaccia
     if modificato:
         st.session_state["lista_tickers"] = lista_corrente
         salva_ticker_su_file(lista_corrente)
@@ -102,10 +99,10 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
 
 st.markdown("---")
 
+# --- COSTRUZIONE TABELLA FINANZIARIA ---
 if not st.session_state["lista_tickers"]:
     st.info("La tua watchlist è vuota. Aggiungi un ticker usando il box sopra per iniziare.")
 else:
-    # --- COSTRUZIONE TABELLA FINANZIARIA ---
     header_cols = st.columns([1, 2, 2, 2, 2, 1])
     with header_cols[0]: st.markdown("**GRAFICO**")
     with header_cols[1]: st.markdown("**TICKER**")
@@ -118,11 +115,15 @@ else:
     def calcola_sma200_settimanale(ticker_name):
         try:
             stock = yf.Ticker(ticker_name)
-            # Recuperiamo un range più compatto per evitare buchi di dati storici (es. 6 anni sono più che sufficienti per la SMA200W)
             df = stock.history(period="7y", interval="1wk")
-            if len(df) < 200:
+            if df is None or df.empty or len(df) < 200:
                 return None, None, None
+                
             df['SMA200_W'] = df['Close'].rolling(window=200).mean()
+            
+            if 'SMA200_W' not in df or pd.isna(df['SMA200_W'].iloc[-1]):
+                return None, None, None
+                
             px_ult = df['Close'].iloc[-1]
             sma_ult = df['SMA200_W'].iloc[-1]
             dist_pct = ((px_ult - sma_ult) / sma_ult) * 100
@@ -130,10 +131,15 @@ else:
         except:
             return None, None, None
 
+    # Ciclo di rendering protetto da eccezioni strutturali
     for tkr in list(st.session_state["lista_tickers"]):
-        px, sma, dist = calcola_sma200_settimanale(tkr)
-        
-        if px is not None:
+        try:
+            px, sma, dist = calcola_sma200_settimanale(tkr)
+            
+            # Se Yahoo Finance non risponde per questo ticker, saltiamo la riga elegantemente senza bloccare l'applicazione
+            if px is None or pd.isna(px):
+                continue
+                
             row_cols = st.columns([1, 2, 2, 2, 2, 1])
             
             with row_cols[0]:
@@ -163,3 +169,7 @@ else:
                     st.rerun()
             
             st.markdown("<hr style='margin:0.5em 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
+        except Exception as single_row_error:
+            # Fallback locale per la singola riga corrotta per evitare interruzioni generali del blocco pg.run()
+            st.caption(f"⚠️ Impossibile elaborare momentaneamente il ticker {tkr}.")
+            continue
