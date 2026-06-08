@@ -3,6 +3,10 @@ import yfinance as yf
 import plotly.graph_objects as go
 import os
 
+if not st.session_state.get('authenticated', False):
+    st.error("Devi prima effettuare l'accesso!")
+    st.stop()
+    
 # --- FUNZIONE DI CARICAMENTO CSS DEDICATO ---
 def local_css(file_path):
     if os.path.exists(file_path):
