@@ -42,18 +42,15 @@ def check_password():
 
 # --- CONTROLLO ACCESSO ---
 if check_password():
-    # Definiamo le pagine dell'applicazione
+    # Pagina visibile nel menu
     page_dashboard = st.Page("pagine/dashboard.py", title="Dashboard Watchlist", icon="📊")
     
-    # Impostando l'opzione *.py senza visualizzarla esplicitamente nella barra laterale,
-    # la pagina grafico rimane accessibile tramite st.switch_page ma sparisce dal menu!
+    # MODO CORRETTO DI NASCONDERE LA PAGINA: Usiamo position="hidden"
+    # La pagina grafico rimane accessibile tramite st.switch_page ma sparisce completamente dal menu laterale!
     page_grafico = st.Page("pagine/grafico.py", title="Analisi Grafica Avanzata", icon="📈")
     
-    # Passiamo a st.navigation solo la dashboard per pulire il menu laterale
-    pg = st.navigation([page_dashboard])
-    
-    # Trucco per registrare la pagina del grafico in background senza mostrarla nel menu
-    st._page_manager = [page_dashboard, page_grafico] 
+    # Passiamo entrambe le pagine alla navigazione in modo che Streamlit le riconosca entrambe ufficialmente
+    pg = st.navigation([page_dashboard, page_grafico], position="hidden")
     
     # Avvia la navigazione dell'app
     pg.run()
