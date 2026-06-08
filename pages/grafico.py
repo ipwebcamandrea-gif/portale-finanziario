@@ -62,6 +62,9 @@ LINREG_UPPER_DEV = 2
 LINREG_LOWER_DEV = 2
 LINREG_FORWARD_WEEKS = 156
 
+LABEL_OFFSET_WEEKS = 52
+X_EXTRA_WEEKS = 230
+
 # =========================
 # DATA FUNCTIONS
 # =========================
@@ -132,7 +135,10 @@ def ultimo_punto_valido(data, colonna):
 
 def calcola_wma(serie, periodo):
     pesi = np.arange(1, periodo + 1)
-    return serie.rolling(periodo).apply(lambda valori: np.dot(valori, pesi) / pesi.sum(), raw=True)
+    return serie.rolling(periodo).apply(
+        lambda valori: np.dot(valori, pesi) / pesi.sum(),
+        raw=True
+    )
 
 
 def calcola_rsi(serie, periodo):
@@ -241,7 +247,7 @@ def aggiungi_label_media(fig, data, colonna, testo, colore):
     if ultimo_x is None or ultimo_y is None:
         return
 
-    label_x = ultimo_x + pd.Timedelta(weeks=10)
+    label_x = ultimo_x + pd.Timedelta(weeks=LABEL_OFFSET_WEEKS)
     testo_label = ":" + testo + "  " + formatta_numero(ultimo_y)
 
     fig.add_annotation(
@@ -250,6 +256,29 @@ def aggiungi_label_media(fig, data, colonna, testo, colore):
         xref="x",
         yref="y",
         text=testo_label,
+        showarrow=False,
+        font=dict(color="#0e1117", size=11),
+        align="center",
+        bgcolor=colore,
+        bordercolor=colore,
+        borderwidth=1,
+        borderpad=4,
+        opacity=0.98,
+        row=1,
+        col=1
+    )
+
+
+def aggiungi_label_orizzontale(fig, y_value, testo, colore, label_x):
+    if y_value is None:
+        return
+
+    fig.add_annotation(
+        x=label_x,
+        y=y_value,
+        xref="x",
+        yref="y",
+        text=testo + "  " + formatta_numero(y_value),
         showarrow=False,
         font=dict(color="#0e1117", size=11),
         align="center",
@@ -287,16 +316,16 @@ def crea_grafico_weekly(data, ticker):
     )
 
     if linreg is not None:
-        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Upper"], mode="lines", name="LinReg Upper", line=dict(color="#2962ff", width=1.4), opacity=0.95), row=1, col=1)
-        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Center"], mode="lines", name="LinReg 100 close 2 2", line=dict(color="#ff3b3b", width=1.3), fill="tonexty", fillcolor="rgba(41, 98, 255, 0.15)", opacity=0.95), row=1, col=1)
-        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Lower"], mode="lines", name="LinReg Lower", line=dict(color="#2962ff", width=1.4), fill="tonexty", fillcolor="rgba(255, 59, 59, 0.14)", opacity=0.95), row=1, col=1)
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Upper"], mode="lines", name="LinReg Upper", line=dict(color="#2962ff", width=1.4), hoverinfo="skip", opacity=0.95), row=1, col=1)
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Center"], mode="lines", name="LinReg 100 close 2 2", line=dict(color="#ff3b3b", width=1.3), fill="tonexty", fillcolor="rgba(41, 98, 255, 0.15)", hoverinfo="skip", opacity=0.95), row=1, col=1)
+        fig.add_trace(go.Scatter(x=linreg.index, y=linreg["Lower"], mode="lines", name="LinReg Lower", line=dict(color="#2962ff", width=1.4), fill="tonexty", fillcolor="rgba(255, 59, 59, 0.14)", hoverinfo="skip", opacity=0.95), row=1, col=1)
 
-    fig.add_trace(go.Candlestick(x=data.index, open=data["Open"], high=data["High"], low=data["Low"], close=data["Close"], name=ticker, increasing_line_color="#00c087", decreasing_line_color="#ff4d4d", increasing_fillcolor="#00c087", decreasing_fillcolor="#ff4d4d"), row=1, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["WMA21W"], mode="lines", name="WMA 21W", line=dict(color="#ffffff", width=1.8)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["WMA50W"], mode="lines", name="WMA 50W", line=dict(color="#26a69a", width=2.0)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["WMA200W"], mode="lines", name="WMA 200W", line=dict(color="#2962ff", width=2.2)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["EMA200W"], mode="lines", name="EMA 200W", line=dict(color="#ffeb3b", width=2.1)), row=1, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["SMA200W"], mode="lines", name="SMA 200W", line=dict(color="#ff9800", width=2.3)), row=1, col=1)
+    fig.add_trace(go.Candlestick(x=data.index, open=data["Open"], high=data["High"], low=data["Low"], close=data["Close"], name=ticker, increasing_line_color="#00c087", decreasing_line_color="#ff4d4d", increasing_fillcolor="#00c087", decreasing_fillcolor="#ff4d4d", hoverinfo="skip"), row=1, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["WMA21W"], mode="lines", name="WMA 21W", line=dict(color="#ffffff", width=1.8), hoverinfo="skip"), row=1, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["WMA50W"], mode="lines", name="WMA 50W", line=dict(color="#26a69a", width=2.0), hoverinfo="skip"), row=1, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["WMA200W"], mode="lines", name="WMA 200W", line=dict(color="#2962ff", width=2.2), hoverinfo="skip"), row=1, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["EMA200W"], mode="lines", name="EMA 200W", line=dict(color="#ffeb3b", width=2.1), hoverinfo="skip"), row=1, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["SMA200W"], mode="lines", name="SMA 200W", line=dict(color="#ff9800", width=2.3), hoverinfo="skip"), row=1, col=1)
 
     aggiungi_label_media(fig, data, "WMA21W", "WMA 21W", "#ffffff")
     aggiungi_label_media(fig, data, "WMA50W", "WMA 50W", "#26a69a")
@@ -304,25 +333,39 @@ def crea_grafico_weekly(data, ticker):
     aggiungi_label_media(fig, data, "EMA200W", "EMA 200W", "#ffeb3b")
     aggiungi_label_media(fig, data, "SMA200W", "SMA 200W", "#ff9800")
 
-    if "Volume" in data.columns:
-        fig.add_trace(go.Bar(x=data.index, y=data["Volume"], name="Volume", opacity=0.42, marker_color="#5f6b7a"), row=2, col=1)
+    ultime_52 = data.tail(52)
+    max_52w = valore_float(ultime_52["High"].max()) if not ultime_52.empty else None
+    min_52w = valore_float(ultime_52["Low"].min()) if not ultime_52.empty else None
+    label_x = data.index.max() + pd.Timedelta(weeks=LABEL_OFFSET_WEEKS)
 
-    fig.add_trace(go.Scatter(x=data.index, y=data["STOCH_RSI_K"], mode="lines", name="Stoch RSI K", line=dict(color="#ffffff", width=1.6)), row=3, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["STOCH_RSI_D"], mode="lines", name="Stoch RSI D", line=dict(color="#f5c542", width=1.6)), row=3, col=1)
+    if max_52w is not None:
+        fig.add_hline(y=max_52w, line_width=1.2, line_dash="dash", line_color="#ef5350", row=1, col=1)
+        aggiungi_label_orizzontale(fig, max_52w, "MAX 52W", "#ef5350", label_x)
+
+    if min_52w is not None:
+        fig.add_hline(y=min_52w, line_width=1.2, line_dash="dash", line_color="#26a69a", row=1, col=1)
+        aggiungi_label_orizzontale(fig, min_52w, "MIN 52W", "#26a69a", label_x)
+
+    if "Volume" in data.columns:
+        fig.add_trace(go.Bar(x=data.index, y=data["Volume"], name="Volume", opacity=0.42, marker_color="#5f6b7a", hoverinfo="skip"), row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=data.index, y=data["STOCH_RSI_K"], mode="lines", name="Stoch RSI K", line=dict(color="#ffffff", width=1.6), hoverinfo="skip"), row=3, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["STOCH_RSI_D"], mode="lines", name="Stoch RSI D", line=dict(color="#f5c542", width=1.6), hoverinfo="skip"), row=3, col=1)
     fig.add_hline(y=80, line_width=1, line_dash="dot", line_color="#8a99ad", row=3, col=1)
     fig.add_hline(y=20, line_width=1, line_dash="dot", line_color="#8a99ad", row=3, col=1)
 
-    fig.add_trace(go.Bar(x=data.index, y=data["MACD_HIST"], name="MACD Histogram", marker_color=colori_macd_hist, opacity=0.55), row=4, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["MACD"], mode="lines", name="MACD", line=dict(color="#00b0ff", width=1.8)), row=4, col=1)
-    fig.add_trace(go.Scatter(x=data.index, y=data["MACD_SIGNAL"], mode="lines", name="Signal", line=dict(color="#ff9800", width=1.7)), row=4, col=1)
+    fig.add_trace(go.Bar(x=data.index, y=data["MACD_HIST"], name="MACD Histogram", marker_color=colori_macd_hist, opacity=0.55, hoverinfo="skip"), row=4, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["MACD"], mode="lines", name="MACD", line=dict(color="#00b0ff", width=1.8), hoverinfo="skip"), row=4, col=1)
+    fig.add_trace(go.Scatter(x=data.index, y=data["MACD_SIGNAL"], mode="lines", name="Signal", line=dict(color="#ff9800", width=1.7), hoverinfo="skip"), row=4, col=1)
     fig.add_hline(y=0, line_width=1, line_dash="dot", line_color="#8a99ad", row=4, col=1)
 
     x_min = data.index.min()
-    x_max = data.index.max() + pd.Timedelta(weeks=170)
+    x_max = data.index.max() + pd.Timedelta(weeks=X_EXTRA_WEEKS)
 
-    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=120, t=70, b=10), xaxis_rangeslider_visible=False, legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1), hovermode="x unified", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117")
-    fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
-    fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
+    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=170, t=70, b=10), xaxis_rangeslider_visible=False, hovermode=False, plot_bgcolor="#0e1117", paper_bgcolor="#0e1117", legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1))
+
+    fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.45)", spikethickness=1, spikedash="dot", spikemode="across", spikesnap="cursor")
+    fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.45)", spikethickness=1, spikedash="dot", spikesnap="cursor")
     fig.update_yaxes(title_text="Volume", row=2, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="Stoch RSI", row=3, col=1, side="right", range=[0, 100], showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="MACD", row=4, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
@@ -342,7 +385,7 @@ if ticker is None:
     st.stop()
 
 st.title("Analisi Weekly: " + ticker)
-st.caption("Vista weekly a 10 anni con medie mobili, LinReg 100 close 2 2, Stoch RSI (20,5,5) e MACD weekly standard (12,26,9).")
+st.caption("Vista weekly a 10 anni con medie mobili, LinReg 100 close 2 2, Stoch RSI (20,5,5), MACD weekly standard (12,26,9), Max/Min 52W.")
 
 col_back, col_info = st.columns([1.2, 4.8])
 
@@ -351,7 +394,7 @@ with col_back:
         st.switch_page("pages/dashboard.py")
 
 with col_info:
-    st.info("Timeframe weekly | Periodo fisso 10 anni | LinReg 100 close 2 2 | Stoch RSI (20,5,5) | MACD weekly standard (12,26,9)")
+    st.info("Popup disattivato | Crosshair attivo | Label medie piu a destra | Max/Min 52W tratteggiati")
 
 with st.spinner("Caricamento dati weekly a 10 anni per " + ticker + "..."):
     data, errore_download = scarica_dati_weekly(ticker)
