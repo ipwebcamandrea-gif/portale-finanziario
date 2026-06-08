@@ -126,18 +126,11 @@ def valore_float(valore):
     return float(valore)
 
 
-def normalizza_colonne_yfinance(data):
-    if isinstance(data.columns, pd.MultiIndex):
-        data.columns = data.columns.get_level_values(-1)
-
-    return data
-
-
 @st.cache_data(ttl=900, show_spinner=False)
 def scarica_dati_weekly_batch(lista_ticker_tuple):
     """
-    Scarica i dati weekly in batch per ridurre il rischio di rate limit.
-    Se Yahoo/YFinance limita le richieste, la funzione non fa crashare l'app.
+    Scarica dati weekly a 10 anni in batch.
+    Serve per calcolare SMA 200W in modo più coerente con grafici tipo TradingView.
     """
     lista_ticker = list(lista_ticker_tuple)
 
@@ -147,7 +140,7 @@ def scarica_dati_weekly_batch(lista_ticker_tuple):
     try:
         data = yf.download(
             tickers=lista_ticker,
-            period="5y",
+            period="10y",
             interval="1wk",
             group_by="ticker",
             auto_adjust=False,
@@ -163,7 +156,7 @@ def scarica_dati_weekly_batch(lista_ticker_tuple):
     if data is None or data.empty:
         return dati_per_ticker, None
 
-    # Caso 1 ticker singolo
+    # Caso ticker singolo
     if len(lista_ticker) == 1:
         ticker = lista_ticker[0]
         df = data.copy()
@@ -173,9 +166,9 @@ def scarica_dati_weekly_batch(lista_ticker_tuple):
                 if ticker in df.columns.get_level_values(0):
                     df = df[ticker].copy()
                 else:
-                    df = normalizza_colonne_yfinance(df)
+                    df.columns = df.columns.get_level_values(-1)
             except Exception:
-                df = normalizza_colonne_yfinance(df)
+                df.columns = df.columns.get_level_values(-1)
 
         if "Close" in df.columns:
             df = df.dropna(subset=["Close"])
@@ -384,7 +377,7 @@ def render_ticker_card(item):
                     '<div class="watchlist-symbol-block">'
                         f'<div class="watchlist-ticker-symbol">{ticker}</div>'
                         '<div class="watchlist-ticker-subtitle">'
-                            'Timeframe weekly · Logica SMA 200W'
+                            'Timeframe weekly 10 anni · Logica SMA 200W'
                         '</div>'
                     '</div>'
                 '</div>'
@@ -440,7 +433,7 @@ st.markdown(
     <div class="watchlist-header">
         <div class="watchlist-title">Watchlist Operativa</div>
         <div class="watchlist-subtitle">
-            Monitoraggio weekly dei ticker con prezzo, SMA 200W, distanza dalla media,
+            Monitoraggio weekly a 10 anni con prezzo, SMA 200W, distanza dalla media,
             stato tecnico e rendimento a 52 settimane. Le card arancioni indicano
             titoli sotto la SMA 200W.
         </div>
@@ -530,7 +523,7 @@ if not st.session_state["lista_tickers"]:
     )
     st.stop()
 
-with st.spinner("Aggiornamento dati weekly in corso..."):
+with st.spinner("Aggiornamento dati weekly a 10 anni in corso..."):
     risultati, errore_download = costruisci_metriche_watchlist(
         st.session_state["lista_tickers"]
     )
@@ -539,7 +532,7 @@ if errore_download:
     st.warning(
         "Yahoo Finance/YFinance ha limitato temporaneamente le richieste. "
         "La pagina resta attiva, ma alcuni dati possono apparire come N/D. "
-        "Riprova tra qualche minuto o usa il reboot dell'app se necessario."
+        "Riprova tra qualche minuto."
     )
 
 ticker_totali = len(risultati)
