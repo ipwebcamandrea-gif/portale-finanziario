@@ -5,6 +5,10 @@ import numpy as np
 import os
 from streamlit_sortables import sort_items
 
+if not st.session_state.get('authenticated', False):
+    st.error("Devi prima effettuare l'accesso!")
+    st.stop()
+    
 # --- FUNZIONE DI CARICAMENTO CSS DEDICATO (PERCORSO ROOT) ---
 def local_css(file_path):
     """Legge un file CSS locale dalla root e lo inietta nell'app Streamlit"""
