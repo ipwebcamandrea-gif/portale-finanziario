@@ -20,7 +20,6 @@ local_css("css/global.css")
 ticker = st.session_state.get('ticker_selezionato', 'AAPL')
 st.markdown(f'<div class="main-title">Analisi Quantitativa: {ticker}</div>', unsafe_allow_html=True)
 
-# CORRETTO: navigazione verso pages/
 if st.button("⬅️ Torna alla Dashboard"):
     st.switch_page("pages/dashboard.py")
 
@@ -28,7 +27,8 @@ if st.button("⬅️ Torna alla Dashboard"):
 try:
     data = yf.download(ticker, period="2y", interval="1d")
     if not data.empty:
-        # Conversione esplicita a float per evitare errori di tipo "Series"
+        # Conversione esplicita a float() per ogni valore
+        # Questo risolve l'errore "Series.format"
         prezzo = float(data['Close'].iloc[-1])
         max_52w = float(data['High'].tail(252).max())
         min_52w = float(data['Low'].tail(252).min())
@@ -46,4 +46,4 @@ try:
     else:
         st.error("Dati non disponibili.")
 except Exception as e:
-    st.error(f"Errore: {e}")
+    st.error(f"Errore durante il caricamento: {e}")
