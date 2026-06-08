@@ -1,53 +1,5 @@
 /* =========================
-   WATCHLIST CARD MODE PAGE
-   ========================= */
-
-.watchlist-header {
-    margin-bottom: 1.5rem;
-}
-
-.watchlist-title {
-    font-size: 2.65rem;
-    font-weight: 900;
-    line-height: 1.05;
-    letter-spacing: -0.055em;
-    background: linear-gradient(90deg, #00b0ff, #26a69a, #8e7dff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.45rem;
-}
-
-.watchlist-subtitle {
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.55;
-    margin-bottom: 1.2rem;
-    max-width: 980px;
-}
-
-/* =========================
-   TOP NAVIGATION
-   ========================= */
-
-.watchlist-topbar {
-    background: linear-gradient(180deg, #171b27 0%, #121622 100%);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-lg);
-    padding: 0.9rem 1rem;
-    margin: 1rem 0 1.2rem 0;
-}
-
-.watchlist-topbar-title {
-    color: var(--text-main);
-    font-size: 0.95rem;
-    font-weight: 900;
-    margin-bottom: 0.2rem;
-}
-
-.watchlist-topbar-text {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    line-height: 1.45;
+   WATCH;   WATCHLIST CARD MODE PAGE
 }
 
 /* =========================
@@ -115,50 +67,6 @@
 }
 
 /* =========================
-   SORTABLE AREA
-   ========================= */
-
-.watchlist-sort-panel {
-    background:
-        radial-gradient(circle at top left, rgba(38, 166, 154, 0.10), transparent 30%),
-        linear-gradient(180deg, #171b27 0%, #121622 100%);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    margin: 1.2rem 0;
-}
-
-.watchlist-sort-title {
-    color: var(--text-main);
-    font-size: 1rem;
-    font-weight: 900;
-    margin-bottom: 0.25rem;
-}
-
-.watchlist-sort-subtitle {
-    color: var(--text-muted);
-    font-size: 0.86rem;
-    line-height: 1.45;
-}
-
-/* Styling component streamlit-sortables */
-div.stColContainer div div div div[style*="background-color"] {
-    background:
-        linear-gradient(180deg, #1b2030 0%, #141927 100%) !important;
-    border: 1px solid #2a2e39 !important;
-    border-radius: 12px !important;
-    color: #ffffff !important;
-    cursor: grab !important;
-    font-weight: 850 !important;
-    padding: 0.75rem 0.85rem !important;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18) !important;
-}
-
-div.stColContainer div div div div[style*="background-color"]:active {
-    cursor: grabbing !important;
-}
-
-/* =========================
    LIST TOOLBAR
    ========================= */
 
@@ -205,6 +113,24 @@ div.stColContainer div div div div[style*="background-color"]:active {
     background:
         radial-gradient(circle at top right, rgba(0, 176, 255, 0.12), transparent 38%),
         linear-gradient(180deg, #1a2030 0%, #121826 100%);
+}
+
+/* Card arancione per ticker sotto SMA 200W */
+.watchlist-card-warning {
+    background:
+        radial-gradient(circle at top right, rgba(245, 197, 66, 0.20), transparent 38%),
+        linear-gradient(180deg, #241d14 0%, #15161b 100%);
+    border: 1px solid rgba(245, 197, 66, 0.58);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.26),
+        0 0 0 1px rgba(245, 197, 66, 0.08);
+}
+
+.watchlist-card-warning:hover {
+    border-color: rgba(245, 197, 66, 0.82);
+    background:
+        radial-gradient(circle at top right, rgba(245, 197, 66, 0.26), transparent 42%),
+        linear-gradient(180deg, #2b2115 0%, #17181f 100%);
 }
 
 .watchlist-card-top {
@@ -348,9 +274,9 @@ div.stColContainer div div div div[style*="background-color"]:active {
 }
 
 .status-negative {
-    color: #ef5350;
-    background-color: rgba(239, 83, 80, 0.13);
-    border: 1px solid rgba(239, 83, 80, 0.38);
+    color: #f5c542;
+    background-color: rgba(245, 197, 66, 0.14);
+    border: 1px solid rgba(245, 197, 66, 0.42);
 }
 
 .status-neutral {
@@ -384,7 +310,7 @@ div.stColContainer div div div div[style*="background-color"]:active {
 }
 
 .negative {
-    color: var(--accent-red);
+    color: #f5c542;
     font-weight: 950;
 }
 
@@ -442,7 +368,6 @@ div.stColContainer div div div div[style*="background-color"]:active {
 
     .watchlist-config-panel,
     .watchlist-toolbar,
-    .watchlist-sort-panel,
     .watchlist-kpi-card {
         padding: 0.78rem;
     }
@@ -488,3 +413,50 @@ div.stColContainer div div div div[style*="background-color"]:active {
         font-size: 1.08rem;
     }
 }
+   ========================= */
+
+.watchlist-header {
+    margin-bottom: 1.5rem;
+}
+
+.watchlist-title {
+    font-size: 2.65rem;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.055em;
+    background: linear-gradient(90deg, #00b0ff, #26a69a, #8e7dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.45rem;
+}
+
+.watchlist-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 1.2rem;
+    max-width: 980px;
+}
+
+/* =========================
+   TOP NAVIGATION
+   ========================= */
+
+.watchlist-topbar {
+    background: linear-gradient(180deg, #171b27 0%, #121622 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 0.9rem 1rem;
+    margin: 1rem 0 1.2rem 0;
+}
+
+.watchlist-topbar-title {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 900;
+    margin-bottom: 0.2rem;
+}
+
+.watchlist-topbar-text {
+    color: var(--text-muted);
+    font-size: 0.85rem;
