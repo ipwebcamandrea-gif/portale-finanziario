@@ -1,10 +1,10 @@
 import streamlit as st
 import os
 
-# Impostazione pagina
-st.set_page_config(page_title="FinancePortal", layout="wide")
+# Configurazione Pagina
+st.set_page_config(page_title="FinancePortal 2026", layout="wide")
 
-# Caricamento stile globale
+# Caricamento CSS Globale
 if os.path.exists("css/global.css"):
     with open("css/global.css", "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -20,7 +20,7 @@ with st.container():
     password = st.text_input("Password", type="password")
     
     if st.button("Entra nella Dashboard"):
-        # Credenziali semplici (personalizza con st.secrets se vuoi)
+        # Logica di autenticazione base
         if user == "admin" and password == "admin": 
             st.session_state['authenticated'] = True
             st.switch_page("pagine/dashboard.py")
