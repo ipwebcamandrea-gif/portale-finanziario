@@ -21,7 +21,7 @@ ticker = st.session_state.get('ticker_selezionato', 'AAPL')
 st.markdown(f'<div class="main-title">Analisi Quantitativa: {ticker}</div>', unsafe_allow_html=True)
 
 if st.button("⬅️ Torna alla Dashboard"):
-    st.switch_page("pages/dashboard.py")
+    st.switch_page("pages/dashboard.py") # CORRETTO: pages/
 
 # Analisi Dati
 try:
