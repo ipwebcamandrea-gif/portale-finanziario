@@ -34,21 +34,15 @@
 }
 
 /* =========================
-   STATUS STRIP
+   STATUS CARDS
    ========================= */
-
-.cockpit-status-strip {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.9rem;
-    margin: 1.4rem 0 1.8rem 0;
-}
 
 .cockpit-status-card {
     background: linear-gradient(180deg, #171b27 0%, #121622 100%);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
     padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
 }
 
 .status-label {
@@ -74,78 +68,32 @@
 }
 
 /* =========================
-   COCKPIT MENU CARDS
+   CARD-LIKE STREAMLIT BUTTONS
    ========================= */
 
-.cockpit-menu-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-    margin: 1.2rem 0 1.4rem 0;
-}
-
-.cockpit-card {
+.stButton > button {
+    min-height: 170px;
+    width: 100%;
     background: linear-gradient(180deg, #171b27 0%, #121622 100%);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-xl);
-    padding: 1.35rem;
-    min-height: 185px;
+    color: var(--text-main);
+    font-size: 1.02rem;
+    font-weight: 800;
+    text-align: left;
+    padding: 1.25rem;
+    white-space: pre-line;
+    line-height: 1.45;
 }
 
-.cockpit-card:hover {
+.stButton > button:hover {
     border-color: var(--border-accent);
     background: linear-gradient(180deg, #1b2030 0%, #141927 100%);
-}
-
-.cockpit-card-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    font-size: 1.35rem;
-    background-color: rgba(0, 176, 255, 0.12);
-    border: 1px solid rgba(0, 176, 255, 0.28);
-}
-
-.cockpit-card-title {
     color: var(--text-main);
-    font-size: 1.2rem;
-    font-weight: 900;
-    margin-bottom: 0.45rem;
-    letter-spacing: -0.02em;
 }
 
-.cockpit-card-text {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-.cockpit-card-accent-green .cockpit-card-icon {
-    background-color: rgba(38, 166, 154, 0.12);
-    border-color: rgba(38, 166, 154, 0.35);
-}
-
-.cockpit-card-accent-yellow .cockpit-card-icon {
-    background-color: rgba(245, 197, 66, 0.12);
-    border-color: rgba(245, 197, 66, 0.35);
-}
-
-.cockpit-card-accent-red .cockpit-card-icon {
-    background-color: rgba(239, 83, 80, 0.12);
-    border-color: rgba(239, 83, 80, 0.35);
-}
-
-/* =========================
-   BUTTON ALIGNMENT INSIDE CARDS
-   ========================= */
-
-.cockpit-action-zone {
-    margin-top: 0.8rem;
+.stButton > button:active {
+    transform: scale(0.99);
 }
 
 /* =========================
@@ -157,7 +105,7 @@
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
     padding: 1.1rem;
-    margin-top: 1.4rem;
+    margin: 1.2rem 0;
 }
 
 .cockpit-info-title {
@@ -178,36 +126,27 @@
    ========================= */
 
 @media (max-width: 1100px) {
-    .cockpit-menu-grid,
-    .cockpit-status-strip {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .main-title {
         font-size: 2.35rem;
+    }
+
+    .stButton > button {
+        min-height: 145px;
     }
 }
 
 @media (max-width: 760px) {
-    .cockpit-menu-grid,
-    .cockpit-status-strip {
-        grid-template-columns: 1fr;
-    }
-
     .main-title {
         font-size: 2rem;
     }
 
-    .cockpit-card {
-        min-height: auto;
-        padding: 1rem;
-    }
-
-    .cockpit-card-title {
-        font-size: 1.08rem;
-    }
-
     .subtitle {
+        font-size: 0.94rem;
+    }
+
+    .stButton > button {
+        min-height: 125px;
+        padding: 1rem;
         font-size: 0.94rem;
     }
 }
