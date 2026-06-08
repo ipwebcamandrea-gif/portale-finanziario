@@ -21,10 +21,12 @@
     --accent-green: #26a69a;
     --accent-red: #ef5350;
     --accent-yellow: #f5c542;
+    --accent-purple: #8e7dff;
 
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
+    --radius-xl: 18px;
 }
 
 /* =========================
@@ -47,6 +49,22 @@ body {
     padding-top: 2rem;
     padding-bottom: 2rem;
     max-width: 1400px;
+}
+
+/* =========================
+   HIDE STREAMLIT SIDEBAR MENU
+   ========================= */
+
+[data-testid="stSidebar"] {
+    display: none !important;
+}
+
+[data-testid="stSidebarCollapseButton"] {
+    display: none !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] {
+    display: none !important;
 }
 
 /* =========================
@@ -149,6 +167,14 @@ label {
 }
 
 /* =========================
+   SELECTBOX
+   ========================= */
+
+[data-testid="stSelectbox"] {
+    color: var(--text-main);
+}
+
+/* =========================
    EXPANDERS
    ========================= */
 
@@ -201,6 +227,17 @@ hr {
 
 .soft-text {
     color: var(--text-soft);
+}
+
+/* =========================
+   COMMON PAGE ACTION BAR
+   ========================= */
+
+.page-action-bar {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    margin: 1rem 0;
 }
 
 /* =========================
