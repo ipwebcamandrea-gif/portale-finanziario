@@ -5,7 +5,7 @@ from streamlit_sortables import sort_items
 
 # --- PROTEZIONE ---
 if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
+    st.error("Accesso non autorizzato. Torna alla home.")
     if st.button("Torna al Login"): st.switch_page("main.py")
     st.stop()
 
@@ -61,20 +61,25 @@ for tkr in list(st.session_state["lista_tickers"]):
         if hist.empty: continue
         
         px = float(hist['Close'].iloc[-1])
-        # Calcolo SMA e gestione nan
         sma_val = hist['Close'].rolling(200).mean().iloc[-1]
-        sma = f"$ {sma_val:.2f}" if not str(sma_val) == 'nan' else "N/D"
-        dist = ((px - sma_val) / sma_val) * 100 if not str(sma_val) == 'nan' else 0
-        dist_str = f"{dist:.2f} %" if not str(sma_val) == 'nan' else "N/D"
+        
+        # Gestione NAN
+        if str(sma_val) == 'nan':
+            sma_str = "N/D"
+            dist_str = "N/D"
+        else:
+            dist = ((px - sma_val) / sma_val) * 100
+            sma_str = f"$ {sma_val:.2f}"
+            dist_str = f"{dist:.2f} %"
         
         cols = st.columns([1, 2, 2, 2, 2, 1])
         with cols[0]:
             if st.button("📈", key=f"graf_{tkr}"):
                 st.session_state['ticker_selezionato'] = tkr
-                st.switch_page("pages/grafico.py") # CORRETTO
+                st.switch_page("pages/grafico.py")
         with cols[1]: st.markdown(f"**{tkr}**")
         with cols[2]: st.markdown(f"$ {px:.2f}")
-        with cols[3]: st.markdown(sma)
+        with cols[3]: st.markdown(sma_str)
         with cols[4]: st.markdown(dist_str)
         with cols[5]:
             if st.button("🗑️", key=f"del_{tkr}"):
