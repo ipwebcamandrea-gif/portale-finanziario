@@ -1,43 +1,125 @@
 import streamlit as st
+from pathlib import Path
 
-st.set_page_config(page_title="Watchlist", layout="wide")
 
-# 1. Inizializzazione della lista nello stato di sessione
-if "my_watchlist" not in st.session_state:
-    st.session_state["my_watchlist"] = ["AAPL", "TSLA", "NVDA"]
+# =========================
+# PROTEZIONE LOGIN
+# =========================
+
+if not st.session_state.get("authenticated", False):
+    st.error("Accesso non autorizzato.")
+
+    if st.button("Torna al Login"):
+        st.switch_page("main.py")
+
+    st.stop()
+
+
+# =========================
+# CONFIGURAZIONE FILE
+# =========================
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+WATCHLIST_FILE = ROOT_DIR / "watchlist.txt"
+
+
+# =========================
+# FUNZIONI WATCHLIST
+# =========================
+
+def carica_watchlist():
+    if WATCHLIST_FILE.exists():
+        with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
+            return [
+                line.strip().upper()
+                for line in file.readlines()
+                if line.strip()
+            ]
+
+    return ["AAPL", "TSLA", "NVDA"]
+
+
+def salva_watchlist(lista_ticker):
+    with open(WATCHLIST_FILE, "w", encoding="utf-8") as file:
+        for ticker in lista_ticker:
+            file.write(f"{ticker}\n")
+
+
+# =========================
+# INIZIALIZZAZIONE SESSIONE
+# =========================
+
+if "lista_tickers" not in st.session_state:
+    st.session_state["lista_tickers"] = carica_watchlist()
+
+
+# =========================
+# INTERFACCIA
+# =========================
 
 st.title("📊 La mia Watchlist")
 
-# 2. Form per aggiungere un nuovo ticker
+st.write(
+    "Da questa pagina puoi aggiungere o rimuovere ticker. "
+    "La lista è la stessa usata dalla Dashboard."
+)
+
+
+# =========================
+# FORM AGGIUNTA TICKER
+# =========================
+
 with st.form("add_ticker_form"):
-    new_ticker = st.text_input("Inserisci simbolo ticker (es. BTC, GOOGL)")
+    nuovo_ticker = st.text_input(
+        "Inserisci simbolo ticker",
+        placeholder="Esempio: AAPL, NVDA, SWDA.MI"
+    )
+
     submitted = st.form_submit_button("Aggiungi alla lista")
-    
-    if submitted and new_ticker:
-        ticker_clean = new_ticker.upper().strip()
-        if ticker_clean not in st.session_state["my_watchlist"]:
-            st.session_state["my_watchlist"].append(ticker_clean)
-            st.rerun()
+
+    if submitted:
+        ticker_pulito = nuovo_ticker.strip().upper()
+
+        if not ticker_pulito:
+            st.warning("Inserisci un ticker valido.")
+
+        elif ticker_pulito in st.session_state["lista_tickers"]:
+            st.warning(f"{ticker_pulito} è già presente nella watchlist.")
+
         else:
-            st.warning("Ticker già presente in lista!")
+            st.session_state["lista_tickers"].append(ticker_pulito)
+            salva_watchlist(st.session_state["lista_tickers"])
+            st.success(f"{ticker_pulito} aggiunto alla watchlist.")
+            st.rerun()
 
-# 3. Visualizzazione della lista
-st.subheader("I tuoi titoli")
 
-for ticker in st.session_state["my_watchlist"]:
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.write(f"### {ticker}")
-        
-    with col2:
-        # Quando clicchi qui, passiamo il ticker tramite l'URL
-        if st.button(f"📊 Analizza", key=f"btn_{ticker}"):
-            st.query_params["ticker"] = ticker
-            st.switch_page("pages/grafico.py")
-            
-    st.divider()
+# =========================
+# VISUALIZZAZIONE LISTA
+# =========================
 
-# 4. Bottone per tornare indietro
-if st.button("Torna alla Dashboard"):
+st.subheader("Ticker presenti")
+
+if not st.session_state["lista_tickers"]:
+    st.info("La watchlist è vuota.")
+else:
+    for ticker in list(st.session_state["lista_tickers"]):
+        col1, col2 = st.columns([4, 1])
+
+        with col1:
+            st.markdown(f"**{ticker}**")
+
+        with col2:
+            if st.button("🗑️", key=f"remove_{ticker}"):
+                st.session_state["lista_tickers"].remove(ticker)
+                salva_watchlist(st.session_state["lista_tickers"])
+                st.rerun()
+
+        st.divider()
+
+
+# =========================
+# NAVIGAZIONE
+# =========================
+
+if st.button("⬅️ Torna alla Dashboard"):
     st.switch_page("pages/dashboard.py")
