@@ -70,8 +70,10 @@ def salva_ticker_su_file(lista_ticker):
 
 def rimuovi_duplicati(lista_ticker):
     lista_pulita = []
+
     for ticker in lista_ticker:
         ticker_pulito = ticker.strip().upper()
+
         if ticker_pulito and ticker_pulito not in lista_pulita:
             lista_pulita.append(ticker_pulito)
 
@@ -83,10 +85,6 @@ def rimuovi_duplicati(lista_ticker):
 # =========================
 
 def valore_float(valore):
-    """
-    Converte in modo sicuro un valore pandas/numpy in float.
-    Evita errori quando pandas/yfinance restituiscono oggetti non scalari.
-    """
     if isinstance(valore, pd.Series):
         valore = valore.dropna()
 
@@ -103,21 +101,14 @@ def valore_float(valore):
 
 @st.cache_data(ttl=900, show_spinner=False)
 def scarica_dati_ticker(ticker):
-    """
-    Scarica dati giornalieri degli ultimi 2 anni.
-    ttl=900 significa cache di 15 minuti.
-    """
     stock = yf.Ticker(ticker)
     hist = stock.history(period="2y", interval="1d")
 
     if hist is None or hist.empty:
         return pd.DataFrame()
 
-    colonne_richieste = ["Open", "High", "Low", "Close"]
-
-    for colonna in colonne_richieste:
-        if colonna not in hist.columns:
-            return pd.DataFrame()
+    if "Close" not in hist.columns:
+        return pd.DataFrame()
 
     hist = hist.dropna(subset=["Close"])
 
@@ -187,7 +178,9 @@ def classe_distanza(valore):
 # =========================
 
 if "lista_tickers" not in st.session_state:
-    st.session_state["lista_tickers"] = rimuovi_duplicati(carica_ticker_da_file())
+    st.session_state["lista_tickers"] = rimuovi_duplicati(
+        carica_ticker_da_file()
+    )
 
 
 # =========================
@@ -307,9 +300,9 @@ for ticker in list(st.session_state["lista_tickers"]):
     try:
         metriche = calcola_metriche(ticker)
 
-        if metriche is None:
-            cols = st.columns([1, 2, 2, 2, 2, 1])
+        cols = st.columns([1, 2, 2, 2, 2, 1])
 
+        if metriche is None:
             with cols[0]:
                 st.write("")
 
@@ -342,8 +335,6 @@ for ticker in list(st.session_state["lista_tickers"]):
         sma_str = formatta_prezzo(sma_200)
         distanza_str = formatta_percentuale(distanza)
         distanza_class = classe_distanza(distanza)
-
-        cols = st.columns([1, 2, 2, 2, 2, 1])
 
         with cols[0]:
             if st.button("📈", key=f"graf_{ticker}"):
