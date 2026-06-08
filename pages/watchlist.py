@@ -1,5 +1,12 @@
 import streamlit as st
+import yfinance as yf
+import pandas as pd
 from pathlib import Path
+
+try:
+    from streamlit_sortables import sort_items
+except Exception:
+    sort_items = None
 
 
 # =========================
@@ -43,7 +50,7 @@ local_css(WATCHLIST_CSS)
 # FUNZIONI WATCHLIST
 # =========================
 
-def carica_watchlist():
+def carica_ticker_da_file():
     if WATCHLIST_FILE.exists():
         with open(WATCHLIST_FILE, "r", encoding="utf-8") as file:
             return [
@@ -52,10 +59,10 @@ def carica_watchlist():
                 if line.strip()
             ]
 
-    return ["AAPL", "TSLA", "NVDA"]
+    return ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"]
 
 
-def salva_watchlist(lista_ticker):
+def salva_ticker_su_file(lista_ticker):
     with open(WATCHLIST_FILE, "w", encoding="utf-8") as file:
         for ticker in lista_ticker:
             file.write(f"{ticker}\n")
@@ -95,12 +102,187 @@ def identifica_mercato(ticker):
 
 
 # =========================
+# FUNZIONI DATI FINANZIARI
+# =========================
+
+def valore_float(valore):
+    if isinstance(valore, pd.Series):
+        valore = valore.dropna()
+
+        if valore.empty:
+            return None
+
+        valore = valore.iloc[0]
+
+    if pd.isna(valore):
+        return None
+
+    return float(valore)
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def scarica_dati_ticker(ticker):
+    stock = yf.Ticker(ticker)
+    hist = stock.history(period="2y", interval="1d")
+
+    if hist is None or hist.empty:
+        return pd.DataFrame()
+
+    if "Close" not in hist.columns:
+        return pd.DataFrame()
+
+    hist = hist.dropna(subset=["Close"])
+
+    return hist
+
+
+def calcola_rendimento(hist, giorni):
+    if hist is None or hist.empty:
+        return None
+
+    if len(hist) <= giorni:
+        return None
+
+    prezzo_attuale = valore_float(hist["Close"].iloc[-1])
+    prezzo_passato = valore_float(hist["Close"].iloc[-giorni])
+
+    if prezzo_attuale is None or prezzo_passato is None:
+        return None
+
+    if prezzo_passato == 0:
+        return None
+
+    return ((prezzo_attuale - prezzo_passato) / prezzo_passato) * 100
+
+
+def calcola_metriche(ticker):
+    hist = scarica_dati_ticker(ticker)
+
+    if hist.empty:
+        return None
+
+    prezzo = valore_float(hist["Close"].iloc[-1])
+
+    if prezzo is None:
+        return None
+
+    sma_200 = valore_float(hist["Close"].rolling(200).mean().iloc[-1])
+
+    if sma_200 is None:
+        distanza = None
+        stato = "N/D"
+    else:
+        distanza = ((prezzo - sma_200) / sma_200) * 100
+
+        if distanza > 0:
+            stato = "Sopra SMA"
+        elif distanza < 0:
+            stato = "Sotto SMA"
+        else:
+            stato = "In linea"
+
+    rendimento_1m = calcola_rendimento(hist, 21)
+    rendimento_6m = calcola_rendimento(hist, 126)
+    rendimento_1y = calcola_rendimento(hist, 252)
+
+    return {
+        "ticker": ticker,
+        "prezzo": prezzo,
+        "sma_200": sma_200,
+        "distanza": distanza,
+        "stato": stato,
+        "rendimento_1m": rendimento_1m,
+        "rendimento_6m": rendimento_6m,
+        "rendimento_1y": rendimento_1y
+    }
+
+
+def costruisci_metriche_watchlist(lista_ticker):
+    risultati = []
+
+    for ticker in lista_ticker:
+        metriche = calcola_metriche(ticker)
+
+        if metriche is None:
+            risultati.append({
+                "ticker": ticker,
+                "valido": False,
+                "prezzo": None,
+                "sma_200": None,
+                "distanza": None,
+                "stato": "N/D",
+                "rendimento_1m": None,
+                "rendimento_6m": None,
+                "rendimento_1y": None
+            })
+        else:
+            metriche["valido"] = True
+            risultati.append(metriche)
+
+    return risultati
+
+
+# =========================
+# FUNZIONI FORMATTAZIONE
+# =========================
+
+def formatta_prezzo(valore):
+    if valore is None:
+        return "N/D"
+
+    return f"$ {valore:.2f}"
+
+
+def formatta_percentuale(valore):
+    if valore is None:
+        return "N/D"
+
+    return f"{valore:.2f} %"
+
+
+def classe_valore(valore):
+    if valore is None:
+        return "neutral"
+
+    if valore > 0:
+        return "positive"
+
+    if valore < 0:
+        return "negative"
+
+    return "neutral"
+
+
+def classe_stato(stato):
+    if stato == "Sopra SMA":
+        return "status-positive"
+
+    if stato == "Sotto SMA":
+        return "status-negative"
+
+    return "status-neutral"
+
+
+def render_kpi_card(label, value, note):
+    st.markdown(
+        f"""
+        <div class="watchlist-kpi-card">
+            <div class="watchlist-kpi-label">{label}</div>
+            <div class="watchlist-kpi-value">{value}</div>
+            <div class="watchlist-kpi-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# =========================
 # INIZIALIZZAZIONE SESSIONE
 # =========================
 
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = rimuovi_duplicati(
-        carica_watchlist()
+        carica_ticker_da_file()
     )
 
 
@@ -111,9 +293,10 @@ if "lista_tickers" not in st.session_state:
 st.markdown(
     """
     <div class="watchlist-header">
-        <div class="watchlist-title">Gestione Watchlist</div>
+        <div class="watchlist-title">Watchlist Operativa</div>
         <div class="watchlist-subtitle">
-            Aggiungi, rimuovi e controlla i ticker usati dalla Dashboard.
+            Monitoraggio dei ticker con prezzo, SMA 200 giorni, distanza dalla media,
+            stato tecnico e rendimento annuale. Il grafico dettaglio si apre dal pulsante 📈.
         </div>
     </div>
     """,
@@ -122,60 +305,87 @@ st.markdown(
 
 
 # =========================
-# PANNELLO AGGIUNTA
+# NAVIGAZIONE ALTA
 # =========================
 
-st.markdown(
-    """
-    <div class="watchlist-panel">
-        <div class="watchlist-panel-title">Aggiungi nuovo ticker</div>
-        <div class="watchlist-panel-subtitle">
-            Inserisci il simbolo Yahoo Finance. Esempi: AAPL, NVDA, SWDA.MI, ENI.MI.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+col_nav_1, col_nav_2, col_nav_3 = st.columns([1.2, 1.2, 3])
 
-with st.form("add_ticker_form"):
-    nuovo_ticker = st.text_input(
-        "Ticker",
-        placeholder="Esempio: AAPL, NVDA, SWDA.MI"
+with col_nav_1:
+    if st.button("⬅️ Cockpit"):
+        st.switch_page("pages/dashboard.py")
+
+with col_nav_2:
+    if st.button("💼 Portafoglio"):
+        st.switch_page("pages/portafoglio.py")
+
+
+# =========================
+# CONFIGURAZIONE WATCHLIST
+# =========================
+
+with st.expander("🛠️ Configura Watchlist", expanded=False):
+    st.markdown(
+        """
+        <div class="watchlist-config-panel">
+            <div class="watchlist-config-title">Gestione ticker</div>
+            <div class="watchlist-config-subtitle">
+                Aggiungi nuovi simboli Yahoo Finance, rimuovi quelli non necessari
+                o modifica l'ordine della lista.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    submitted = st.form_submit_button("Aggiungi alla watchlist")
+    nuovo_ticker = st.text_input(
+        "Aggiungi Ticker:",
+        placeholder="Esempio: AAPL, NVDA, SWDA.MI",
+        key="txt_add_watchlist"
+    ).upper().strip()
 
-    if submitted:
-        ticker_pulito = nuovo_ticker.strip().upper()
-
-        if not ticker_pulito:
+    if st.button("Aggiungi alla lista"):
+        if not nuovo_ticker:
             st.warning("Inserisci un ticker valido.")
 
-        elif ticker_pulito in st.session_state["lista_tickers"]:
-            st.warning(f"{ticker_pulito} è già presente nella watchlist.")
+        elif nuovo_ticker in st.session_state["lista_tickers"]:
+            st.warning(f"{nuovo_ticker} è già presente nella watchlist.")
 
         else:
-            st.session_state["lista_tickers"].append(ticker_pulito)
+            st.session_state["lista_tickers"].append(nuovo_ticker)
             st.session_state["lista_tickers"] = rimuovi_duplicati(
                 st.session_state["lista_tickers"]
             )
-            salva_watchlist(st.session_state["lista_tickers"])
-            st.success(f"{ticker_pulito} aggiunto alla watchlist.")
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.success(f"{nuovo_ticker} aggiunto alla watchlist.")
             st.rerun()
 
+    st.markdown("#### Ordina ticker")
+
+    lista_prima = list(st.session_state["lista_tickers"])
+
+    if sort_items is not None:
+        lista_dopo = sort_items(
+            lista_prima,
+            direction="vertical",
+            key="drag_drop_watchlist"
+        )
+
+        if lista_dopo and lista_dopo != lista_prima:
+            st.session_state["lista_tickers"] = rimuovi_duplicati(lista_dopo)
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
+    else:
+        st.info(
+            "Ordinamento drag & drop non disponibile. "
+            "Verifica che streamlit-sortables sia presente in requirements.txt."
+        )
+
 
 # =========================
-# LISTA TICKER
+# DATI WATCHLIST
 # =========================
 
-st.markdown(
-    """
-    <div class="watchlist-list-card">
-        <div class="watchlist-list-title">Ticker presenti</div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("---")
 
 if not st.session_state["lista_tickers"]:
     st.markdown(
@@ -186,44 +396,72 @@ if not st.session_state["lista_tickers"]:
         """,
         unsafe_allow_html=True
     )
+    st.stop()
 
-else:
-    for ticker in list(st.session_state["lista_tickers"]):
-        mercato = identifica_mercato(ticker)
+with st.spinner("Aggiornamento dati finanziari in corso..."):
+    risultati = costruisci_metriche_watchlist(
+        st.session_state["lista_tickers"]
+    )
 
-        col1, col2 = st.columns([4, 1])
+ticker_totali = len(risultati)
+ticker_validi = len([item for item in risultati if item["valido"]])
+ticker_non_validi = ticker_totali - ticker_validi
 
-        with col1:
-            st.markdown(
-                f"""
-                <div class="watchlist-row">
-                    <div class="watchlist-ticker-symbol">{ticker}</div>
-                    <div class="watchlist-ticker-note">
-                        Simbolo usato da Yahoo Finance
-                    </div>
-                    <span class="market-badge {mercato["classe"]}">
-                        {mercato["label"]}
-                    </span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+sopra_sma = len([
+    item for item in risultati
+    if item["valido"] and item["stato"] == "Sopra SMA"
+])
 
-        with col2:
-            if st.button("🗑️", key=f"remove_{ticker}"):
-                st.session_state["lista_tickers"].remove(ticker)
-                salva_watchlist(st.session_state["lista_tickers"])
-                st.rerun()
+sotto_sma = len([
+    item for item in risultati
+    if item["valido"] and item["stato"] == "Sotto SMA"
+])
+
+validi_con_distanza = [
+    item for item in risultati
+    if item["valido"] and item["distanza"] is not None
+]
+
+migliore = None
+peggiore = None
+
+if validi_con_distanza:
+    migliore = max(validi_con_distanza, key=lambda item: item["distanza"])
+    peggiore = min(validi_con_distanza, key=lambda item: item["distanza"])
 
 
 # =========================
-# NAVIGAZIONE
+# KPI CARDS
 # =========================
 
-st.markdown("---")
+kpi_1, kpi_2, kpi_3, kpi_4 = st.columns(4)
 
-col_back, col_dashboard = st.columns([1, 3])
+with kpi_1:
+    render_kpi_card(
+        "Ticker totali",
+        ticker_totali,
+        f"{ticker_validi} validi · {ticker_non_validi} non disponibili"
+    )
 
-with col_back:
-    if st.button("⬅️ Dashboard"):
-        st.switch_page("pages/dashboard.py")
+with kpi_2:
+    render_kpi_card(
+        "Sopra SMA 200D",
+        sopra_sma,
+        f"{sotto_sma} sotto SMA 200D"
+    )
+
+with kpi_3:
+    if migliore is not None:
+        render_kpi_card(
+            "Migliore distanza",
+            migliore["ticker"],
+            formatta_percentuale(migliore["distanza"])
+        )
+    else:
+        render_kpi_card(
+            "Migliore distanza",
+            "N/D",
+            "Dati non disponibili"
+        )
+
+with kpi_4:
