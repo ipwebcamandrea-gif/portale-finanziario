@@ -3,14 +3,15 @@ import yfinance as yf
 import os
 from streamlit_sortables import sort_items
 
-# --- SICUREZZA: PRIMA COSA ASSOLUTA ---
-if not st.session_state.get('authenticated', False):
+# --- PROTEZIONE TOTALE ---
+# Se non sei autenticato, ti buttiamo fuori subito
+if not st.session_state.get("authenticated", False):
     st.error("Accesso non autorizzato. Torna alla home.")
     if st.button("Torna al Login"):
         st.switch_page("main.py")
-    st.stop()
+    st.stop() # FERMA TUTTO
 
-# --- CARICAMENTO STILI ---
+# --- CARICAMENTO CSS ---
 def local_css(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r", encoding="utf-8") as f:
@@ -36,10 +37,9 @@ if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
 st.markdown('<div class="main-title">Monitoraggio Globale Watchlist</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Analisi quantitativa e distanze metriche dalla SMA 200 Settimanale</div>', unsafe_allow_html=True)
 
-# Gestione Watchlist (Expander)
-with st.expander("🛠️ Configura Watchlist & Drag-and-Drop", expanded=False):
+# Gestione Watchlist
+with st.expander("🛠️ Configura Watchlist", expanded=False):
     nuovo_ticker = st.text_input("Aggiungi Ticker:", key="txt_add").upper().strip()
     if st.button("Aggiungi alla lista"):
         if nuovo_ticker and nuovo_ticker not in st.session_state["lista_tickers"]:
