@@ -236,7 +236,7 @@ with st.expander("🛠️ Configura Watchlist", expanded=False):
             key="drag_drop"
         )
 
-        if lista_dopo != lista_prima:
+        if lista_dopo and lista_dopo != lista_prima:
             st.session_state["lista_tickers"] = rimuovi_duplicati(lista_dopo)
             salva_ticker_su_file(st.session_state["lista_tickers"])
             st.rerun()
@@ -275,23 +275,12 @@ if not st.session_state["lista_tickers"]:
 
 header = st.columns([1, 2, 2, 2, 2, 1])
 
-with header[0]:
-    st.markdown("**Grafico**")
-
-with header[1]:
-    st.markdown("**Ticker**")
-
-with header[2]:
-    st.markdown("**Prezzo**")
-
-with header[3]:
-    st.markdown("**SMA 200D**")
-
-with header[4]:
-    st.markdown("**Distanza**")
-
-with header[5]:
-    st.markdown("**Elimina**")
+header[0].markdown("**Grafico**")
+header[1].markdown("**Ticker**")
+header[2].markdown("**Prezzo**")
+header[3].markdown("**SMA 200D**")
+header[4].markdown("**Distanza**")
+header[5].markdown("**Elimina**")
 
 st.divider()
 
@@ -303,26 +292,16 @@ for ticker in list(st.session_state["lista_tickers"]):
         cols = st.columns([1, 2, 2, 2, 2, 1])
 
         if metriche is None:
-            with cols[0]:
-                st.write("")
+            cols[0].write("")
+            cols[1].markdown(f"**{ticker}**")
+            cols[2].warning("N/D")
+            cols[3].write("N/D")
+            cols[4].write("N/D")
 
-            with cols[1]:
-                st.markdown(f"**{ticker}**")
-
-            with cols[2]:
-                st.warning("N/D")
-
-            with cols[3]:
-                st.write("N/D")
-
-            with cols[4]:
-                st.write("N/D")
-
-            with cols[5]:
-                if st.button("🗑️", key=f"del_{ticker}"):
-                    st.session_state["lista_tickers"].remove(ticker)
-                    salva_ticker_su_file(st.session_state["lista_tickers"])
-                    st.rerun()
+            if cols[5].button("🗑️", key=f"del_{ticker}"):
+                st.session_state["lista_tickers"].remove(ticker)
+                salva_ticker_su_file(st.session_state["lista_tickers"])
+                st.rerun()
 
             st.divider()
             continue
@@ -336,31 +315,22 @@ for ticker in list(st.session_state["lista_tickers"]):
         distanza_str = formatta_percentuale(distanza)
         distanza_class = classe_distanza(distanza)
 
-        with cols[0]:
-            if st.button("📈", key=f"graf_{ticker}"):
-                st.session_state["ticker_selezionato"] = ticker
-                st.switch_page("pages/grafico.py")
+        if cols[0].button("📈", key=f"graf_{ticker}"):
+            st.session_state["ticker_selezionato"] = ticker
+            st.switch_page("pages/grafico.py")
 
-        with cols[1]:
-            st.markdown(f"**{ticker}**")
+        cols[1].markdown(f"**{ticker}**")
+        cols[2].markdown(prezzo_str)
+        cols[3].markdown(sma_str)
+        cols[4].markdown(
+            f'<span class="{distanza_class}">{distanza_str}</span>',
+            unsafe_allow_html=True
+        )
 
-        with cols[2]:
-            st.markdown(prezzo_str)
-
-        with cols[3]:
-            st.markdown(sma_str)
-
-        with cols[4]:
-            st.markdown(
-                f'<span class="{distanza_class}">{distanza_str}</span>',
-                unsafe_allow_html=True
-            )
-
-        with cols[5]:
-            if st.button("🗑️", key=f"del_{ticker}"):
-                st.session_state["lista_tickers"].remove(ticker)
-                salva_ticker_su_file(st.session_state["lista_tickers"])
-                st.rerun()
+        if cols[5].button("🗑️", key=f"del_{ticker}"):
+            st.session_state["lista_tickers"].remove(ticker)
+            salva_ticker_su_file(st.session_state["lista_tickers"])
+            st.rerun()
 
         st.divider()
 
