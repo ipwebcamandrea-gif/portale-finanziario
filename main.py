@@ -1,43 +1,109 @@
 import streamlit as st
-import os
+from pathlib import Path
 
-# 1. Configurazione pagina
-st.set_page_config(page_title="FinancePortal 2026", layout="centered")
 
-# 2. Inizializzazione sessione
+# =========================
+# CONFIGURAZIONE PAGINA
+# =========================
+
+st.set_page_config(
+    page_title="FinancePortal 2026",
+    page_icon="📊",
+    layout="centered"
+)
+
+
+# =========================
+# CONFIGURAZIONE FILE / CSS
+# =========================
+
+ROOT_DIR = Path(__file__).resolve().parent
+GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
+
+
+def local_css(file_path):
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as file:
+            st.markdown(
+                f"<style>{file.read()}</style>",
+                unsafe_allow_html=True
+            )
+
+
+local_css(GLOBAL_CSS)
+
+
+# =========================
+# SESSION STATE
+# =========================
+
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
-# 3. Caricamento CSS
-if os.path.exists("css/global.css"):
-    with open("css/global.css", "r", encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# 4. Interfaccia Login
-st.markdown('<div class="welcome-container">', unsafe_allow_html=True)
-st.markdown('<div class="hero-title">FinancePortal 2026</div>', unsafe_allow_html=True)
+# =========================
+# CREDENZIALI
+# =========================
+
+def get_admin_password():
+    """
+    Legge la password admin dai Secrets di Streamlit.
+
+    Formato consigliato nei Secrets:
+
+    [credentials.usernames]
+    admin = "LA_TUA_PASSWORD"
+    """
+    try:
+        return st.secrets["credentials"]["usernames"]["admin"]
+    except Exception:
+        return None
+
+
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = get_admin_password()
+
+
+# =========================
+# SE GIÀ AUTENTICATO
+# =========================
+
+if st.session_state.get("authenticated", False):
+    st.switch_page("pages/dashboard.py")
+
+
+# =========================
+# INTERFACCIA LOGIN
+# =========================
+
+st.markdown(
+    '<div class="hero-title">FinancePortal 2026</div>',
+    unsafe_allow_html=True
+)
 
 with st.container():
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
+
     st.subheader("Accedi al sistema")
-    
-    # Questo form è fondamentale: protegge i dati finché non premi il tasto
+
     with st.form("login_form"):
         user = st.text_input("Username")
         password = st.text_input("Password", type="password")
-        
         submitted = st.form_submit_button("Entra nella Dashboard")
-        
-        # --- IL SEGRETO È TUTTO QUI ---
-        # "st.switch_page" DEVE stare dentro questo blocco "if submitted"
-        # E anche dentro il controllo delle credenziali
+
         if submitted:
-            if user.strip() == "admin" and password.strip() == "Pippolo001+1": 
+            if ADMIN_PASSWORD is None:
+                st.session_state["authenticated"] = False
+                st.error(
+                    "Password admin non configurata nei Secrets di Streamlit."
+                )
+
+            elif user.strip() == ADMIN_USERNAME and password.strip() == ADMIN_PASSWORD:
                 st.session_state["authenticated"] = True
-                # Questa funzione parte SOLO se le credenziali sono giuste
                 st.switch_page("pages/dashboard.py")
+
             else:
                 st.session_state["authenticated"] = False
                 st.error("Credenziali non valide")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
