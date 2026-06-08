@@ -1,0 +1,68 @@
+/* Stili specifici per la pagina della Dashboard */
+
+/* Titolo Principale in Gradiente Sfumato */
+.main-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #26a69a, #00b0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2rem;
+}
+
+.subtitle {
+    color: #8a99ad;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Riduzione drastica dei blocchi rossi di streamlit-sortables */
+div[data-testid="stMarkdownContainer"] ul {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+
+/* Trasformazione dei blocchi trascinabili in elementi compatti */
+div.stColContainer div div div div[style*="background-color"] {
+    background: #1e222d !important;
+    border: 1px solid #2a2e39 !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: grab !important;
+}
+
+div.stColContainer div div div div[style*="background-color"]:hover {
+    border-color: #00b0ff !important;
+    transform: translateY(-1px);
+}
+
+/* Intestazioni minimaliste della Tabella dei Titoli */
+.table-header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #8a99ad;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+}
+
+/* Personalizzazione contenitore Expander */
+.stExpander {
+    background-color: #161a25 !important;
+    border: 1px solid #222632 !important;
+    border-radius: 8px !important;
+}
+
+/* Bottone "Aggiungi alla lista" evidenziato in verde smeraldo */
+div[data-testid="stBlock"] button[title="Aggiungi alla lista"] {
+    background: linear-gradient(90deg, #26a69a, #1de9b6) !important;
+    color: #0e1117 !important;
+    font-weight: 600 !important;
+    border: none !important;
+}
