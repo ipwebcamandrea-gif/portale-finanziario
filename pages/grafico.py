@@ -175,6 +175,39 @@ def formatta_numero(valore):
     return f"{valore:.2f}"
 
 
+def ultimo_punto_valido(data, colonna):
+    serie = data[colonna].dropna()
+    if serie.empty:
+        return None, None
+    return serie.index[-1], float(serie.iloc[-1])
+
+
+def aggiungi_label_media(fig, data, colonna, testo, colore):
+    ultimo_x, ultimo_y = ultimo_punto_valido(data, colonna)
+    if ultimo_x is None or ultimo_y is None:
+        return
+
+    label_x = ultimo_x + pd.Timedelta(weeks=10)
+    testo_label = ":" + testo + "  " + formatta_numero(ultimo_y)
+
+    fig.add_annotation(
+        x=label_x,
+        y=ultimo_y,
+        xref="x",
+        yref="y",
+        text=testo_label,
+        showarrow=False,
+        font=dict(color="#0e1117", size=11),
+        align="center",
+        bgcolor=colore,
+        bordercolor=colore,
+        borderwidth=1,
+        borderpad=4,
+        opacity=0.98,
+        row=1,
+        col=1
+    )
+
 # =========================
 # CHART
 # =========================
@@ -203,6 +236,12 @@ def crea_grafico_weekly(data, ticker):
     fig.add_trace(go.Scatter(x=data.index, y=data["EMA200W"], mode="lines", name="EMA 200W", line=dict(color="#ffeb3b", width=2.1)), row=1, col=1)
     fig.add_trace(go.Scatter(x=data.index, y=data["SMA200W"], mode="lines", name="SMA 200W", line=dict(color="#ff9800", width=2.3)), row=1, col=1)
 
+    aggiungi_label_media(fig, data, "WMA21W", "WMA 21W", "#ffffff")
+    aggiungi_label_media(fig, data, "WMA50W", "WMA 50W", "#26a69a")
+    aggiungi_label_media(fig, data, "WMA200W", "WMA 200W", "#2962ff")
+    aggiungi_label_media(fig, data, "EMA200W", "EMA 200W", "#ffeb3b")
+    aggiungi_label_media(fig, data, "SMA200W", "SMA 200W", "#ff9800")
+
     if "Volume" in data.columns:
         fig.add_trace(go.Bar(x=data.index, y=data["Volume"], name="Volume", opacity=0.42, marker_color="#5f6b7a"), row=2, col=1)
 
@@ -216,8 +255,11 @@ def crea_grafico_weekly(data, ticker):
     fig.add_trace(go.Scatter(x=data.index, y=data["MACD_SIGNAL"], mode="lines", name="Signal", line=dict(color="#ff9800", width=1.7)), row=4, col=1)
     fig.add_hline(y=0, line_width=1, line_dash="dot", line_color="#8a99ad", row=4, col=1)
 
-    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=55, t=70, b=10), xaxis_rangeslider_visible=False, legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1), hovermode="x unified", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117")
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
+    x_min = data.index.min()
+    x_max = data.index.max() + pd.Timedelta(weeks=32)
+
+    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=120, t=70, b=10), xaxis_rangeslider_visible=False, legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1), hovermode="x unified", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117")
+    fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
     fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False)
     fig.update_yaxes(title_text="Volume", row=2, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="Stoch RSI", row=3, col=1, side="right", range=[0, 100], showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
