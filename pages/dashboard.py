@@ -70,7 +70,7 @@ for tkr in list(st.session_state["lista_tickers"]):
         with cols[0]:
             if st.button("📈", key=f"graf_{tkr}"):
                 st.session_state['ticker_selezionato'] = tkr
-                st.switch_page("pagine/grafico.py")
+                st.switch_page("pages/grafico.py")
         with cols[1]: st.markdown(f"**{tkr}**")
         with cols[2]: st.markdown(f"$ {px:.2f}")
         with cols[3]: st.markdown(f"$ {sma:.2f}")
