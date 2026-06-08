@@ -30,7 +30,7 @@ def salva_ticker_su_file(lista_ticker):
 if "lista_tickers" not in st.session_state:
     st.session_state["lista_tickers"] = carica_ticker_da_file()
 
-st.title("📊 Monitoraggio Watchlist Magnifici 7")
+st.title("📊 Monitoraggio Watchlist")
 st.markdown("I dati e le distanze dalla **SMA 200 Settimanale** si aggiornano automaticamente.")
 
 # --- SEZIONE GESTIONE E RIORDINO TICKER ---
@@ -66,27 +66,39 @@ with st.expander("🛠️ Gestisci e Riordina la Watchlist (Modifiche Permanenti
                 
     st.markdown("---")
     
-    # 2. Strumento di Riordino Visivo tramite Multiselect
-    st.subheader("↕️ Configura l'ordine dei titoli")
-    st.caption("Fai click sui titoli nell'ordine esatto in cui desideri vederli apparire in tabella. Puoi anche rimuoverli cliccando sulla 'x'.")
+    # 2. Riordino tramite Pulsanti Freccia (Indistruttibile su Mobile e PC)
+    st.subheader("↕️ Modifica Ordine Posizioni")
+    st.caption("Usa le frecce per spostare i titoli su o giù nella tabella.")
     
-    # Questo selettore permette di ridefinire la lista semplicemente cliccando i nomi nell'ordine voluto
-    lista_riordinata = st.multiselect(
-        "Disponi i titoli nell'ordine preferito:",
-        options=st.session_state["lista_tickers"], # Tutte le opzioni disponibili
-        default=st.session_state["lista_tickers"], # L'ordine attuale di partenza
-        key="selettore_ordine"
-    )
+    lista_corrente = st.session_state["lista_tickers"]
+    modificato = False
     
-    # Pulsante per salvare la nuova sequenza scelta dall'utente
-    if st.button("💾 Salva Nuovo Ordine", use_container_width=True, type="primary"):
-        if lista_riordinata:
-            st.session_state["lista_tickers"] = lista_riordinata
-            salva_ticker_su_file(lista_riordinata)
-            st.success("Nuovo ordine salvato con successo!")
-            st.rerun()
-        else:
-            st.error("La lista non può essere completamente vuota al salvataggio dello schema.")
+    # Ciclo per creare una riga di comando per ogni ticker nell'expander
+    for i, tkr in enumerate(lista_corrente):
+        col_name, col_up, col_down = st.columns([6, 2, 2])
+        
+        with col_name:
+            st.markdown(f"**{i+1}. {tkr}**")
+            
+        with col_up:
+            # Disattiviamo il tasto "Su" per il primo elemento della lista
+            if st.button("🔼", key=f"up_{tkr}_{i}", disabled=(i == 0), use_container_width=True):
+                # Scambia l'elemento attuale con quello precedente
+                lista_corrente[i], lista_corrente[i-1] = lista_corrente[i-1], lista_corrente[i]
+                modificato = True
+                
+        with col_down:
+            # Disattiviamo il tasto "Giù" per l'ultimo elemento della lista
+            if st.button("🔽", key=f"down_{tkr}_{i}", disabled=(i == len(lista_corrente) - 1), use_container_width=True):
+                # Scambia l'elemento attuale con quello successivo
+                lista_corrente[i], lista_corrente[i+1] = lista_corrente[i+1], lista_corrente[i]
+                modificato = True
+                
+    # Se l'utente ha premuto una freccia, salviamo subito e rinfreschiamo l'interfaccia
+    if modificato:
+        st.session_state["lista_tickers"] = lista_corrente
+        salva_ticker_su_file(lista_corrente)
+        st.rerun()
 
 st.markdown("---")
 
@@ -106,7 +118,8 @@ else:
     def calcola_sma200_settimanale(ticker_name):
         try:
             stock = yf.Ticker(ticker_name)
-            df = stock.history(period="max", interval="1wk")
+            # Recuperiamo un range più compatto per evitare buchi di dati storici (es. 6 anni sono più che sufficienti per la SMA200W)
+            df = stock.history(period="7y", interval="1wk")
             if len(df) < 200:
                 return None, None, None
             df['SMA200_W'] = df['Close'].rolling(window=200).mean()
