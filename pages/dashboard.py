@@ -4,12 +4,11 @@ import os
 from streamlit_sortables import sort_items
 
 # --- PROTEZIONE TOTALE ---
-# Se non sei autenticato, ti buttiamo fuori subito
 if not st.session_state.get("authenticated", False):
     st.error("Accesso non autorizzato. Torna alla home.")
     if st.button("Torna al Login"):
         st.switch_page("main.py")
-    st.stop() # FERMA TUTTO
+    st.stop()
 
 # --- CARICAMENTO CSS ---
 def local_css(file_path):
@@ -70,7 +69,7 @@ for tkr in list(st.session_state["lista_tickers"]):
         with cols[0]:
             if st.button("📈", key=f"graf_{tkr}"):
                 st.session_state['ticker_selezionato'] = tkr
-                st.switch_page("pages/grafico.py")
+                st.switch_page("pages/grafico.py") # CORRETTO: pages/
         with cols[1]: st.markdown(f"**{tkr}**")
         with cols[2]: st.markdown(f"$ {px:.2f}")
         with cols[3]: st.markdown(f"$ {sma:.2f}")
