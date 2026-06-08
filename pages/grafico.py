@@ -2,6 +2,7 @@ import streamlit as st
 import yfinance as yf
 import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
 from pathlib import Path
 from plotly.subplots import make_subplots
 
@@ -54,11 +55,11 @@ def normalizza_dataframe_yfinance(data):
 
 
 @st.cache_data(ttl=900, show_spinner=False)
-def scarica_dati(ticker, periodo):
+def scarica_dati_weekly(ticker):
     data = yf.download(
         ticker,
-        period=periodo,
-        interval="1d",
+        period="5y",
+        interval="1wk",
         progress=False,
         auto_adjust=False
     )
@@ -94,15 +95,24 @@ def valore_float(valore):
     return float(valore)
 
 
-def calcola_rendimento(data, giorni):
+def calcola_wma(serie, periodo):
+    pesi = np.arange(1, periodo + 1)
+
+    return serie.rolling(periodo).apply(
+        lambda valori: np.dot(valori, pesi) / pesi.sum(),
+        raw=True
+    )
+
+
+def calcola_rendimento(data, settimane):
     if data is None or data.empty:
         return None
 
-    if len(data) <= giorni:
+    if len(data) <= settimane:
         return None
 
     prezzo_attuale = valore_float(data["Close"].iloc[-1])
-    prezzo_passato = valore_float(data["Close"].iloc[-giorni])
+    prezzo_passato = valore_float(data["Close"].iloc[-settimane])
 
     if prezzo_attuale is None or prezzo_passato is None:
         return None
@@ -113,33 +123,51 @@ def calcola_rendimento(data, giorni):
     return ((prezzo_attuale - prezzo_passato) / prezzo_passato) * 100
 
 
+def prepara_indicatori_weekly(data):
+    data_plot = data.copy()
+
+    data_plot["WMA21W"] = calcola_wma(data_plot["Close"], 21)
+    data_plot["WMA50W"] = calcola_wma(data_plot["Close"], 50)
+    data_plot["WMA200W"] = calcola_wma(data_plot["Close"], 200)
+    data_plot["EMA200W"] = data_plot["Close"].ewm(span=200, adjust=False).mean()
+    data_plot["SMA200W"] = data_plot["Close"].rolling(200).mean()
+
+    return data_plot
+
+
 def calcola_metriche(data):
     prezzo = valore_float(data["Close"].iloc[-1])
     max_periodo = valore_float(data["High"].max())
     min_periodo = valore_float(data["Low"].min())
 
-    sma_50 = valore_float(data["Close"].rolling(50).mean().iloc[-1])
-    sma_200 = valore_float(data["Close"].rolling(200).mean().iloc[-1])
+    sma_200w = valore_float(data["SMA200W"].iloc[-1])
+    wma_21w = valore_float(data["WMA21W"].iloc[-1])
+    wma_50w = valore_float(data["WMA50W"].iloc[-1])
+    wma_200w = valore_float(data["WMA200W"].iloc[-1])
+    ema_200w = valore_float(data["EMA200W"].iloc[-1])
 
-    rendimento_1m = calcola_rendimento(data, 21)
-    rendimento_6m = calcola_rendimento(data, 126)
-    rendimento_1y = calcola_rendimento(data, 252)
+    distanza_sma_200w = None
 
-    distanza_sma_200 = None
+    if prezzo is not None and sma_200w is not None and sma_200w != 0:
+        distanza_sma_200w = ((prezzo - sma_200w) / sma_200w) * 100
 
-    if prezzo is not None and sma_200 is not None and sma_200 != 0:
-        distanza_sma_200 = ((prezzo - sma_200) / sma_200) * 100
+    rendimento_13w = calcola_rendimento(data, 13)
+    rendimento_26w = calcola_rendimento(data, 26)
+    rendimento_52w = calcola_rendimento(data, 52)
 
     return {
         "prezzo": prezzo,
         "max_periodo": max_periodo,
         "min_periodo": min_periodo,
-        "sma_50": sma_50,
-        "sma_200": sma_200,
-        "rendimento_1m": rendimento_1m,
-        "rendimento_6m": rendimento_6m,
-        "rendimento_1y": rendimento_1y,
-        "distanza_sma_200": distanza_sma_200
+        "wma_21w": wma_21w,
+        "wma_50w": wma_50w,
+        "wma_200w": wma_200w,
+        "ema_200w": ema_200w,
+        "sma_200w": sma_200w,
+        "distanza_sma_200w": distanza_sma_200w,
+        "rendimento_13w": rendimento_13w,
+        "rendimento_26w": rendimento_26w,
+        "rendimento_52w": rendimento_52w
     }
 
 
@@ -196,78 +224,102 @@ def render_kpi_card(label, value, note=None, css_class=None):
 # FUNZIONE GRAFICO
 # =========================
 
-def crea_grafico(data, ticker, tipo_grafico):
-    data_plot = data.copy()
-
-    data_plot["SMA50"] = data_plot["Close"].rolling(50).mean()
-    data_plot["SMA200"] = data_plot["Close"].rolling(200).mean()
-
+def crea_grafico_weekly(data, ticker):
     fig = make_subplots(
         rows=2,
         cols=1,
         shared_xaxes=True,
         vertical_spacing=0.04,
-        row_heights=[0.75, 0.25],
-        subplot_titles=(f"Andamento {ticker}", "Volume")
+        row_heights=[0.76, 0.24],
+        subplot_titles=(f"{ticker} - Vista Weekly 5 anni", "Volume weekly")
     )
 
-    if tipo_grafico == "Candlestick":
-        fig.add_trace(
-            go.Candlestick(
-                x=data_plot.index,
-                open=data_plot["Open"],
-                high=data_plot["High"],
-                low=data_plot["Low"],
-                close=data_plot["Close"],
-                name=ticker
-            ),
-            row=1,
-            col=1
-        )
-    else:
-        fig.add_trace(
-            go.Scatter(
-                x=data_plot.index,
-                y=data_plot["Close"],
-                mode="lines",
-                name="Close",
-                line=dict(width=2)
-            ),
-            row=1,
-            col=1
-        )
-
     fig.add_trace(
-        go.Scatter(
-            x=data_plot.index,
-            y=data_plot["SMA50"],
-            mode="lines",
-            name="SMA 50",
-            line=dict(width=1.4)
+        go.Candlestick(
+            x=data.index,
+            open=data["Open"],
+            high=data["High"],
+            low=data["Low"],
+            close=data["Close"],
+            name=ticker
         ),
         row=1,
         col=1
     )
 
+    # WMA 21 weekly - bianca
     fig.add_trace(
         go.Scatter(
-            x=data_plot.index,
-            y=data_plot["SMA200"],
+            x=data.index,
+            y=data["WMA21W"],
             mode="lines",
-            name="SMA 200",
-            line=dict(width=1.4)
+            name="WMA 21W",
+            line=dict(color="#ffffff", width=1.8)
         ),
         row=1,
         col=1
     )
 
-    if "Volume" in data_plot.columns:
+    # WMA 50 weekly - verde
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data["WMA50W"],
+            mode="lines",
+            name="WMA 50W",
+            line=dict(color="#26a69a", width=1.9)
+        ),
+        row=1,
+        col=1
+    )
+
+    # WMA 200 weekly - blu
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data["WMA200W"],
+            mode="lines",
+            name="WMA 200W",
+            line=dict(color="#00b0ff", width=2.1)
+        ),
+        row=1,
+        col=1
+    )
+
+    # EMA 200 weekly - gialla
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data["EMA200W"],
+            mode="lines",
+            name="EMA 200W",
+            line=dict(color="#f5c542", width=2.0)
+        ),
+        row=1,
+        col=1
+    )
+
+    # SMA 200 weekly - arancione
+    fig.add_trace(
+        go.Scatter(
+            x=data.index,
+            y=data["SMA200W"],
+            mode="lines",
+            name="SMA 200W",
+            line=dict(color="#ff9800", width=2.2)
+        ),
+        row=1,
+        col=1
+    )
+
+    if "Volume" in data.columns:
         fig.add_trace(
             go.Bar(
-                x=data_plot.index,
-                y=data_plot["Volume"],
+                x=data.index,
+                y=data["Volume"],
                 name="Volume",
-                opacity=0.45
+                opacity=0.45,
+                marker_color="#5f6b7a"
             ),
             row=2,
             col=1
@@ -275,13 +327,13 @@ def crea_grafico(data, ticker, tipo_grafico):
 
     fig.update_layout(
         template="plotly_dark",
-        height=720,
-        margin=dict(l=10, r=10, t=50, b=10),
+        height=760,
+        margin=dict(l=10, r=10, t=55, b=10),
         xaxis_rangeslider_visible=False,
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.03,
             xanchor="right",
             x=1
         )
@@ -314,10 +366,10 @@ if ticker is None:
 st.markdown(
     f"""
     <div class="grafico-header">
-        <div class="grafico-title">Analisi Quantitativa: {ticker}</div>
+        <div class="grafico-title">Analisi Weekly: {ticker}</div>
         <div class="grafico-subtitle">
-            Dettaglio tecnico aperto dalla Watchlist. Include SMA 50, SMA 200,
-            volume, rendimento e download dati.
+            Vista unica a 5 anni su timeframe weekly con WMA 21W, WMA 50W,
+            WMA 200W, EMA 200W e SMA 200W.
         </div>
     </div>
     """,
@@ -326,60 +378,35 @@ st.markdown(
 
 
 # =========================
-# CONTROLLI
+# NAVIGAZIONE
 # =========================
 
-st.markdown(
-    """
-    <div class="grafico-control-panel">
-        <div class="grafico-control-title">Impostazioni grafico</div>
-        <div class="grafico-control-subtitle">
-            Seleziona periodo e tipo di visualizzazione.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-col_periodo, col_tipo, col_back = st.columns([1.2, 1.2, 2])
-
-with col_periodo:
-    periodo_label = st.selectbox(
-        "Periodo",
-        ["6 mesi", "1 anno", "2 anni", "5 anni"],
-        index=2
-    )
-
-with col_tipo:
-    tipo_grafico = st.selectbox(
-        "Tipo grafico",
-        ["Candlestick", "Linea"],
-        index=0
-    )
+col_back, col_info = st.columns([1.2, 4.8])
 
 with col_back:
-    st.write("")
-    st.write("")
     if st.button("⬅️ Torna al Cockpit"):
         st.switch_page("pages/dashboard.py")
 
-
-mappa_periodi = {
-    "6 mesi": "6mo",
-    "1 anno": "1y",
-    "2 anni": "2y",
-    "5 anni": "5y"
-}
-
-periodo_yfinance = mappa_periodi[periodo_label]
+with col_info:
+    st.markdown(
+        """
+        <div class="grafico-control-panel">
+            <div class="grafico-control-title">Vista grafico</div>
+            <div class="grafico-control-subtitle">
+                Timeframe weekly · Periodo fisso 5 anni · Medie mobili weekly.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # =========================
 # DOWNLOAD DATI
 # =========================
 
-with st.spinner(f"Caricamento dati per {ticker}..."):
-    data = scarica_dati(ticker, periodo_yfinance)
+with st.spinner(f"Caricamento dati weekly a 5 anni per {ticker}..."):
+    data = scarica_dati_weekly(ticker)
 
 if data.empty:
     st.markdown(
@@ -401,6 +428,9 @@ if data.empty:
     st.stop()
 
 
+data = prepara_indicatori_weekly(data)
+
+
 # =========================
 # METRICHE
 # =========================
@@ -413,32 +443,32 @@ with kpi_1:
     render_kpi_card(
         "Prezzo attuale",
         formatta_numero(metriche["prezzo"]),
-        f"Periodo: {periodo_label}"
+        "Ultima chiusura weekly"
     )
 
 with kpi_2:
     render_kpi_card(
-        "SMA 200",
-        formatta_numero(metriche["sma_200"]),
-        "Media mobile 200 giorni"
+        "SMA 200W",
+        formatta_numero(metriche["sma_200w"]),
+        "Media mobile semplice weekly"
     )
 
 with kpi_3:
-    distanza = metriche["distanza_sma_200"]
+    distanza = metriche["distanza_sma_200w"]
     render_kpi_card(
-        "Distanza SMA 200",
+        "Distanza SMA 200W",
         formatta_percentuale(distanza),
-        "Sopra/sotto media",
+        "Prezzo vs SMA 200W",
         classe_valore(distanza)
     )
 
 with kpi_4:
-    rendimento_1y = metriche["rendimento_1y"]
+    rendimento_52w = metriche["rendimento_52w"]
     render_kpi_card(
-        "Rendimento 1Y",
-        formatta_percentuale(rendimento_1y),
-        "Ultimi 252 giorni",
-        classe_valore(rendimento_1y)
+        "Rendimento 52W",
+        formatta_percentuale(rendimento_52w),
+        "Ultime 52 settimane",
+        classe_valore(rendimento_52w)
     )
 
 
@@ -446,34 +476,30 @@ kpi_5, kpi_6, kpi_7, kpi_8 = st.columns(4)
 
 with kpi_5:
     render_kpi_card(
-        "Max periodo",
-        formatta_numero(metriche["max_periodo"]),
-        "Massimo nel periodo"
+        "WMA 21W",
+        formatta_numero(metriche["wma_21w"]),
+        "Linea bianca"
     )
 
 with kpi_6:
     render_kpi_card(
-        "Min periodo",
-        formatta_numero(metriche["min_periodo"]),
-        "Minimo nel periodo"
+        "WMA 50W",
+        formatta_numero(metriche["wma_50w"]),
+        "Linea verde"
     )
 
 with kpi_7:
-    rendimento_1m = metriche["rendimento_1m"]
     render_kpi_card(
-        "Rendimento 1M",
-        formatta_percentuale(rendimento_1m),
-        "Ultimi 21 giorni",
-        classe_valore(rendimento_1m)
+        "WMA 200W",
+        formatta_numero(metriche["wma_200w"]),
+        "Linea blu"
     )
 
 with kpi_8:
-    rendimento_6m = metriche["rendimento_6m"]
     render_kpi_card(
-        "Rendimento 6M",
-        formatta_percentuale(rendimento_6m),
-        "Ultimi 126 giorni",
-        classe_valore(rendimento_6m)
+        "EMA 200W",
+        formatta_numero(metriche["ema_200w"]),
+        "Linea gialla"
     )
 
 
@@ -484,16 +510,17 @@ with kpi_8:
 st.markdown(
     """
     <div class="grafico-chart-card">
-        <div class="grafico-section-title">Grafico tecnico</div>
+        <div class="grafico-section-title">Grafico tecnico weekly</div>
         <div class="grafico-section-subtitle">
-            Prezzo, medie mobili e volumi.
+            Candele weekly a 5 anni con WMA 21W, WMA 50W, WMA 200W,
+            EMA 200W e SMA 200W.
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-fig = crea_grafico(data, ticker, tipo_grafico)
+fig = crea_grafico_weekly(data, ticker)
 st.plotly_chart(fig, use_container_width=True)
 
 
@@ -504,8 +531,9 @@ st.plotly_chart(fig, use_container_width=True)
 csv_data = data.to_csv(index=True).encode("utf-8")
 
 st.download_button(
-    label="⬇️ Scarica dati CSV",
+    label="⬇️ Scarica dati weekly CSV",
     data=csv_data,
-    file_name=f"{ticker}_storico.csv",
+    file_name=f"{ticker}_weekly_5y.csv",
     mime="text/csv"
 )
+``
