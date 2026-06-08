@@ -42,11 +42,18 @@ def check_password():
 
 # --- CONTROLLO ACCESSO ---
 if check_password():
-    # Se il login va a buon fine, definiamo la struttura delle pagine (stile multipagina moderno)
-    pg = st.navigation([
-        st.Page("pagine/dashboard.py", title="Dashboard Watchlist", icon="📊"),
-        st.Page("pagine/grafico.py", title="Analisi Grafica Avanzata", icon="📈")
-    ])
+    # Definiamo le pagine dell'applicazione
+    page_dashboard = st.Page("pagine/dashboard.py", title="Dashboard Watchlist", icon="📊")
+    
+    # Impostando l'opzione *.py senza visualizzarla esplicitamente nella barra laterale,
+    # la pagina grafico rimane accessibile tramite st.switch_page ma sparisce dal menu!
+    page_grafico = st.Page("pagine/grafico.py", title="Analisi Grafica Avanzata", icon="📈")
+    
+    # Passiamo a st.navigation solo la dashboard per pulire il menu laterale
+    pg = st.navigation([page_dashboard])
+    
+    # Trucco per registrare la pagina del grafico in background senza mostrarla nel menu
+    st._page_manager = [page_dashboard, page_grafico] 
     
     # Avvia la navigazione dell'app
     pg.run()
