@@ -21,18 +21,20 @@ with st.container():
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     st.subheader("Accedi al sistema")
     
+    # Questo form è fondamentale: protegge i dati finché non premi il tasto
     with st.form("login_form"):
         user = st.text_input("Username")
         password = st.text_input("Password", type="password")
         
         submitted = st.form_submit_button("Entra nella Dashboard")
         
-        # --- QUI C'ERA L'ERRORE: Tutto questo deve stare dentro "if submitted" ---
+        # --- IL SEGRETO È TUTTO QUI ---
+        # "st.switch_page" DEVE stare dentro questo blocco "if submitted"
+        # E anche dentro il controllo delle credenziali
         if submitted:
-            # Controllo credenziali
             if user.strip() == "admin" and password.strip() == "Pippolo001+1": 
                 st.session_state["authenticated"] = True
-                # Questa riga deve essere dentro l'if delle credenziali corrette
+                # Questa funzione parte SOLO se le credenziali sono giuste
                 st.switch_page("pagine/dashboard.py")
             else:
                 st.session_state["authenticated"] = False
