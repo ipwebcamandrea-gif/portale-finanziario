@@ -114,7 +114,7 @@ if len(df_chart) >= 200:
 
     st.subheader(f"Grafico {titolo_grafico} - {ticker}")
 
-    # Costruzione Struttura Multi-Panel Plotly (Riquadri separati per oscillatori)
+    # Costruzione Struttura Multi-Panel Plotly
     fig = make_subplots(
         rows=3, cols=1, 
         shared_xaxes=True, 
@@ -144,23 +144,23 @@ if len(df_chart) >= 200:
     fig.add_annotation(x=df_plot.index[-1], y=max_52w, text=f"Max 1A: {max_52w:.2f} ({dist_max52w:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="white"), bgcolor="#ff3399", row=1, col=1)
     fig.add_annotation(x=df_plot.index[-1], y=min_52w, text=f"Min 1A: {min_52w:.2f} ({dist_min52w:+.2f}%)", showarrow=False, xanchor="left", xshift=8, font=dict(size=11, color="black"), bgcolor="#33ccff", row=1, col=1)
     
-    colori_volumi = ['rgba(38, 166, 154, 0.12)' if c >= o else 'rgba(239, 83, 80, 0.12)' for c, o in zip(df_plot['Close'], df_plot['Open'])]
+    # 2) ACCENTUAZIONE VOLUMI: Aumentata opacità a 0.40 per renderli ben visibili
+    colori_volumi = ['rgba(38, 166, 154, 0.40)' if c >= o else 'rgba(239, 83, 80, 0.40)' for c, o in zip(df_plot['Close'], df_plot['Open'])]
     fig.add_trace(go.Bar(x=df_plot.index, y=df_plot['Volume'], marker_color=colori_volumi, name="Volume", showlegend=False), row=1, col=1, secondary_y=True)
     
-    # --- PANNELLO 2: STOCHASTIC RSI (Nascosto dalla legenda, aggiunti parametri sul titolo dell'asse) ---
+    # --- PANNELLO 2: STOCHASTIC RSI ---
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['StochRSI_K'], line=dict(color='#17a2b8', width=1.5), name="Stoch K", showlegend=False), row=2, col=1)
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['StochRSI_D'], line=dict(color='#ffc107', width=1.2), name="Stoch D", showlegend=False), row=2, col=1)
-    # Linee di ipercomprato/ipervenduto classiche (80 e 20)
     fig.add_shape(type="line", x0=df_plot.index[0], x1=df_plot.index[-1], y0=80, y1=80, line=dict(color="rgba(255,255,255,0.15)", width=1, dash="dash"), row=2, col=1)
     fig.add_shape(type="line", x0=df_plot.index[0], x1=df_plot.index[-1], y0=20, y1=20, line=dict(color="rgba(255,255,255,0.15)", width=1, dash="dash"), row=2, col=1)
     
-    # --- PANNELLO 3: MACD (Nascosto dalla legenda, aggiunti parametri sul titolo dell'asse) ---
+    # --- PANNELLO 3: MACD ---
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD'], line=dict(color='#007bff', width=1.5), name="MACD Line", showlegend=False), row=3, col=1)
     fig.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD_Signal'], line=dict(color='#dc3545', width=1.5), name="Signal Line", showlegend=False), row=3, col=1)
     colori_macd_hist = ['rgba(38, 166, 154, 0.5)' if v >= 0 else 'rgba(239, 83, 80, 0.5)' for v in df_plot['MACD_Hist']]
     fig.add_trace(go.Bar(x=df_plot.index, y=df_plot['MACD_Hist'], marker_color=colori_macd_hist, name='Histogram', showlegend=False), row=3, col=1)
 
-    # --- CONFIGURAZIONE ESTETICA E TITOLI PARAMETRIZZATI ---
+    # --- CONFIGURAZIONE ESTETICA ---
     fig.update_layout(
         template="plotly_dark", height=850, xaxis_rangeslider_visible=False,
         margin=dict(l=10, r=160, t=30, b=10), paper_bgcolor='#131722', plot_bgcolor='#131722',
@@ -168,10 +168,9 @@ if len(df_chart) >= 200:
         hovermode="x unified"
     )
     
-    # Forziamo la scala dei volumi secondaria per non coprire le candele
-    fig.update_yaxes(range=[0, df_plot['Volume'].max() * 4], showgrid=False, showticklabels=False, row=1, col=1, secondary_y=True)
+    # Abbassato leggermente il tetto della scala volumi da *4 a *2.8 per far svettare meglio i picchi di volume
+    fig.update_yaxes(range=[0, df_plot['Volume'].max() * 2.8], showgrid=False, showticklabels=False, row=1, col=1, secondary_y=True)
     
-    # Inserimento dei parametri tecnici direttamente sulle etichette dei pannelli corrispondenti
     fig.update_yaxes(title_text="Stoch RSI (20, 20, 5, 5)", title_font=dict(color="#17a2b8", size=11), row=2, col=1)
     fig.update_yaxes(title_text="MACD (12, 26, 9)", title_font=dict(color="#007bff", size=11), row=3, col=1)
     
