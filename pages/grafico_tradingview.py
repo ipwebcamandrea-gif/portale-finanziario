@@ -1,5 +1,4 @@
 import json
-from html import escape
 from pathlib import Path
 
 import streamlit as st
@@ -93,6 +92,7 @@ def tradingview_widget_html(tv_symbol):
         "autosize": True,
         "symbol": tv_symbol,
         "interval": "W",
+        "range": "ALL",
         "timezone": "Europe/Rome",
         "theme": "dark",
         "style": "1",
@@ -111,9 +111,47 @@ def tradingview_widget_html(tv_symbol):
         "save_image": True,
         "support_host": "https://www.tradingview.com",
         "studies": [
-            "STD;SMA",
-            "STD;EMA"
-        ]
+            {
+                "id": "MAWeighted@tv-basicstudies",
+                "inputs": {"length": 21},
+                "overrides": {
+                    "plot.color": "#ffffff",
+                    "plot.linewidth": 2
+                }
+            },
+            {
+                "id": "MAWeighted@tv-basicstudies",
+                "inputs": {"length": 50},
+                "overrides": {
+                    "plot.color": "#26a69a",
+                    "plot.linewidth": 2
+                }
+            },
+            {
+                "id": "MAExp@tv-basicstudies",
+                "inputs": {"length": 200},
+                "overrides": {
+                    "plot.color": "#ffeb3b",
+                    "plot.linewidth": 2
+                }
+            },
+            {
+                "id": "MASimple@tv-basicstudies",
+                "inputs": {"length": 200},
+                "overrides": {
+                    "plot.color": "#ff9800",
+                    "plot.linewidth": 2
+                }
+            }
+        ],
+        "studies_overrides": {
+            "moving average weighted.ma.color": "#ffffff",
+            "moving average weighted.ma.linewidth": 2,
+            "moving average exponential.ma.color": "#ffeb3b",
+            "moving average exponential.ma.linewidth": 2,
+            "moving average.ma.color": "#ff9800",
+            "moving average.ma.linewidth": 2
+        }
     }
 
     config_json = json.dumps(config, ensure_ascii=False, indent=8)
@@ -138,33 +176,14 @@ def tradingview_widget_html(tv_symbol):
                     background: #0e1117;
                 }}
                 .tradingview-widget-container__widget {{
-                    height: calc(100% - 32px);
+                    height: 100%;
                     width: 100%;
-                }}
-                .tradingview-widget-copyright {{
-                    height: 32px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-family: Inter, Arial, sans-serif;
-                    font-size: 12px;
-                    color: #8a99ad;
-                    background: #0e1117;
-                }}
-                .tradingview-widget-copyright a {{
-                    color: #00b0ff;
-                    text-decoration: none;
                 }}
             </style>
         </head>
         <body>
             <div class="tradingview-widget-container">
                 <div class="tradingview-widget-container__widget"></div>
-                <div class="tradingview-widget-copyright">
-                    <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
-                        Grafico TradingView
-                    </a>
-                </div>
                 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
                 {config_json}
                 </script>
@@ -190,16 +209,7 @@ tv_symbol = simbolo_tradingview(ticker_raw)
 header_col_1, header_col_2 = st.columns([5.0, 1.25], vertical_alignment="center")
 
 with header_col_1:
-    st.markdown(
-        f"""
-        <div class="grafico-tv-header">
-            <div class="grafico-tv-eyebrow">TradingView Advanced Chart</div>
-            <div class="grafico-tv-title">{escape(str(ticker_raw).upper())}</div>
-            <div class="grafico-tv-subtitle">Simbolo TradingView: {escape(tv_symbol)}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.empty()
 
 with header_col_2:
     bottone_torna_watchlist()
@@ -207,7 +217,7 @@ with header_col_2:
 st.markdown('<div class="grafico-tv-shell">', unsafe_allow_html=True)
 components.html(
     tradingview_widget_html(tv_symbol),
-    height=860,
+    height=1040,
     scrolling=False
 )
 st.markdown('</div>', unsafe_allow_html=True)
