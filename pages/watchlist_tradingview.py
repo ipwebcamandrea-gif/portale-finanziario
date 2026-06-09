@@ -141,6 +141,34 @@ st.markdown(
         font-weight: 950;
     }
 
+    .tv-delete-confirm-panel {
+        margin: 0.55rem 0 0.80rem 0;
+        padding: 0.72rem 0.85rem;
+        border-radius: 12px;
+        border: 1px solid rgba(239, 83, 80, 0.62);
+        background:
+            radial-gradient(circle at top right, rgba(239, 83, 80, 0.18), transparent 35%),
+            linear-gradient(135deg, rgba(239, 83, 80, 0.12) 0%, rgba(22, 27, 34, 0.92) 100%);
+        color: #e6edf3;
+        font-weight: 850;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 0 14px rgba(239, 83, 80, 0.14);
+    }
+
+    .tv-delete-confirm-title {
+        color: #ff8a80;
+        font-size: 0.95rem;
+        font-weight: 950;
+        margin-bottom: 0.18rem;
+    }
+
+    .tv-delete-confirm-text {
+        color: #9fb3d1;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
     div[class*="st-key-tv_normal_row_"] {
         padding: 0.72rem 0.78rem 0.82rem 0.78rem;
         margin: 0.62rem 0;
@@ -413,6 +441,7 @@ def elimina_watchlist_attiva():
 
     st.session_state["tv_current_list"] = nuovo_corrente
     data["active_watchlist"] = nuovo_corrente
+    st.session_state["tv_confirm_delete_tab"] = False
     salva_sessione_su_disco()
     st.cache_data.clear()
 
@@ -768,6 +797,9 @@ if "tv_show_create_panel" not in st.session_state:
 if "tv_add_symbol_nonce" not in st.session_state:
     st.session_state["tv_add_symbol_nonce"] = 0
 
+if "tv_confirm_delete_tab" not in st.session_state:
+    st.session_state["tv_confirm_delete_tab"] = False
+
 
 # =========================
 # PAGE HEADER + AZIONI ALTE
@@ -809,6 +841,7 @@ for idx, name in enumerate(watchlist_names):
             if st.button(tab_label, key="tv_tab_btn_" + slug_safe(name), use_container_width=True):
                 st.session_state["tv_current_list"] = name
                 st.session_state["tv_watchlists_data"]["active_watchlist"] = name
+                st.session_state["tv_confirm_delete_tab"] = False
                 salva_sessione_su_disco()
                 st.rerun()
 
@@ -819,23 +852,26 @@ with cols[-1]:
         with st.container(key="tv_tab_action_btn_plus"):
             if st.button("+", key="tv_create_toggle", use_container_width=True, help="Crea nuova watchlist"):
                 st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
+                st.session_state["tv_confirm_delete_tab"] = False
                 st.rerun()
 
     with minus_col:
         with st.container(key="tv_tab_action_btn_minus"):
             if st.button("−", key="tv_delete_current_list", use_container_width=True, help="Elimina la watchlist attiva"):
-                elimina_watchlist_attiva()
+                st.session_state["tv_confirm_delete_tab"] = True
                 st.rerun()
 
 move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns([0.55, 0.55, 1.1, 4.8])
 
 with move_tab_col_1:
     if st.button("◀", key="tv_move_tab_left", use_container_width=True, help="Sposta la watchlist attiva a sinistra"):
+        st.session_state["tv_confirm_delete_tab"] = False
         sposta_watchlist(st.session_state["tv_current_list"], -1)
         st.rerun()
 
 with move_tab_col_2:
     if st.button("▶", key="tv_move_tab_right", use_container_width=True, help="Sposta la watchlist attiva a destra"):
+        st.session_state["tv_confirm_delete_tab"] = False
         sposta_watchlist(st.session_state["tv_current_list"], 1)
         st.rerun()
 
@@ -843,6 +879,38 @@ with refresh_col:
     if st.button("Aggiorna dati", key="tv_refresh_data", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
+
+
+# =========================
+# CONFERMA ELIMINAZIONE WATCHLIST
+# =========================
+
+if st.session_state.get("tv_confirm_delete_tab", False):
+    current_confirm = st.session_state.get("tv_current_list", "")
+
+    st.markdown(
+        f"""
+        <div class="tv-delete-confirm-panel">
+            <div class="tv-delete-confirm-title">Conferma eliminazione watchlist</div>
+            <div class="tv-delete-confirm-text">
+                Vuoi eliminare definitivamente la watchlist <b>{escape(current_confirm)}</b> e tutti i simboli contenuti?
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    confirm_col_1, confirm_col_2, confirm_col_3 = st.columns([1.25, 1.0, 4.75])
+
+    with confirm_col_1:
+        if st.button("Elimina", key="tv_confirm_delete_current_list", use_container_width=True):
+            elimina_watchlist_attiva()
+            st.rerun()
+
+    with confirm_col_2:
+        if st.button("Annulla", key="tv_cancel_delete_current_list", use_container_width=True):
+            st.session_state["tv_confirm_delete_tab"] = False
+            st.rerun()
 
 
 # =========================
@@ -869,6 +937,7 @@ if st.session_state["tv_show_create_panel"]:
                 st.session_state["tv_current_list"] = new_list_name
                 st.session_state["tv_watchlists_data"]["active_watchlist"] = new_list_name
                 st.session_state["tv_show_create_panel"] = False
+                st.session_state["tv_confirm_delete_tab"] = False
                 salva_sessione_su_disco()
                 st.success("Watchlist creata.")
                 st.rerun()
@@ -915,6 +984,7 @@ with add_col_2:
         else:
             st.session_state["tv_watchlists_data"]["watchlists"][current].append(new_symbol)
             st.session_state["tv_add_symbol_nonce"] += 1
+            st.session_state["tv_confirm_delete_tab"] = False
             salva_sessione_su_disco()
             st.cache_data.clear()
             st.success(new_symbol + " aggiunto.")
