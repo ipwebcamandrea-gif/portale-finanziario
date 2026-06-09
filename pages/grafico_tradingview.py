@@ -47,12 +47,11 @@ local_css(GRAFICO_TV_CSS)
 def simbolo_tradingview(symbol):
     """
     Conversione pratica Yahoo Finance -> TradingView.
-    Se il simbolo contiene già il mercato TradingView, viene mantenuto.
-    Esempi:
-    - AAPL      -> NASDAQ:AAPL
-    - MSFT      -> NASDAQ:MSFT
-    - JPM       -> NYSE:JPM
-    - SWDA.MI   -> MIL:SWDA
+
+    Nota:
+    Per alcuni titoli USA TradingView può mostrare comunque la dicitura dati "Cboe One".
+    Quella dicitura riguarda il feed dati usato dal widget, non necessariamente il mercato
+    di quotazione richiesto. Qui forziamo comunque il simbolo TradingView esplicito.
     """
     symbol = str(symbol or "").strip().upper()
 
@@ -65,14 +64,25 @@ def simbolo_tradingview(symbol):
     if symbol.endswith(".MI"):
         return "MIL:" + symbol.replace(".MI", "")
 
-    nyse_symbols = {
-        "JPM", "BAC", "V", "MA", "BRK.B", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT"
+    nasdaq_symbols = {
+        "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "NFLX", "ADBE",
+        "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN", "PEP", "COST", "AMAT", "MU",
+        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI"
     }
+
+    nyse_symbols = {
+        "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "KO", "PG", "JNJ", "UNH", "HD",
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT",
+        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
+    }
+
+    if symbol in nasdaq_symbols:
+        return "NASDAQ:" + symbol
 
     if symbol in nyse_symbols:
         return "NYSE:" + symbol
 
+    # Default operativo: molti ticker tech USA sono su NASDAQ.
     return "NASDAQ:" + symbol
 
 
@@ -92,7 +102,8 @@ def tradingview_widget_html(tv_symbol):
         "autosize": True,
         "symbol": tv_symbol,
         "interval": "W",
-        "range": "ALL",
+        # 120M = circa 10 anni. Evita il comportamento di ALL che può portare il widget a visualizzare 1M.
+        "range": "120M",
         "timezone": "Europe/Rome",
         "theme": "dark",
         "style": "1",
