@@ -90,7 +90,7 @@ st.markdown(
         <div class="main-title">Portafoglio Cockpit</div>
         <div class="subtitle">
             Centro di controllo del monitor finanziario. Da qui puoi aprire la Watchlist,
-            consultare il Portafoglio e gestire la sessione.
+            la nuova Watchlist TradingView, consultare il Portafoglio e gestire la sessione.
         </div>
     </div>
     """,
@@ -136,22 +136,30 @@ st.markdown(
         <div class="cockpit-info-title">Menu principale</div>
         <div class="cockpit-info-text">
             Usa le card qui sotto per navigare. Il grafico dettaglio non è nel menu:
-            si apre solo dalla Watchlist tramite il pulsante 📈 sul singolo ticker.
+            si apre solo dalle Watchlist tramite il pulsante sul singolo ticker.
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-col_watchlist, col_portafoglio, col_logout = st.columns(3)
+col_watchlist, col_watchlist_tv, col_portafoglio, col_logout = st.columns(4)
 
 with col_watchlist:
     if st.button(
-        "📊  Watchlist\n\nPrezzi, SMA 200D, stato tecnico e grafici.",
+        "📊  Watchlist\n\nPrezzi, SMA 200W, stato tecnico e grafici.",
         key="card_watchlist",
         use_container_width=True
     ):
         st.switch_page("pages/watchlist.py")
+
+with col_watchlist_tv:
+    if st.button(
+        "📺  Watchlist TradingView\n\nMulti-tab, SMA 200W, drag & drop e grafici.",
+        key="card_watchlist_tradingview",
+        use_container_width=True
+    ):
+        st.switch_page("pages/watchlist_tradingview.py")
 
 with col_portafoglio:
     if st.button(
@@ -181,6 +189,7 @@ st.markdown(
         <div class="cockpit-info-text">
             Il menu laterale automatico di Streamlit è nascosto. La navigazione principale
             passa dal Cockpit, mentre le pagine operative gestiscono i propri ritorni.
+            La Watchlist TradingView è una nuova pagina separata e non modifica la Watchlist attuale.
         </div>
     </div>
     """,
