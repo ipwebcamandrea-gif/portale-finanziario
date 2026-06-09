@@ -52,18 +52,14 @@ local_css(WATCHLIST_TV_CSS)
 st.markdown(
     """
     <style>
-    /* =========================
-       TAB WATCHLIST - ST.BUTTON
-       ========================= */
-
-    div[class*="st-key-tv_tab_"] .stButton > button {
+    div[class*="st-key-tv_normal_tab_"] .stButton > button,
+    div[class*="st-key-tv_zone_tab_"] .stButton > button {
         min-height: 46px;
         width: 100%;
         border-radius: 10px;
         border: 1px solid rgba(48, 54, 61, 0.95);
         background: linear-gradient(180deg, #202733 0%, #151b24 100%);
         color: #e6edf3 !important;
-        text-decoration: none !important;
         font-size: 0.98rem;
         font-weight: 900;
         letter-spacing: -0.01em;
@@ -71,15 +67,15 @@ st.markdown(
         transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
     }
 
-    div[class*="st-key-tv_tab_"] .stButton > button:hover {
+    div[class*="st-key-tv_normal_tab_"] .stButton > button:hover,
+    div[class*="st-key-tv_zone_tab_"] .stButton > button:hover {
         border-color: rgba(0, 176, 255, 0.65);
         background: linear-gradient(180deg, #27303a 0%, #1b222c 100%);
         color: #ffffff !important;
         transform: translateY(-1px);
     }
 
-    div[class*="st-key-tv_tab_active_"] .stButton > button,
-    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
+    div[class*="st-key-tv_active_tab_"] .stButton > button {
         border-color: rgba(0, 176, 255, 0.75);
         box-shadow:
             inset 0 1px 0 rgba(255,255,255,0.06),
@@ -87,8 +83,7 @@ st.markdown(
             0 0 14px rgba(0, 176, 255, 0.12);
     }
 
-    div[class*="st-key-tv_tab_zone_"] .stButton > button,
-    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
+    div[class*="st-key-tv_zone_tab_"] .stButton > button {
         background:
             radial-gradient(circle at top right, rgba(255, 140, 0, 0.20), transparent 34%),
             linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(255, 179, 71, 0.07) 100%);
@@ -98,8 +93,7 @@ st.markdown(
             0 0 15px rgba(255, 140, 0, 0.28);
     }
 
-    div[class*="st-key-tv_tab_zone_"] .stButton > button:hover,
-    div[class*="st-key-tv_tab_active_zone_"] .stButton > button:hover {
+    div[class*="st-key-tv_zone_tab_"] .stButton > button:hover {
         border-color: rgba(255, 179, 71, 0.98);
         background:
             radial-gradient(circle at top right, rgba(255, 140, 0, 0.25), transparent 34%),
@@ -109,7 +103,7 @@ st.markdown(
             0 0 18px rgba(255, 140, 0, 0.42);
     }
 
-    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
+    div[class*="st-key-tv_zone_tab_"][class*="st-key-tv_active_tab_"] .stButton > button {
         border-color: rgba(255, 179, 71, 1);
         box-shadow:
             inset 0 1px 0 rgba(255,255,255,0.07),
@@ -117,7 +111,6 @@ st.markdown(
             0 0 20px rgba(255, 140, 0, 0.42);
     }
 
-    /* Riga normale Streamlit container */
     div[class*="st-key-tv_normal_row_"] {
         padding: 0.72rem 0.78rem 0.82rem 0.78rem;
         margin: 0.62rem 0;
@@ -127,7 +120,6 @@ st.markdown(
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
     }
 
-    /* Riga in zona SMA200W: stesso arancione/rame delle tab */
     div[class*="st-key-tv_zone_row_"] {
         padding: 0.72rem 0.78rem 0.82rem 0.78rem;
         margin: 0.72rem 0;
@@ -202,7 +194,6 @@ st.markdown(
         font-weight: 850;
     }
 
-    /* Compatta i pulsanti Streamlit nella colonna azioni della riga */
     div[data-testid="stHorizontalBlock"] .stButton > button {
         min-height: 30px;
         padding: 0.20rem 0.35rem;
@@ -638,19 +629,6 @@ def slug_safe(value):
     return re.sub(r"[^A-Za-z0-9_]+", "_", str(value)).strip("_") or "item"
 
 
-def tab_container_key(name, current, in_zone):
-    if name == current and in_zone:
-        prefix = "tv_tab_active_zone_"
-    elif name == current:
-        prefix = "tv_tab_active_"
-    elif in_zone:
-        prefix = "tv_tab_zone_"
-    else:
-        prefix = "tv_tab_normal_"
-
-    return prefix + slug_safe(name)
-
-
 # =========================
 # RENDER HTML
 # =========================
@@ -679,21 +657,6 @@ def render_persistence_note():
                 In questa prima versione le modifiche vengono salvate su watchlists.json
                 nell'ambiente dell'app. In futuro potremo collegare lo stesso JSON a GitHub API
                 per persistenza definitiva su repository.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-def render_active_list_card(current, symbols):
-    st.markdown(
-        f"""
-        <div class="tv-active-list-card">
-            <div class="tv-active-list-label">Lista attiva</div>
-            <div class="tv-active-list-name">{escape(current)}</div>
-            <div class="tv-active-list-note">
-                {len(symbols)} simboli monitorati · Yahoo Finance 15m/delayed · SMA 200W su timeframe weekly.
             </div>
         </div>
         """,
@@ -819,18 +782,6 @@ render_persistence_note()
 # NAVIGAZIONE
 # =========================
 
-st.markdown(
-    """
-    <div class="tv-topbar">
-        <div class="tv-topbar-title">Navigazione</div>
-        <div class="tv-topbar-text">
-            Torna al Cockpit oppure apri il grafico weekly direttamente dalla riga del simbolo.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 nav_col_1, nav_col_2 = st.columns([1.2, 4.8])
 
 with nav_col_1:
@@ -842,34 +793,23 @@ with nav_col_1:
 # TABS WATCHLIST
 # =========================
 
-st.markdown(
-    """
-    <div class="tv-tabs-panel">
-        <div class="tv-tabs-title">Watchlist</div>
-        <div class="tv-tabs-subtitle">
-            Seleziona una lista, crea nuove tab o sposta la tab attiva con i pulsanti sinistra/destra.
-            Le tab arancioni indicano almeno un simbolo entro +/-10% dalla SMA 200W.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
 watchlist_names = list(watchlists.keys())
 
 cols = st.columns(len(watchlist_names) + 1)
 
 for idx, name in enumerate(watchlist_names):
-    current_tab = st.session_state["tv_current_list"]
     in_zone = watchlist_has_sma200_zone(name)
-    is_active = name == current_tab
-    label = ("▶ " if is_active else "") + name
-    container_key = tab_container_key(name, current_tab, in_zone)
+    is_active = name == st.session_state["tv_current_list"]
+
+    tab_kind = "zone" if in_zone else "normal"
+    active_part = "_active_tab" if is_active else ""
+    tab_wrap_key = "tv_" + tab_kind + "_tab" + active_part + "_" + slug_safe(name)
+    tab_label = ("▶ " if is_active else "") + name
 
     with cols[idx]:
-        with st.container(key=container_key):
-            if st.button(label, key="tv_tab_btn_" + slug_safe(name), use_container_width=True):
+        with st.container(key=tab_wrap_key):
+            if st.button(tab_label, key="tv_tab_btn_" + slug_safe(name), use_container_width=True):
                 st.session_state["tv_current_list"] = name
                 st.session_state["tv_watchlists_data"]["active_watchlist"] = name
                 salva_sessione_su_disco()
@@ -907,18 +847,6 @@ with move_tab_col_2:
 # =========================
 
 if st.session_state["tv_show_create_panel"]:
-    st.markdown(
-        """
-        <div class="tv-create-panel">
-            <div class="tv-create-title">Crea nuova watchlist</div>
-            <div class="tv-create-text">
-                Inserisci il nome della nuova tab. La lista verra salvata nel JSON locale.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     create_col_1, create_col_2, create_col_3 = st.columns([3, 1, 1])
 
     with create_col_1:
@@ -968,24 +896,10 @@ if current not in watchlists:
 
 symbols = watchlists.get(current, [])
 
-render_active_list_card(current, symbols)
-
 
 # =========================
 # AGGIUNGI SIMBOLO
 # =========================
-
-st.markdown(
-    """
-    <div class="tv-add-panel">
-        <div class="tv-add-title">Aggiungi simbolo</div>
-        <div class="tv-add-subtitle">
-            Usa simboli compatibili Yahoo Finance, ad esempio AAPL, MSFT, NVDA, SWDA.MI.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 add_col_1, add_col_2 = st.columns([5, 1])
 
