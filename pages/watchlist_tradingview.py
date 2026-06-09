@@ -649,10 +649,6 @@ def render_header():
         """
         <div class="tv-page-header">
             <div class="tv-page-title">Watchlist TradingView</div>
-            <div class="tv-page-subtitle">
-                Multi-watchlist in stile TradingView con tab, ordinamento manuale,
-                distanza da SMA 200W e apertura diretta del grafico weekly.
-            </div>
         </div>
         """,
         unsafe_allow_html=True
