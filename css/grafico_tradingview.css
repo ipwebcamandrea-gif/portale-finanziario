@@ -2,37 +2,9 @@
    GRAFICO TRADINGVIEW PAGE
    ========================= */
 
-.grafico-tv-header {
-    margin-bottom: 0.8rem;
-}
-
-.grafico-tv-eyebrow {
-    color: #00b0ff;
-    font-size: 0.78rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.10em;
-    margin-bottom: 0.25rem;
-}
-
-.grafico-tv-title {
-    color: #ffffff;
-    font-size: 2.15rem;
-    font-weight: 950;
-    letter-spacing: -0.045em;
-    line-height: 1.05;
-}
-
-.grafico-tv-subtitle {
-    color: #8a99ad;
-    font-size: 0.86rem;
-    font-weight: 750;
-    margin-top: 0.30rem;
-}
-
 .grafico-tv-shell {
-    margin-top: 0.75rem;
-    padding: 0.65rem;
+    margin-top: 0.35rem;
+    padding: 0.55rem;
     border-radius: 16px;
     border: 1px solid rgba(48, 54, 61, 0.92);
     background:
@@ -69,4 +41,3 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
         inset 0 1px 0 rgba(255,255,255,0.07),
         0 0 20px rgba(255, 140, 0, 0.28);
 }
-
