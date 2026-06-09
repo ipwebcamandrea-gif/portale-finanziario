@@ -117,51 +117,10 @@ st.markdown(
             0 0 20px rgba(255, 140, 0, 0.42);
     }
 
-    .tv-actions-inline {
-        display: flex;
-        align-items: center;
-        gap: 0.42rem;
-        justify-content: flex-start;
-    }
-
-    .tv-action-link {
-        width: 34px;
-        height: 30px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 9px;
-        border: 1px solid rgba(48, 54, 61, 0.95);
-        background: linear-gradient(180deg, #202733 0%, #151b24 100%);
-        color: #e6edf3 !important;
-        text-decoration: none !important;
-        font-size: 0.86rem;
-        font-weight: 950;
-        line-height: 1;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    }
-
-    .tv-action-link:hover {
-        border-color: rgba(0, 176, 255, 0.70);
-        background: linear-gradient(180deg, #2a3442 0%, #1a222d 100%);
-        color: #ffffff !important;
-        transform: translateY(-1px);
-    }
-
-    .tv-action-link-danger:hover {
-        border-color: rgba(239, 83, 80, 0.90);
-        background: linear-gradient(180deg, rgba(239,83,80,0.30) 0%, rgba(90,25,25,0.35) 100%);
-    }
-
-    .tv-action-chart svg {
-        width: 17px;
-        height: 17px;
-        display: block;
-    }
-
-    .tv-action-chart path,
-    .tv-action-chart polyline {
-        stroke: #00c853;
+    .tv-actions-note {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-weight: 750;
     }
 
     @media (max-width: 1100px) {
@@ -353,7 +312,7 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
-# QUERY PARAM ACTIONS
+# QUERY PARAM SOLO PER TAB
 # =========================
 
 def query_value(name):
@@ -391,50 +350,6 @@ def gestisci_tab_da_query():
 
     clear_query_params()
     st.rerun()
-
-
-def gestisci_azioni_da_query():
-    action = query_value("tv_action")
-    symbol = query_value("tv_symbol")
-    list_name = query_value("tv_list")
-
-    if not action or not symbol or not list_name:
-        return
-
-    data = st.session_state.get("tv_watchlists_data")
-
-    if not data:
-        clear_query_params()
-        return
-
-    watchlists = data.get("watchlists", {})
-
-    if list_name not in watchlists:
-        clear_query_params()
-        st.rerun()
-
-    if action == "graph":
-        st.session_state["ticker_selezionato"] = symbol
-        clear_query_params()
-        st.switch_page("pages/grafico.py")
-
-    if action == "up":
-        sposta_simbolo(list_name, symbol, -1)
-        clear_query_params()
-        st.rerun()
-
-    if action == "down":
-        sposta_simbolo(list_name, symbol, 1)
-        clear_query_params()
-        st.rerun()
-
-    if action == "delete":
-        if symbol in watchlists.get(list_name, []):
-            watchlists[list_name].remove(symbol)
-            salva_sessione_su_disco()
-            st.cache_data.clear()
-        clear_query_params()
-        st.rerun()
 
 
 # =========================
@@ -678,40 +593,8 @@ def classe_zona_sma(value):
     return classe_percentuale(value)
 
 
-def action_url(action, symbol, list_name):
-    return (
-        "?tv_action=" + quote_plus(action)
-        + "&tv_symbol=" + quote_plus(symbol)
-        + "&tv_list=" + quote_plus(list_name)
-    )
-
-
 def tab_url(name):
     return "?tv_select_tab=" + quote_plus(name)
-
-
-def chart_svg():
-    return (
-        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
-        '<path d="M4 19.5H20" stroke-width="1.8" stroke-linecap="round"/>'
-        '<path d="M5 16L9 12L12 14.5L18.5 7.5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>'
-        '<path d="M15.5 7.5H18.5V10.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
-        '</svg>'
-    )
-
-
-def render_action_links(symbol, current):
-    symbol_safe = escape(symbol)
-    current_safe = escape(current)
-
-    return (
-        '<div class="tv-actions-inline">'
-        f'<a class="tv-action-link tv-action-chart" href="{action_url("graph", symbol, current)}" title="Apri grafico tecnico weekly per {symbol_safe}">{chart_svg()}</a>'
-        f'<a class="tv-action-link" href="{action_url("up", symbol, current)}" title="Sposta {symbol_safe} in alto">▲</a>'
-        f'<a class="tv-action-link" href="{action_url("down", symbol, current)}" title="Sposta {symbol_safe} in basso">▼</a>'
-        f'<a class="tv-action-link tv-action-link-danger" href="{action_url("delete", symbol, current)}" title="Elimina {symbol_safe} da {current_safe}">×</a>'
-        '</div>'
-    )
 
 
 def render_tab_link(name, current, in_zone):
@@ -783,7 +666,7 @@ def render_active_list_card(current, symbols):
     )
 
 
-def render_row(symbol, metrics, current):
+def render_row(symbol, metrics):
     dist_pct = metrics["dist_pct"]
     daily_pct = metrics["daily_change_pct"]
     sma200w = metrics.get("sma200w")
@@ -798,7 +681,6 @@ def render_row(symbol, metrics, current):
     dist_class = classe_zona_sma(dist_pct)
 
     zone_note = "Zona SMA200W" if is_in_sma200_zone(dist_pct) else "Monitoraggio"
-    actions_html = render_action_links(symbol, current)
 
     html = (
         f'<div class="{row_class}">'
@@ -825,7 +707,7 @@ def render_row(symbol, metrics, current):
         '</div>'
         '<div>'
         '<div class="tv-metric-label">Azioni</div>'
-        f'{actions_html}'
+        '<div class="tv-actions-note">Usa i pulsanti sotto</div>'
         '</div>'
         '</div>'
         '</div>'
@@ -847,8 +729,7 @@ if "tv_current_list" not in st.session_state:
 if "tv_show_create_panel" not in st.session_state:
     st.session_state["tv_show_create_panel"] = False
 
-# Gestione query params dopo inizializzazione sessione.
-gestisci_azioni_da_query()
+# Gestione query params solo per i tab.
 gestisci_tab_da_query()
 
 
@@ -1060,7 +941,7 @@ st.markdown(
         <div class="tv-rows-title">Simboli monitorati</div>
         <div class="tv-rows-subtitle">
             Prezzo da Yahoo Finance intraday 15m/delayed. SMA 200W calcolata su weekly 10 anni.
-            Le azioni rapide sono integrate nella card di ogni simbolo.
+            Le azioni operative usano pulsanti Streamlit per mantenere stabile la sessione.
         </div>
     </div>
     """,
@@ -1087,9 +968,58 @@ if not symbols:
 
 
 # =========================
-# RENDER RIGHE
+# RENDER RIGHE + AZIONI STREAMLIT
 # =========================
 
 for symbol in list(symbols):
     metrics = get_stock_metrics(symbol)
-    render_row(symbol, metrics, current)
+    render_row(symbol, metrics)
+
+    action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(
+        [0.55, 0.55, 0.55, 0.55, 5.8]
+    )
+
+    with action_col_1:
+        if st.button(
+            "📈",
+            key="tv_graph_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Apri grafico tecnico weekly"
+        ):
+            st.session_state["ticker_selezionato"] = symbol
+            st.switch_page("pages/grafico.py")
+
+    with action_col_2:
+        if st.button(
+            "▲",
+            key="tv_up_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Sposta simbolo in alto"
+        ):
+            sposta_simbolo(current, symbol, -1)
+            st.rerun()
+
+    with action_col_3:
+        if st.button(
+            "▼",
+            key="tv_down_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Sposta simbolo in basso"
+        ):
+            sposta_simbolo(current, symbol, 1)
+            st.rerun()
+
+    with action_col_4:
+        if st.button(
+            "×",
+            key="tv_delete_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Elimina simbolo dalla watchlist"
+        ):
+            if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
+                st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
+                salva_sessione_su_disco()
+                st.cache_data.clear()
+                st.rerun()
+
+    st.markdown("")
