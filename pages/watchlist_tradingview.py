@@ -52,6 +52,32 @@ local_css(WATCHLIST_TV_CSS)
 st.markdown(
     """
     <style>
+    .tv-modern-back-button .stButton > button {
+        min-height: 42px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 176, 255, 0.52);
+        background:
+            radial-gradient(circle at top left, rgba(0, 176, 255, 0.22), transparent 36%),
+            linear-gradient(135deg, rgba(0, 176, 255, 0.16) 0%, rgba(22, 27, 34, 0.95) 100%);
+        color: #e6edf3 !important;
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 0 14px rgba(0, 176, 255, 0.14);
+    }
+
+    .tv-modern-back-button .stButton > button:hover {
+        border-color: rgba(0, 176, 255, 0.85);
+        background:
+            radial-gradient(circle at top left, rgba(0, 176, 255, 0.30), transparent 36%),
+            linear-gradient(135deg, rgba(0, 176, 255, 0.22) 0%, rgba(22, 27, 34, 1) 100%);
+        transform: translateY(-1px);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 0 18px rgba(0, 176, 255, 0.22);
+    }
+
     div[class*="st-key-tv_normal_tab_"] .stButton > button,
     div[class*="st-key-tv_zone_tab_"] .stButton > button {
         min-height: 46px;
@@ -174,25 +200,10 @@ st.markdown(
         margin-top: 0.10rem;
     }
 
-    .tv-zone-text-inline {
-        color: #f5c542;
-        font-weight: 950;
-    }
-
-    .tv-positive-inline {
-        color: #00c853;
-        font-weight: 950;
-    }
-
-    .tv-negative-inline {
-        color: #ff1744;
-        font-weight: 950;
-    }
-
-    .tv-neutral-inline {
-        color: var(--text-muted);
-        font-weight: 850;
-    }
+    .tv-zone-text-inline { color: #f5c542; font-weight: 950; }
+    .tv-positive-inline { color: #00c853; font-weight: 950; }
+    .tv-negative-inline { color: #ff1744; font-weight: 950; }
+    .tv-neutral-inline { color: var(--text-muted); font-weight: 850; }
 
     div[data-testid="stHorizontalBlock"] .stButton > button {
         min-height: 30px;
@@ -684,7 +695,7 @@ def render_row_streamlit(symbol, metrics, current):
 
     with st.container(key=row_key):
         row_col_1, row_col_2, row_col_3, row_col_4, row_col_5, row_col_6 = st.columns(
-            [1.40, 1.00, 1.05, 1.18, 0.82, 1.25],
+            [1.40, 1.00, 1.05, 1.18, 0.82, 1.55],
             vertical_alignment="center"
         )
 
@@ -710,7 +721,17 @@ def render_row_streamlit(symbol, metrics, current):
 
         with row_col_6:
             st.markdown('<div class="tv-cell-label">Azioni</div>', unsafe_allow_html=True)
-            action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(4)
+            action_col_0, action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(5)
+
+            with action_col_0:
+                if st.button(
+                    "📊",
+                    key="tv_alt_graph_" + symbol + "_" + current,
+                    use_container_width=True,
+                    help="Grafico alternativo - pagina futura"
+                ):
+                    st.session_state["ticker_selezionato_alt"] = symbol
+                    st.info("Pagina grafico alternativo non ancora collegata.")
 
             with action_col_1:
                 if st.button(
@@ -771,26 +792,24 @@ if "tv_show_create_panel" not in st.session_state:
 
 
 # =========================
-# PAGE HEADER
+# PAGE HEADER + AZIONI ALTE
 # =========================
 
-render_header()
-render_persistence_note()
+header_col_1, header_col_2 = st.columns([5.0, 1.35], vertical_alignment="center")
 
+with header_col_1:
+    render_header()
+    render_persistence_note()
 
-# =========================
-# NAVIGAZIONE
-# =========================
-
-nav_col_1, nav_col_2 = st.columns([1.2, 4.8])
-
-with nav_col_1:
-    if st.button("Torna al Cockpit", key="tv_back_cockpit"):
+with header_col_2:
+    st.markdown('<div class="tv-modern-back-button">', unsafe_allow_html=True)
+    if st.button("← Cockpit", key="tv_back_cockpit", use_container_width=True):
         st.switch_page("pages/dashboard.py")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # =========================
-# TABS WATCHLIST
+# TABS WATCHLIST + AZIONI
 # =========================
 
 watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
@@ -819,7 +838,7 @@ if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
     st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
     st.rerun()
 
-move_tab_col_1, move_tab_col_2, move_tab_col_3 = st.columns([0.55, 0.55, 5.9])
+move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns([0.55, 0.55, 1.1, 4.8])
 
 with move_tab_col_1:
     if st.button(
@@ -839,6 +858,11 @@ with move_tab_col_2:
         help="Sposta la watchlist attiva a destra"
     ):
         sposta_watchlist(st.session_state["tv_current_list"], 1)
+        st.rerun()
+
+with refresh_col:
+    if st.button("Aggiorna dati", key="tv_refresh_data", use_container_width=True):
+        st.cache_data.clear()
         st.rerun()
 
 
@@ -923,28 +947,6 @@ with add_col_2:
             st.cache_data.clear()
             st.success(new_symbol + " aggiunto.")
             st.rerun()
-
-
-# =========================
-# TOOLBAR RIGHE
-# =========================
-
-st.markdown(
-    """
-    <div class="tv-rows-toolbar">
-        <div class="tv-rows-title">Simboli monitorati</div>
-        <div class="tv-rows-subtitle">
-            Prezzo da Yahoo Finance intraday 15m/delayed. SMA 200W calcolata su weekly 10 anni.
-            Le azioni sono integrate nella stessa riga usando pulsanti Streamlit stabili.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-if st.button("Aggiorna dati", key="tv_refresh_data"):
-    st.cache_data.clear()
-    st.rerun()
 
 
 symbols = st.session_state["tv_watchlists_data"]["watchlists"].get(current, [])
