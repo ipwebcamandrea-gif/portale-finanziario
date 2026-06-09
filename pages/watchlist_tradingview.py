@@ -113,25 +113,6 @@ st.markdown(
             0 0 15px rgba(255, 140, 0, 0.28);
     }
 
-    div[class*="st-key-tv_zone_tab_"] .stButton > button:hover {
-        border-color: rgba(255, 179, 71, 0.98);
-        background:
-            radial-gradient(circle at top right, rgba(255, 140, 0, 0.25), transparent 34%),
-            linear-gradient(135deg, rgba(255, 140, 0, 0.22) 0%, rgba(255, 179, 71, 0.10) 100%);
-        box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.05),
-            0 0 18px rgba(255, 140, 0, 0.42);
-    }
-
-    div[class*="st-key-tv_zone_tab_"][class*="st-key-tv_active_tab_"] .stButton > button {
-        border-color: rgba(255, 179, 71, 1);
-        box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.07),
-            0 0 0 1px rgba(255, 179, 71, 0.18),
-            0 0 20px rgba(255, 140, 0, 0.42);
-    }
-
-    /* Bottoni + e - compatti, affiancati */
     div[class*="st-key-tv_tab_action_btn_"] .stButton > button {
         min-height: 34px;
         height: 34px;
@@ -237,7 +218,8 @@ st.markdown(
     .tv-negative-inline { color: #ff1744; font-weight: 950; }
     .tv-neutral-inline { color: var(--text-muted); font-weight: 850; }
 
-    div[data-testid="stHorizontalBlock"] .stButton > button {
+    div[data-testid="stHorizontalBlock"] .stButton > button,
+    div[data-testid="stHorizontalBlock"] [data-testid="stLinkButton"] > a {
         min-height: 30px;
         padding: 0.20rem 0.35rem;
         border-radius: 9px;
@@ -337,9 +319,7 @@ def carica_watchlists_da_json():
     try:
         with open(WATCHLISTS_JSON, "r", encoding="utf-8") as file:
             data = json.load(file)
-
         return normalizza_dati_watchlists(data)
-
     except Exception:
         return copia_default_data()
 
@@ -498,7 +478,6 @@ def get_stock_metrics(symbol):
 
                     if not intraday.empty:
                         last_price = valore_float_sicuro(intraday["Close"].iloc[-1])
-
         except Exception:
             pass
 
@@ -515,7 +494,6 @@ def get_stock_metrics(symbol):
                         previous_close = valore_float_sicuro(daily["Close"].iloc[-2])
                     elif len(daily) == 1:
                         previous_close = valore_float_sicuro(daily["Close"].iloc[-1])
-
         except Exception:
             pass
 
@@ -545,7 +523,6 @@ def get_stock_metrics(symbol):
                 previous_close = valore_float_sicuro(fast_value("previous_close", "previousClose", "regularMarketPreviousClose"))
 
             currency = fast_value("currency") or ""
-
         except Exception:
             pass
 
@@ -569,7 +546,6 @@ def get_stock_metrics(symbol):
 
                         if sma200 is not None and sma200 != 0 and last_price is not None:
                             dist_pct = ((last_price - sma200) / sma200) * 100
-
         except Exception:
             pass
 
@@ -585,7 +561,6 @@ def get_stock_metrics(symbol):
             "dist_pct": dist_pct,
             "currency": currency or ""
         }
-
     except Exception:
         return {
             "last_price": None,
@@ -661,6 +636,55 @@ def cell_html(label, value, css_class="tv-cell-value"):
 
 def slug_safe(value):
     return re.sub(r"[^A-Za-z0-9_]+", "_", str(value)).strip("_") or "item"
+
+
+def simbolo_tradingview(symbol):
+    """
+    Conversione pratica Yahoo Finance -> TradingView per link esterno.
+
+    Esempi:
+    - AAPL      -> NASDAQ:AAPL
+    - MSFT      -> NASDAQ:MSFT
+    - JPM       -> NYSE:JPM
+    - SWDA.MI   -> MIL:SWDA
+
+    Se il simbolo contiene già il mercato TradingView, viene mantenuto.
+    """
+    symbol = str(symbol or "").strip().upper()
+
+    if not symbol:
+        return "NASDAQ:AAPL"
+
+    if ":" in symbol:
+        return symbol
+
+    if symbol.endswith(".MI"):
+        return "MIL:" + symbol.replace(".MI", "")
+
+    nasdaq_symbols = {
+        "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "NFLX", "ADBE",
+        "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN", "PEP", "COST", "AMAT", "MU",
+        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI"
+    }
+
+    nyse_symbols = {
+        "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "KO", "PG", "JNJ", "UNH", "HD",
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT",
+        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
+    }
+
+    if symbol in nasdaq_symbols:
+        return "NASDAQ:" + symbol
+
+    if symbol in nyse_symbols:
+        return "NYSE:" + symbol
+
+    return "NASDAQ:" + symbol
+
+
+def url_tradingview(symbol):
+    tv_symbol = simbolo_tradingview(symbol)
+    return "https://www.tradingview.com/chart/?symbol=" + tv_symbol
 
 
 # =========================
@@ -743,14 +767,12 @@ def render_row_streamlit(symbol, metrics, current):
             action_col_0, action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(5)
 
             with action_col_0:
-                if st.button(
+                st.link_button(
                     "📊",
-                    key="tv_tradingview_graph_" + symbol + "_" + current,
+                    url_tradingview(symbol),
                     use_container_width=True,
-                    help="Apri grafico TradingView"
-                ):
-                    st.session_state["ticker_selezionato_tv"] = symbol
-                    st.switch_page("pages/grafico_tradingview.py")
+                    help="Apri TradingView esterno"
+                )
 
             with action_col_1:
                 if st.button(
