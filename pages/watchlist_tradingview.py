@@ -2,7 +2,6 @@ import json
 import re
 from pathlib import Path
 from html import escape
-from urllib.parse import quote_plus
 
 import pandas as pd
 import streamlit as st
@@ -53,11 +52,12 @@ local_css(WATCHLIST_TV_CSS)
 st.markdown(
     """
     <style>
-    .tv-tab-link {
+    /* =========================
+       TAB WATCHLIST - ST.BUTTON
+       ========================= */
+
+    div[class*="st-key-tv_tab_"] .stButton > button {
         min-height: 46px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         width: 100%;
         border-radius: 10px;
         border: 1px solid rgba(48, 54, 61, 0.95);
@@ -71,14 +71,15 @@ st.markdown(
         transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
     }
 
-    .tv-tab-link:hover {
+    div[class*="st-key-tv_tab_"] .stButton > button:hover {
         border-color: rgba(0, 176, 255, 0.65);
         background: linear-gradient(180deg, #27303a 0%, #1b222c 100%);
         color: #ffffff !important;
         transform: translateY(-1px);
     }
 
-    .tv-tab-active {
+    div[class*="st-key-tv_tab_active_"] .stButton > button,
+    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
         border-color: rgba(0, 176, 255, 0.75);
         box-shadow:
             inset 0 1px 0 rgba(255,255,255,0.06),
@@ -86,7 +87,8 @@ st.markdown(
             0 0 14px rgba(0, 176, 255, 0.12);
     }
 
-    .tv-tab-zone {
+    div[class*="st-key-tv_tab_zone_"] .stButton > button,
+    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
         background:
             radial-gradient(circle at top right, rgba(255, 140, 0, 0.20), transparent 34%),
             linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(255, 179, 71, 0.07) 100%);
@@ -96,7 +98,8 @@ st.markdown(
             0 0 15px rgba(255, 140, 0, 0.28);
     }
 
-    .tv-tab-zone:hover {
+    div[class*="st-key-tv_tab_zone_"] .stButton > button:hover,
+    div[class*="st-key-tv_tab_active_zone_"] .stButton > button:hover {
         border-color: rgba(255, 179, 71, 0.98);
         background:
             radial-gradient(circle at top right, rgba(255, 140, 0, 0.25), transparent 34%),
@@ -106,7 +109,7 @@ st.markdown(
             0 0 18px rgba(255, 140, 0, 0.42);
     }
 
-    .tv-tab-zone.tv-tab-active {
+    div[class*="st-key-tv_tab_active_zone_"] .stButton > button {
         border-color: rgba(255, 179, 71, 1);
         box-shadow:
             inset 0 1px 0 rgba(255,255,255,0.07),
@@ -384,47 +387,6 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
-# QUERY PARAM SOLO PER TAB
-# =========================
-
-def query_value(name):
-    value = st.query_params.get(name, None)
-
-    if isinstance(value, list):
-        return value[0] if value else None
-
-    return value
-
-
-def clear_query_params():
-    try:
-        st.query_params.clear()
-    except Exception:
-        pass
-
-
-def gestisci_tab_da_query():
-    tab_name = query_value("tv_select_tab")
-
-    if not tab_name:
-        return
-
-    data = st.session_state.get("tv_watchlists_data")
-
-    if not data:
-        clear_query_params()
-        return
-
-    if tab_name in data.get("watchlists", {}):
-        st.session_state["tv_current_list"] = tab_name
-        data["active_watchlist"] = tab_name
-        salva_sessione_su_disco()
-
-    clear_query_params()
-    st.rerun()
-
-
-# =========================
 # HELPERS DATI YFINANCE
 # =========================
 
@@ -665,29 +627,6 @@ def classe_zona_sma(value):
     return classe_percentuale(value)
 
 
-def tab_url(name):
-    return "?tv_select_tab=" + quote_plus(name)
-
-
-def render_tab_link(name, current, in_zone):
-    classi = ["tv-tab-link"]
-
-    if name == current:
-        classi.append("tv-tab-active")
-
-    if in_zone:
-        classi.append("tv-tab-zone")
-
-    prefix = "▶ " if name == current else ""
-    class_attr = " ".join(classi)
-
-    return (
-        f'<a class="{class_attr}" href="{tab_url(name)}" title="Apri watchlist {escape(name)}">'
-        f'{prefix}{escape(name)}'
-        '</a>'
-    )
-
-
 def cell_html(label, value, css_class="tv-cell-value"):
     return (
         f'<div class="tv-cell-label">{escape(label)}</div>'
@@ -697,6 +636,19 @@ def cell_html(label, value, css_class="tv-cell-value"):
 
 def slug_safe(value):
     return re.sub(r"[^A-Za-z0-9_]+", "_", str(value)).strip("_") or "item"
+
+
+def tab_container_key(name, current, in_zone):
+    if name == current and in_zone:
+        prefix = "tv_tab_active_zone_"
+    elif name == current:
+        prefix = "tv_tab_active_"
+    elif in_zone:
+        prefix = "tv_tab_zone_"
+    else:
+        prefix = "tv_tab_normal_"
+
+    return prefix + slug_safe(name)
 
 
 # =========================
@@ -854,9 +806,6 @@ if "tv_current_list" not in st.session_state:
 if "tv_show_create_panel" not in st.session_state:
     st.session_state["tv_show_create_panel"] = False
 
-# Gestione query params solo per i tab.
-gestisci_tab_da_query()
-
 
 # =========================
 # PAGE HEADER
@@ -912,13 +861,19 @@ watchlist_names = list(watchlists.keys())
 cols = st.columns(len(watchlist_names) + 1)
 
 for idx, name in enumerate(watchlist_names):
+    current_tab = st.session_state["tv_current_list"]
     in_zone = watchlist_has_sma200_zone(name)
+    is_active = name == current_tab
+    label = ("▶ " if is_active else "") + name
+    container_key = tab_container_key(name, current_tab, in_zone)
 
     with cols[idx]:
-        st.markdown(
-            render_tab_link(name, st.session_state["tv_current_list"], in_zone),
-            unsafe_allow_html=True
-        )
+        with st.container(key=container_key):
+            if st.button(label, key="tv_tab_btn_" + slug_safe(name), use_container_width=True):
+                st.session_state["tv_current_list"] = name
+                st.session_state["tv_watchlists_data"]["active_watchlist"] = name
+                salva_sessione_su_disco()
+                st.rerun()
 
 if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
     st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
