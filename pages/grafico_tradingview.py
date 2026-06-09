@@ -97,9 +97,9 @@ def bottone_torna_watchlist():
 
 
 def tradingview_widget_html(tv_symbol):
-    # VERSIONE TEST: studi in formato semplice.
-    # Se il widget gratuito TradingView ignora inputs/overrides avanzati,
-    # questa variante prova almeno a far comparire gli indicatori.
+    # Versione stabile: widget TradingView pulito con toolbar superiore e laterale visibili.
+    # Gli studi automatici sono stati rimossi perché nel widget embedded gratuito possono
+    # far sparire o degradare toolbar e componenti UI.
     config = {
         "autosize": True,
         "symbol": tv_symbol,
@@ -121,24 +121,8 @@ def tradingview_widget_html(tv_symbol):
         "hotlist": False,
         "withdateranges": True,
         "save_image": True,
-        "support_host": "https://www.tradingview.com",
-        "studies": [
-            "MAWeighted@tv-basicstudies",
-            "MAWeighted@tv-basicstudies",
-            "MAExp@tv-basicstudies",
-            "MASimple@tv-basicstudies"
-        ],
-        "studies_overrides": {
-            "moving average weighted.length": 21,
-            "moving average weighted.ma.color": "#ffffff",
-            "moving average weighted.ma.linewidth": 2,
-            "moving average exponential.length": 200,
-            "moving average exponential.ma.color": "#ffeb3b",
-            "moving average exponential.ma.linewidth": 2,
-            "moving average.length": 200,
-            "moving average.ma.color": "#ff9800",
-            "moving average.ma.linewidth": 2
-        }
+        "enable_publishing": False,
+        "support_host": "https://www.tradingview.com"
     }
 
     config_json = json.dumps(config, ensure_ascii=False, indent=8)
