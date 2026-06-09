@@ -4,11 +4,6 @@ from pathlib import Path
 import streamlit as st
 import yfinance as yf
 
-try:
-    from streamlit_sortables import sort_items
-except Exception:
-    sort_items = None
-
 
 # =========================
 # PROTEZIONE LOGIN
@@ -66,12 +61,15 @@ DEFAULT_DATA = {
 # PERSISTENZA JSON LOCALE
 # =========================
 
+def copia_default_data():
+    return json.loads(json.dumps(DEFAULT_DATA))
+
+
 def normalizza_dati_watchlists(data):
     if not isinstance(data, dict):
-        return DEFAULT_DATA.copy()
+        return copia_default_data()
 
     if "watchlists" not in data or not isinstance(data["watchlists"], dict):
-        # Compatibilita con formato semplice: {"Default": ["AAPL"]}
         if all(isinstance(value, list) for value in data.values()):
             data = {
                 "version": 1,
@@ -79,7 +77,7 @@ def normalizza_dati_watchlists(data):
                 "watchlists": data
             }
         else:
-            return DEFAULT_DATA.copy()
+            return copia_default_data()
 
     if "version" not in data:
         data["version"] = 1
@@ -90,7 +88,6 @@ def normalizza_dati_watchlists(data):
         watchlists = {"Default": []}
         data["watchlists"] = watchlists
 
-    # Pulisce nomi liste e ticker
     watchlists_pulite = {}
 
     for nome_lista, simboli in watchlists.items():
@@ -127,8 +124,8 @@ def normalizza_dati_watchlists(data):
 
 def carica_watchlists_da_json():
     if not WATCHLISTS_JSON.exists():
-        salva_watchlists_su_json(DEFAULT_DATA)
-        return DEFAULT_DATA.copy()
+        salva_watchlists_su_json(copia_default_data())
+        return copia_default_data()
 
     try:
         with open(WATCHLISTS_JSON, "r", encoding="utf-8") as file:
@@ -137,7 +134,7 @@ def carica_watchlists_da_json():
         return normalizza_dati_watchlists(data)
 
     except Exception:
-        return DEFAULT_DATA.copy()
+        return copia_default_data()
 
 
 def salva_watchlists_su_json(data):
@@ -159,6 +156,58 @@ def salva_sessione_su_disco():
     data = st.session_state["tv_watchlists_data"]
     data["active_watchlist"] = st.session_state.get("tv_current_list")
     salva_watchlists_su_json(data)
+
+
+# =========================
+# ORDINAMENTO SENZA COMPONENTI ESTERNI
+# =========================
+
+def sposta_elemento(lista, elemento, direzione):
+    lista_nuova = list(lista)
+
+    if elemento not in lista_nuova:
+        return lista_nuova
+
+    indice = lista_nuova.index(elemento)
+    nuovo_indice = indice + direzione
+
+    if nuovo_indice < 0 or nuovo_indice >= len(lista_nuova):
+        return lista_nuova
+
+    lista_nuova[indice], lista_nuova[nuovo_indice] = lista_nuova[nuovo_indice], lista_nuova[indice]
+
+    return lista_nuova
+
+
+def sposta_watchlist(nome_lista, direzione):
+    data = st.session_state["tv_watchlists_data"]
+    watchlists = data["watchlists"]
+    nomi = list(watchlists.keys())
+    nuovi_nomi = sposta_elemento(nomi, nome_lista, direzione)
+
+    if nuovi_nomi == nomi:
+        return
+
+    nuova_struttura = {}
+
+    for nome in nuovi_nomi:
+        nuova_struttura[nome] = watchlists[nome]
+
+    data["watchlists"] = nuova_struttura
+    data["active_watchlist"] = st.session_state["tv_current_list"]
+    salva_sessione_su_disco()
+
+
+def sposta_simbolo(nome_lista, simbolo, direzione):
+    data = st.session_state["tv_watchlists_data"]
+    simboli = data["watchlists"].get(nome_lista, [])
+    nuovi_simboli = sposta_elemento(simboli, simbolo, direzione)
+
+    if nuovi_simboli == simboli:
+        return
+
+    data["watchlists"][nome_lista] = nuovi_simboli
+    salva_sessione_su_disco()
 
 
 # =========================
@@ -280,6 +329,10 @@ def classe_zona_sma(value):
     return classe_percentuale(value)
 
 
+# =========================
+# RENDER HTML
+# =========================
+
 def render_header():
     st.markdown(
         """
@@ -361,7 +414,7 @@ def render_row(symbol, metrics):
         '</div>'
         '<div>'
         '<div class="tv-metric-label">Azioni</div>'
-        '<div class="tv-actions-note">Grafico / elimina</div>'
+        '<div class="tv-actions-note">Grafico / sposta / elimina</div>'
         '</div>'
         '</div>'
         '</div>'
@@ -424,41 +477,12 @@ st.markdown(
     <div class="tv-tabs-panel">
         <div class="tv-tabs-title">Watchlist</div>
         <div class="tv-tabs-subtitle">
-            Seleziona una lista, crea nuove tab o riordina i nomi delle watchlist.
+            Seleziona una lista, crea nuove tab o sposta la tab attiva con i pulsanti sinistra/destra.
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
-
-watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
-watchlist_names = list(watchlists.keys())
-
-if sort_items is not None and len(watchlist_names) > 1:
-    sorted_tab_names = sort_items(
-        watchlist_names,
-        direction="horizontal",
-        key="tv_sortable_tabs"
-    )
-
-    if sorted_tab_names and sorted_tab_names != watchlist_names:
-        nuova_struttura = {}
-
-        for name in sorted_tab_names:
-            if name in watchlists:
-                nuova_struttura[name] = watchlists[name]
-
-        st.session_state["tv_watchlists_data"]["watchlists"] = nuova_struttura
-
-        if st.session_state["tv_current_list"] not in nuova_struttura:
-            st.session_state["tv_current_list"] = list(nuova_struttura.keys())[0]
-
-        st.session_state["tv_watchlists_data"]["active_watchlist"] = st.session_state["tv_current_list"]
-        salva_sessione_su_disco()
-        st.rerun()
-
-elif sort_items is None:
-    st.info("Ordinamento tab non disponibile: verifica streamlit-sortables in requirements.txt.")
 
 watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
 watchlist_names = list(watchlists.keys())
@@ -482,6 +506,18 @@ for idx, name in enumerate(watchlist_names):
 if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
     st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
     st.rerun()
+
+move_tab_col_1, move_tab_col_2, move_tab_col_3 = st.columns([1, 1, 5])
+
+with move_tab_col_1:
+    if st.button("← Tab", key="tv_move_tab_left", use_container_width=True):
+        sposta_watchlist(st.session_state["tv_current_list"], -1)
+        st.rerun()
+
+with move_tab_col_2:
+    if st.button("Tab →", key="tv_move_tab_right", use_container_width=True):
+        sposta_watchlist(st.session_state["tv_current_list"], 1)
+        st.rerun()
 
 
 # =========================
@@ -603,7 +639,7 @@ st.markdown(
         <div class="tv-rows-title">Simboli monitorati</div>
         <div class="tv-rows-subtitle">
             Le righe in arancione indicano simboli entro +/-10% dalla SMA 200W.
-            Il pulsante Grafico apre il grafico weekly esistente.
+            Usa Su/Giu per ordinare senza componenti esterni bloccati dal sistema.
         </div>
     </div>
     """,
@@ -630,48 +666,16 @@ if not symbols:
 
 
 # =========================
-# ORDINAMENTO RIGHE
-# =========================
-
-if sort_items is not None and len(symbols) > 1:
-    st.markdown(
-        """
-        <div class="tv-sort-panel">
-            <div class="tv-sort-title">Ordina simboli</div>
-            <div class="tv-sort-subtitle">
-                Trascina i simboli per modificare l'ordine della watchlist attiva.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    sorted_symbols = sort_items(
-        symbols,
-        direction="vertical",
-        key="tv_sortable_rows_" + current
-    )
-
-    if sorted_symbols and sorted_symbols != symbols:
-        st.session_state["tv_watchlists_data"]["watchlists"][current] = sorted_symbols
-        salva_sessione_su_disco()
-        st.rerun()
-
-elif sort_items is None:
-    st.info("Ordinamento righe non disponibile: verifica streamlit-sortables in requirements.txt.")
-
-
-# =========================
 # RENDER RIGHE
 # =========================
-
-symbols = st.session_state["tv_watchlists_data"]["watchlists"].get(current, [])
 
 for symbol in list(symbols):
     metrics = get_stock_metrics(symbol)
     render_row(symbol, metrics)
 
-    action_col_1, action_col_2, action_col_3 = st.columns([1.1, 1.1, 4.8])
+    action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(
+        [1.1, 0.75, 0.75, 1.1, 4.3]
+    )
 
     with action_col_1:
         if st.button("Grafico", key="tv_graph_" + symbol + "_" + current):
@@ -679,6 +683,16 @@ for symbol in list(symbols):
             st.switch_page("pages/grafico.py")
 
     with action_col_2:
+        if st.button("Su", key="tv_up_" + symbol + "_" + current):
+            sposta_simbolo(current, symbol, -1)
+            st.rerun()
+
+    with action_col_3:
+        if st.button("Giu", key="tv_down_" + symbol + "_" + current):
+            sposta_simbolo(current, symbol, 1)
+            st.rerun()
+
+    with action_col_4:
         if st.button("Elimina", key="tv_delete_" + symbol + "_" + current):
             if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                 st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
