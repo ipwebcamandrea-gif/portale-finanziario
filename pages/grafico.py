@@ -175,10 +175,7 @@ def ultimo_punto_valido(data, colonna):
 
 def calcola_wma(serie, periodo):
     pesi = np.arange(1, periodo + 1)
-    return serie.rolling(periodo).apply(
-        lambda valori: np.dot(valori, pesi) / pesi.sum(),
-        raw=True
-    )
+    return serie.rolling(periodo).apply(lambda valori: np.dot(valori, pesi) / pesi.sum(), raw=True)
 
 
 def calcola_rsi(serie, periodo):
@@ -233,7 +230,6 @@ def formatta_numero(valore):
         return "N/D"
     return f"{valore:.2f}"
 
-
 # =========================
 # LIN REG CHANNEL
 # =========================
@@ -266,15 +262,7 @@ def calcola_linreg_channel(data):
     date_future = [ultima_data + pd.Timedelta(weeks=i) for i in range(1, LINREG_FORWARD_WEEKS + 2)]
     date_canale = date_reali + date_future
 
-    return pd.DataFrame(
-        {
-            "Upper": upper,
-            "Center": centro,
-            "Lower": lower
-        },
-        index=pd.Index(date_canale)
-    )
-
+    return pd.DataFrame({"Upper": upper, "Center": centro, "Lower": lower}, index=pd.Index(date_canale))
 
 # =========================
 # LABELS
@@ -287,14 +275,7 @@ def costruisci_label_items(data):
     def aggiungi_media(colonna, testo, colore):
         _, valore = ultimo_punto_valido(data, colonna)
         if valore is not None:
-            items.append(
-                {
-                    "text": ":" + testo + "  " + formatta_numero(valore),
-                    "value": valore,
-                    "color": colore,
-                    "font_color": "#0e1117"
-                }
-            )
+            items.append({"text": ":" + testo + "  " + formatta_numero(valore), "value": valore, "color": colore, "font_color": "#0e1117"})
 
     aggiungi_media("WMA21W", "WMA 21W", "#ffffff")
     aggiungi_media("WMA50W", "WMA 50W", "#26a69a")
@@ -311,14 +292,7 @@ def costruisci_label_items(data):
         colore_prezzo = "#26a69a"
         if close_precedente is not None and close_attuale < close_precedente:
             colore_prezzo = "#ef5350"
-        items.append(
-            {
-                "text": "PREZZO  " + formatta_numero(close_attuale),
-                "value": close_attuale,
-                "color": colore_prezzo,
-                "font_color": "#ffffff"
-            }
-        )
+        items.append({"text": "PREZZO  " + formatta_numero(close_attuale), "value": close_attuale, "color": colore_prezzo, "font_color": "#ffffff"})
 
     ultime_52 = data.tail(52)
     if not ultime_52.empty:
@@ -326,24 +300,10 @@ def costruisci_label_items(data):
         min_52w = valore_float(ultime_52["Low"].min())
 
         if max_52w is not None:
-            items.append(
-                {
-                    "text": "MAX 52W  " + formatta_numero(max_52w),
-                    "value": max_52w,
-                    "color": "#ef5350",
-                    "font_color": "#ffffff"
-                }
-            )
+            items.append({"text": "MAX 52W  " + formatta_numero(max_52w), "value": max_52w, "color": "#ef5350", "font_color": "#ffffff"})
 
         if min_52w is not None:
-            items.append(
-                {
-                    "text": "MIN 52W  " + formatta_numero(min_52w),
-                    "value": min_52w,
-                    "color": "#26a69a",
-                    "font_color": "#ffffff"
-                }
-            )
+            items.append({"text": "MIN 52W  " + formatta_numero(min_52w), "value": min_52w, "color": "#26a69a", "font_color": "#ffffff"})
 
     return items
 
@@ -397,7 +357,6 @@ def aggiungi_label_items(fig, items, label_x):
             col=1
         )
 
-
 # =========================
 # CHART
 # =========================
@@ -412,13 +371,7 @@ def crea_grafico_weekly(data, ticker):
         cols=1,
         shared_xaxes=True,
         vertical_spacing=0.025,
-        row_heights=[0.58, 0.14, 0.14, 0.14],
-        subplot_titles=(
-            ticker + " - Weekly 10 anni",
-            "Volume weekly",
-            "Stoch RSI (20,5,5)",
-            "MACD Weekly (12,26,9)"
-        )
+        row_heights=[0.58, 0.14, 0.14, 0.14]
     )
 
     if linreg is not None:
@@ -494,7 +447,16 @@ def crea_grafico_weekly(data, ticker):
         y_max = max(y_max, max(item["label_y"] for item in label_items))
     y_padding = max((y_max - y_min) * 0.05, 1)
 
-    fig.update_layout(template="plotly_dark", height=1050, margin=dict(l=10, r=190, t=70, b=10), xaxis_rangeslider_visible=False, hovermode="closest", plot_bgcolor="#0e1117", paper_bgcolor="#0e1117", legend=dict(orientation="h", yanchor="bottom", y=1.03, xanchor="right", x=1))
+    fig.update_layout(
+        template="plotly_dark",
+        height=1050,
+        margin=dict(l=10, r=190, t=25, b=10),
+        xaxis_rangeslider_visible=False,
+        hovermode="closest",
+        plot_bgcolor="#0e1117",
+        paper_bgcolor="#0e1117",
+        showlegend=False
+    )
 
     fig.update_xaxes(range=[x_min, x_max], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.55)", spikethickness=1, spikedash="dot", spikemode="across", spikesnap="cursor")
     fig.update_yaxes(title_text="Prezzo", row=1, col=1, side="right", range=[y_min - y_padding, y_max + y_padding], showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False, showspikes=True, spikecolor="rgba(255,255,255,0.55)", spikethickness=1, spikedash="dot", spikesnap="cursor")
@@ -502,7 +464,6 @@ def crea_grafico_weekly(data, ticker):
     fig.update_yaxes(title_text="Stoch RSI", row=3, col=1, side="right", range=[0, 100], showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     fig.update_yaxes(title_text="MACD", row=4, col=1, side="right", showgrid=True, gridcolor="rgba(255,255,255,0.05)", zeroline=False)
     return fig
-
 
 # =========================
 # PAGE
@@ -516,15 +477,11 @@ if ticker is None:
     st.stop()
 
 st.title("Analisi Weekly: " + ticker)
-st.caption("Vista weekly a 10 anni con medie mobili, LinReg 100 close 2 2, Stoch RSI (20,5,5), MACD weekly standard (12,26,9), prezzo attuale e Max/Min 52W.")
 
-col_back, col_info = st.columns([1.2, 4.8])
+col_back, col_space = st.columns([1.2, 4.8])
 
 with col_back:
     bottone_torna_watchlist("back_top")
-
-with col_info:
-    st.info("Label anti-sovrapposizione | Prezzo attuale tratteggiato | Crosshair tratteggiato | Max/Min 52W")
 
 with st.spinner("Caricamento dati weekly a 10 anni per " + ticker + "..."):
     data, errore_download = scarica_dati_weekly(ticker)
@@ -539,19 +496,6 @@ if data.empty:
 
 data = prepara_indicatori_weekly(data)
 
-st.subheader("Metriche weekly")
-metriche = {
-    "prezzo": valore_float(data["Close"].iloc[-1]),
-    "sma_200w": valore_float(data["SMA200W"].iloc[-1])
-}
-
-kpi_1, kpi_2 = st.columns(2)
-with kpi_1:
-    st.metric("Prezzo attuale", formatta_numero(metriche["prezzo"]))
-with kpi_2:
-    st.metric("SMA 200W", formatta_numero(metriche["sma_200w"]))
-
-st.subheader("Grafico tecnico weekly")
 fig = crea_grafico_weekly(data, ticker)
 st.plotly_chart(fig, use_container_width=True)
 
