@@ -35,10 +35,7 @@ WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
 def local_css(file_path):
     if file_path.exists():
         with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(
-                "<style>" + file.read() + "</style>",
-                unsafe_allow_html=True
-            )
+            st.markdown("<style>" + file.read() + "</style>", unsafe_allow_html=True)
 
 
 local_css(GLOBAL_CSS)
@@ -388,6 +385,31 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
     salva_sessione_su_disco()
 
 
+def elimina_watchlist_attiva():
+    data = st.session_state["tv_watchlists_data"]
+    watchlists = data["watchlists"]
+    current = st.session_state["tv_current_list"]
+
+    if len(watchlists) <= 1:
+        st.warning("Non puoi eliminare l'unica watchlist rimasta.")
+        return
+
+    nomi = list(watchlists.keys())
+    indice_corrente = nomi.index(current) if current in nomi else 0
+
+    if current in watchlists:
+        del watchlists[current]
+
+    nuovi_nomi = list(watchlists.keys())
+    nuovo_indice = min(indice_corrente, len(nuovi_nomi) - 1)
+    nuovo_corrente = nuovi_nomi[nuovo_indice]
+
+    st.session_state["tv_current_list"] = nuovo_corrente
+    data["active_watchlist"] = nuovo_corrente
+    salva_sessione_su_disco()
+    st.cache_data.clear()
+
+
 # =========================
 # HELPERS DATI YFINANCE
 # =========================
@@ -430,14 +452,7 @@ def get_stock_metrics(symbol):
         currency = ""
 
         try:
-            intraday = yf.download(
-                symbol,
-                period="5d",
-                interval="15m",
-                auto_adjust=False,
-                progress=False,
-                threads=False
-            )
+            intraday = yf.download(symbol, period="5d", interval="15m", auto_adjust=False, progress=False, threads=False)
 
             if intraday is not None and not intraday.empty:
                 intraday = normalizza_dataframe_yfinance(intraday)
@@ -452,14 +467,7 @@ def get_stock_metrics(symbol):
             pass
 
         try:
-            daily = yf.download(
-                symbol,
-                period="10d",
-                interval="1d",
-                auto_adjust=False,
-                progress=False,
-                threads=False
-            )
+            daily = yf.download(symbol, period="10d", interval="1d", auto_adjust=False, progress=False, threads=False)
 
             if daily is not None and not daily.empty:
                 daily = normalizza_dataframe_yfinance(daily)
@@ -495,22 +503,10 @@ def get_stock_metrics(symbol):
                 return None
 
             if last_price is None:
-                last_price = valore_float_sicuro(
-                    fast_value(
-                        "last_price",
-                        "lastPrice",
-                        "regularMarketPrice"
-                    )
-                )
+                last_price = valore_float_sicuro(fast_value("last_price", "lastPrice", "regularMarketPrice"))
 
             if previous_close is None:
-                previous_close = valore_float_sicuro(
-                    fast_value(
-                        "previous_close",
-                        "previousClose",
-                        "regularMarketPreviousClose"
-                    )
-                )
+                previous_close = valore_float_sicuro(fast_value("previous_close", "previousClose", "regularMarketPreviousClose"))
 
             currency = fast_value("currency") or ""
 
@@ -521,14 +517,7 @@ def get_stock_metrics(symbol):
         dist_pct = None
 
         try:
-            weekly = yf.download(
-                symbol,
-                period="10y",
-                interval="1wk",
-                auto_adjust=False,
-                progress=False,
-                threads=False
-            )
+            weekly = yf.download(symbol, period="10y", interval="1wk", auto_adjust=False, progress=False, threads=False)
 
             if weekly is not None and not weekly.empty:
                 weekly = normalizza_dataframe_yfinance(weekly)
@@ -540,9 +529,7 @@ def get_stock_metrics(symbol):
                         last_price = valore_float_sicuro(weekly["Close"].iloc[-1])
 
                     if len(weekly) >= 200:
-                        sma200 = valore_float_sicuro(
-                            weekly["Close"].rolling(200).mean().iloc[-1]
-                        )
+                        sma200 = valore_float_sicuro(weekly["Close"].rolling(200).mean().iloc[-1])
 
                         if sma200 is not None and sma200 != 0 and last_price is not None:
                             dist_pct = ((last_price - sma200) / sma200) * 100
@@ -786,6 +773,9 @@ if "tv_current_list" not in st.session_state:
 if "tv_show_create_panel" not in st.session_state:
     st.session_state["tv_show_create_panel"] = False
 
+if "tv_add_symbol_nonce" not in st.session_state:
+    st.session_state["tv_add_symbol_nonce"] = 0
+
 
 # =========================
 # PAGE HEADER + AZIONI ALTE
@@ -830,29 +820,24 @@ for idx, name in enumerate(watchlist_names):
                 salva_sessione_su_disco()
                 st.rerun()
 
-if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
-    st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
-    st.rerun()
+with cols[-1]:
+    if st.button("+", key="tv_create_toggle", use_container_width=True):
+        st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
+        st.rerun()
+
+    if st.button("−", key="tv_delete_current_list", use_container_width=True, help="Elimina la watchlist attiva"):
+        elimina_watchlist_attiva()
+        st.rerun()
 
 move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns([0.55, 0.55, 1.1, 4.8])
 
 with move_tab_col_1:
-    if st.button(
-        "◀",
-        key="tv_move_tab_left",
-        use_container_width=True,
-        help="Sposta la watchlist attiva a sinistra"
-    ):
+    if st.button("◀", key="tv_move_tab_left", use_container_width=True, help="Sposta la watchlist attiva a sinistra"):
         sposta_watchlist(st.session_state["tv_current_list"], -1)
         st.rerun()
 
 with move_tab_col_2:
-    if st.button(
-        "▶",
-        key="tv_move_tab_right",
-        use_container_width=True,
-        help="Sposta la watchlist attiva a destra"
-    ):
+    if st.button("▶", key="tv_move_tab_right", use_container_width=True, help="Sposta la watchlist attiva a destra"):
         sposta_watchlist(st.session_state["tv_current_list"], 1)
         st.rerun()
 
@@ -870,11 +855,7 @@ if st.session_state["tv_show_create_panel"]:
     create_col_1, create_col_2, create_col_3 = st.columns([3, 1, 1])
 
     with create_col_1:
-        new_list_name = st.text_input(
-            "Nome nuova watchlist",
-            placeholder="Esempio: Tech USA, ETF, Italia",
-            key="tv_new_list_name"
-        ).strip()
+        new_list_name = st.text_input("Nome nuova watchlist", placeholder="Esempio: Tech USA, ETF, Italia", key="tv_new_list_name").strip()
 
     with create_col_2:
         st.write("")
@@ -921,15 +902,11 @@ symbols = watchlists.get(current, [])
 # AGGIUNGI SIMBOLO
 # =========================
 
+add_input_key = "tv_add_symbol_input_" + str(st.session_state["tv_add_symbol_nonce"])
 add_col_1, add_col_2 = st.columns([5, 1])
 
 with add_col_1:
-    new_symbol = st.text_input(
-        "Aggiungi simbolo",
-        placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI",
-        label_visibility="collapsed",
-        key="tv_add_symbol_input"
-    ).upper().strip()
+    new_symbol = st.text_input("Aggiungi simbolo", placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI", label_visibility="collapsed", key=add_input_key).upper().strip()
 
 with add_col_2:
     if st.button("Aggiungi", key="tv_add_symbol_btn", use_container_width=True):
@@ -939,6 +916,7 @@ with add_col_2:
             st.warning("Simbolo gia presente nella watchlist.")
         else:
             st.session_state["tv_watchlists_data"]["watchlists"][current].append(new_symbol)
+            st.session_state["tv_add_symbol_nonce"] += 1
             salva_sessione_su_disco()
             st.cache_data.clear()
             st.success(new_symbol + " aggiunto.")
