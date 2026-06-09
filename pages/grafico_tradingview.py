@@ -82,7 +82,6 @@ def simbolo_tradingview(symbol):
     if symbol in nyse_symbols:
         return "NYSE:" + symbol
 
-    # Default operativo: molti ticker tech USA sono su NASDAQ.
     return "NASDAQ:" + symbol
 
 
@@ -98,11 +97,13 @@ def bottone_torna_watchlist():
 
 
 def tradingview_widget_html(tv_symbol):
+    # VERSIONE TEST: studi in formato semplice.
+    # Se il widget gratuito TradingView ignora inputs/overrides avanzati,
+    # questa variante prova almeno a far comparire gli indicatori.
     config = {
         "autosize": True,
         "symbol": tv_symbol,
         "interval": "W",
-        # 120M = circa 10 anni. Evita il comportamento di ALL che può portare il widget a visualizzare 1M.
         "range": "120M",
         "timezone": "Europe/Rome",
         "theme": "dark",
@@ -122,44 +123,19 @@ def tradingview_widget_html(tv_symbol):
         "save_image": True,
         "support_host": "https://www.tradingview.com",
         "studies": [
-            {
-                "id": "MAWeighted@tv-basicstudies",
-                "inputs": {"length": 21},
-                "overrides": {
-                    "plot.color": "#ffffff",
-                    "plot.linewidth": 2
-                }
-            },
-            {
-                "id": "MAWeighted@tv-basicstudies",
-                "inputs": {"length": 50},
-                "overrides": {
-                    "plot.color": "#26a69a",
-                    "plot.linewidth": 2
-                }
-            },
-            {
-                "id": "MAExp@tv-basicstudies",
-                "inputs": {"length": 200},
-                "overrides": {
-                    "plot.color": "#ffeb3b",
-                    "plot.linewidth": 2
-                }
-            },
-            {
-                "id": "MASimple@tv-basicstudies",
-                "inputs": {"length": 200},
-                "overrides": {
-                    "plot.color": "#ff9800",
-                    "plot.linewidth": 2
-                }
-            }
+            "MAWeighted@tv-basicstudies",
+            "MAWeighted@tv-basicstudies",
+            "MAExp@tv-basicstudies",
+            "MASimple@tv-basicstudies"
         ],
         "studies_overrides": {
+            "moving average weighted.length": 21,
             "moving average weighted.ma.color": "#ffffff",
             "moving average weighted.ma.linewidth": 2,
+            "moving average exponential.length": 200,
             "moving average exponential.ma.color": "#ffeb3b",
             "moving average exponential.ma.linewidth": 2,
+            "moving average.length": 200,
             "moving average.ma.color": "#ff9800",
             "moving average.ma.linewidth": 2
         }
