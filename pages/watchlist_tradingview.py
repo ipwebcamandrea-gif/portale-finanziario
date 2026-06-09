@@ -745,12 +745,12 @@ def render_row_streamlit(symbol, metrics, current):
             with action_col_0:
                 if st.button(
                     "📊",
-                    key="tv_alt_graph_" + symbol + "_" + current,
+                    key="tv_tradingview_graph_" + symbol + "_" + current,
                     use_container_width=True,
-                    help="Grafico alternativo - pagina futura"
+                    help="Apri grafico TradingView"
                 ):
-                    st.session_state["ticker_selezionato_alt"] = symbol
-                    st.info("Pagina grafico alternativo non ancora collegata.")
+                    st.session_state["ticker_selezionato_tv"] = symbol
+                    st.switch_page("pages/grafico_tradingview.py")
 
             with action_col_1:
                 if st.button(
