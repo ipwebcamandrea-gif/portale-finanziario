@@ -120,10 +120,16 @@ st.markdown(
     }
 
     .tv-native-row-topline-zone {
-        height: 2px;
-        background: linear-gradient(90deg, rgba(255, 140, 0, 0.95), rgba(255, 179, 71, 0.35), rgba(255, 140, 0, 0.0));
-        margin: 0.65rem 0 0.48rem 0;
-        box-shadow: 0 0 10px rgba(255, 140, 0, 0.35);
+        height: 10px;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid rgba(255, 140, 0, 0.82);
+        background:
+            radial-gradient(circle at top right, rgba(255, 140, 0, 0.24), transparent 34%),
+            linear-gradient(135deg, rgba(255, 140, 0, 0.26) 0%, rgba(255, 179, 71, 0.14) 100%);
+        margin: 0.75rem 0 0.38rem 0;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 0 15px rgba(255, 140, 0, 0.38);
     }
 
     .tv-cell-label {
