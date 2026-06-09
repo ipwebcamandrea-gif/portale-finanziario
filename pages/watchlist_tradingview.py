@@ -14,10 +14,8 @@ import yfinance as yf
 
 if not st.session_state.get("authenticated", False):
     st.error("Accesso non autorizzato.")
-
     if st.button("Torna al Login"):
         st.switch_page("main.py")
-
     st.stop()
 
 
@@ -27,7 +25,6 @@ if not st.session_state.get("authenticated", False):
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WATCHLISTS_JSON = ROOT_DIR / "watchlists.json"
-
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
 
@@ -132,6 +129,16 @@ st.markdown(
             inset 0 1px 0 rgba(255,255,255,0.07),
             0 0 0 1px rgba(255, 179, 71, 0.18),
             0 0 20px rgba(255, 140, 0, 0.42);
+    }
+
+    /* Bottoni + e - compatti, affiancati */
+    div[class*="st-key-tv_tab_action_btn_"] .stButton > button {
+        min-height: 34px;
+        height: 34px;
+        padding: 0.08rem 0.20rem;
+        border-radius: 9px;
+        font-size: 1.02rem;
+        font-weight: 950;
     }
 
     div[class*="st-key-tv_normal_row_"] {
@@ -727,32 +734,17 @@ def render_row_streamlit(symbol, metrics, current):
                     st.switch_page("pages/grafico.py")
 
             with action_col_2:
-                if st.button(
-                    "▲",
-                    key="tv_up_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Sposta simbolo in alto"
-                ):
+                if st.button("▲", key="tv_up_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in alto"):
                     sposta_simbolo(current, symbol, -1)
                     st.rerun()
 
             with action_col_3:
-                if st.button(
-                    "▼",
-                    key="tv_down_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Sposta simbolo in basso"
-                ):
+                if st.button("▼", key="tv_down_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in basso"):
                     sposta_simbolo(current, symbol, 1)
                     st.rerun()
 
             with action_col_4:
-                if st.button(
-                    "×",
-                    key="tv_delete_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Elimina simbolo dalla watchlist"
-                ):
+                if st.button("×", key="tv_delete_" + symbol + "_" + current, use_container_width=True, help="Elimina simbolo dalla watchlist"):
                     if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                         st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
                         salva_sessione_su_disco()
@@ -821,13 +813,19 @@ for idx, name in enumerate(watchlist_names):
                 st.rerun()
 
 with cols[-1]:
-    if st.button("+", key="tv_create_toggle", use_container_width=True):
-        st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
-        st.rerun()
+    plus_col, minus_col = st.columns(2, gap="small")
 
-    if st.button("−", key="tv_delete_current_list", use_container_width=True, help="Elimina la watchlist attiva"):
-        elimina_watchlist_attiva()
-        st.rerun()
+    with plus_col:
+        with st.container(key="tv_tab_action_btn_plus"):
+            if st.button("+", key="tv_create_toggle", use_container_width=True, help="Crea nuova watchlist"):
+                st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
+                st.rerun()
+
+    with minus_col:
+        with st.container(key="tv_tab_action_btn_minus"):
+            if st.button("−", key="tv_delete_current_list", use_container_width=True, help="Elimina la watchlist attiva"):
+                elimina_watchlist_attiva()
+                st.rerun()
 
 move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns([0.55, 0.55, 1.1, 4.8])
 
