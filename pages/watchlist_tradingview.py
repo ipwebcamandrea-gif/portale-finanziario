@@ -46,7 +46,7 @@ local_css(WATCHLIST_TV_CSS)
 
 
 # =========================
-# CSS MINIMO PER AZIONI INLINE
+# CSS INLINE SPECIFICO
 # =========================
 
 st.markdown(
@@ -54,6 +54,67 @@ st.markdown(
     <style>
     .tv-row-grid {
         grid-template-columns: 1.40fr 1.00fr 1.05fr 1.18fr 0.82fr 1.25fr;
+    }
+
+    .tv-tab-link {
+        min-height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid rgba(48, 54, 61, 0.95);
+        background: linear-gradient(180deg, #202733 0%, #151b24 100%);
+        color: #e6edf3 !important;
+        text-decoration: none !important;
+        font-size: 0.98rem;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .tv-tab-link:hover {
+        border-color: rgba(0, 176, 255, 0.65);
+        background: linear-gradient(180deg, #27303a 0%, #1b222c 100%);
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+
+    .tv-tab-active {
+        border-color: rgba(0, 176, 255, 0.75);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 0 0 1px rgba(0, 176, 255, 0.16),
+            0 0 14px rgba(0, 176, 255, 0.12);
+    }
+
+    .tv-tab-zone {
+        background:
+            radial-gradient(circle at top right, rgba(255, 140, 0, 0.20), transparent 34%),
+            linear-gradient(135deg, rgba(255, 140, 0, 0.15) 0%, rgba(255, 179, 71, 0.07) 100%);
+        border-color: rgba(255, 140, 0, 0.82);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 0 15px rgba(255, 140, 0, 0.28);
+    }
+
+    .tv-tab-zone:hover {
+        border-color: rgba(255, 179, 71, 0.98);
+        background:
+            radial-gradient(circle at top right, rgba(255, 140, 0, 0.25), transparent 34%),
+            linear-gradient(135deg, rgba(255, 140, 0, 0.22) 0%, rgba(255, 179, 71, 0.10) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 0 18px rgba(255, 140, 0, 0.42);
+    }
+
+    .tv-tab-zone.tv-tab-active {
+        border-color: rgba(255, 179, 71, 1);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.07),
+            0 0 0 1px rgba(255, 179, 71, 0.18),
+            0 0 20px rgba(255, 140, 0, 0.42);
     }
 
     .tv-actions-inline {
@@ -309,6 +370,27 @@ def clear_query_params():
         st.query_params.clear()
     except Exception:
         pass
+
+
+def gestisci_tab_da_query():
+    tab_name = query_value("tv_select_tab")
+
+    if not tab_name:
+        return
+
+    data = st.session_state.get("tv_watchlists_data")
+
+    if not data:
+        clear_query_params()
+        return
+
+    if tab_name in data.get("watchlists", {}):
+        st.session_state["tv_current_list"] = tab_name
+        data["active_watchlist"] = tab_name
+        salva_sessione_su_disco()
+
+    clear_query_params()
+    st.rerun()
 
 
 def gestisci_azioni_da_query():
@@ -604,6 +686,10 @@ def action_url(action, symbol, list_name):
     )
 
 
+def tab_url(name):
+    return "?tv_select_tab=" + quote_plus(name)
+
+
 def chart_svg():
     return (
         '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">'
@@ -625,6 +711,25 @@ def render_action_links(symbol, current):
         f'<a class="tv-action-link" href="{action_url("down", symbol, current)}" title="Sposta {symbol_safe} in basso">▼</a>'
         f'<a class="tv-action-link tv-action-link-danger" href="{action_url("delete", symbol, current)}" title="Elimina {symbol_safe} da {current_safe}">×</a>'
         '</div>'
+    )
+
+
+def render_tab_link(name, current, in_zone):
+    classi = ["tv-tab-link"]
+
+    if name == current:
+        classi.append("tv-tab-active")
+
+    if in_zone:
+        classi.append("tv-tab-zone")
+
+    prefix = "▶ " if name == current else ""
+    class_attr = " ".join(classi)
+
+    return (
+        f'<a class="{class_attr}" href="{tab_url(name)}" title="Apri watchlist {escape(name)}">'
+        f'{prefix}{escape(name)}'
+        '</a>'
     )
 
 
@@ -742,9 +847,9 @@ if "tv_current_list" not in st.session_state:
 if "tv_show_create_panel" not in st.session_state:
     st.session_state["tv_show_create_panel"] = False
 
-# Gestione click sulle azioni inline nella card
-# Deve avvenire dopo l'inizializzazione della sessione.
+# Gestione query params dopo inizializzazione sessione.
 gestisci_azioni_da_query()
+gestisci_tab_da_query()
 
 
 # =========================
@@ -788,6 +893,7 @@ st.markdown(
         <div class="tv-tabs-title">Watchlist</div>
         <div class="tv-tabs-subtitle">
             Seleziona una lista, crea nuove tab o sposta la tab attiva con i pulsanti sinistra/destra.
+            Le tab arancioni indicano almeno un simbolo entro +/-10% dalla SMA 200W.
         </div>
     </div>
     """,
@@ -800,18 +906,13 @@ watchlist_names = list(watchlists.keys())
 cols = st.columns(len(watchlist_names) + 1)
 
 for idx, name in enumerate(watchlist_names):
-    is_active = name == st.session_state["tv_current_list"]
     in_zone = watchlist_has_sma200_zone(name)
 
-    prefix = "▶ " if is_active else ""
-    zone_mark = "■ " if in_zone else ""
-    label = prefix + zone_mark + name
-
-    if cols[idx].button(label, key="tv_tab_" + name, use_container_width=True):
-        st.session_state["tv_current_list"] = name
-        st.session_state["tv_watchlists_data"]["active_watchlist"] = name
-        salva_sessione_su_disco()
-        st.rerun()
+    with cols[idx]:
+        st.markdown(
+            render_tab_link(name, st.session_state["tv_current_list"], in_zone),
+            unsafe_allow_html=True
+        )
 
 if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
     st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
