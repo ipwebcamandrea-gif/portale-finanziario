@@ -34,6 +34,45 @@ def local_css(file_path):
 local_css(GLOBAL_CSS)
 local_css(GRAFICO_CSS)
 
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-grafico_back_watchlist"] .stButton > button {
+        min-height: 42px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 140, 0, 0.62);
+        background:
+            radial-gradient(circle at top left, rgba(255, 140, 0, 0.24), transparent 36%),
+            linear-gradient(135deg, rgba(255, 140, 0, 0.16) 0%, rgba(22, 27, 34, 0.96) 100%);
+        color: #e6edf3 !important;
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 0 14px rgba(255, 140, 0, 0.18);
+    }
+
+    div[class*="st-key-grafico_back_watchlist"] .stButton > button:hover {
+        border-color: rgba(255, 179, 71, 0.98);
+        background:
+            radial-gradient(circle at top left, rgba(255, 140, 0, 0.32), transparent 36%),
+            linear-gradient(135deg, rgba(255, 140, 0, 0.24) 0%, rgba(22, 27, 34, 1) 100%);
+        transform: translateY(-1px);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.07),
+            0 0 20px rgba(255, 140, 0, 0.28);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+def bottone_torna_watchlist(key, use_container_width=True):
+    with st.container(key="grafico_back_watchlist_" + key):
+        if st.button("← Watchlist", key=key, use_container_width=use_container_width, help="Torna alla Watchlist TradingView"):
+            st.switch_page("pages/watchlist_tradingview.py")
+
 # =========================
 # PARAMETERS
 # =========================
@@ -473,8 +512,7 @@ ticker = st.session_state.get("ticker_selezionato", None)
 
 if ticker is None:
     st.warning("Nessun ticker selezionato. Apri questa pagina dalla Watchlist usando il pulsante grafico.")
-    if st.button("Torna al Cockpit"):
-        st.switch_page("pages/dashboard.py")
+    bottone_torna_watchlist("back_no_ticker")
     st.stop()
 
 st.title("Analisi Weekly: " + ticker)
@@ -483,8 +521,7 @@ st.caption("Vista weekly a 10 anni con medie mobili, LinReg 100 close 2 2, Stoch
 col_back, col_info = st.columns([1.2, 4.8])
 
 with col_back:
-    if st.button("Torna al Cockpit"):
-        st.switch_page("pages/dashboard.py")
+    bottone_torna_watchlist("back_top")
 
 with col_info:
     st.info("Label anti-sovrapposizione | Prezzo attuale tratteggiato | Crosshair tratteggiato | Max/Min 52W")
@@ -497,8 +534,7 @@ if errore_download:
 
 if data.empty:
     st.error("Non sono stati trovati dati validi per il ticker " + ticker + ". Controlla il simbolo nella Watchlist.")
-    if st.button("Torna al Cockpit", key="back_no_data"):
-        st.switch_page("pages/dashboard.py")
+    bottone_torna_watchlist("back_no_data")
     st.stop()
 
 data = prepara_indicatori_weekly(data)
