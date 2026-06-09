@@ -34,6 +34,56 @@ local_css(GLOBAL_CSS)
 
 
 # =========================
+# CSS INLINE LOGIN SPECIFICO
+# =========================
+
+st.markdown(
+    """
+    <style>
+    div[class*="st-key-login_card"] {
+        max-width: 460px;
+        margin: 0 auto;
+        padding: 2.2rem 2.4rem 2.3rem 2.4rem;
+        border-radius: 16px;
+        border: 1px solid rgba(48, 54, 61, 0.92);
+        background:
+            radial-gradient(circle at top right, rgba(0, 176, 255, 0.13), transparent 36%),
+            linear-gradient(135deg, rgba(22, 27, 34, 0.98) 0%, rgba(13, 17, 23, 0.98) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 0 24px rgba(0, 176, 255, 0.08);
+    }
+
+    div[class*="st-key-login_card"] h3 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 1.1rem;
+    }
+
+    div[class*="st-key-login_card"] .stButton > button,
+    div[class*="st-key-login_card"] [data-testid="stFormSubmitButton"] > button {
+        min-height: 40px;
+        border-radius: 10px;
+        font-weight: 900;
+        border-color: rgba(0, 176, 255, 0.56);
+        background:
+            radial-gradient(circle at top left, rgba(0, 176, 255, 0.22), transparent 36%),
+            linear-gradient(135deg, rgba(0, 176, 255, 0.15) 0%, rgba(22, 27, 34, 0.95) 100%);
+    }
+
+    div[class*="st-key-login_card"] .stButton > button:hover,
+    div[class*="st-key-login_card"] [data-testid="stFormSubmitButton"] > button:hover {
+        border-color: rgba(0, 176, 255, 0.88);
+        box-shadow: 0 0 18px rgba(0, 176, 255, 0.18);
+        transform: translateY(-1px);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# =========================
 # SESSION STATE
 # =========================
 
@@ -81,9 +131,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-with st.container():
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-
+with st.container(key="login_card"):
     st.subheader("Accedi al sistema")
 
     with st.form("login_form"):
@@ -105,5 +153,3 @@ with st.container():
             else:
                 st.session_state["authenticated"] = False
                 st.error("Credenziali non valide")
-
-    st.markdown("</div>", unsafe_allow_html=True)
