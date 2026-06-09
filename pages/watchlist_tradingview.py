@@ -414,7 +414,7 @@ def render_row(symbol, metrics):
         '</div>'
         '<div>'
         '<div class="tv-metric-label">Azioni</div>'
-        '<div class="tv-actions-note">Grafico / sposta / elimina</div>'
+        '<div class="tv-actions-note">Azioni rapide</div>'
         '</div>'
         '</div>'
         '</div>'
@@ -507,15 +507,25 @@ if cols[-1].button("+", key="tv_create_toggle", use_container_width=True):
     st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
     st.rerun()
 
-move_tab_col_1, move_tab_col_2, move_tab_col_3 = st.columns([1, 1, 5])
+move_tab_col_1, move_tab_col_2, move_tab_col_3 = st.columns([0.55, 0.55, 5.9])
 
 with move_tab_col_1:
-    if st.button("← Tab", key="tv_move_tab_left", use_container_width=True):
+    if st.button(
+        "◀",
+        key="tv_move_tab_left",
+        use_container_width=True,
+        help="Sposta la watchlist attiva a sinistra"
+    ):
         sposta_watchlist(st.session_state["tv_current_list"], -1)
         st.rerun()
 
 with move_tab_col_2:
-    if st.button("Tab →", key="tv_move_tab_right", use_container_width=True):
+    if st.button(
+        "▶",
+        key="tv_move_tab_right",
+        use_container_width=True,
+        help="Sposta la watchlist attiva a destra"
+    ):
         sposta_watchlist(st.session_state["tv_current_list"], 1)
         st.rerun()
 
@@ -639,7 +649,7 @@ st.markdown(
         <div class="tv-rows-title">Simboli monitorati</div>
         <div class="tv-rows-subtitle">
             Le righe in arancione indicano simboli entro +/-10% dalla SMA 200W.
-            Usa Su/Giu per ordinare senza componenti esterni bloccati dal sistema.
+            Usa i pulsanti compatti per grafico, ordinamento ed eliminazione.
         </div>
     </div>
     """,
@@ -674,26 +684,46 @@ for symbol in list(symbols):
     render_row(symbol, metrics)
 
     action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(
-        [1.1, 0.75, 0.75, 1.1, 4.3]
+        [0.55, 0.55, 0.55, 0.55, 5.8]
     )
 
     with action_col_1:
-        if st.button("Grafico", key="tv_graph_" + symbol + "_" + current):
+        if st.button(
+            "📈",
+            key="tv_graph_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Apri grafico tecnico weekly"
+        ):
             st.session_state["ticker_selezionato"] = symbol
             st.switch_page("pages/grafico.py")
 
     with action_col_2:
-        if st.button("Su", key="tv_up_" + symbol + "_" + current):
+        if st.button(
+            "▲",
+            key="tv_up_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Sposta simbolo in alto"
+        ):
             sposta_simbolo(current, symbol, -1)
             st.rerun()
 
     with action_col_3:
-        if st.button("Giu", key="tv_down_" + symbol + "_" + current):
+        if st.button(
+            "▼",
+            key="tv_down_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Sposta simbolo in basso"
+        ):
             sposta_simbolo(current, symbol, 1)
             st.rerun()
 
     with action_col_4:
-        if st.button("Elimina", key="tv_delete_" + symbol + "_" + current):
+        if st.button(
+            "×",
+            key="tv_delete_" + symbol + "_" + current,
+            use_container_width=True,
+            help="Elimina simbolo dalla watchlist"
+        ):
             if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                 st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
                 salva_sessione_su_disco()
