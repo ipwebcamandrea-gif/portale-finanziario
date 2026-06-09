@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 import yfinance as yf
 
@@ -174,7 +175,10 @@ def sposta_elemento(lista, elemento, direzione):
     if nuovo_indice < 0 or nuovo_indice >= len(lista_nuova):
         return lista_nuova
 
-    lista_nuova[indice], lista_nuova[nuovo_indice] = lista_nuova[nuovo_indice], lista_nuova[indice]
+    lista_nuova[indice], lista_nuova[nuovo_indice] = (
+        lista_nuova[nuovo_indice],
+        lista_nuova[indice]
+    )
 
     return lista_nuova
 
@@ -211,49 +215,191 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
+# HELPERS DATI YFINANCE
+# =========================
+
+def normalizza_dataframe_yfinance(data):
+    if isinstance(data.columns, pd.MultiIndex):
+        livello_0 = list(data.columns.get_level_values(0))
+        livello_1 = list(data.columns.get_level_values(1))
+
+        if "Close" in livello_0:
+            data.columns = data.columns.get_level_values(0)
+        elif "Close" in livello_1:
+            data.columns = data.columns.get_level_values(1)
+
+    return data
+
+
+def valore_float_sicuro(value):
+    if isinstance(value, pd.Series):
+        value = value.dropna()
+        if value.empty:
+            return None
+        value = value.iloc[0]
+
+    if value is None or pd.isna(value):
+        return None
+
+    return float(value)
+
+
+# =========================
 # METRICHE FINANZIARIE
 # =========================
 
 @st.cache_data(ttl=900, show_spinner=False)
 def get_stock_metrics(symbol):
     try:
-        ticker = yf.Ticker(symbol)
-        info = ticker.fast_info
+        last_price = None
+        previous_close = None
+        currency = ""
 
-        last_price = info.get("last_price", None)
-        previous_close = info.get("previous_close", None)
-        currency = info.get("currency", "")
+        # =========================
+        # 1. Prezzo operativo intraday 15 minuti
+        # =========================
+
+        try:
+            intraday = yf.download(
+                symbol,
+                period="5d",
+                interval="15m",
+                auto_adjust=False,
+                progress=False,
+                threads=False
+            )
+
+            if intraday is not None and not intraday.empty:
+                intraday = normalizza_dataframe_yfinance(intraday)
+
+                if "Close" in intraday.columns:
+                    intraday = intraday.dropna(subset=["Close"])
+
+                    if not intraday.empty:
+                        last_price = valore_float_sicuro(intraday["Close"].iloc[-1])
+
+        except Exception:
+            pass
+
+        # =========================
+        # 2. Previous close giornaliero
+        # =========================
+
+        try:
+            daily = yf.download(
+                symbol,
+                period="10d",
+                interval="1d",
+                auto_adjust=False,
+                progress=False,
+                threads=False
+            )
+
+            if daily is not None and not daily.empty:
+                daily = normalizza_dataframe_yfinance(daily)
+
+                if "Close" in daily.columns:
+                    daily = daily.dropna(subset=["Close"])
+
+                    if len(daily) >= 2:
+                        previous_close = valore_float_sicuro(daily["Close"].iloc[-2])
+                    elif len(daily) == 1:
+                        previous_close = valore_float_sicuro(daily["Close"].iloc[-1])
+
+        except Exception:
+            pass
+
+        # =========================
+        # 3. Fallback fast_info per valuta/prezzo
+        # =========================
+
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.fast_info
+
+            def fast_value(*keys):
+                for key in keys:
+                    try:
+                        value = info.get(key, None)
+                    except Exception:
+                        try:
+                            value = info[key]
+                        except Exception:
+                            value = None
+
+                    if value is not None:
+                        return value
+
+                return None
+
+            if last_price is None:
+                last_price = valore_float_sicuro(
+                    fast_value(
+                        "last_price",
+                        "lastPrice",
+                        "regularMarketPrice"
+                    )
+                )
+
+            if previous_close is None:
+                previous_close = valore_float_sicuro(
+                    fast_value(
+                        "previous_close",
+                        "previousClose",
+                        "regularMarketPreviousClose"
+                    )
+                )
+
+            currency = fast_value("currency") or ""
+
+        except Exception:
+            pass
+
+        # =========================
+        # 4. SMA 200W su weekly 10 anni
+        # =========================
+
+        sma200 = None
+        dist_pct = None
+
+        try:
+            weekly = yf.download(
+                symbol,
+                period="10y",
+                interval="1wk",
+                auto_adjust=False,
+                progress=False,
+                threads=False
+            )
+
+            if weekly is not None and not weekly.empty:
+                weekly = normalizza_dataframe_yfinance(weekly)
+
+                if "Close" in weekly.columns:
+                    weekly = weekly.dropna(subset=["Close"])
+
+                    if last_price is None and not weekly.empty:
+                        last_price = valore_float_sicuro(weekly["Close"].iloc[-1])
+
+                    if len(weekly) >= 200:
+                        sma200 = valore_float_sicuro(
+                            weekly["Close"].rolling(200).mean().iloc[-1]
+                        )
+
+                        if sma200 is not None and sma200 != 0 and last_price is not None:
+                            dist_pct = ((last_price - sma200) / sma200) * 100
+
+        except Exception:
+            pass
+
+        # =========================
+        # 5. Variazione giornaliera
+        # =========================
 
         daily_change_pct = None
 
         if last_price is not None and previous_close is not None and previous_close != 0:
             daily_change_pct = ((last_price - previous_close) / previous_close) * 100
-
-        hist = ticker.history(period="10y", interval="1wk")
-
-        sma200 = None
-        dist_pct = None
-
-        if hist is not None and not hist.empty and "Close" in hist.columns:
-            hist = hist.dropna(subset=["Close"])
-
-            if len(hist) >= 200:
-                sma200 = hist["Close"].rolling(200).mean().iloc[-1]
-
-                if sma200 is not None and sma200 != 0 and last_price is not None:
-                    dist_pct = ((last_price - sma200) / sma200) * 100
-
-        if last_price is not None:
-            last_price = float(last_price)
-
-        if daily_change_pct is not None:
-            daily_change_pct = float(daily_change_pct)
-
-        if sma200 is not None:
-            sma200 = float(sma200)
-
-        if dist_pct is not None:
-            dist_pct = float(dist_pct)
 
         return {
             "last_price": last_price,
@@ -371,7 +517,7 @@ def render_active_list_card(current, symbols):
             <div class="tv-active-list-label">Lista attiva</div>
             <div class="tv-active-list-name">{current}</div>
             <div class="tv-active-list-note">
-                {len(symbols)} simboli monitorati · dati Yahoo Finance · SMA 200W su timeframe weekly.
+                {len(symbols)} simboli monitorati · Yahoo Finance 15m/delayed · SMA 200W su timeframe weekly.
             </div>
         </div>
         """,
@@ -648,7 +794,7 @@ st.markdown(
     <div class="tv-rows-toolbar">
         <div class="tv-rows-title">Simboli monitorati</div>
         <div class="tv-rows-subtitle">
-            Le righe in arancione indicano simboli entro +/-10% dalla SMA 200W.
+            Prezzo da Yahoo Finance intraday 15m/delayed. SMA 200W calcolata su weekly 10 anni.
             Usa i pulsanti compatti per grafico, ordinamento ed eliminazione.
         </div>
     </div>
