@@ -52,10 +52,6 @@ local_css(WATCHLIST_TV_CSS)
 st.markdown(
     """
     <style>
-    .tv-row-grid {
-        grid-template-columns: 1.40fr 1.00fr 1.05fr 1.18fr 0.82fr 1.25fr;
-    }
-
     .tv-tab-link {
         min-height: 46px;
         display: flex;
@@ -117,22 +113,76 @@ st.markdown(
             0 0 20px rgba(255, 140, 0, 0.42);
     }
 
-    .tv-actions-note {
+    .tv-native-row-topline {
+        height: 1px;
+        background: rgba(48, 54, 61, 0.85);
+        margin: 0.55rem 0 0.48rem 0;
+    }
+
+    .tv-native-row-topline-zone {
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 140, 0, 0.95), rgba(255, 179, 71, 0.35), rgba(255, 140, 0, 0.0));
+        margin: 0.65rem 0 0.48rem 0;
+        box-shadow: 0 0 10px rgba(255, 140, 0, 0.35);
+    }
+
+    .tv-cell-label {
+        color: #9fb3d1;
+        font-size: 0.68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 0.18rem;
+        white-space: nowrap;
+    }
+
+    .tv-cell-value {
+        color: #e6edf3;
+        font-size: 0.92rem;
+        font-weight: 850;
+        line-height: 1.25;
+        word-break: break-word;
+    }
+
+    .tv-symbol-value {
+        font-size: 1.02rem;
+        font-weight: 950;
+        letter-spacing: -0.025em;
+    }
+
+    .tv-symbol-note-inline {
         color: var(--text-muted);
         font-size: 0.72rem;
-        font-weight: 750;
+        font-weight: 650;
+        margin-top: 0.10rem;
     }
 
-    @media (max-width: 1100px) {
-        .tv-row-grid {
-            grid-template-columns: 1.35fr 1fr 1fr;
-        }
+    .tv-zone-text-inline {
+        color: #f5c542;
+        font-weight: 950;
     }
 
-    @media (max-width: 760px) {
-        .tv-row-grid {
-            grid-template-columns: 1fr;
-        }
+    .tv-positive-inline {
+        color: #00c853;
+        font-weight: 950;
+    }
+
+    .tv-negative-inline {
+        color: #ff1744;
+        font-weight: 950;
+    }
+
+    .tv-neutral-inline {
+        color: var(--text-muted);
+        font-weight: 850;
+    }
+
+    /* Compatta i pulsanti Streamlit nella colonna azioni della riga */
+    div[data-testid="stHorizontalBlock"] .stButton > button {
+        min-height: 30px;
+        padding: 0.20rem 0.35rem;
+        border-radius: 9px;
+        font-weight: 950;
     }
     </style>
     """,
@@ -575,20 +625,20 @@ def formatta_percentuale(value):
 
 def classe_percentuale(value):
     if value is None:
-        return "tv-neutral"
+        return "tv-neutral-inline"
 
     if value > 0:
-        return "tv-positive"
+        return "tv-positive-inline"
 
     if value < 0:
-        return "tv-negative"
+        return "tv-negative-inline"
 
-    return "tv-neutral"
+    return "tv-neutral-inline"
 
 
 def classe_zona_sma(value):
     if is_in_sma200_zone(value):
-        return "tv-zone-text"
+        return "tv-zone-text-inline"
 
     return classe_percentuale(value)
 
@@ -613,6 +663,13 @@ def render_tab_link(name, current, in_zone):
         f'<a class="{class_attr}" href="{tab_url(name)}" title="Apri watchlist {escape(name)}">'
         f'{prefix}{escape(name)}'
         '</a>'
+    )
+
+
+def cell_html(label, value, css_class="tv-cell-value"):
+    return (
+        f'<div class="tv-cell-label">{escape(label)}</div>'
+        f'<div class="{css_class}">{escape(value)}</div>'
     )
 
 
@@ -666,11 +723,10 @@ def render_active_list_card(current, symbols):
     )
 
 
-def render_row(symbol, metrics):
+def render_row_streamlit(symbol, metrics, current):
     dist_pct = metrics["dist_pct"]
     daily_pct = metrics["daily_change_pct"]
     sma200w = metrics.get("sma200w")
-    row_class = "tv-row tv-row-zone" if is_in_sma200_zone(dist_pct) else "tv-row"
 
     prezzo = formatta_prezzo(metrics["last_price"], metrics["currency"])
     sma200w_testo = formatta_prezzo(sma200w, metrics["currency"])
@@ -679,41 +735,85 @@ def render_row(symbol, metrics):
 
     daily_class = classe_percentuale(daily_pct)
     dist_class = classe_zona_sma(dist_pct)
+    in_zone = is_in_sma200_zone(dist_pct)
+    zone_note = "Zona SMA200W" if in_zone else "Monitoraggio"
 
-    zone_note = "Zona SMA200W" if is_in_sma200_zone(dist_pct) else "Monitoraggio"
+    if in_zone:
+        st.markdown('<div class="tv-native-row-topline-zone"></div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="tv-native-row-topline"></div>', unsafe_allow_html=True)
 
-    html = (
-        f'<div class="{row_class}">'
-        '<div class="tv-row-grid">'
-        '<div class="tv-symbol-block">'
-        f'<div class="tv-symbol">{escape(symbol)}</div>'
-        f'<div class="tv-symbol-note">{zone_note}</div>'
-        '</div>'
-        '<div>'
-        '<div class="tv-metric-label">Prezzo</div>'
-        f'<div class="tv-metric-value tv-price">{escape(prezzo)}</div>'
-        '</div>'
-        '<div>'
-        '<div class="tv-metric-label">SMA 200W</div>'
-        f'<div class="tv-metric-value tv-price">{escape(sma200w_testo)}</div>'
-        '</div>'
-        '<div>'
-        '<div class="tv-metric-label">Distanza SMA200W</div>'
-        f'<div class="tv-metric-value {dist_class}">{escape(distanza)}</div>'
-        '</div>'
-        '<div>'
-        '<div class="tv-metric-label">Daily</div>'
-        f'<div class="tv-metric-value {daily_class}">{escape(daily)}</div>'
-        '</div>'
-        '<div>'
-        '<div class="tv-metric-label">Azioni</div>'
-        '<div class="tv-actions-note">Usa i pulsanti sotto</div>'
-        '</div>'
-        '</div>'
-        '</div>'
+    row_col_1, row_col_2, row_col_3, row_col_4, row_col_5, row_col_6 = st.columns(
+        [1.40, 1.00, 1.05, 1.18, 0.82, 1.25],
+        vertical_alignment="center"
     )
 
-    st.markdown(html, unsafe_allow_html=True)
+    with row_col_1:
+        st.markdown(
+            '<div class="tv-cell-label">Ticker</div>'
+            f'<div class="tv-cell-value tv-symbol-value">{escape(symbol)}</div>'
+            f'<div class="tv-symbol-note-inline">{zone_note}</div>',
+            unsafe_allow_html=True
+        )
+
+    with row_col_2:
+        st.markdown(cell_html("Prezzo", prezzo), unsafe_allow_html=True)
+
+    with row_col_3:
+        st.markdown(cell_html("SMA 200W", sma200w_testo), unsafe_allow_html=True)
+
+    with row_col_4:
+        st.markdown(cell_html("Distanza SMA200W", distanza, dist_class), unsafe_allow_html=True)
+
+    with row_col_5:
+        st.markdown(cell_html("Daily", daily, daily_class), unsafe_allow_html=True)
+
+    with row_col_6:
+        st.markdown('<div class="tv-cell-label">Azioni</div>', unsafe_allow_html=True)
+        action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(4)
+
+        with action_col_1:
+            if st.button(
+                "📈",
+                key="tv_graph_" + symbol + "_" + current,
+                use_container_width=True,
+                help="Apri grafico tecnico weekly"
+            ):
+                st.session_state["ticker_selezionato"] = symbol
+                st.switch_page("pages/grafico.py")
+
+        with action_col_2:
+            if st.button(
+                "▲",
+                key="tv_up_" + symbol + "_" + current,
+                use_container_width=True,
+                help="Sposta simbolo in alto"
+            ):
+                sposta_simbolo(current, symbol, -1)
+                st.rerun()
+
+        with action_col_3:
+            if st.button(
+                "▼",
+                key="tv_down_" + symbol + "_" + current,
+                use_container_width=True,
+                help="Sposta simbolo in basso"
+            ):
+                sposta_simbolo(current, symbol, 1)
+                st.rerun()
+
+        with action_col_4:
+            if st.button(
+                "×",
+                key="tv_delete_" + symbol + "_" + current,
+                use_container_width=True,
+                help="Elimina simbolo dalla watchlist"
+            ):
+                if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
+                    st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
+                    salva_sessione_su_disco()
+                    st.cache_data.clear()
+                    st.rerun()
 
 
 # =========================
@@ -941,7 +1041,7 @@ st.markdown(
         <div class="tv-rows-title">Simboli monitorati</div>
         <div class="tv-rows-subtitle">
             Prezzo da Yahoo Finance intraday 15m/delayed. SMA 200W calcolata su weekly 10 anni.
-            Le azioni operative usano pulsanti Streamlit per mantenere stabile la sessione.
+            Le azioni sono integrate nella stessa riga usando pulsanti Streamlit stabili.
         </div>
     </div>
     """,
@@ -968,58 +1068,9 @@ if not symbols:
 
 
 # =========================
-# RENDER RIGHE + AZIONI STREAMLIT
+# RENDER RIGHE STREAMLIT NATIVE
 # =========================
 
 for symbol in list(symbols):
     metrics = get_stock_metrics(symbol)
-    render_row(symbol, metrics)
-
-    action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(
-        [0.55, 0.55, 0.55, 0.55, 5.8]
-    )
-
-    with action_col_1:
-        if st.button(
-            "📈",
-            key="tv_graph_" + symbol + "_" + current,
-            use_container_width=True,
-            help="Apri grafico tecnico weekly"
-        ):
-            st.session_state["ticker_selezionato"] = symbol
-            st.switch_page("pages/grafico.py")
-
-    with action_col_2:
-        if st.button(
-            "▲",
-            key="tv_up_" + symbol + "_" + current,
-            use_container_width=True,
-            help="Sposta simbolo in alto"
-        ):
-            sposta_simbolo(current, symbol, -1)
-            st.rerun()
-
-    with action_col_3:
-        if st.button(
-            "▼",
-            key="tv_down_" + symbol + "_" + current,
-            use_container_width=True,
-            help="Sposta simbolo in basso"
-        ):
-            sposta_simbolo(current, symbol, 1)
-            st.rerun()
-
-    with action_col_4:
-        if st.button(
-            "×",
-            key="tv_delete_" + symbol + "_" + current,
-            use_container_width=True,
-            help="Elimina simbolo dalla watchlist"
-        ):
-            if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
-                st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
-                salva_sessione_su_disco()
-                st.cache_data.clear()
-                st.rerun()
-
-    st.markdown("")
+    render_row_streamlit(symbol, metrics, current)
