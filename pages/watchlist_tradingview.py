@@ -52,6 +52,10 @@ local_css(WATCHLIST_TV_CSS)
 st.markdown(
     """
     <style>
+    .tv-row-grid {
+        grid-template-columns: 1.40fr 1.00fr 1.05fr 1.18fr 0.82fr 1.25fr;
+    }
+
     .tv-actions-inline {
         display: flex;
         align-items: center;
@@ -97,6 +101,18 @@ st.markdown(
     .tv-action-chart path,
     .tv-action-chart polyline {
         stroke: #00c853;
+    }
+
+    @media (max-width: 1100px) {
+        .tv-row-grid {
+            grid-template-columns: 1.35fr 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .tv-row-grid {
+            grid-template-columns: 1fr;
+        }
     }
     </style>
     """,
@@ -665,9 +681,11 @@ def render_active_list_card(current, symbols):
 def render_row(symbol, metrics, current):
     dist_pct = metrics["dist_pct"]
     daily_pct = metrics["daily_change_pct"]
+    sma200w = metrics.get("sma200w")
     row_class = "tv-row tv-row-zone" if is_in_sma200_zone(dist_pct) else "tv-row"
 
     prezzo = formatta_prezzo(metrics["last_price"], metrics["currency"])
+    sma200w_testo = formatta_prezzo(sma200w, metrics["currency"])
     distanza = formatta_percentuale(dist_pct)
     daily = formatta_percentuale(daily_pct)
 
@@ -687,6 +705,10 @@ def render_row(symbol, metrics, current):
         '<div>'
         '<div class="tv-metric-label">Prezzo</div>'
         f'<div class="tv-metric-value tv-price">{escape(prezzo)}</div>'
+        '</div>'
+        '<div>'
+        '<div class="tv-metric-label">SMA 200W</div>'
+        f'<div class="tv-metric-value tv-price">{escape(sma200w_testo)}</div>'
         '</div>'
         '<div>'
         '<div class="tv-metric-label">Distanza SMA200W</div>'
