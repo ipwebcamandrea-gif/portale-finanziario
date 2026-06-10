@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "PROVA DI FUN",
+    "active_watchlist": "ALTO BETA",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -21,10 +21,6 @@
         "TEST": [
             "MSFT",
             "TESLA"
-        ],
-        "PROVA DI FUN": [
-            "ORCL",
-            "MA"
         ],
         "ALTO BETA": [
             "ZETA"
