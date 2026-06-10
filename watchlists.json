@@ -42,7 +42,8 @@
             "ENI.MI"
         ],
         "CROLLO": [
-            "EURUSD"
+            "EURUSD",
+            "EUR/USD"
         ]
     }
 }
