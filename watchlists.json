@@ -13,13 +13,13 @@
             "GOOGL",
             "AAPL"
         ],
-        "ETF": [
-            "SWDA.MI",
-            "EIMI.MI"
-        ],
         "TEST": [
             "MSFT",
             "TESLA"
+        ],
+        "ETF": [
+            "SWDA.MI",
+            "EIMI.MI"
         ]
     }
 }
