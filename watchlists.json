@@ -1,21 +1,22 @@
 {
-  "version": 1,
-  "active_watchlist": "Default",
-  "watchlists": {
-    "Default": [
-      "AAPL",
-      "MSFT",
-      "GOOGL"
-    ],
-    "Finanza": [
-      "JPM",
-      "BAC",
-      "V",
-      "MA"
-    ],
-    "ETF": [
-      "SWDA.MI",
-      "EIMI.MI"
-    ]
-  }
+    "version": 1,
+    "active_watchlist": "TEST",
+    "watchlists": {
+        "Default": [
+            "AAPL",
+            "MSFT",
+            "GOOGL"
+        ],
+        "Finanza": [
+            "JPM",
+            "BAC",
+            "V",
+            "MA"
+        ],
+        "ETF": [
+            "SWDA.MI",
+            "EIMI.MI"
+        ],
+        "TEST": []
+    }
 }
