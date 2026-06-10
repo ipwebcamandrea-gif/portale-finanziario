@@ -44,7 +44,8 @@
         ],
         "CROLLO": [
             "EURUSD=X",
-            "^GSPC"
+            "^GSPC",
+            "^VIX"
         ]
     }
 }
