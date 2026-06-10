@@ -2,10 +2,6 @@
     "version": 1,
     "active_watchlist": "MEGA  CAP  SU ITA",
     "watchlists": {
-        "MEGA  CAP  SU ITA": [
-            "1AMZN.MI",
-            "1MSFT.MI"
-        ],
         "MEGA CAP USA": [
             "MSFT",
             "MA",
@@ -13,6 +9,10 @@
             "AAPL",
             "GOOGL",
             "HIMS"
+        ],
+        "MEGA  CAP  SU ITA": [
+            "1AMZN.MI",
+            "1MSFT.MI"
         ],
         "ETF": [
             "SWDA.MI",
