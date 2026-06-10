@@ -3,6 +3,7 @@ from html import escape
 
 import streamlit as st
 
+from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
 from utils.watchlist_storage import (
@@ -300,18 +301,7 @@ if "tv_show_rename_panel" not in st.session_state:
 # PAGE HEADER + AZIONI ALTE
 # =========================
 
-header_col_1, header_col_2 = st.columns([5.0, 1.35], vertical_alignment="center")
-
-with header_col_1:
-    render_header()
-    render_persistence_note()
-
-with header_col_2:
-    st.markdown('<div class="tv-modern-back-button">', unsafe_allow_html=True)
-    if st.button("← Cockpit", key="tv_back_cockpit", use_container_width=True):
-        st.switch_page("pages/dashboard.py")
-    st.markdown("</div>", unsafe_allow_html=True)
-
+render_watchlist_header()
 
 # =========================
 # TABS WATCHLIST + AZIONI
