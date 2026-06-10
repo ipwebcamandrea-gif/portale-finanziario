@@ -9,15 +9,15 @@
             "V",
             "MA"
         ],
+        "ETF": [
+            "SWDA.MI",
+            "EIMI.MI"
+        ],
         "Finanza": [
             "JPM",
             "BAC",
             "V",
             "MA"
-        ],
-        "ETF": [
-            "SWDA.MI",
-            "EIMI.MI"
         ],
         "TEST": [
             "TESLA",
