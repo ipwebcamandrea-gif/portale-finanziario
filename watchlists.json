@@ -17,6 +17,8 @@
             "SWDA.MI",
             "EIMI.MI"
         ],
-        "TEST": []
+        "TEST": [
+            "TESLA"
+        ]
     }
 }
