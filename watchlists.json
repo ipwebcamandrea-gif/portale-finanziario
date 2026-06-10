@@ -5,8 +5,8 @@
         "Default": [
             "MSFT",
             "AAPL",
-            "GOOGL",
             "MA",
+            "GOOGL",
             "V"
         ],
         "ETF": [
