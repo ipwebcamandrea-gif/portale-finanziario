@@ -2,13 +2,13 @@
     "version": 1,
     "active_watchlist": "MEGA ITA",
     "watchlists": {
-        "PROVA": [
-            "ORCL",
-            "MA"
-        ],
         "MEGA ITA": [
             "1MSFT.MI",
             "1AMZN.MI"
+        ],
+        "PROVA": [
+            "ORCL",
+            "MA"
         ],
         "Default": [
             "MSFT",
