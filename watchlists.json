@@ -43,7 +43,8 @@
             "ENI.MI"
         ],
         "CROLLO": [
-            "EURUSD=X"
+            "EURUSD=X",
+            "^GSPC"
         ]
     }
 }
