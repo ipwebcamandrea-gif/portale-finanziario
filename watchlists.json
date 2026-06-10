@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "Finanza",
+    "active_watchlist": "TEST",
     "watchlists": {
         "Default": [
             "AAPL",
@@ -12,12 +12,6 @@
         "ETF": [
             "SWDA.MI",
             "EIMI.MI"
-        ],
-        "Finanza": [
-            "JPM",
-            "BAC",
-            "V",
-            "MA"
         ],
         "TEST": [
             "TESLA",
