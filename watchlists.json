@@ -6,10 +6,6 @@
             "SWDA.MI",
             "EIMI.MI"
         ],
-        "TEST": [
-            "TESLA",
-            "MSFT"
-        ],
         "Default": [
             "1MSFT.MI",
             "MSFT",
@@ -17,6 +13,10 @@
             "V",
             "GOOGL",
             "AAPL"
+        ],
+        "TEST": [
+            "TESLA",
+            "MSFT"
         ]
     }
 }
