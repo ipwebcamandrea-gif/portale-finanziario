@@ -5,7 +5,8 @@
         "Default": [
             "AAPL",
             "MSFT",
-            "GOOGL"
+            "GOOGL",
+            "V"
         ],
         "Finanza": [
             "JPM",
