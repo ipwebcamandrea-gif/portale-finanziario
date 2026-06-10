@@ -17,13 +17,13 @@
             "SWDA.MI",
             "EIMI.MI"
         ],
-        "PROVA": [
-            "ORCL",
-            "MA"
-        ],
         "TEST": [
             "MSFT",
             "TESLA"
+        ],
+        "PROVA": [
+            "ORCL",
+            "MA"
         ]
     }
 }
