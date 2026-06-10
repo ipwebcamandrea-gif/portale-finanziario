@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "Default",
+    "active_watchlist": "MEGA ITA",
     "watchlists": {
         "Default": [
             "1MSFT.MI",
@@ -17,6 +17,7 @@
         "TEST": [
             "TESLA",
             "MSFT"
-        ]
+        ],
+        "MEGA ITA": []
     }
 }
