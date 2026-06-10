@@ -15,7 +15,8 @@
         ],
         "TEST": [
             "MSFT",
-            "TESLA"
+            "TESLA",
+            "HIMS"
         ],
         "ETF": [
             "SWDA.MI",
