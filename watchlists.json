@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TEST",
+    "active_watchlist": "ALTO BETA",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -17,10 +17,6 @@
         "ETF": [
             "SWDA.MI",
             "EIMI.MI"
-        ],
-        "TEST": [
-            "MSFT",
-            "TESLA"
         ],
         "ALTO BETA": [
             "ZETA"
