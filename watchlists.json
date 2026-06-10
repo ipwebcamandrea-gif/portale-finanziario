@@ -19,7 +19,8 @@
         ],
         "TEST": [
             "TESLA",
-            "MSFT"
+            "MSFT",
+            "TSLA"
         ]
     }
 }
