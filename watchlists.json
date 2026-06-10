@@ -19,8 +19,8 @@
         ],
         "TEST": [
             "MSFT",
-            "HIMS",
-            "TESLA"
+            "TESLA",
+            "HIMS"
         ]
     }
 }
