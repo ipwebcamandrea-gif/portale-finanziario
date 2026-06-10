@@ -41,6 +41,8 @@
             "UCG.MI",
             "ENI.MI"
         ],
-        "CROLLO": []
+        "CROLLO": [
+            "EURUSD"
+        ]
     }
 }
