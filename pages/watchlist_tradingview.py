@@ -7,6 +7,22 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 
+try:
+    from utils.github_storage import (
+        github_storage_enabled,
+        read_watchlists_from_github,
+        write_watchlists_to_github,
+    )
+except Exception:
+    def github_storage_enabled():
+        return False
+
+    def read_watchlists_from_github():
+        raise RuntimeError("Modulo github_storage non disponibile.")
+
+    def write_watchlists_to_github(data, previous_sha=None, commit_message=None):
+        raise RuntimeError("Modulo github_storage non disponibile.")
+
 
 # =========================
 # PROTEZIONE LOGIN
@@ -247,7 +263,7 @@ DEFAULT_DATA = {
 
 
 # =========================
-# PERSISTENZA JSON LOCALE
+# PERSISTENZA JSON + GITHUB
 # =========================
 
 def copia_default_data():
@@ -311,9 +327,29 @@ def normalizza_dati_watchlists(data):
     return data
 
 
+def salva_watchlists_locale(data):
+    data = normalizza_dati_watchlists(data)
+
+    with open(WATCHLISTS_JSON, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
+
+
 def carica_watchlists_da_json():
+    if github_storage_enabled():
+        try:
+            data, sha = read_watchlists_from_github()
+            data = normalizza_dati_watchlists(data)
+            st.session_state["tv_github_watchlists_sha"] = sha
+            st.session_state["tv_storage_mode"] = "github"
+            st.session_state["tv_last_github_error"] = ""
+            salva_watchlists_locale(data)
+            return data
+        except Exception as error:
+            st.session_state["tv_storage_mode"] = "locale_fallback"
+            st.session_state["tv_last_github_error"] = str(error)
+
     if not WATCHLISTS_JSON.exists():
-        salva_watchlists_su_json(copia_default_data())
+        salva_watchlists_locale(copia_default_data())
         return copia_default_data()
 
     try:
@@ -326,9 +362,26 @@ def carica_watchlists_da_json():
 
 def salva_watchlists_su_json(data):
     data = normalizza_dati_watchlists(data)
+    salva_watchlists_locale(data)
 
-    with open(WATCHLISTS_JSON, "w", encoding="utf-8") as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
+    if github_storage_enabled():
+        try:
+            previous_sha = st.session_state.get("tv_github_watchlists_sha")
+            response = write_watchlists_to_github(
+                data,
+                previous_sha=previous_sha,
+                commit_message="update: aggiorna watchlists.json da Streamlit"
+            )
+            new_sha = response.get("content", {}).get("sha")
+            if new_sha:
+                st.session_state["tv_github_watchlists_sha"] = new_sha
+            st.session_state["tv_storage_mode"] = "github"
+            st.session_state["tv_last_github_save_ok"] = True
+            st.session_state["tv_last_github_error"] = ""
+        except Exception as error:
+            st.session_state["tv_storage_mode"] = "locale_fallback"
+            st.session_state["tv_last_github_save_ok"] = False
+            st.session_state["tv_last_github_error"] = str(error)
 
 
 def aggiorna_sessione_da_disco():
@@ -639,17 +692,6 @@ def slug_safe(value):
 
 
 def simbolo_tradingview(symbol):
-    """
-    Conversione pratica Yahoo Finance -> TradingView per link esterno.
-
-    Esempi:
-    - AAPL      -> NASDAQ:AAPL
-    - MSFT      -> NASDAQ:MSFT
-    - JPM       -> NYSE:JPM
-    - SWDA.MI   -> MIL:SWDA
-
-    Se il simbolo contiene già il mercato TradingView, viene mantenuto.
-    """
     symbol = str(symbol or "").strip().upper()
 
     if not symbol:
@@ -703,15 +745,24 @@ def render_header():
 
 
 def render_persistence_note():
+    storage_mode = st.session_state.get("tv_storage_mode", "locale")
+    last_error = st.session_state.get("tv_last_github_error", "")
+
+    if storage_mode == "github":
+        title = "Modalita GitHub API"
+        text = "Le modifiche vengono salvate su watchlists.json nel branch data-watchlists del repository GitHub."
+    elif storage_mode == "locale_fallback":
+        title = "Modalita locale fallback"
+        text = "GitHub API non disponibile: le modifiche vengono salvate localmente. Ultimo errore: " + last_error
+    else:
+        title = "Modalita JSON locale"
+        text = "Le modifiche vengono salvate su watchlists.json nell'ambiente dell'app."
+
     st.markdown(
-        """
+        f"""
         <div class="tv-persistence-note">
-            <div class="tv-persistence-title">Modalita JSON locale</div>
-            <div class="tv-persistence-text">
-                In questa prima versione le modifiche vengono salvate su watchlists.json
-                nell'ambiente dell'app. In futuro potremo collegare lo stesso JSON a GitHub API
-                per persistenza definitiva su repository.
-            </div>
+            <div class="tv-persistence-title">{escape(title)}</div>
+            <div class="tv-persistence-text">{escape(text)}</div>
         </div>
         """,
         unsafe_allow_html=True
