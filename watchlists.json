@@ -15,13 +15,13 @@
             "V",
             "MA"
         ],
-        "TEST": [
-            "TESLA",
-            "MSFT"
-        ],
         "ETF": [
             "SWDA.MI",
             "EIMI.MI"
+        ],
+        "TEST": [
+            "TESLA",
+            "MSFT"
         ]
     }
 }
