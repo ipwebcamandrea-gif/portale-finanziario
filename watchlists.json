@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "Default",
+    "active_watchlist": "ALTO BETA",
     "watchlists": {
         "Default": [
             "MSFT",
@@ -25,6 +25,7 @@
         "PROVA DI FUN": [
             "ORCL",
             "MA"
-        ]
+        ],
+        "ALTO BETA": []
     }
 }
