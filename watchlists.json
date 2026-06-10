@@ -6,16 +6,16 @@
             "1MSFT.MI",
             "1AMZN.MI"
         ],
-        "PROVA": [
-            "ORCL",
-            "MA"
-        ],
         "Default": [
             "MSFT",
             "MA",
             "V",
             "AAPL",
             "GOOGL"
+        ],
+        "PROVA": [
+            "ORCL",
+            "MA"
         ],
         "ETF": [
             "SWDA.MI",
