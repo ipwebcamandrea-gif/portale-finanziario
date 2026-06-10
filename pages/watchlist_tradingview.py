@@ -7,6 +7,15 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 
+from utils.symbols import slug_safe, url_tradingview
+from utils.formatting import (
+    formatta_prezzo,
+    formatta_percentuale,
+    classe_percentuale,
+    classe_zona_sma,
+    cell_html,
+)
+
 try:
     from utils.github_storage import (
         github_storage_enabled,
@@ -638,95 +647,6 @@ def watchlist_has_sma200_zone(name):
             return True
 
     return False
-
-
-# =========================
-# FORMATTAZIONE
-# =========================
-
-def formatta_prezzo(value, currency):
-    if value is None:
-        return "N/D"
-
-    suffix = " " + currency if currency else ""
-
-    return f"{value:.2f}{suffix}"
-
-
-def formatta_percentuale(value):
-    if value is None:
-        return "N/D"
-
-    return f"{value:.2f} %"
-
-
-def classe_percentuale(value):
-    if value is None:
-        return "tv-neutral-inline"
-
-    if value > 0:
-        return "tv-positive-inline"
-
-    if value < 0:
-        return "tv-negative-inline"
-
-    return "tv-neutral-inline"
-
-
-def classe_zona_sma(value):
-    if is_in_sma200_zone(value):
-        return "tv-zone-text-inline"
-
-    return classe_percentuale(value)
-
-
-def cell_html(label, value, css_class="tv-cell-value"):
-    return (
-        f'<div class="tv-cell-label">{escape(label)}</div>'
-        f'<div class="{css_class}">{escape(value)}</div>'
-    )
-
-
-def slug_safe(value):
-    return re.sub(r"[^A-Za-z0-9_]+", "_", str(value)).strip("_") or "item"
-
-
-def simbolo_tradingview(symbol):
-    symbol = str(symbol or "").strip().upper()
-
-    if not symbol:
-        return "NASDAQ:AAPL"
-
-    if ":" in symbol:
-        return symbol
-
-    if symbol.endswith(".MI"):
-        return "MIL:" + symbol.replace(".MI", "")
-
-    nasdaq_symbols = {
-        "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "NFLX", "ADBE",
-        "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN", "PEP", "COST", "AMAT", "MU",
-        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI"
-    }
-
-    nyse_symbols = {
-        "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT",
-        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
-    }
-
-    if symbol in nasdaq_symbols:
-        return "NASDAQ:" + symbol
-
-    if symbol in nyse_symbols:
-        return "NYSE:" + symbol
-
-    return "NASDAQ:" + symbol
-
-
-def url_tradingview(symbol):
-    tv_symbol = simbolo_tradingview(symbol)
-    return "https://www.tradingview.com/chart/?symbol=" + tv_symbol
 
 
 # =========================
