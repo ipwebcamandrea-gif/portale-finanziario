@@ -9,13 +9,13 @@
             "GOOGL",
             "AAPL"
         ],
-        "ETF": [
-            "SWDA.MI",
-            "EIMI.MI"
-        ],
         "MEGA ITA": [
             "1MSFT.MI",
             "1AMZN.MI"
+        ],
+        "ETF": [
+            "SWDA.MI",
+            "EIMI.MI"
         ],
         "TEST": [
             "TESLA",
