@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TEST",
+    "active_watchlist": "PROVA",
     "watchlists": {
         "MEGA ITA": [
             "1MSFT.MI",
@@ -21,6 +21,7 @@
             "MSFT",
             "TESLA",
             "HIMS"
-        ]
+        ],
+        "PROVA": []
     }
 }
