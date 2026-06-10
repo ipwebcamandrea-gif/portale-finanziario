@@ -1,9 +1,9 @@
-import re
 from pathlib import Path
 from html import escape
 
 import streamlit as st
 
+from components.watchlist_tabs import render_watchlist_tabs
 from utils.symbols import slug_safe, url_tradingview
 from utils.formatting import (
     formatta_prezzo,
@@ -15,7 +15,6 @@ from utils.formatting import (
 from utils.market_data import (
     get_stock_metrics,
     is_in_sma200_zone,
-    watchlist_has_sma200_zone,
 )
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
@@ -241,12 +240,12 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
 # =========================
-# ORDINAMENTO SENZA COMPONENTI ESTERNI
+# ORDINAMENTO SIMBOLI
 # =========================
 
 def sposta_elemento(lista, elemento, direzione):
@@ -263,29 +262,10 @@ def sposta_elemento(lista, elemento, direzione):
 
     lista_nuova[indice], lista_nuova[nuovo_indice] = (
         lista_nuova[nuovo_indice],
-        lista_nuova[indice]
+        lista_nuova[indice],
     )
 
     return lista_nuova
-
-
-def sposta_watchlist(nome_lista, direzione):
-    data = st.session_state["tv_watchlists_data"]
-    watchlists = data["watchlists"]
-    nomi = list(watchlists.keys())
-    nuovi_nomi = sposta_elemento(nomi, nome_lista, direzione)
-
-    if nuovi_nomi == nomi:
-        return
-
-    nuova_struttura = {}
-
-    for nome in nuovi_nomi:
-        nuova_struttura[nome] = watchlists[nome]
-
-    data["watchlists"] = nuova_struttura
-    data["active_watchlist"] = st.session_state["tv_current_list"]
-    salva_sessione_su_disco()
 
 
 def sposta_simbolo(nome_lista, simbolo, direzione):
@@ -300,70 +280,6 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
     salva_sessione_su_disco()
 
 
-def elimina_watchlist_attiva():
-    data = st.session_state["tv_watchlists_data"]
-    watchlists = data["watchlists"]
-    current = st.session_state["tv_current_list"]
-
-    if len(watchlists) <= 1:
-        st.warning("Non puoi eliminare l'unica watchlist rimasta.")
-        return
-
-    nomi = list(watchlists.keys())
-    indice_corrente = nomi.index(current) if current in nomi else 0
-
-    if current in watchlists:
-        del watchlists[current]
-
-    nuovi_nomi = list(watchlists.keys())
-    nuovo_indice = min(indice_corrente, len(nuovi_nomi) - 1)
-    nuovo_corrente = nuovi_nomi[nuovo_indice]
-
-    st.session_state["tv_current_list"] = nuovo_corrente
-    data["active_watchlist"] = nuovo_corrente
-    st.session_state["tv_confirm_delete_tab"] = False
-    salva_sessione_su_disco()
-    st.cache_data.clear()
-
-
-def rinomina_watchlist_attiva(nuovo_nome):
-    data = st.session_state["tv_watchlists_data"]
-    watchlists = data["watchlists"]
-    current = st.session_state["tv_current_list"]
-
-    nuovo_nome = str(nuovo_nome or "").strip()
-
-    if not nuovo_nome:
-        st.warning("Inserisci un nome valido.")
-        return False
-
-    if nuovo_nome == current:
-        st.session_state["tv_show_rename_panel"] = False
-        return True
-
-    if nuovo_nome in watchlists:
-        st.warning("Esiste gia una watchlist con questo nome.")
-        return False
-
-    nuova_struttura = {}
-
-    for nome, simboli in watchlists.items():
-        if nome == current:
-            nuova_struttura[nuovo_nome] = simboli
-        else:
-            nuova_struttura[nome] = simboli
-
-    data["watchlists"] = nuova_struttura
-    data["active_watchlist"] = nuovo_nome
-    st.session_state["tv_current_list"] = nuovo_nome
-    st.session_state["tv_show_rename_panel"] = False
-
-    salva_sessione_su_disco()
-    st.cache_data.clear()
-
-    return True
-
-
 # =========================
 # RENDER HTML
 # =========================
@@ -375,7 +291,7 @@ def render_header():
             <div class="tv-page-title">Watchlist TradingView</div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -400,7 +316,7 @@ def render_persistence_note():
             <div class="tv-persistence-text">{escape(text)}</div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -425,7 +341,7 @@ def render_row_streamlit(symbol, metrics, current):
     with st.container(key=row_key):
         row_col_1, row_col_2, row_col_3, row_col_4, row_col_5, row_col_6 = st.columns(
             [1.40, 1.00, 1.05, 1.18, 0.82, 1.55],
-            vertical_alignment="center"
+            vertical_alignment="center",
         )
 
         with row_col_1:
@@ -433,7 +349,7 @@ def render_row_streamlit(symbol, metrics, current):
                 '<div class="tv-cell-label">Ticker</div>'
                 f'<div class="tv-cell-value tv-symbol-value">{escape(symbol)}</div>'
                 f'<div class="tv-symbol-note-inline">{zone_note}</div>',
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         with row_col_2:
@@ -457,7 +373,7 @@ def render_row_streamlit(symbol, metrics, current):
                     "📊",
                     url_tradingview(symbol),
                     use_container_width=True,
-                    help="Apri TradingView esterno"
+                    help="Apri TradingView esterno",
                 )
 
             with action_col_1:
@@ -465,23 +381,38 @@ def render_row_streamlit(symbol, metrics, current):
                     "📈",
                     key="tv_graph_" + symbol + "_" + current,
                     use_container_width=True,
-                    help="Apri grafico tecnico weekly"
+                    help="Apri grafico tecnico weekly",
                 ):
                     st.session_state["ticker_selezionato"] = symbol
                     st.switch_page("pages/grafico.py")
 
             with action_col_2:
-                if st.button("▲", key="tv_up_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in alto"):
+                if st.button(
+                    "▲",
+                    key="tv_up_" + symbol + "_" + current,
+                    use_container_width=True,
+                    help="Sposta simbolo in alto",
+                ):
                     sposta_simbolo(current, symbol, -1)
                     st.rerun()
 
             with action_col_3:
-                if st.button("▼", key="tv_down_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in basso"):
+                if st.button(
+                    "▼",
+                    key="tv_down_" + symbol + "_" + current,
+                    use_container_width=True,
+                    help="Sposta simbolo in basso",
+                ):
                     sposta_simbolo(current, symbol, 1)
                     st.rerun()
 
             with action_col_4:
-                if st.button("×", key="tv_delete_" + symbol + "_" + current, use_container_width=True, help="Elimina simbolo dalla watchlist"):
+                if st.button(
+                    "×",
+                    key="tv_delete_" + symbol + "_" + current,
+                    use_container_width=True,
+                    help="Elimina simbolo dalla watchlist",
+                ):
                     if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                         st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
                         salva_sessione_su_disco()
@@ -526,196 +457,14 @@ with header_col_2:
     st.markdown('<div class="tv-modern-back-button">', unsafe_allow_html=True)
     if st.button("← Cockpit", key="tv_back_cockpit", use_container_width=True):
         st.switch_page("pages/dashboard.py")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =========================
 # TABS WATCHLIST + AZIONI
 # =========================
 
-watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
-watchlist_names = list(watchlists.keys())
-
-cols = st.columns(len(watchlist_names) + 1)
-
-for idx, name in enumerate(watchlist_names):
-    in_zone = watchlist_has_sma200_zone(name)
-    is_active = name == st.session_state["tv_current_list"]
-
-    tab_kind = "zone" if in_zone else "normal"
-    active_part = "_active_tab" if is_active else ""
-    tab_wrap_key = "tv_" + tab_kind + "_tab" + active_part + "_" + slug_safe(name)
-    tab_label = ("▶ " if is_active else "") + name
-
-    with cols[idx]:
-        with st.container(key=tab_wrap_key):
-            if st.button(tab_label, key="tv_tab_btn_" + slug_safe(name), use_container_width=True):
-                st.session_state["tv_current_list"] = name
-                st.session_state["tv_watchlists_data"]["active_watchlist"] = name
-                st.session_state["tv_confirm_delete_tab"] = False
-                st.session_state["tv_show_rename_panel"] = False
-                salva_sessione_su_disco()
-                st.rerun()
-
-with cols[-1]:
-    plus_col, rename_col, minus_col = st.columns(3, gap="small")
-
-    with plus_col:
-        with st.container(key="tv_tab_action_btn_plus"):
-            if st.button("+", key="tv_create_toggle", use_container_width=True, help="Crea nuova watchlist"):
-                st.session_state["tv_show_create_panel"] = not st.session_state["tv_show_create_panel"]
-                st.session_state["tv_confirm_delete_tab"] = False
-                st.session_state["tv_show_rename_panel"] = False
-                st.rerun()
-
-    with rename_col:
-        with st.container(key="tv_tab_action_btn_rename"):
-            if st.button("✎", key="tv_rename_current_list", use_container_width=True, help="Rinomina la watchlist attiva"):
-                st.session_state["tv_show_rename_panel"] = not st.session_state["tv_show_rename_panel"]
-                st.session_state["tv_show_create_panel"] = False
-                st.session_state["tv_confirm_delete_tab"] = False
-                st.rerun()
-
-    with minus_col:
-        with st.container(key="tv_tab_action_btn_minus"):
-            if st.button("−", key="tv_delete_current_list", use_container_width=True, help="Elimina la watchlist attiva"):
-                st.session_state["tv_confirm_delete_tab"] = True
-                st.session_state["tv_show_create_panel"] = False
-                st.session_state["tv_show_rename_panel"] = False
-                st.rerun()
-
-move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns([0.55, 0.55, 1.1, 4.8])
-
-with move_tab_col_1:
-    if st.button("◀", key="tv_move_tab_left", use_container_width=True, help="Sposta la watchlist attiva a sinistra"):
-        st.session_state["tv_confirm_delete_tab"] = False
-        st.session_state["tv_show_rename_panel"] = False
-        sposta_watchlist(st.session_state["tv_current_list"], -1)
-        st.rerun()
-
-with move_tab_col_2:
-    if st.button("▶", key="tv_move_tab_right", use_container_width=True, help="Sposta la watchlist attiva a destra"):
-        st.session_state["tv_confirm_delete_tab"] = False
-        st.session_state["tv_show_rename_panel"] = False
-        sposta_watchlist(st.session_state["tv_current_list"], 1)
-        st.rerun()
-
-with refresh_col:
-    if st.button("Aggiorna dati", key="tv_refresh_data", use_container_width=True):
-        st.cache_data.clear()
-        st.rerun()
-
-
-# =========================
-# CONFERMA ELIMINAZIONE WATCHLIST
-# =========================
-
-if st.session_state.get("tv_confirm_delete_tab", False):
-    current_confirm = st.session_state.get("tv_current_list", "")
-
-    st.markdown(
-        f"""
-        <div class="tv-delete-confirm-panel">
-            <div class="tv-delete-confirm-title">Conferma eliminazione watchlist</div>
-            <div class="tv-delete-confirm-text">
-                Vuoi eliminare definitivamente la watchlist <b>{escape(current_confirm)}</b> e tutti i simboli contenuti?
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    confirm_col_1, confirm_col_2, confirm_col_3 = st.columns([1.25, 1.0, 4.75])
-
-    with confirm_col_1:
-        if st.button("Elimina", key="tv_confirm_delete_current_list", use_container_width=True):
-            elimina_watchlist_attiva()
-            st.rerun()
-
-    with confirm_col_2:
-        if st.button("Annulla", key="tv_cancel_delete_current_list", use_container_width=True):
-            st.session_state["tv_confirm_delete_tab"] = False
-            st.rerun()
-
-
-
-# =========================
-# RINOMINA WATCHLIST
-# =========================
-
-if st.session_state.get("tv_show_rename_panel", False):
-    current_rename = st.session_state.get("tv_current_list", "")
-
-    st.markdown(
-        f"""
-        <div class="tv-delete-confirm-panel">
-            <div class="tv-delete-confirm-title">Rinomina watchlist</div>
-            <div class="tv-delete-confirm-text">
-                Nome attuale: <b>{escape(current_rename)}</b>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    rename_col_1, rename_col_2, rename_col_3, rename_col_4 = st.columns([3, 1, 1, 3])
-
-    with rename_col_1:
-        nuovo_nome_watchlist = st.text_input(
-            "Nuovo nome watchlist",
-            value=current_rename,
-            key="tv_rename_list_name_" + slug_safe(current_rename),
-            label_visibility="collapsed"
-        ).strip()
-
-    with rename_col_2:
-        if st.button("Salva", key="tv_confirm_rename_current_list", use_container_width=True):
-            if rinomina_watchlist_attiva(nuovo_nome_watchlist):
-                st.success("Watchlist rinominata.")
-                st.rerun()
-
-    with rename_col_3:
-        if st.button("Annulla", key="tv_cancel_rename_current_list", use_container_width=True):
-            st.session_state["tv_show_rename_panel"] = False
-            st.rerun()
-
-# =========================
-# CREA NUOVA WATCHLIST
-# =========================
-
-if st.session_state["tv_show_create_panel"]:
-    create_col_1, create_col_2, create_col_3 = st.columns([3, 1, 1])
-
-    with create_col_1:
-        new_list_name = st.text_input("Nome nuova watchlist", placeholder="Esempio: Tech USA, ETF, Italia", key="tv_new_list_name").strip()
-
-    with create_col_2:
-        st.write("")
-        st.write("")
-
-        if st.button("Crea", key="tv_create_list", use_container_width=True):
-            if not new_list_name:
-                st.warning("Inserisci un nome valido.")
-            elif new_list_name in st.session_state["tv_watchlists_data"]["watchlists"]:
-                st.warning("Questa watchlist esiste gia.")
-            else:
-                st.session_state["tv_watchlists_data"]["watchlists"][new_list_name] = []
-                st.session_state["tv_current_list"] = new_list_name
-                st.session_state["tv_watchlists_data"]["active_watchlist"] = new_list_name
-                st.session_state["tv_show_create_panel"] = False
-                st.session_state["tv_confirm_delete_tab"] = False
-                st.session_state["tv_show_rename_panel"] = False
-                salva_sessione_su_disco()
-                st.success("Watchlist creata.")
-                st.rerun()
-
-    with create_col_3:
-        st.write("")
-        st.write("")
-
-        if st.button("Annulla", key="tv_cancel_create", use_container_width=True):
-            st.session_state["tv_show_create_panel"] = False
-            st.rerun()
+render_watchlist_tabs()
 
 
 # =========================
@@ -728,6 +477,8 @@ watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
 if current not in watchlists:
     current = list(watchlists.keys())[0]
     st.session_state["tv_current_list"] = current
+    st.session_state["tv_watchlists_data"]["active_watchlist"] = current
+    salva_sessione_su_disco()
 
 symbols = watchlists.get(current, [])
 
@@ -740,7 +491,12 @@ add_input_key = "tv_add_symbol_input_" + str(st.session_state["tv_add_symbol_non
 add_col_1, add_col_2 = st.columns([5, 1])
 
 with add_col_1:
-    new_symbol = st.text_input("Aggiungi simbolo", placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI", label_visibility="collapsed", key=add_input_key).upper().strip()
+    new_symbol = st.text_input(
+        "Aggiungi simbolo",
+        placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI",
+        label_visibility="collapsed",
+        key=add_input_key,
+    ).upper().strip()
 
 with add_col_2:
     if st.button("Aggiungi", key="tv_add_symbol_btn", use_container_width=True):
@@ -768,7 +524,7 @@ if not symbols:
             Nessun simbolo presente in questa watchlist. Aggiungi un simbolo per iniziare.
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
     st.stop()
 
