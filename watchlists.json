@@ -13,13 +13,13 @@
             "SWDA.MI",
             "EIMI.MI"
         ],
-        "TEST": [
-            "TESLA",
-            "MSFT"
-        ],
         "MEGA ITA": [
             "1MSFT.MI",
             "1AMZN.MI"
+        ],
+        "TEST": [
+            "TESLA",
+            "MSFT"
         ]
     }
 }
