@@ -13,13 +13,13 @@
             "AAPL",
             "GOOGL"
         ],
-        "PROVA": [
-            "ORCL",
-            "MA"
-        ],
         "ETF": [
             "SWDA.MI",
             "EIMI.MI"
+        ],
+        "PROVA": [
+            "ORCL",
+            "MA"
         ],
         "TEST": [
             "MSFT",
