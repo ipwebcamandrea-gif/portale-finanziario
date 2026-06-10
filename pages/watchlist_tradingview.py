@@ -3,6 +3,7 @@ from html import escape
 
 import streamlit as st
 
+from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
@@ -330,33 +331,7 @@ symbols = watchlists.get(current, [])
 # AGGIUNGI SIMBOLO
 # =========================
 
-add_input_key = "tv_add_symbol_input_" + str(st.session_state["tv_add_symbol_nonce"])
-add_col_1, add_col_2 = st.columns([5, 1])
-
-with add_col_1:
-    new_symbol = st.text_input(
-        "Aggiungi simbolo",
-        placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI",
-        label_visibility="collapsed",
-        key=add_input_key,
-    ).upper().strip()
-
-with add_col_2:
-    if st.button("Aggiungi", key="tv_add_symbol_btn", use_container_width=True):
-        if not new_symbol:
-            st.warning("Inserisci un simbolo valido.")
-        elif new_symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
-            st.warning("Simbolo gia presente nella watchlist.")
-        else:
-            st.session_state["tv_watchlists_data"]["watchlists"][current].append(new_symbol)
-            st.session_state["tv_add_symbol_nonce"] += 1
-            st.session_state["tv_confirm_delete_tab"] = False
-            st.session_state["tv_show_rename_panel"] = False
-            salva_sessione_su_disco()
-            st.cache_data.clear()
-            st.success(new_symbol + " aggiunto.")
-            st.rerun()
-
+render_add_symbol_form(current)
 
 symbols = st.session_state["tv_watchlists_data"]["watchlists"].get(current, [])
 
