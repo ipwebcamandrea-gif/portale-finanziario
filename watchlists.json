@@ -2,10 +2,6 @@
     "version": 1,
     "active_watchlist": "Default",
     "watchlists": {
-        "ETF": [
-            "SWDA.MI",
-            "EIMI.MI"
-        ],
         "Default": [
             "1MSFT.MI",
             "MSFT",
@@ -13,6 +9,10 @@
             "V",
             "GOOGL",
             "AAPL"
+        ],
+        "ETF": [
+            "SWDA.MI",
+            "EIMI.MI"
         ],
         "TEST": [
             "TESLA",
