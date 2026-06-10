@@ -90,3 +90,21 @@ with col_logout:
         use_container_width=True
     ):
         st.switch_page("pages/logout.py")
+
+
+# =========================
+# TEST TEMPORANEO GITHUB STORAGE
+# =========================
+
+st.write("")
+
+test_col_1, test_col_2, test_col_3 = st.columns([1.25, 1.25, 3.5])
+
+with test_col_1:
+    if st.button(
+        "🧪  Test GitHub Storage",
+        key="card_test_github_storage",
+        use_container_width=True,
+        help="Pagina temporanea per testare lettura watchlists.json dal branch data-watchlists"
+    ):
+        st.switch_page("pages/test_github_storage.py")
