@@ -648,12 +648,12 @@ if st.session_state.get("tv_show_rename_panel", False):
 
     st.markdown(
         f"""
-        &lt;div class="tv-delete-confirm-panel"&gt;
-            &lt;div class="tv-delete-confirm-title"&gt;Rinomina watchlist&lt;/div&gt;
-            &lt;div class="tv-delete-confirm-text"&gt;
-                Nome attuale: &lt;b&gt;{escape(current_rename)}&lt;/b&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
+        <div class="tv-delete-confirm-panel">
+            <div class="tv-delete-confirm-title">Rinomina watchlist</div>
+            <div class="tv-delete-confirm-text">
+                Nome attuale: <b>{escape(current_rename)}</b>
+            </div>
+        </div>
         """,
         unsafe_allow_html=True
     )
