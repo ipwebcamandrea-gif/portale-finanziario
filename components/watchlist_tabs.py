@@ -168,7 +168,12 @@ def render_tabs_header():
         st.session_state["tv_watchlists_data"]["active_watchlist"] = current
         salva_sessione_su_disco()
 
-    cols = st.columns(len(watchlist_names) + 1)
+    compact_mode = bool(st.session_state.get("tv_compact_rows", False))
+
+    # In vista compatta la pagina e solo consultiva:
+    # niente pulsanti crea/rinomina/elimina tab.
+    extra_cols = 0 if compact_mode else 1
+    cols = st.columns(len(watchlist_names) + extra_cols)
 
     for idx, name in enumerate(watchlist_names):
         in_zone = watchlist_has_sma200_zone(name)
@@ -194,6 +199,13 @@ def render_tabs_header():
                     st.session_state["tv_compact_rows"] = compact_state
                     salva_sessione_su_disco()
                     st.rerun()
+
+    if compact_mode:
+        # Se entro in vista compatta con pannelli aperti, li chiudo.
+        st.session_state["tv_show_create_panel"] = False
+        st.session_state["tv_show_rename_panel"] = False
+        st.session_state["tv_confirm_delete_tab"] = False
+        return
 
     with cols[-1]:
         plus_col, rename_col, minus_col = st.columns(3, gap="small")
@@ -243,12 +255,12 @@ def render_tabs_header():
 # =========================
 
 def render_tabs_toolbar():
-    if "tv_compact_rows" not in st.session_state:
-        st.session_state["tv_compact_rows"] = False
+    # La toolbar sotto i tab serve solo in modalita normale.
+    # In vista compatta i controlli globali sono sotto il pulsante Cockpit.
+    if bool(st.session_state.get("tv_compact_rows", False)):
+        return
 
-    move_tab_col_1, move_tab_col_2, compact_col, refresh_col, spacer_col = st.columns(
-        [0.55, 0.55, 1.55, 0.55, 4.25]
-    )
+    move_tab_col_1, move_tab_col_2, spacer_col = st.columns([0.55, 0.55, 5.9])
 
     with move_tab_col_1:
         if st.button(
@@ -274,29 +286,15 @@ def render_tabs_toolbar():
             sposta_watchlist(st.session_state["tv_current_list"], 1)
             st.rerun()
 
-    with compact_col:
-        st.toggle(
-            "📱 Vista compatta",
-            key="tv_compact_rows",
-            help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
-        )
-
-    with refresh_col:
-        if st.button(
-            "🔄",
-            key="tv_refresh_data",
-            use_container_width=True,
-            help="Aggiorna dati",
-        ):
-            st.cache_data.clear()
-            st.rerun()
-
 
 # =========================
 # PANNELLI TAB
 # =========================
 
 def render_delete_confirm_panel():
+    if bool(st.session_state.get("tv_compact_rows", False)):
+        return
+
     if not st.session_state.get("tv_confirm_delete_tab", False):
         return
 
@@ -336,6 +334,9 @@ def render_delete_confirm_panel():
 
 
 def render_rename_panel():
+    if bool(st.session_state.get("tv_compact_rows", False)):
+        return
+
     if not st.session_state.get("tv_show_rename_panel", False):
         return
 
@@ -384,6 +385,9 @@ def render_rename_panel():
 
 
 def render_create_panel():
+    if bool(st.session_state.get("tv_compact_rows", False)):
+        return
+
     if not st.session_state.get("tv_show_create_panel", False):
         return
 
