@@ -41,15 +41,15 @@
             "WVE",
             "PERI"
         ],
+        "ITA": [
+            "UCG.MI",
+            "ENI.MI"
+        ],
         "CROLLO": [
             "EURUSD=X",
             "^GSPC",
             "^VIX",
             "^VVIX"
-        ],
-        "ITA": [
-            "UCG.MI",
-            "ENI.MI"
         ]
     }
 }
