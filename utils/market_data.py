@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 
+from utils.symbols import normalize_yfinance_symbol
+
 
 # =========================
 # HELPERS DATI YFINANCE
@@ -39,13 +41,17 @@ def valore_float_sicuro(value):
 
 @st.cache_data(ttl=120, show_spinner=False)
 def get_stock_metrics(symbol):
+    yf_symbol = normalize_yfinance_symbol(symbol)
+
     try:
         last_price = None
         previous_close = None
         currency = ""
+        short_name = ""
+        long_name = ""
 
         try:
-            intraday = yf.download(symbol, period="5d", interval="15m", auto_adjust=False, progress=False, threads=False)
+            intraday = yf.download(yf_symbol, period="5d", interval="15m", auto_adjust=False, progress=False, threads=False)
 
             if intraday is not None and not intraday.empty:
                 intraday = normalizza_dataframe_yfinance(intraday)
@@ -59,7 +65,7 @@ def get_stock_metrics(symbol):
             pass
 
         try:
-            daily = yf.download(symbol, period="10d", interval="1d", auto_adjust=False, progress=False, threads=False)
+            daily = yf.download(yf_symbol, period="10d", interval="1d", auto_adjust=False, progress=False, threads=False)
 
             if daily is not None and not daily.empty:
                 daily = normalizza_dataframe_yfinance(daily)
@@ -75,7 +81,7 @@ def get_stock_metrics(symbol):
             pass
 
         try:
-            ticker = yf.Ticker(symbol)
+            ticker = yf.Ticker(yf_symbol)
             info = ticker.fast_info
 
             def fast_value(*keys):
@@ -100,6 +106,13 @@ def get_stock_metrics(symbol):
                 previous_close = valore_float_sicuro(fast_value("previous_close", "previousClose", "regularMarketPreviousClose"))
 
             currency = fast_value("currency") or ""
+
+            try:
+                full_info = ticker.get_info()
+                short_name = full_info.get("shortName") or full_info.get("displayName") or ""
+                long_name = full_info.get("longName") or ""
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -107,7 +120,7 @@ def get_stock_metrics(symbol):
         dist_pct = None
 
         try:
-            weekly = yf.download(symbol, period="10y", interval="1wk", auto_adjust=False, progress=False, threads=False)
+            weekly = yf.download(yf_symbol, period="10y", interval="1wk", auto_adjust=False, progress=False, threads=False)
 
             if weekly is not None and not weekly.empty:
                 weekly = normalizza_dataframe_yfinance(weekly)
@@ -132,19 +145,29 @@ def get_stock_metrics(symbol):
             daily_change_pct = ((last_price - previous_close) / previous_close) * 100
 
         return {
+            "symbol": symbol,
+            "yf_symbol": yf_symbol,
             "last_price": last_price,
             "daily_change_pct": daily_change_pct,
             "sma200w": sma200,
             "dist_pct": dist_pct,
-            "currency": currency or ""
+            "currency": currency or "",
+            "name": short_name or long_name or "",
+            "short_name": short_name or "",
+            "long_name": long_name or "",
         }
     except Exception:
         return {
+            "symbol": symbol,
+            "yf_symbol": yf_symbol,
             "last_price": None,
             "daily_change_pct": None,
             "sma200w": None,
             "dist_pct": None,
-            "currency": ""
+            "currency": "",
+            "name": "",
+            "short_name": "",
+            "long_name": "",
         }
 
 
