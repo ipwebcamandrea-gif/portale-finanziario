@@ -2,8 +2,17 @@ import streamlit as st
 from utils.watchlist_storage import salva_sessione_su_disco
 
 
+# =========================
+# FORM AGGIUNTA SIMBOLO
+# =========================
+
 def render_add_symbol_form(current):
-    # chiave dinamica per reset automatico input
+    # In vista compatta la pagina e solo consultiva:
+    # niente input aggiunta titoli e niente pulsante Aggiungi.
+    if bool(st.session_state.get("tv_compact_rows", False)):
+        return
+
+    # Chiave dinamica per reset automatico input dopo aggiunta.
     add_input_key = "tv_add_symbol_input_" + str(st.session_state.get("tv_add_symbol_nonce", 0))
 
     col1, col2 = st.columns([5, 1])
@@ -18,7 +27,6 @@ def render_add_symbol_form(current):
 
     with col2:
         if st.button("Aggiungi", key="tv_add_symbol_btn", use_container_width=True):
-
             if not new_symbol:
                 st.warning("Inserisci un simbolo valido.")
                 return
@@ -29,17 +37,15 @@ def render_add_symbol_form(current):
                 st.warning("Simbolo gia presente nella watchlist.")
                 return
 
-            # aggiunta simbolo
             watchlists[current].append(new_symbol)
 
-            # reset input tramite nonce
+            # Reset input tramite nonce.
             st.session_state["tv_add_symbol_nonce"] = st.session_state.get("tv_add_symbol_nonce", 0) + 1
 
-            # reset stati UI coerenti
+            # Reset stati UI coerenti.
             st.session_state["tv_confirm_delete_tab"] = False
             st.session_state["tv_show_rename_panel"] = False
 
-            # persistenza
             salva_sessione_su_disco()
             st.cache_data.clear()
 
