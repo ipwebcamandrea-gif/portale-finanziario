@@ -27,7 +27,7 @@ def render_compact_rows_css():
 <style>
 div[class*="st-key-tv_compact_normal_row_"],
 div[class*="st-key-tv_compact_zone_row_"] {
-    margin: 0.30rem 0;
+    margin: 0.28rem 0;
     border-radius: 11px;
     overflow: hidden;
 }
@@ -76,7 +76,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 }
 
 .tv-compact-row-inner {
-    padding: 0.44rem 0.58rem;
+    padding: 0.42rem 0.58rem;
 }
 
 .tv-compact-row-line-1,
@@ -84,7 +84,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.55rem;
+    gap: 0.62rem;
     min-width: 0;
 }
 
@@ -111,7 +111,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     color: #5f7899;
     font-size: 0.72rem;
     font-weight: 900;
-    margin: 0 0.34rem;
+    margin: 0 0.36rem;
     white-space: nowrap;
 }
 
@@ -122,12 +122,13 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 360px;
 }
 
 .tv-compact-price-block {
     display: flex;
     align-items: baseline;
-    gap: 0.42rem;
+    gap: 0.52rem;
     flex-shrink: 0;
     white-space: nowrap;
 }
@@ -163,7 +164,12 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
 @media (max-width: 640px) {
     .tv-compact-row-inner {
-        padding: 0.42rem 0.50rem;
+        padding: 0.40rem 0.50rem;
+    }
+
+    .tv-compact-row-line-1,
+    .tv-compact-row-line-2 {
+        gap: 0.42rem;
     }
 
     .tv-compact-symbol {
@@ -171,23 +177,27 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     }
 
     .tv-compact-name {
-        font-size: 0.69rem;
-        max-width: 128px;
+        font-size: 0.68rem;
+        max-width: 118px;
     }
 
     .tv-compact-separator {
-        margin: 0 0.26rem;
-        font-size: 0.66rem;
+        margin: 0 0.24rem;
+        font-size: 0.64rem;
+    }
+
+    .tv-compact-price-block {
+        gap: 0.34rem;
     }
 
     .tv-compact-price {
-        font-size: 0.76rem;
+        font-size: 0.74rem;
     }
 
     .tv-compact-meta,
     .tv-compact-dist,
     .tv-compact-row-line-2 {
-        font-size: 0.66rem;
+        font-size: 0.64rem;
     }
 }
 </style>
@@ -202,16 +212,10 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
 @st.cache_data(ttl=86400, show_spinner=False)
 def get_company_name_from_yfinance(symbol):
-    """
-    Recupera il nome del titolo solo se non arriva gia da get_stock_metrics().
-    Fallback sicuro: se yfinance non e disponibile o fallisce, ritorna stringa vuota.
-    """
     try:
         import yfinance as yf
-
         ticker = yf.Ticker(symbol)
         info = ticker.get_info()
-
         return (
             info.get("shortName")
             or info.get("longName")
@@ -419,7 +423,8 @@ def render_row_compact(symbol, metrics, current):
         f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
     )
 
-    # HTML non indentato: evita che Markdown lo renda come blocco codice.
+    price_separator_html = '<span class="tv-compact-separator">•</span>'
+
     html = (
         f'<a class="tv-compact-row-link" href="{escape(tv_url, quote=True)}" target="_blank" rel="noopener noreferrer">'
         '<div class="tv-compact-row-inner">'
@@ -430,6 +435,7 @@ def render_row_compact(symbol, metrics, current):
         '</div>'
         '<div class="tv-compact-price-block">'
         f'<span class="tv-compact-price">{escape(prezzo)}</span>'
+        f'{price_separator_html}'
         f'<span class="{daily_class}">{escape(daily)}</span>'
         '</div>'
         '</div>'
@@ -454,7 +460,7 @@ def render_row_compact(symbol, metrics, current):
 def render_watchlist_rows(current, symbols):
     render_compact_rows_css()
 
-    compact_mode = st.session_state.get("tv_compact_rows", False)
+    compact_mode = bool(st.session_state.get("tv_compact_rows", False))
 
     for symbol in list(symbols):
         metrics = get_stock_metrics(symbol)
