@@ -37,7 +37,7 @@ def valore_float_sicuro(value):
 # METRICHE FINANZIARIE
 # =========================
 
-@st.cache_data(ttl=900, show_spinner=False)
+@st.cache_data(ttl=120, show_spinner=False)
 def get_stock_metrics(symbol):
     try:
         last_price = None
