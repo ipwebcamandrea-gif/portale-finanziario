@@ -34,8 +34,16 @@ def login_user():
 def logout_user():
     st.session_state["authenticated"] = False
 
+    chiavi_da_rimuovere = [
+        "ticker_selezionato",
+        "lista_tickers",
+    ]
+
+    for chiave in chiavi_da_rimuovere:
+        if chiave in st.session_state:
+            del st.session_state[chiave]
+
 
 def logout_and_redirect():
     logout_user()
     st.switch_page("main.py")
-``
