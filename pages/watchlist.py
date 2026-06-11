@@ -2,20 +2,13 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 from pathlib import Path
-
+from utils.auth import require_login
 
 # =========================
 # PROTEZIONE LOGIN
 # =========================
 
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
-
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-
-    st.stop()
-
+require_login()
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
