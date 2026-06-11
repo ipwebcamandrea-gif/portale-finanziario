@@ -5,16 +5,13 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from plotly.subplots import make_subplots
+from utils.auth import require_login
 
 # =========================
 # LOGIN CHECK
 # =========================
 
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso negato.")
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-    st.stop()
+require_login()
 
 # =========================
 # CSS
