@@ -236,9 +236,13 @@ def render_tabs_header():
                     st.rerun()
 
 
+# =========================
+# TOOLBAR TAB
+# =========================
+
 def render_tabs_toolbar():
-    move_tab_col_1, move_tab_col_2, refresh_col, spacer_col = st.columns(
-        [0.55, 0.55, 1.1, 4.8]
+    move_tab_col_1, move_tab_col_2, compact_col, refresh_col, spacer_col = st.columns(
+        [0.55, 0.55, 1.55, 0.55, 4.25]
     )
 
     with move_tab_col_1:
@@ -265,8 +269,20 @@ def render_tabs_toolbar():
             sposta_watchlist(st.session_state["tv_current_list"], 1)
             st.rerun()
 
+    with compact_col:
+        st.toggle(
+            "📱 Vista compatta",
+            key="tv_compact_rows",
+            help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
+        )
+
     with refresh_col:
-        if st.button("Aggiorna dati", key="tv_refresh_data", use_container_width=True):
+        if st.button(
+            "🔄",
+            key="tv_refresh_data",
+            use_container_width=True,
+            help="Aggiorna dati",
+        ):
             st.cache_data.clear()
             st.rerun()
 
