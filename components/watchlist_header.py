@@ -78,11 +78,20 @@ def render_compact_refresh_controls():
 # =========================
 
 def render_watchlist_header():
+    if "tv_compact_rows" not in st.session_state:
+        st.session_state["tv_compact_rows"] = False
+
+    compact_mode = bool(st.session_state.get("tv_compact_rows", False))
+
     header_col_1, header_col_2 = st.columns([5.0, 1.35], vertical_alignment="center")
 
     with header_col_1:
         render_header()
-        render_persistence_note()
+
+        # In vista compatta la nota gialla GitHub/fallback viene nascosta
+        # per lasciare spazio alla sola consultazione della watchlist.
+        if not compact_mode:
+            render_persistence_note()
 
     with header_col_2:
         st.markdown('<div class="tv-modern-back-button">', unsafe_allow_html=True)
