@@ -186,10 +186,12 @@ def render_tabs_header():
                     key="tv_tab_btn_" + slug_safe(name),
                     use_container_width=True,
                 ):
+                    compact_state = bool(st.session_state.get("tv_compact_rows", False))
                     st.session_state["tv_current_list"] = name
                     st.session_state["tv_watchlists_data"]["active_watchlist"] = name
                     st.session_state["tv_confirm_delete_tab"] = False
                     st.session_state["tv_show_rename_panel"] = False
+                    st.session_state["tv_compact_rows"] = compact_state
                     salva_sessione_su_disco()
                     st.rerun()
 
@@ -241,6 +243,9 @@ def render_tabs_header():
 # =========================
 
 def render_tabs_toolbar():
+    if "tv_compact_rows" not in st.session_state:
+        st.session_state["tv_compact_rows"] = False
+
     move_tab_col_1, move_tab_col_2, compact_col, refresh_col, spacer_col = st.columns(
         [0.55, 0.55, 1.55, 0.55, 4.25]
     )
