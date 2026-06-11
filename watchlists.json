@@ -49,8 +49,6 @@
             "^VIX",
             "^VVIX"
         ],
-        "PORTAFOGLIO": [
-            "PYPL,1MSFT"
-        ]
+        "PORTAFOGLIO": []
     }
 }
