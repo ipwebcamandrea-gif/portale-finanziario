@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "LARGE CAP",
+    "active_watchlist": "PORTAFOGLIO",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -48,6 +48,7 @@
             "^GSPC",
             "^VIX",
             "^VVIX"
-        ]
+        ],
+        "PORTAFOGLIO": []
     }
 }
