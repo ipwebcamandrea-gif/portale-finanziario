@@ -77,7 +77,6 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     text-decoration: none !important;
 }
 
-/* Rende cliccabile tutta la card compatta, anche le zone vuote a destra/sinistra. */
 .tv-compact-row-link::after {
     content: "";
     position: absolute;
@@ -140,7 +139,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     max-width: 360px;
 }
 
-/* Stile usato SOLO nella vista non compatta per ticker + nome titolo. */
+/* SOLO VISTA NON COMPATTA */
 .tv-desktop-symbol-line {
     display: flex;
     align-items: baseline;
@@ -200,42 +199,14 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 }
 
 @media (max-width: 640px) {
-    .tv-compact-row-inner {
-        padding: 0.40rem 0.50rem;
-    }
-
-    .tv-compact-row-line-1,
-    .tv-compact-row-line-2 {
-        gap: 0.42rem;
-    }
-
-    .tv-compact-symbol {
-        font-size: 0.86rem;
-    }
-
-    .tv-compact-name {
-        font-size: 0.68rem;
-        max-width: 118px;
-    }
-
-    .tv-compact-separator {
-        margin: 0 0.24rem;
-        font-size: 0.64rem;
-    }
-
-    .tv-compact-price-block {
-        gap: 0.34rem;
-    }
-
-    .tv-compact-price {
-        font-size: 0.74rem;
-    }
-
-    .tv-compact-meta,
-    .tv-compact-dist,
-    .tv-compact-row-line-2 {
-        font-size: 0.64rem;
-    }
+    .tv-compact-row-inner { padding: 0.40rem 0.50rem; }
+    .tv-compact-row-line-1, .tv-compact-row-line-2 { gap: 0.42rem; }
+    .tv-compact-symbol { font-size: 0.86rem; }
+    .tv-compact-name { font-size: 0.68rem; max-width: 118px; }
+    .tv-compact-separator { margin: 0 0.24rem; font-size: 0.64rem; }
+    .tv-compact-price-block { gap: 0.34rem; }
+    .tv-compact-price { font-size: 0.74rem; }
+    .tv-compact-meta, .tv-compact-dist, .tv-compact-row-line-2 { font-size: 0.64rem; }
 }
 </style>
         """,
@@ -325,15 +296,6 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 # =========================
 
 def sort_rows_for_compact(rows):
-    """
-    Ordina SOLO la vista compatta per vicinanza alla SMA200W.
-
-    Criterio:
-    - distanza disponibile: prima, ordinata per abs(dist_pct) crescente
-    - distanza mancante: in fondo
-
-    Non modifica l'ordine salvato della watchlist.
-    """
     def sort_key(item):
         symbol, metrics = item
         dist_pct = metrics.get("dist_pct")
@@ -347,7 +309,7 @@ def sort_rows_for_compact(rows):
 
 
 # =========================
-# RENDER RIGHE DESKTOP
+# RENDER RIGHE DESKTOP / NON COMPATTA
 # =========================
 
 def render_row_streamlit(symbol, metrics, current):
@@ -414,50 +376,25 @@ def render_row_streamlit(symbol, metrics, current):
             action_col_0, action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(5)
 
             with action_col_0:
-                st.link_button(
-                    "📊",
-                    url_tradingview(symbol),
-                    use_container_width=True,
-                    help="Apri TradingView esterno",
-                )
+                st.link_button("📊", url_tradingview(symbol), use_container_width=True, help="Apri TradingView esterno")
 
             with action_col_1:
-                if st.button(
-                    "📈",
-                    key="tv_graph_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Apri grafico tecnico weekly",
-                ):
+                if st.button("📈", key="tv_graph_" + symbol + "_" + current, use_container_width=True, help="Apri grafico tecnico weekly"):
                     st.session_state["ticker_selezionato"] = symbol
                     st.switch_page("pages/grafico.py")
 
             with action_col_2:
-                if st.button(
-                    "▲",
-                    key="tv_up_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Sposta simbolo in alto",
-                ):
+                if st.button("▲", key="tv_up_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in alto"):
                     sposta_simbolo(current, symbol, -1)
                     st.rerun()
 
             with action_col_3:
-                if st.button(
-                    "▼",
-                    key="tv_down_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Sposta simbolo in basso",
-                ):
+                if st.button("▼", key="tv_down_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in basso"):
                     sposta_simbolo(current, symbol, 1)
                     st.rerun()
 
             with action_col_4:
-                if st.button(
-                    "×",
-                    key="tv_delete_" + symbol + "_" + current,
-                    use_container_width=True,
-                    help="Elimina simbolo dalla watchlist",
-                ):
+                if st.button("×", key="tv_delete_" + symbol + "_" + current, use_container_width=True, help="Elimina simbolo dalla watchlist"):
                     if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                         st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
                         salva_sessione_su_disco()
