@@ -27,7 +27,7 @@ def render_compact_rows_css():
 <style>
 div[class*="st-key-tv_compact_normal_row_"],
 div[class*="st-key-tv_compact_zone_row_"] {
-    margin: 0.34rem 0;
+    margin: 0.30rem 0;
     border-radius: 11px;
     overflow: hidden;
 }
@@ -76,7 +76,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 }
 
 .tv-compact-row-inner {
-    padding: 0.50rem 0.62rem;
+    padding: 0.44rem 0.58rem;
 }
 
 .tv-compact-row-line-1,
@@ -84,12 +84,12 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.55rem;
+    gap: 0.50rem;
     min-width: 0;
 }
 
 .tv-compact-row-line-1 {
-    margin-bottom: 0.18rem;
+    margin-bottom: 0.16rem;
 }
 
 .tv-compact-title {
@@ -111,7 +111,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 .tv-compact-name {
     color: #9fb3d1;
     font-size: 0.74rem;
-    font-weight: 700;
+    font-weight: 750;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -135,23 +135,19 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     min-width: 0;
     display: flex;
     align-items: baseline;
-    gap: 0.42rem;
+    gap: 0.58rem;
     overflow: hidden;
+}
+
+.tv-compact-meta,
+.tv-compact-dist {
+    font-size: 0.72rem;
+    font-weight: 850;
+    white-space: nowrap;
 }
 
 .tv-compact-meta {
     color: #9fb3d1;
-    font-size: 0.72rem;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.tv-compact-open-note {
-    color: #7d91ad;
-    font-size: 0.68rem;
-    font-weight: 800;
-    white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .tv-compact-row-line-2 {
@@ -161,32 +157,83 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
 @media (max-width: 640px) {
     .tv-compact-row-inner {
-        padding: 0.46rem 0.54rem;
+        padding: 0.42rem 0.50rem;
     }
 
     .tv-compact-symbol {
-        font-size: 0.88rem;
+        font-size: 0.86rem;
     }
 
     .tv-compact-name {
-        font-size: 0.70rem;
-        max-width: 150px;
+        font-size: 0.69rem;
+        max-width: 135px;
     }
 
     .tv-compact-price {
-        font-size: 0.78rem;
+        font-size: 0.76rem;
     }
 
     .tv-compact-meta,
-    .tv-compact-open-note,
+    .tv-compact-dist,
     .tv-compact-row-line-2 {
-        font-size: 0.68rem;
+        font-size: 0.66rem;
+    }
+
+    .tv-compact-meta-left {
+        gap: 0.38rem;
     }
 }
 </style>
         """,
         unsafe_allow_html=True,
     )
+
+
+# =========================
+# DATI ANAGRAFICI TITOLO
+# =========================
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def get_company_name_from_yfinance(symbol):
+    """
+    Recupera il nome del titolo solo se non arriva gia da get_stock_metrics().
+    Fallback sicuro: se yfinance non e disponibile o fallisce, ritorna stringa vuota.
+    """
+    try:
+        import yfinance as yf
+
+        ticker = yf.Ticker(symbol)
+        info = ticker.get_info()
+
+        return (
+            info.get("shortName")
+            or info.get("longName")
+            or info.get("displayName")
+            or ""
+        )
+    except Exception:
+        return ""
+
+
+def get_company_name(symbol, metrics):
+    company_name = (
+        metrics.get("name")
+        or metrics.get("short_name")
+        or metrics.get("shortName")
+        or metrics.get("long_name")
+        or metrics.get("longName")
+        or metrics.get("company_name")
+        or metrics.get("companyName")
+        or ""
+    )
+
+    if not company_name:
+        company_name = get_company_name_from_yfinance(symbol)
+
+    if str(company_name).strip().upper() == str(symbol).strip().upper():
+        return ""
+
+    return str(company_name or "").strip()
 
 
 # =========================
@@ -350,24 +397,14 @@ def render_row_compact(symbol, metrics, current):
     row_kind = "zone" if in_zone else "normal"
     row_key = "tv_compact_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
 
-    company_name = (
-        metrics.get("name")
-        or metrics.get("short_name")
-        or metrics.get("long_name")
-        or metrics.get("company_name")
-        or ""
-    )
-
-    if str(company_name).strip().upper() == str(symbol).strip().upper():
-        company_name = ""
-
+    company_name = get_company_name(symbol, metrics)
     tv_url = url_tradingview(symbol)
 
     company_name_html = ""
     if company_name:
         company_name_html = f'<span class="tv-compact-name">{escape(company_name)}</span>'
 
-    # IMPORTANTE: HTML tutto su stringa non indentata, per evitare che Markdown lo renda come codice.
+    # HTML non indentato: evita che Markdown lo renda come blocco codice.
     html = (
         f'<a class="tv-compact-row-link" href="{escape(tv_url, quote=True)}" target="_blank" rel="noopener noreferrer">'
         '<div class="tv-compact-row-inner">'
@@ -384,9 +421,8 @@ def render_row_compact(symbol, metrics, current):
         '<div class="tv-compact-row-line-2">'
         '<div class="tv-compact-meta-left">'
         f'<span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>'
-        f'<span class="{dist_class}">Dist {escape(distanza)}</span>'
+        f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
         '</div>'
-        '<span class="tv-compact-open-note">TradingView ↗</span>'
         '</div>'
         '</div>'
         '</a>'
