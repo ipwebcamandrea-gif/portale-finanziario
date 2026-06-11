@@ -37,15 +37,15 @@
             "WVE",
             "PERI"
         ],
+        "EDGAR": [
+            "WVE",
+            "PERI"
+        ],
         "CROLLO": [
             "EURUSD=X",
             "^GSPC",
             "^VIX",
             "^VVIX"
-        ],
-        "EDGAR": [
-            "WVE",
-            "PERI"
         ],
         "ITA": [
             "UCG.MI",
