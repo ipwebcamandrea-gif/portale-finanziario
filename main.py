@@ -1,6 +1,12 @@
 import streamlit as st
 from pathlib import Path
 
+from utils.auth import (
+    is_authenticated,
+    login_user,
+    logout_user,
+)
+
 
 # =========================
 # CONFIGURAZIONE PAGINA
@@ -88,7 +94,7 @@ st.markdown(
 # =========================
 
 if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
+    logout_user()
 
 
 # =========================
@@ -118,7 +124,7 @@ ADMIN_PASSWORD = get_admin_password()
 # SE GIÀ AUTENTICATO
 # =========================
 
-if st.session_state.get("authenticated", False):
+if is_authenticated():
     st.switch_page("pages/dashboard.py")
 
 
@@ -141,15 +147,15 @@ with st.container(key="login_card"):
 
         if submitted:
             if ADMIN_PASSWORD is None:
-                st.session_state["authenticated"] = False
+                logout_user()
                 st.error(
                     "Password admin non configurata nei Secrets di Streamlit."
                 )
 
             elif user.strip() == ADMIN_USERNAME and password.strip() == ADMIN_PASSWORD:
-                st.session_state["authenticated"] = True
+                login_user()
                 st.switch_page("pages/dashboard.py")
 
             else:
-                st.session_state["authenticated"] = False
+                logout_user()
                 st.error("Credenziali non valide")
