@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TLI",
+    "active_watchlist": "EDGAR",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -46,6 +46,7 @@
             "^GSPC",
             "^VIX",
             "^VVIX"
-        ]
+        ],
+        "EDGAR": []
     }
 }
