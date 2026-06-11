@@ -43,7 +43,9 @@
             "^VIX",
             "^VVIX"
         ],
-        "EDGAR": [],
+        "EDGAR": [
+            "WVE"
+        ],
         "ITA": [
             "UCG.MI",
             "ENI.MI"
