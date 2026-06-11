@@ -1,6 +1,9 @@
 import streamlit as st
 from pathlib importfrom pathlib import Path
 from utils.auth import require_login
+
+# =========================
+# PROTEZIONE LOGIN
 # =========================
 
 require_login()
