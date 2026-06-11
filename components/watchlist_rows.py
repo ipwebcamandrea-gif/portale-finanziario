@@ -355,10 +355,17 @@ def render_row_compact(symbol, metrics, current):
         or metrics.get("short_name")
         or metrics.get("long_name")
         or metrics.get("company_name")
-        or symbol
+        or ""
     )
 
+    if str(company_name).strip().upper() == str(symbol).strip().upper():
+        company_name = ""
+
     tv_url = url_tradingview(symbol)
+
+    company_name_html = ""
+    if company_name:
+        company_name_html = f'<span class="tv-compact-name">{escape(company_name)}</span>'
 
     with st.container(key=row_key):
         st.markdown(
@@ -368,7 +375,7 @@ def render_row_compact(symbol, metrics, current):
                     <div class="tv-compact-row-line-1">
                         <div class="tv-compact-title">
                             <span class="tv-compact-symbol">{escape(symbol)}</span>
-                            <span class="tv-compact-name">{escape(company_name)}</span>
+                            {company_name_html}
                         </div>
                         <div class="tv-compact-price-block">
                             <span class="tv-compact-price">{escape(prezzo)}</span>
@@ -388,7 +395,6 @@ def render_row_compact(symbol, metrics, current):
             """,
             unsafe_allow_html=True,
         )
-
 
 # =========================
 # ENTRY POINT RIGHE
