@@ -396,6 +396,7 @@ def render_row_compact(symbol, metrics, current):
             unsafe_allow_html=True,
         )
 
+
 # =========================
 # ENTRY POINT RIGHE
 # =========================
@@ -403,11 +404,7 @@ def render_row_compact(symbol, metrics, current):
 def render_watchlist_rows(current, symbols):
     render_compact_rows_css()
 
-    compact_mode = st.toggle(
-        "📱 Vista compatta",
-        key="tv_compact_rows",
-        help="Mostra righe compatte ottimizzate per smartphone",
-    )
+    compact_mode = st.session_state.get("tv_compact_rows", False)
 
     for symbol in list(symbols):
         metrics = get_stock_metrics(symbol)
