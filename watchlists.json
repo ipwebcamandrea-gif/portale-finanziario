@@ -50,7 +50,8 @@
             "^VVIX"
         ],
         "PORTAFOGLIO": [
-            "1MSFT.MI"
+            "1MSFT.MI",
+            "PYPL"
         ]
     }
 }
