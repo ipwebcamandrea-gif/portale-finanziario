@@ -367,34 +367,33 @@ def render_row_compact(symbol, metrics, current):
     if company_name:
         company_name_html = f'<span class="tv-compact-name">{escape(company_name)}</span>'
 
-    with st.container(key=row_key):
-        st.markdown(
-            f"""
-            <a class="tv-compact-row-link" href="{escape(tv_url, quote=True)}" target="_blank" rel="noopener noreferrer">
-                <div class="tv-compact-row-inner">
-                    <div class="tv-compact-row-line-1">
-                        <div class="tv-compact-title">
-                            <span class="tv-compact-symbol">{escape(symbol)}</span>
-                            {company_name_html}
-                        </div>
-                        <div class="tv-compact-price-block">
-                            <span class="tv-compact-price">{escape(prezzo)}</span>
-                            <span class="{daily_class}">{escape(daily)}</span>
-                        </div>
-                    </div>
-
-                    <div class="tv-compact-row-line-2">
-                        <div class="tv-compact-meta-left">
-                            <span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>
-                            <span class="{dist_class}">Dist {escape(distanza)}</span>
-                        </div>
-                        <span class="tv-compact-open-note">TradingView ↗</span>
-                    </div>
+    html = f"""
+    <a class="tv-compact-row-link" href="{escape(tv_url, quote=True)}" target="_blank" rel="noopener noreferrer">
+        <div class="tv-compact-row-inner">
+            <div class="tv-compact-row-line-1">
+                <div class="tv-compact-title">
+                    <span class="tv-compact-symbol">{escape(symbol)}</span>
+                    {company_name_html}
                 </div>
-            </a>
-            """,
-            unsafe_allow_html=True,
-        )
+                <div class="tv-compact-price-block">
+                    <span class="tv-compact-price">{escape(prezzo)}</span>
+                    <span class="{daily_class}">{escape(daily)}</span>
+                </div>
+            </div>
+
+            <div class="tv-compact-row-line-2">
+                <div class="tv-compact-meta-left">
+                    <span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>
+                    <span class="{dist_class}">Dist {escape(distanza)}</span>
+                </div>
+                <span class="tv-compact-open-note">TradingView ↗</span>
+            </div>
+        </div>
+    </a>
+    """
+
+    with st.container(key=row_key):
+        st.markdown(html, unsafe_allow_html=True)
 
 
 # =========================
