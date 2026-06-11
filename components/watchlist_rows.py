@@ -299,6 +299,32 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
+# ORDINAMENTO VISTA COMPATTA
+# =========================
+
+def sort_rows_for_compact(rows):
+    """
+    Ordina SOLO la vista compatta per vicinanza alla SMA200W.
+
+    Criterio:
+    - distanza disponibile: prima, ordinata per abs(dist_pct) crescente
+    - distanza mancante: in fondo
+
+    Non modifica l'ordine salvato della watchlist.
+    """
+    def sort_key(item):
+        symbol, metrics = item
+        dist_pct = metrics.get("dist_pct")
+
+        if dist_pct is None:
+            return (1, float("inf"), str(symbol))
+
+        return (0, abs(dist_pct), str(symbol))
+
+    return sorted(rows, key=sort_key)
+
+
+# =========================
 # RENDER RIGHE DESKTOP
 # =========================
 
@@ -477,9 +503,16 @@ def render_watchlist_rows(current, symbols):
 
     compact_mode = bool(st.session_state.get("tv_compact_rows", False))
 
+    rows = []
+
     for symbol in list(symbols):
         metrics = get_stock_metrics(symbol)
+        rows.append((symbol, metrics))
 
+    if compact_mode:
+        rows = sort_rows_for_compact(rows)
+
+    for symbol, metrics in rows:
         if compact_mode:
             render_row_compact(symbol, metrics, current)
         else:
