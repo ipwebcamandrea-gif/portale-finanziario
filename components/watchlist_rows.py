@@ -140,6 +140,28 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     max-width: 360px;
 }
 
+/* Stile usato SOLO nella vista non compatta per ticker + nome titolo. */
+.tv-desktop-symbol-line {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.tv-desktop-symbol-main {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tv-desktop-symbol-name {
+    color: #9fb3d1;
+    font-size: 0.78rem;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .tv-compact-price-block {
     display: flex;
     align-items: baseline;
@@ -341,7 +363,7 @@ def render_row_streamlit(symbol, metrics, current):
     daily_class = classe_percentuale(daily_pct)
     dist_class = classe_zona_sma(dist_pct)
     in_zone = is_in_sma200_zone(dist_pct)
-    zone_note = "Zona SMA200W" if in_zone else "Monitoraggio"
+    zone_note = "Zona SMA200W" if in_zone else ""
 
     row_kind = "zone" if in_zone else "normal"
     row_key = "tv_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
@@ -353,10 +375,25 @@ def render_row_streamlit(symbol, metrics, current):
         )
 
         with row_col_1:
+            company_name = get_company_name(symbol, metrics)
+
+            company_name_html = ""
+            if company_name:
+                company_name_html = (
+                    '<span class="tv-compact-separator">•</span>'
+                    f'<span class="tv-desktop-symbol-name">{escape(company_name)}</span>'
+                )
+
+            zone_note_html = ""
+            if zone_note:
+                zone_note_html = f'<div class="tv-symbol-note-inline">{escape(zone_note)}</div>'
+
             st.markdown(
-                '<div class="tv-cell-label">Ticker</div>'
-                f'<div class="tv-cell-value tv-symbol-value">{escape(symbol)}</div>'
-                f'<div class="tv-symbol-note-inline">{zone_note}</div>',
+                '<div class="tv-cell-value tv-symbol-value tv-desktop-symbol-line">'
+                f'<span class="tv-desktop-symbol-main">{escape(symbol)}</span>'
+                f'{company_name_html}'
+                '</div>'
+                f'{zone_note_html}',
                 unsafe_allow_html=True,
             )
 
