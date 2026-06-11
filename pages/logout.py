@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-
+from utils.auth import logout_user
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
@@ -27,17 +27,7 @@ local_css(GLOBAL_CSS)
 # LOGOUT
 # =========================
 
-st.session_state["authenticated"] = False
-
-chiavi_da_rimuovere = [
-    "ticker_selezionato",
-    "lista_tickers"
-]
-
-for chiave in chiavi_da_rimuovere:
-    if chiave in st.session_state:
-        del st.session_state[chiave]
-
+logout_user()
 
 # =========================
 # INTERFACCIA
