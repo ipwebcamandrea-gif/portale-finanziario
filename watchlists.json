@@ -49,6 +49,8 @@
             "^VIX",
             "^VVIX"
         ],
-        "PORTAFOGLIO": []
+        "PORTAFOGLIO": [
+            "1MSFT.MI"
+        ]
     }
 }
