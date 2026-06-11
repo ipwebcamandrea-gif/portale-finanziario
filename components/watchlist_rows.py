@@ -84,7 +84,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.50rem;
+    gap: 0.55rem;
     min-width: 0;
 }
 
@@ -96,7 +96,6 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     min-width: 0;
     display: flex;
     align-items: baseline;
-    gap: 0.38rem;
     overflow: hidden;
 }
 
@@ -105,6 +104,14 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     font-size: 0.92rem;
     font-weight: 950;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.tv-compact-separator {
+    color: #5f7899;
+    font-size: 0.72rem;
+    font-weight: 900;
+    margin: 0 0.34rem;
     white-space: nowrap;
 }
 
@@ -135,7 +142,6 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     min-width: 0;
     display: flex;
     align-items: baseline;
-    gap: 0.58rem;
     overflow: hidden;
 }
 
@@ -166,7 +172,12 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
     .tv-compact-name {
         font-size: 0.69rem;
-        max-width: 135px;
+        max-width: 128px;
+    }
+
+    .tv-compact-separator {
+        margin: 0 0.26rem;
+        font-size: 0.66rem;
     }
 
     .tv-compact-price {
@@ -177,10 +188,6 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     .tv-compact-dist,
     .tv-compact-row-line-2 {
         font-size: 0.66rem;
-    }
-
-    .tv-compact-meta-left {
-        gap: 0.38rem;
     }
 }
 </style>
@@ -402,7 +409,15 @@ def render_row_compact(symbol, metrics, current):
 
     company_name_html = ""
     if company_name:
-        company_name_html = f'<span class="tv-compact-name">{escape(company_name)}</span>'
+        company_name_html = (
+            '<span class="tv-compact-separator">•</span>'
+            f'<span class="tv-compact-name">{escape(company_name)}</span>'
+        )
+
+    dist_html = (
+        '<span class="tv-compact-separator">•</span>'
+        f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
+    )
 
     # HTML non indentato: evita che Markdown lo renda come blocco codice.
     html = (
@@ -421,7 +436,7 @@ def render_row_compact(symbol, metrics, current):
         '<div class="tv-compact-row-line-2">'
         '<div class="tv-compact-meta-left">'
         f'<span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>'
-        f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
+        f'{dist_html}'
         '</div>'
         '</div>'
         '</div>'
