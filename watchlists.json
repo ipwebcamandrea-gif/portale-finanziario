@@ -2,10 +2,6 @@
     "version": 1,
     "active_watchlist": "MEGA  CAP  SU ITA",
     "watchlists": {
-        "MEGA  CAP  SU ITA": [
-            "1AMZN.MI",
-            "1MSFT.MI"
-        ],
         "MEGA CAP USA": [
             "MSFT",
             "MA",
@@ -23,6 +19,10 @@
             "KO",
             "BRK-B",
             "NOW"
+        ],
+        "MEGA  CAP  SU ITA": [
+            "1AMZN.MI",
+            "1MSFT.MI"
         ],
         "LARGE CAP": [
             "INTU",
