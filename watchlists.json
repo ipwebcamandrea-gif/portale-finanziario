@@ -40,14 +40,14 @@
             "UCG.MI",
             "ENI.MI"
         ],
+        "LARGE CAP": [
+            "INTU",
+            "NOW"
+        ],
         "CROLLO": [
             "EURUSD=X",
             "^GSPC",
             "^VIX"
-        ],
-        "LARGE CAP": [
-            "INTU",
-            "NOW"
         ]
     }
 }
