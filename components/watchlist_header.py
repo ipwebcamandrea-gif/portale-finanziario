@@ -55,7 +55,7 @@ def render_header_controls():
     - ritorno Cockpit
     """
     if "tv_compact_rows" not in st.session_state:
-        st.session_state["tv_compact_rows"] = False
+        st.session_state["tv_compact_rows"] = True
 
     compact_col, refresh_col, back_col = st.columns(
         [1.55, 0.42, 1.10],
@@ -93,9 +93,9 @@ def render_header_controls():
 
 def render_watchlist_header():
     if "tv_compact_rows" not in st.session_state:
-        st.session_state["tv_compact_rows"] = False
+        st.session_state["tv_compact_rows"] = True
 
-    compact_mode = bool(st.session_state.get("tv_compact_rows", False))
+    compact_mode = bool(st.session_state.get("tv_compact_rows", True))
 
     header_col_1, header_col_2 = st.columns(
         [3.55, 2.45],
