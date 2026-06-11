@@ -45,6 +45,8 @@
             "^GSPC",
             "^VIX"
         ],
-        "LARGE CAP": []
+        "LARGE CAP": [
+            "INTU"
+        ]
     }
 }
