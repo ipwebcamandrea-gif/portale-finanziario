@@ -27,6 +27,7 @@ def render_compact_rows_css():
 <style>
 div[class*="st-key-tv_compact_normal_row_"],
 div[class*="st-key-tv_compact_zone_row_"] {
+    position: relative;
     margin: 0.28rem 0;
     border-radius: 11px;
     overflow: hidden;
@@ -68,6 +69,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     width: 100%;
     color: inherit !important;
     text-decoration: none !important;
+    cursor: pointer;
 }
 
 .tv-compact-row-link:hover {
@@ -75,7 +77,20 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     text-decoration: none !important;
 }
 
+/* Rende cliccabile tutta la card compatta, anche le zone vuote a destra/sinistra. */
+.tv-compact-row-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+}
+
 .tv-compact-row-inner {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.42rem 0.58rem;
 }
 
