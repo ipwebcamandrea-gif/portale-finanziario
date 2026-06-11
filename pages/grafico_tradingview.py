@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from utils.auth import require_login
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -9,14 +10,7 @@ import streamlit.components.v1 as components
 # PROTEZIONE LOGIN
 # =========================
 
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
-
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-
-    st.stop()
-
+require_login()
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
