@@ -149,10 +149,17 @@ def crea_watchlist(nuovo_nome):
 
 
 # =========================
-# RENDER TAB PRINCIPALI
+# VISTA COMPATTA: SELECTBOX WATCHLIST
 # =========================
 
-def render_tabs_header():
+def format_compact_watchlist_name(name):
+    if watchlist_has_sma200_zone(name):
+        return "🟠 " + name
+
+    return name
+
+
+def render_compact_watchlist_selector():
     watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
     watchlist_names = list(watchlists.keys())
 
@@ -168,12 +175,56 @@ def render_tabs_header():
         st.session_state["tv_watchlists_data"]["active_watchlist"] = current
         salva_sessione_su_disco()
 
+    # In vista compatta chiudiamo eventuali pannelli aperti della modalita normale.
+    st.session_state["tv_show_create_panel"] = False
+    st.session_state["tv_show_rename_panel"] = False
+    st.session_state["tv_confirm_delete_tab"] = False
+
+    current_index = watchlist_names.index(current)
+
+    selected = st.selectbox(
+        "📂 Watchlist",
+        options=watchlist_names,
+        index=current_index,
+        format_func=format_compact_watchlist_name,
+        key="tv_compact_watchlist_selector",
+        help="Seleziona la watchlist da visualizzare",
+    )
+
+    if selected != current:
+        st.session_state["tv_current_list"] = selected
+        st.session_state["tv_watchlists_data"]["active_watchlist"] = selected
+        salva_sessione_su_disco()
+        st.rerun()
+
+
+# =========================
+# RENDER TAB PRINCIPALI
+# =========================
+
+def render_tabs_header():
     compact_mode = bool(st.session_state.get("tv_compact_rows", False))
 
-    # In vista compatta la pagina e solo consultiva:
-    # niente pulsanti crea/rinomina/elimina tab.
-    extra_cols = 0 if compact_mode else 1
-    cols = st.columns(len(watchlist_names) + extra_cols)
+    if compact_mode:
+        render_compact_watchlist_selector()
+        return
+
+    watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
+    watchlist_names = list(watchlists.keys())
+
+    if not watchlist_names:
+        st.warning("Nessuna watchlist disponibile.")
+        return
+
+    current = st.session_state.get("tv_current_list")
+
+    if current not in watchlists:
+        current = watchlist_names[0]
+        st.session_state["tv_current_list"] = current
+        st.session_state["tv_watchlists_data"]["active_watchlist"] = current
+        salva_sessione_su_disco()
+
+    cols = st.columns(len(watchlist_names) + 1)
 
     for idx, name in enumerate(watchlist_names):
         in_zone = watchlist_has_sma200_zone(name)
@@ -197,13 +248,6 @@ def render_tabs_header():
                     st.session_state["tv_show_rename_panel"] = False
                     salva_sessione_su_disco()
                     st.rerun()
-
-    if compact_mode:
-        # Se entro in vista compatta con pannelli aperti, li chiudo.
-        st.session_state["tv_show_create_panel"] = False
-        st.session_state["tv_show_rename_panel"] = False
-        st.session_state["tv_confirm_delete_tab"] = False
-        return
 
     with cols[-1]:
         plus_col, rename_col, minus_col = st.columns(3, gap="small")
@@ -254,7 +298,7 @@ def render_tabs_header():
 
 def render_tabs_toolbar():
     # La toolbar sotto i tab serve solo in modalita normale.
-    # In vista compatta i controlli globali sono sotto il pulsante Cockpit.
+    # In vista compatta i tab sono sostituiti dalla selectbox.
     if bool(st.session_state.get("tv_compact_rows", False)):
         return
 
