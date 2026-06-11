@@ -7,6 +7,7 @@ from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
+from utils.auth import require_login
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
     salva_sessione_su_disco,
@@ -17,12 +18,7 @@ from utils.watchlist_storage import (
 # PROTEZIONE LOGIN
 # =========================
 
-if not st.session_state.get("authenticated", False):
-    st.error("Accesso non autorizzato.")
-    if st.button("Torna al Login"):
-        st.switch_page("main.py")
-    st.stop()
-
+require_login()
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
