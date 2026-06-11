@@ -43,10 +43,10 @@
             "^VIX",
             "^VVIX"
         ],
+        "EDGAR": [],
         "ITA": [
             "UCG.MI",
             "ENI.MI"
-        ],
-        "EDGAR": []
+        ]
     }
 }
