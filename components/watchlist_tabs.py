@@ -3,7 +3,6 @@ from html import escape
 import streamlit as st
 
 from utils.symbols import slug_safe
-from utils.market_data import watchlist_has_sma200_zone
 from utils.watchlist_storage import salva_sessione_su_disco
 
 
@@ -152,13 +151,6 @@ def crea_watchlist(nuovo_nome):
 # VISTA COMPATTA: SELECTBOX WATCHLIST
 # =========================
 
-def format_compact_watchlist_name(name):
-    if watchlist_has_sma200_zone(name):
-        return "🟠 " + name
-
-    return name
-
-
 def render_compact_watchlist_selector():
     watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
     watchlist_names = list(watchlists.keys())
@@ -186,7 +178,6 @@ def render_compact_watchlist_selector():
         "📂 Watchlist",
         options=watchlist_names,
         index=current_index,
-        format_func=format_compact_watchlist_name,
         key="tv_compact_watchlist_selector",
         help="Seleziona la watchlist da visualizzare",
     )
@@ -227,10 +218,11 @@ def render_tabs_header():
     cols = st.columns(len(watchlist_names) + 1)
 
     for idx, name in enumerate(watchlist_names):
-        in_zone = watchlist_has_sma200_zone(name)
         is_active = name == st.session_state["tv_current_list"]
 
-        tab_kind = "zone" if in_zone else "normal"
+        # Importante: non calcoliamo nessun dato finanziario qui.
+        # I tab sono solo navigazione. I dati vengono caricati solo da watchlist_rows.py.
+        tab_kind = "normal"
         active_part = "_active_tab" if is_active else ""
         tab_wrap_key = "tv_" + tab_kind + "_tab" + active_part + "_" + slug_safe(name)
         tab_label = ("▶ " if is_active else "") + name
