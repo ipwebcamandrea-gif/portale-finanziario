@@ -7,11 +7,11 @@
     margin-left: 0;
 }
 
-.portfolio-top-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.9rem;
+/* Riduce margini generati dai blocchi Streamlit nella tabella simulata. */
+div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.portfolio-row-cell),
+div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.portfolio-table-header),
+div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.portfolio-cell.metric) {
+    margin-bottom: 0 !important;
 }
 
 .portfolio-page-title {
@@ -62,21 +62,31 @@
 }
 
 .portfolio-table-header {
+    height: 2.85rem;
+    display: flex;
+    align-items: flex-end;
     font-size: 0.78rem;
     line-height: 1.1;
     font-weight: 800;
     color: #d1d5db;
-    padding: 0.65rem 0.25rem;
+    padding: 0 0.25rem 0.55rem 0.25rem;
     border-bottom: 1px solid #e5e7eb;
 }
 
-.portfolio-row {
-    border-bottom: 1px solid #374151;
-    padding: 0.25rem 0;
+.portfolio-row-separator {
+    width: 100%;
+    height: 1px;
+    background: #374151;
+    margin: 0.42rem 0 0.42rem 0;
+}
+
+.portfolio-header-separator {
+    margin-top: 0.2rem;
 }
 
 .portfolio-cell {
-    min-height: 2.7rem;
+    min-height: 3.05rem;
+    height: 3.05rem;
     display: flex;
     align-items: center;
     font-size: 0.86rem;
@@ -105,7 +115,8 @@
 }
 
 .portfolio-title-cell {
-    min-height: 2.7rem;
+    min-height: 3.05rem;
+    height: 3.05rem;
     display: flex;
     align-items: center;
     gap: 0.55rem;
@@ -155,26 +166,38 @@
     color: #d1d5db !important;
 }
 
-.portfolio-action-box {
-    min-height: 2.7rem;
+/* Allineamento pulsanti azione nella colonna Azioni. */
+.portfolio-action-spacer {
+    height: 0.13rem;
+}
+
+.portfolio-action-row {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    min-height: 3.05rem;
+    height: 3.05rem;
 }
 
-/* Pulsanti azione riga: TradingView / modifica / elimina. */
-.portfolio-action-box div[data-testid="column"] {
+.portfolio-action-row div[data-testid="column"] {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.portfolio-action-box button {
-    width: 2.15rem !important;
-    height: 2.15rem !important;
-    min-height: 2.15rem !important;
+.portfolio-action-row div[data-testid="stButton"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio-action-row button {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-height: 2.25rem !important;
     padding: 0 !important;
     border-radius: 0.55rem !important;
+    margin: 0 !important;
 }
 
 .portfolio-form-box {
