@@ -44,6 +44,7 @@ DEFAULT_PORTFOLIO_JSON_PATH = "portfolio/portafoglio.json"
 # =========================
 
 def _secret_value(*names: str, default: str = "") -> str:
+    """Read a top-level Streamlit secret, supporting multiple possible names."""
     for name in names:
         try:
             value = st.secrets.get(name, "")
@@ -54,18 +55,92 @@ def _secret_value(*names: str, default: str = "") -> str:
     return default
 
 
+def _github_secret_value(name: str, default: str = "") -> str:
+    """Read a nested [github] Streamlit secret used by this project."""
+    try:
+        github_cfg = st.secrets.get("github", {})
+        if github_cfg and name in github_cfg and github_cfg.get(name):
+            return str(github_cfg.get(name)).strip()
+    except Exception:
+        pass
+    return default
+
+
+def _github_storage_enabled() -> bool:
+    """Respect [github].use_github_storage when present.
+
+    If the flag is absent, GitHub storage is considered enabled when token/repo
+    are available, preserving compatibility with the flat-secrets format.
+    """
+    try:
+        github_cfg = st.secrets.get("github", {})
+        if github_cfg and "use_github_storage" in github_cfg:
+            return bool(github_cfg.get("use_github_storage"))
+    except Exception:
+        pass
+    return True
+
+
 def get_portfolio_github_config() -> dict[str, str]:
+    """Return GitHub configuration for portfolio persistence.
+
+    Supports the project's nested secrets format:
+
+    [github]
+    token = "..."
+    owner = "ipwebcamandrea-gif"
+    repo = "portale-finanziario"
+    branch = "data-watchlists"
+
+    Also supports the previous flat format:
+
+    GITHUB_TOKEN = "..."
+    GITHUB_REPO = "owner/repo"
+    """
+    nested_token = _github_secret_value("token")
+    nested_owner = _github_secret_value("owner")
+    nested_repo_name = _github_secret_value("repo")
+    nested_branch = _github_secret_value("branch", DEFAULT_PORTFOLIO_BRANCH)
+
+    flat_token = _secret_value("GITHUB_TOKEN", "GH_TOKEN")
+    flat_repo = _secret_value("GITHUB_REPO", "GITHUB_REPOSITORY")
+    flat_branch = _secret_value("GITHUB_PORTFOLIO_BRANCH", default=DEFAULT_PORTFOLIO_BRANCH)
+
+    token = nested_token or flat_token
+
+    if nested_owner and nested_repo_name:
+        repo = f"{nested_owner}/{nested_repo_name}"
+    else:
+        repo = flat_repo
+
+    branch = _secret_value(
+        "GITHUB_PORTFOLIO_BRANCH",
+        default=(nested_branch or flat_branch or DEFAULT_PORTFOLIO_BRANCH),
+    )
+
+    path = _secret_value(
+        "GITHUB_PORTFOLIO_PATH",
+        default=DEFAULT_PORTFOLIO_JSON_PATH,
+    )
+
     return {
-        "token": _secret_value("GITHUB_TOKEN", "GH_TOKEN"),
-        "repo": _secret_value("GITHUB_REPO", "GITHUB_REPOSITORY"),
-        "branch": _secret_value("GITHUB_PORTFOLIO_BRANCH", default=DEFAULT_PORTFOLIO_BRANCH),
-        "path": _secret_value("GITHUB_PORTFOLIO_PATH", default=DEFAULT_PORTFOLIO_JSON_PATH),
+        "token": token,
+        "repo": repo,
+        "branch": branch,
+        "path": path,
+        "enabled": "true" if _github_storage_enabled() else "false",
     }
 
 
 def is_github_configured() -> bool:
     cfg = get_portfolio_github_config()
-    return bool(cfg["token"] and cfg["repo"] and cfg["branch"] and cfg["path"])
+    return bool(
+        cfg.get("enabled") == "true"
+        and cfg.get("token")
+        and cfg.get("repo")
+        and cfg.get("branch")
+        and cfg.get("path")
+    )
 
 
 def set_portfolio_storage_state(mode: str, error: str = "") -> None:
@@ -261,7 +336,11 @@ def load_portfolio(json_path: Path) -> pd.DataFrame:
         except Exception as exc:
             set_portfolio_storage_state("locale_fallback", str(exc))
     else:
-        set_portfolio_storage_state("locale")
+        cfg = get_portfolio_github_config()
+        if cfg.get("enabled") != "true":
+            set_portfolio_storage_state("locale", "[github].use_github_storage è false")
+        else:
+            set_portfolio_storage_state("locale", "Configurazione GitHub incompleta")
 
     return _payload_to_df(_read_local_payload(json_path))
 
@@ -284,7 +363,11 @@ def save_portfolio(
             set_portfolio_storage_state("locale_fallback", str(exc))
             return
 
-    set_portfolio_storage_state("locale")
+    cfg = get_portfolio_github_config()
+    if cfg.get("enabled") != "true":
+        set_portfolio_storage_state("locale", "[github].use_github_storage è false")
+    else:
+        set_portfolio_storage_state("locale", "Configurazione GitHub incompleta")
 
 
 def add_position(json_path: Path, position: dict) -> None:
