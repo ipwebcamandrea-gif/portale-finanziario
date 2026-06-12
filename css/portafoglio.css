@@ -14,6 +14,68 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.
     margin-bottom: 0 !important;
 }
 
+/* =========================
+   TOPBAR MODERNA STILE WATCHLIST
+   ========================= */
+.portfolio-top-actions-modern {
+    margin: 0.25rem 0 1.35rem 0;
+}
+
+/* Pulsante refresh compatto */
+div[class*="st-key-portfolio_refresh_quotes"] .stButton > button,
+div[class*="st-key-portfolio_refresh_quotes"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    width: 74px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 176, 255, 0.52) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.22), transparent 36%),
+        linear-gradient(135deg, rgba(0, 176, 255, 0.12) 0%, rgba(22, 27, 34, 0.95) 100%) !important;
+    color: #e6edf3 !important;
+    font-weight: 950 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 14px rgba(0, 176, 255, 0.14) !important;
+    transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease !important;
+}
+
+/* Pulsante Cockpit largo */
+div[class*="st-key-portfolio_back_to_cockpit"] .stButton > button,
+div[class*="st-key-portfolio_back_to_cockpit"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 176, 255, 0.36) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+        linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+    color: #e6edf3 !important;
+    font-weight: 950 !important;
+    letter-spacing: -0.01em !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 14px rgba(0, 176, 255, 0.10) !important;
+    transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease !important;
+}
+
+/* Hover coerente con WatchlistTradingView */
+div[class*="st-key-portfolio_refresh_quotes"] .stButton > button:hover,
+div[class*="st-key-portfolio_refresh_quotes"] button:hover,
+div[class*="st-key-portfolio_back_to_cockpit"] .stButton > button:hover,
+div[class*="st-key-portfolio_back_to_cockpit"] button:hover {
+    border-color: rgba(0, 176, 255, 0.85) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.30), transparent 36%),
+        linear-gradient(135deg, rgba(0, 176, 255, 0.22) 0%, rgba(22, 27, 34, 1) 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 0 18px rgba(0, 176, 255, 0.22) !important;
+}
+
 .portfolio-page-title {
     font-size: 1.6rem;
     font-weight: 800;
@@ -252,5 +314,10 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.
         width: 24px;
         height: 24px;
         font-size: 0.6rem;
+    }
+
+    div[class*="st-key-portfolio_refresh_quotes"] .stButton > button,
+    div[class*="st-key-portfolio_refresh_quotes"] button {
+        width: 58px !important;
     }
 }
