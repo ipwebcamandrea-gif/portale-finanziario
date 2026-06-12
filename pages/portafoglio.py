@@ -16,16 +16,14 @@ from utils.portfolio_storage import (
     load_portfolio,
     update_position,
 )
-from utils.portfolio_tradingview import (
-    build_tradingview_symbol,
-    render_tradingview_chart,
-)
+from utils.portfolio_tradingview import build_tradingview_symbol
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 COCKPIT_PAGE = "main.py"
+TRADINGVIEW_PAGE = "pages/grafico_tradingview.py"
 
 
 st.set_page_config(
@@ -70,6 +68,36 @@ def go_to_cockpit() -> None:
     except Exception:
         st.warning(
             f"Non riesco ad aprire {COCKPIT_PAGE}. Se il cockpit ha un nome diverso, modifica COCKPIT_PAGE in pages/portafoglio.py."
+        )
+
+
+def open_tradingview_page(symbol: str) -> None:
+    """Open the app TradingView page using the same session-state style as the Watchlist flow.
+
+    We intentionally set multiple keys to remain compatible with the existing
+    TradingView page, even if the current implementation reads a slightly
+    different session-state key.
+    """
+    if not symbol:
+        st.warning("Simbolo TradingView non valido.")
+        return
+
+    st.session_state["portfolio_selected_symbol"] = symbol
+    st.session_state["selected_tradingview_symbol"] = symbol
+    st.session_state["tradingview_symbol"] = symbol
+    st.session_state["tv_symbol"] = symbol
+    st.session_state["watchlist_selected_symbol"] = symbol
+    st.session_state["watchlist_tradingview_symbol"] = symbol
+
+    try:
+        st.switch_page(TRADINGVIEW_PAGE)
+    except Exception:
+        st.error(
+            f"Non riesco ad aprire {TRADINGVIEW_PAGE}. Controlla il nome reale del file pagina e modifica TRADINGVIEW_PAGE in pages/portafoglio.py."
+        )
+        st.link_button(
+            "Apri su TradingView ↗",
+            url=f"https://www.tradingview.com/chart/?symbol={symbol}",
         )
 
 
@@ -343,11 +371,8 @@ def render_portfolio_rows(df) -> None:
 
             with action_cols[0]:
                 if st.button("📊", key=f"portfolio_chart_{idx}", help="Apri grafico TradingView"):
-                    st.session_state["portfolio_selected_symbol"] = build_tradingview_symbol(
-                        row["mercato"],
-                        row["ticker"],
-                    )
-                    st.rerun()
+                    symbol = build_tradingview_symbol(row["mercato"], row["ticker"])
+                    open_tradingview_page(symbol)
 
             with action_cols[1]:
                 if st.button("✏️", key=f"portfolio_edit_{idx}", help="Modifica posizione"):
@@ -391,10 +416,6 @@ def main() -> None:
     render_portfolio_rows(df)
     render_edit_form(df)
     render_delete_confirmation(df)
-
-    selected_symbol = st.session_state.get("portfolio_selected_symbol")
-    if selected_symbol:
-        render_tradingview_chart(selected_symbol)
 
 
 if __name__ == "__main__":
