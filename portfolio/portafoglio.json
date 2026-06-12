@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T15:36:15+00:00",
+  "updated_at": "2026-06-12T16:07:45+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 1100,
       "prezzo_medio": 6.85531,
-      "prezzo_mercato": 5.92140007019043,
+      "prezzo_mercato": 5.829999923706055,
       "prezzo_precedente": 5.77,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 270.69500732421875,
+      "prezzo_mercato": 270.4495849609375,
       "prezzo_precedente": 277.75,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -36,7 +36,7 @@
       "valuta": "USD",
       "quantita": 700,
       "prezzo_medio": 8.34849,
-      "prezzo_mercato": 8.289999961853027,
+      "prezzo_mercato": 8.305000305175781,
       "prezzo_precedente": 8.27,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 16.635000228881836,
+      "prezzo_mercato": 16.325000762939453,
       "prezzo_precedente": 16.655,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 490.04998779296875,
+      "prezzo_mercato": 491.06500244140625,
       "prezzo_precedente": 486.88,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 134,
       "prezzo_medio": 325.94,
-      "prezzo_mercato": 336.6000061035156,
+      "prezzo_mercato": 335.1499938964844,
       "prezzo_precedente": 337.25,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 109,
       "prezzo_medio": 63.29729,
-      "prezzo_mercato": 41.34000015258789,
+      "prezzo_mercato": 40.94499969482422,
       "prezzo_precedente": 41.24,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
