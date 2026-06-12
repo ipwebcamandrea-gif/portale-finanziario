@@ -3,10 +3,11 @@ import html
 import streamlit as st
 
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
+from utils.portfolio_tradingview import build_tradingview_symbol
 
 
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
-# Valore mercato, Guadagno, Var quotidiana, Azioni.
+# Var quotidiana, Valore mercato, Guadagno, Azioni.
 COLUMN_WEIGHTS = [2.35, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 1.75]
 
 
@@ -48,9 +49,9 @@ def render_portfolio_table_header() -> None:
         "Quantità",
         "P.zo medio<br>di carico",
         "P.zo di<br>mercato",
+        "Var % quotidiana €",
         "Val di mercato €",
         "Guadagno",
-        "Var % quotidiana €",
         "Azioni",
     ]
 
@@ -80,11 +81,15 @@ def render_position_values(row):
 
     ticker = _esc(row["ticker"])
     titolo = _esc(row["titolo"])
-    tv_symbol = _esc(row.get("tv_symbol", ""))
-    mercato = _esc(row["mercato"])
     valuta = _esc(row["valuta"])
 
-    subtitle = tv_symbol if tv_symbol else f"{mercato}:{ticker}"
+    effective_tv_symbol = build_tradingview_symbol(
+        row.get("mercato", ""),
+        row.get("ticker", ""),
+        row.get("tv_symbol", ""),
+        row.get("valuta", ""),
+    )
+    subtitle = _esc(effective_tv_symbol)
 
     cols = st.columns(COLUMN_WEIGHTS, gap="small")
 
@@ -123,26 +128,26 @@ def render_position_values(row):
 
     with cols[5]:
         st.markdown(
-            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}</div>',
+            _metric_html(
+                daily_class,
+                fmt_pct(row["var_quotidiana_pct"]),
+                fmt_eur(row["var_quotidiana_eur"]),
+            ),
             unsafe_allow_html=True,
         )
 
     with cols[6]:
         st.markdown(
-            _metric_html(
-                gain_class,
-                fmt_eur(row["var_da_carico_eur"]),
-                fmt_pct(row["var_da_carico_pct"]),
-            ),
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}</div>',
             unsafe_allow_html=True,
         )
 
     with cols[7]:
         st.markdown(
             _metric_html(
-                daily_class,
-                fmt_pct(row["var_quotidiana_pct"]),
-                fmt_eur(row["var_quotidiana_eur"]),
+                gain_class,
+                fmt_eur(row["var_da_carico_eur"]),
+                fmt_pct(row["var_da_carico_pct"]),
             ),
             unsafe_allow_html=True,
         )
