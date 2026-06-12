@@ -146,14 +146,12 @@ def render_auto_refresh_status() -> None:
 
 
 def render_top_actions() -> None:
-    col_back, col_refresh, col_spacer = st.columns([1.0, 1.35, 7.65])
-
-    with col_back:
-        if st.button("← Cockpit", key="portfolio_back_to_cockpit"):
-            go_to_cockpit()
+    """Render top navigation/actions using WatchlistTradingView-like modern buttons."""
+    st.markdown('<div class="portfolio-top-actions-modern">', unsafe_allow_html=True)
+    col_refresh, col_back, col_spacer = st.columns([0.48, 1.45, 8.07])
 
     with col_refresh:
-        if st.button("🔄 Aggiorna quotazioni", key="portfolio_refresh_quotes"):
+        if st.button("🔄", key="portfolio_refresh_quotes", help="Aggiorna quotazioni"):
             with st.spinner("Aggiornamento quotazioni in corso..."):
                 result = refresh_portfolio_quotes(DATA_PATH)
 
@@ -167,6 +165,12 @@ def render_top_actions() -> None:
 
             render_refresh_details(result)
             st.rerun()
+
+    with col_back:
+        if st.button("← Cockpit", key="portfolio_back_to_cockpit", use_container_width=True):
+            go_to_cockpit()
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_add_form() -> None:
