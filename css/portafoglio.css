@@ -2,11 +2,11 @@
     font-size: 1.6rem;
     font-weight: 800;
     margin-bottom: 0.3rem;
-    color: #111827;
+    color: #f9fafb;
 }
 
 .portfolio-page-subtitle {
-    color: #6b7280;
+    color: #9ca3af;
     font-size: 0.9rem;
     margin-bottom: 1.2rem;
 }
@@ -77,8 +77,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    gap: 0.1rem;
+    gap: 0.14rem;
     line-height: 1.15;
+    white-space: nowrap;
+}
+
+.portfolio-metric-line {
+    display: block;
+    width: 100%;
+    text-align: right;
 }
 
 .portfolio-title-cell {
