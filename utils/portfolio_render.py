@@ -5,7 +5,9 @@ import streamlit as st
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 
 
-COLUMN_WEIGHTS = [2.2, 1.0, 0.8, 0.9, 1.2, 1.1, 1.3, 1.3, 1.3, 1.45]
+# Stessi pesi per header e righe. La colonna Azioni è un po' più larga
+# per contenere bene i tre pulsanti Streamlit.
+COLUMN_WEIGHTS = [2.25, 1.05, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 1.75]
 
 
 def _esc(value) -> str:
@@ -39,7 +41,7 @@ def render_portfolio_summary(totals: dict) -> None:
 
 
 def render_portfolio_table_header() -> None:
-    cols = st.columns(COLUMN_WEIGHTS)
+    cols = st.columns(COLUMN_WEIGHTS, gap="small")
 
     headers = [
         "Titolo",
@@ -60,6 +62,8 @@ def render_portfolio_table_header() -> None:
                 f'<div class="portfolio-table-header">{header}</div>',
                 unsafe_allow_html=True,
             )
+
+    st.markdown('<div class="portfolio-row-separator portfolio-header-separator"></div>', unsafe_allow_html=True)
 
 
 def _metric_html(css_class: str, pct_value: str, eur_value: str) -> str:
@@ -82,11 +86,11 @@ def render_position_values(row):
     strumento = _esc(row["strumento"])
     valuta = _esc(row["valuta"])
 
-    cols = st.columns(COLUMN_WEIGHTS)
+    cols = st.columns(COLUMN_WEIGHTS, gap="small")
 
     with cols[0]:
         st.markdown(
-            '<div class="portfolio-title-cell">'
+            '<div class="portfolio-title-cell portfolio-row-cell">'
             f'<span class="portfolio-logo">{ticker[:2]}</span>'
             '<span>'
             f'<span class="portfolio-title">{titolo}</span>'
@@ -97,32 +101,32 @@ def render_position_values(row):
         )
 
     with cols[1]:
-        st.markdown(f'<div class="portfolio-cell">{strumento}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="portfolio-cell portfolio-row-cell">{strumento}</div>', unsafe_allow_html=True)
 
     with cols[2]:
-        st.markdown(f'<div class="portfolio-cell">{valuta}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="portfolio-cell portfolio-row-cell">{valuta}</div>', unsafe_allow_html=True)
 
     with cols[3]:
         st.markdown(
-            f'<div class="portfolio-cell right">{fmt_qty(row["quantita"])}</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_qty(row["quantita"])}</div>',
             unsafe_allow_html=True,
         )
 
     with cols[4]:
         st.markdown(
-            f'<div class="portfolio-cell right">{fmt_num(row["prezzo_medio"], 5)}</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_num(row["prezzo_medio"], 5)}</div>',
             unsafe_allow_html=True,
         )
 
     with cols[5]:
         st.markdown(
-            f'<div class="portfolio-cell right">{fmt_num(row["prezzo_mercato"], 2)}</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_num(row["prezzo_mercato"], 2)}</div>',
             unsafe_allow_html=True,
         )
 
     with cols[6]:
         st.markdown(
-            f'<div class="portfolio-cell right">{fmt_eur(row["valore_mercato_eur"])}</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}</div>',
             unsafe_allow_html=True,
         )
 
@@ -147,3 +151,7 @@ def render_position_values(row):
         )
 
     return cols[9]
+
+
+def render_row_separator() -> None:
+    st.markdown('<div class="portfolio-row-separator"></div>', unsafe_allow_html=True)
