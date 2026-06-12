@@ -366,3 +366,106 @@ div[class*="st-key-portfolio_back_to_cockpit"] button:hover {
         width: 58px !important;
     }
 }
+
+
+/* =========================
+   SIMULATORE ACQUISTO AGGIUNTIVO
+   ========================= */
+.portfolio-simulator-box {
+    margin: 1.1rem 0 0.9rem 0;
+    padding: 1rem 1.05rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 176, 255, 0.38);
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(13, 17, 23, 0.60) 0%, rgba(22, 27, 34, 0.96) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 0 18px rgba(0, 176, 255, 0.12);
+}
+
+.portfolio-simulator-kicker {
+    color: #8bd3ff;
+    font-size: 0.74rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.22rem;
+}
+
+.portfolio-simulator-title {
+    color: #f9fafb;
+    font-size: 1.18rem;
+    font-weight: 950;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.18rem;
+}
+
+.portfolio-simulator-subtitle {
+    color: #9fb3d1;
+    font-size: 0.84rem;
+    font-weight: 750;
+}
+
+.portfolio-sim-card {
+    min-height: 88px;
+    padding: 0.78rem 0.88rem;
+    border-radius: 14px;
+    border: 1px solid rgba(48, 54, 61, 0.78);
+    background: linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+    margin-bottom: 0.55rem;
+}
+
+.portfolio-sim-card-label {
+    color: #9fb3d1;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 0.35rem;
+}
+
+.portfolio-sim-card-value {
+    color: #f9fafb;
+    font-size: 1.08rem;
+    font-weight: 950;
+    line-height: 1.18;
+}
+
+.portfolio-sim-accent {
+    border-color: rgba(0, 176, 255, 0.42);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.14), transparent 34%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.86) 100%);
+}
+
+.portfolio-sim-card.portfolio-positive .portfolio-sim-card-value {
+    color: #22c55e !important;
+}
+
+.portfolio-sim-card.portfolio-negative .portfolio-sim-card-value {
+    color: #ef4444 !important;
+}
+
+.portfolio-sim-budget-note {
+    margin: 0.85rem 0 0.45rem 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(139, 211, 255, 0.28);
+    background: rgba(13, 17, 23, 0.45);
+    color: #cfe7ff;
+    font-size: 0.88rem;
+    font-weight: 750;
+    line-height: 1.42;
+}
+
+@media screen and (max-width: 768px) {
+    .portfolio-simulator-title {
+        font-size: 1rem;
+    }
+
+    .portfolio-sim-card-value {
+        font-size: 0.92rem;
+    }
+}
