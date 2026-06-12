@@ -469,3 +469,38 @@ div[class*="st-key-portfolio_back_to_cockpit"] button:hover {
         font-size: 0.92rem;
     }
 }
+
+
+/* Controlli rapidi del simulatore: -10 -1 +1 +10 */
+.portfolio-sim-stepper-label {
+    color: #9fb3d1;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 0.35rem;
+}
+
+/* Pulsanti rapidi nel pannello simulatore */
+div[class*="st-key-portfolio_sim_step_"] .stButton > button,
+div[class*="st-key-portfolio_sim_step_"] button {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0.05rem 0.20rem !important;
+    border-radius: 9px !important;
+    font-size: 0.86rem !important;
+    font-weight: 950 !important;
+    border: 1px solid rgba(0, 176, 255, 0.34) !important;
+    background: linear-gradient(180deg, rgba(32, 39, 51, 0.88) 0%, rgba(21, 27, 36, 0.94) 100%) !important;
+    color: #e6edf3 !important;
+}
+
+div[class*="st-key-portfolio_sim_step_"] .stButton > button:hover,
+div[class*="st-key-portfolio_sim_step_"] button:hover {
+    border-color: rgba(0, 176, 255, 0.76) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.20), transparent 36%),
+        linear-gradient(180deg, rgba(39, 48, 58, 0.92) 0%, rgba(21, 27, 36, 1) 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
