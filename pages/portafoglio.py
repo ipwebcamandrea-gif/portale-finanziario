@@ -307,6 +307,11 @@ def _sim_card(label: str, value: str, css_class: str = "") -> None:
     st.markdown(html, unsafe_allow_html=True)
 
 
+def _adjust_sim_qty(key: str, delta: int, minimum: int, maximum: int) -> None:
+    current_value = int(st.session_state.get(key, 0) or 0)
+    st.session_state[key] = max(minimum, min(maximum, current_value + delta))
+
+
 def render_buy_simulator(df) -> None:
     simulation_index = st.session_state.get("portfolio_simulation_index")
 
@@ -343,9 +348,9 @@ def render_buy_simulator(df) -> None:
         buy_price = st.number_input(
             f"Prezzo ipotetico di acquisto ({currency})",
             min_value=0.0,
-            value=float(current_market_price),
+            value=round(float(current_market_price), 2),
             step=0.01,
-            format="%.6f",
+            format="%.2f",
             key=f"portfolio_sim_buy_price_{simulation_index}",
         )
 
@@ -364,14 +369,33 @@ def render_buy_simulator(df) -> None:
     suggested_max = max(10, int(current_qty), int(budget_capacity["buyable_qty"]), 100)
     slider_max = min(max(suggested_max * 2, 100), 10000)
 
+    slider_key = f"portfolio_sim_add_qty_{simulation_index}"
+
+    if slider_key not in st.session_state:
+        st.session_state[slider_key] = 0
+
+    st.session_state[slider_key] = max(
+        0,
+        min(int(slider_max), int(st.session_state.get(slider_key, 0) or 0)),
+    )
+
     with input_col_3:
+        st.markdown('<div class="portfolio-sim-stepper-label">Regola quantità</div>', unsafe_allow_html=True)
+        step_cols = st.columns(4, gap="small")
+        step_buttons = [(-10, "−10"), (-1, "−1"), (1, "+1"), (10, "+10")]
+
+        for step_col, (delta, label) in zip(step_cols, step_buttons):
+            with step_col:
+                if st.button(label, key=f"portfolio_sim_step_{simulation_index}_{label}", use_container_width=True):
+                    _adjust_sim_qty(slider_key, delta, 0, int(slider_max))
+                    st.rerun()
+
         add_qty = st.slider(
             "Azioni/quote da aggiungere",
             min_value=0,
             max_value=int(slider_max),
-            value=0,
             step=1,
-            key=f"portfolio_sim_add_qty_{simulation_index}",
+            key=slider_key,
         )
 
     sim = calculate_buy_simulation(
@@ -412,7 +436,7 @@ def render_buy_simulator(df) -> None:
         note_html = (
             '<div class="portfolio-sim-budget-note">'
             f'Con un budget di <b>{_money(budget, currency)}</b> puoi comprare circa '
-            f'<b>{fmt_qty(budget_capacity["buyable_qty"])}</b> azioni/quote a {fmt_num(buy_price, 4)} {currency}. '
+            f'<b>{fmt_qty(budget_capacity["buyable_qty"])}</b> azioni/quote a {fmt_num(buy_price, 2)} {currency}. '
             f'Budget usato: <b>{_money(budget_capacity["used_budget"], currency)}</b> · '
             f'residuo: <b>{_money(budget_capacity["remaining_budget"], currency)}</b>.'
             '</div>'
