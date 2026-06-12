@@ -8,7 +8,8 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
 # Var quotidiana, Valore mercato, Guadagno, Azioni.
-COLUMN_WEIGHTS = [2.35, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 1.75]
+# Azioni più larga per 4 pulsanti: 📊 🧮 ✏️ 🗑️
+COLUMN_WEIGHTS = [2.35, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 2.25]
 
 
 def _esc(value) -> str:
