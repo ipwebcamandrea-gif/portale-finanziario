@@ -1,4 +1,4 @@
-import textwrap
+import html
 
 import streamlit as st
 
@@ -8,42 +8,34 @@ from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value
 COLUMN_WEIGHTS = [2.2, 1.0, 0.8, 0.9, 1.2, 1.1, 1.3, 1.3, 1.3, 1.2]
 
 
-def _html(markup: str) -> str:
-    """Return left-aligned HTML so Streamlit Markdown does not render it as a code block."""
-    return textwrap.dedent(markup).strip()
+def _esc(value) -> str:
+    """Escape text values before injecting them into small HTML snippets."""
+    return html.escape(str(value or ""), quote=True)
 
 
 def render_portfolio_summary(totals: dict) -> None:
-    st.markdown(
-        _html(
-            f"""
-            <div class="portfolio-summary-wrapper">
-                <div class="portfolio-summary-card">
-                    <div class="portfolio-summary-label">Valorizzazione EUR</div>
-                    <div class="portfolio-summary-value">
-                        {fmt_eur(totals["valore_mercato"])}
-                    </div>
-                </div>
-                <div class="portfolio-summary-card">
-                    <div class="portfolio-summary-label">Var quotidiana EUR</div>
-                    <div class="portfolio-summary-value {value_class(totals["var_quotidiana"])}">
-                        {fmt_eur(totals["var_quotidiana"])}
-                    </div>
-                </div>
-                <div class="portfolio-summary-card">
-                    <div class="portfolio-summary-label">Var da carico</div>
-                    <div class="portfolio-summary-value {value_class(totals["var_da_carico"])}">
-                        {fmt_eur(totals["var_da_carico"])}
-                        <span class="portfolio-summary-pct">
-                            {fmt_pct(totals["var_da_carico_pct"])}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            """
-        ),
-        unsafe_allow_html=True,
+    """Render the central summary without Markdown indentation side effects."""
+    html_summary = (
+        '<div class="portfolio-summary-wrapper">'
+        '<div class="portfolio-summary-card">'
+        '<div class="portfolio-summary-label">Valorizzazione EUR</div>'
+        f'<div class="portfolio-summary-value">{fmt_eur(totals["valore_mercato"])}</div>'
+        '</div>'
+        '<div class="portfolio-summary-card">'
+        '<div class="portfolio-summary-label">Var quotidiana EUR</div>'
+        f'<div class="portfolio-summary-value {value_class(totals["var_quotidiana"])}">{fmt_eur(totals["var_quotidiana"])}</div>'
+        '</div>'
+        '<div class="portfolio-summary-card">'
+        '<div class="portfolio-summary-label">Var da carico</div>'
+        f'<div class="portfolio-summary-value {value_class(totals["var_da_carico"])}">'
+        f'{fmt_eur(totals["var_da_carico"])}'
+        f'<span class="portfolio-summary-pct">{fmt_pct(totals["var_da_carico_pct"])}</span>'
+        '</div>'
+        '</div>'
+        '</div>'
     )
+
+    st.markdown(html_summary, unsafe_allow_html=True)
 
 
 def render_portfolio_table_header() -> None:
@@ -70,40 +62,45 @@ def render_portfolio_table_header() -> None:
             )
 
 
+def _metric_html(css_class: str, pct_value: str, eur_value: str) -> str:
+    return (
+        f'<div class="portfolio-cell right metric {css_class}">'
+        f'<div class="portfolio-metric-line">{pct_value}</div>'
+        f'<div class="portfolio-metric-line">{eur_value}</div>'
+        '</div>'
+    )
+
+
 def render_position_values(row):
     """Render all non-action values for a portfolio row and return the action column."""
     daily_class = value_class(row["var_quotidiana_eur"])
     load_class = value_class(row["var_da_carico_eur"])
 
+    ticker = _esc(row["ticker"])
+    titolo = _esc(row["titolo"])
+    mercato = _esc(row["mercato"])
+    strumento = _esc(row["strumento"])
+    valuta = _esc(row["valuta"])
+
     cols = st.columns(COLUMN_WEIGHTS)
 
     with cols[0]:
         st.markdown(
-            _html(
-                f"""
-                <div class="portfolio-title-cell">
-                    <span class="portfolio-logo">{str(row["ticker"])[:2]}</span>
-                    <span>
-                        <span class="portfolio-title">{row["titolo"]}</span>
-                        <span class="portfolio-subtitle">{row["mercato"]}:{row["ticker"]}</span>
-                    </span>
-                </div>
-                """
-            ),
+            '<div class="portfolio-title-cell">'
+            f'<span class="portfolio-logo">{ticker[:2]}</span>'
+            '<span>'
+            f'<span class="portfolio-title">{titolo}</span>'
+            f'<span class="portfolio-subtitle">{mercato}:{ticker}</span>'
+            '</span>'
+            '</div>',
             unsafe_allow_html=True,
         )
 
     with cols[1]:
-        st.markdown(
-            f'<div class="portfolio-cell">{row["strumento"]}</div>',
-            unsafe_allow_html=True,
-        )
+        st.markdown(f'<div class="portfolio-cell">{strumento}</div>', unsafe_allow_html=True)
 
     with cols[2]:
-        st.markdown(
-            f'<div class="portfolio-cell">{row["valuta"]}</div>',
-            unsafe_allow_html=True,
-        )
+        st.markdown(f'<div class="portfolio-cell">{valuta}</div>', unsafe_allow_html=True)
 
     with cols[3]:
         st.markdown(
@@ -131,26 +128,20 @@ def render_position_values(row):
 
     with cols[7]:
         st.markdown(
-            _html(
-                f"""
-                <div class="portfolio-cell right metric {daily_class}">
-                    <span>{fmt_pct(row["var_quotidiana_pct"])}</span>
-                    <span>{fmt_eur(row["var_quotidiana_eur"])}</span>
-                </div>
-                """
+            _metric_html(
+                daily_class,
+                fmt_pct(row["var_quotidiana_pct"]),
+                fmt_eur(row["var_quotidiana_eur"]),
             ),
             unsafe_allow_html=True,
         )
 
     with cols[8]:
         st.markdown(
-            _html(
-                f"""
-                <div class="portfolio-cell right metric {load_class}">
-                    <span>{fmt_pct(row["var_da_carico_pct"])}</span>
-                    <span>{fmt_eur(row["var_da_carico_eur"])}</span>
-                </div>
-                """
+            _metric_html(
+                load_class,
+                fmt_pct(row["var_da_carico_pct"]),
+                fmt_eur(row["var_da_carico_eur"]),
             ),
             unsafe_allow_html=True,
         )
