@@ -5,6 +5,8 @@ import streamlit as st
 
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
+from utils.portfolio_fx import convert_to_eur
+from utils.portfolio_add_smart import build_smart_position
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
     render_portfolio_summary,
@@ -209,80 +211,129 @@ def render_top_actions() -> None:
 
 def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
-        with st.form("portfolio_add_form", clear_on_submit=True):
-            col1, col2, col3 = st.columns(3)
-            col4, col5, col6, col7 = st.columns(4)
-            col8, col9 = st.columns(2)
+        st.markdown(
+            '<div class="portfolio-add-smart-title">Aggiunta minima smart</div>'
+            '<div class="portfolio-add-smart-subtitle">Inserisci solo ticker, mercato opzionale, valuta, quantità e prezzo medio Fineco.</div>',
+            unsafe_allow_html=True,
+        )
 
-            with col1:
-                ticker = st.text_input("Ticker", placeholder="MSFT oppure 1MSFT")
+        col1, col2, col3 = st.columns([1.2, 1.2, 0.8])
+        col4, col5 = st.columns([1, 1])
 
-            with col2:
-                titolo = st.text_input("Titolo", placeholder="MICROSOFT")
+        with col1:
+            ticker = st.text_input("Ticker", placeholder="SOFI, MSFT, MA", key="portfolio_add_ticker")
 
-            with col3:
-                mercato = st.text_input("Mercato TradingView", value="NASDAQ", help="Esempio: NASDAQ, NYSE, MIL")
+        with col2:
+            mercato = st.text_input(
+                "Mercato opzionale",
+                value="NASDAQ",
+                help="Se vuoto usa NASDAQ. Esempio: NYSE per Mastercard.",
+                key="portfolio_add_market",
+            )
 
-            with col4:
-                valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"])
+        with col3:
+            valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"], index=1, key="portfolio_add_currency")
 
-            with col5:
-                quantita = st.number_input("Quantità", min_value=0.0, step=1.0, format="%.6f")
+        with col4:
+            quantita = st.number_input(
+                "Quantità azioni",
+                min_value=0.0,
+                step=1.0,
+                format="%.6f",
+                key="portfolio_add_qty",
+            )
 
-            with col6:
-                prezzo_medio = st.number_input("P.zo medio carico", min_value=0.0, step=0.01, format="%.6f")
-
-            with col7:
-                prezzo_mercato = st.number_input("P.zo mercato", min_value=0.0, step=0.01, format="%.6f")
-
-            with col8:
-                yf_symbol = st.text_input(
-                    "Simbolo yfinance opzionale",
-                    placeholder="1MSFT.MI",
-                    help="Da usare se la posizione è quotata su mercato diverso dal ticker principale, es. EUR su Borsa Italiana.",
-                )
-
-            with col9:
-                tv_symbol = st.text_input(
-                    "Simbolo TradingView opzionale",
-                    placeholder="MIL:1MSFT",
-                    help="Da usare se il grafico deve aprire uno specifico mercato/strumento.",
-                )
-
-            prezzo_precedente = st.number_input(
-                "P.zo precedente",
+        with col5:
+            prezzo_medio = st.number_input(
+                "Prezzo medio per azione",
                 min_value=0.0,
                 step=0.01,
                 format="%.6f",
-                help="Valore manuale usato come fallback se l'aggiornamento quote non trova dati live.",
+                key="portfolio_add_avg_price",
             )
 
-            submitted = st.form_submit_button("Aggiungi posizione")
+        investimento = float(quantita or 0.0) * float(prezzo_medio or 0.0)
+        conversion = convert_to_eur(investimento, valuta)
 
-            if submitted:
-                if not ticker.strip() or not titolo.strip():
-                    st.warning("Ticker e Titolo sono obbligatori.")
-                    return
+        preview_cols = st.columns(3)
+        with preview_cols[0]:
+            st.markdown(
+                '<div class="portfolio-add-preview-card">'
+                '<div class="portfolio-add-preview-label">Investimento di carico</div>'
+                f'<div class="portfolio-add-preview-value">{fmt_eur(investimento)} {valuta}</div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
 
-                add_position(
-                    DATA_PATH,
-                    {
-                        "ticker": ticker.upper().strip(),
-                        "titolo": titolo.strip(),
-                        "mercato": mercato.upper().strip(),
-                        "strumento": "",
-                        "valuta": valuta,
-                        "quantita": quantita,
-                        "prezzo_medio": prezzo_medio,
-                        "prezzo_mercato": prezzo_mercato,
-                        "prezzo_precedente": prezzo_precedente,
-                        "yf_symbol": yf_symbol.upper().strip(),
-                        "tv_symbol": tv_symbol.upper().strip(),
-                    },
+        with preview_cols[1]:
+            if conversion.get("ok"):
+                eur_text = f"{fmt_eur(conversion.get('value'))} EUR"
+            else:
+                eur_text = "Cambio non disponibile"
+
+            st.markdown(
+                '<div class="portfolio-add-preview-card">'
+                '<div class="portfolio-add-preview-label">Investimento in EUR</div>'
+                f'<div class="portfolio-add-preview-value">{eur_text}</div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+        with preview_cols[2]:
+            if conversion.get("ok"):
+                fx_text = f"{fmt_num(conversion.get('rate'), 6)} · {conversion.get('source', '')}"
+            else:
+                fx_text = conversion.get("error", "Cambio non disponibile")
+
+            st.markdown(
+                '<div class="portfolio-add-preview-card">'
+                '<div class="portfolio-add-preview-label">Cambio usato</div>'
+                f'<div class="portfolio-add-preview-value small">{fx_text}</div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+        if not conversion.get("ok") and valuta != "EUR":
+            st.warning(
+                f"Cambio {valuta}/EUR non disponibile da yfinance. Non aggiungo valori EUR stimati con fallback finti."
+            )
+
+        submitted = st.button("Aggiungi posizione", key="portfolio_add_smart_submit")
+
+        if submitted:
+            clean_ticker = str(ticker or "").strip().upper()
+            if not clean_ticker:
+                st.warning("Ticker obbligatorio.")
+                return
+
+            if float(quantita or 0.0) <= 0:
+                st.warning("Quantità obbligatoria e maggiore di zero.")
+                return
+
+            if float(prezzo_medio or 0.0) <= 0:
+                st.warning("Prezzo medio per azione obbligatorio e maggiore di zero.")
+                return
+
+            result = build_smart_position(
+                ticker=clean_ticker,
+                mercato=mercato,
+                valuta=valuta,
+                quantita=quantita,
+                prezzo_medio=prezzo_medio,
+            )
+
+            add_position(DATA_PATH, result["position"])
+
+            if not result.get("quote_ok"):
+                quote_error = result.get("quote", {}).get("error", "prezzo non disponibile")
+                st.warning(
+                    f"Posizione aggiunta, ma quotazione non recuperata da yfinance ({quote_error}). "
+                    "Uso temporaneamente il prezzo medio come prezzo mercato/precedente."
                 )
+            else:
+                st.success("Posizione aggiunta con quotazione recuperata da yfinance.")
 
-                st.success("Posizione aggiunta.")
-                st.rerun()
+            st.rerun()
 
 
 def _get_row_by_original_index(df, original_index: int):
