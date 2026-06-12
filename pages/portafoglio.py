@@ -3,6 +3,7 @@ from pathlib import Path
 import streamlit as st
 
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
+from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
     render_portfolio_summary,
     render_portfolio_table_header,
@@ -23,12 +24,14 @@ from utils.portfolio_tradingview import (
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
+COCKPIT_PAGE = "main.py"
 
 
 st.set_page_config(
     page_title="Portafoglio",
     page_icon="💼",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
 
@@ -58,6 +61,40 @@ def reset_edit_state() -> None:
 
 def reset_delete_state() -> None:
     st.session_state["portfolio_delete_index"] = None
+
+
+def go_to_cockpit() -> None:
+    try:
+        st.switch_page(COCKPIT_PAGE)
+    except Exception:
+        st.warning(
+            f"Non riesco ad aprire {COCKPIT_PAGE}. Se il cockpit ha un nome diverso, modifica COCKPIT_PAGE in pages/portafoglio.py."
+        )
+
+
+def render_top_actions() -> None:
+    col_back, col_refresh, col_spacer = st.columns([1.0, 1.2, 7.8])
+
+    with col_back:
+        if st.button("← Cockpit", key="portfolio_back_to_cockpit"):
+            go_to_cockpit()
+
+    with col_refresh:
+        if st.button("🔄 Aggiorna quotazioni", key="portfolio_refresh_quotes"):
+            with st.spinner("Aggiornamento quotazioni in corso..."):
+                result = refresh_portfolio_quotes(DATA_PATH)
+
+            if result["updated"] > 0:
+                st.success(f"Quotazioni aggiornate: {result['updated']} su {result['total']}.")
+            else:
+                st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel CSV.")
+
+            if result["failed"]:
+                with st.expander("Dettaglio quotazioni non aggiornate", expanded=False):
+                    for item in result["failed"]:
+                        st.write(f"- {item}")
+
+            st.rerun()
 
 
 def render_add_form() -> None:
@@ -113,7 +150,7 @@ def render_add_form() -> None:
                 min_value=0.0,
                 step=0.01,
                 format="%.6f",
-                help="Per ora è manuale. Nella patch 002 verrà agganciato ai prezzi live.",
+                help="Valore manuale usato come fallback se l'aggiornamento quote non trova dati live.",
             )
 
             submitted = st.form_submit_button("Aggiungi posizione")
@@ -302,7 +339,8 @@ def render_portfolio_rows(df) -> None:
         action_col = render_position_values(row)
 
         with action_col:
-            action_cols = st.columns(3)
+            st.markdown('<div class="portfolio-action-box">', unsafe_allow_html=True)
+            action_cols = st.columns([1, 1, 1], gap="small")
 
             with action_cols[0]:
                 if st.button("📊", key=f"portfolio_chart_{idx}", help="Apri grafico TradingView"):
@@ -323,12 +361,16 @@ def render_portfolio_rows(df) -> None:
                     st.session_state["portfolio_edit_index"] = None
                     st.rerun()
 
+            st.markdown("</div>", unsafe_allow_html=True)
+
         st.markdown("</div>", unsafe_allow_html=True)
 
 
 def main() -> None:
     load_css()
     init_state()
+
+    render_top_actions()
 
     st.markdown('<div class="portfolio-page-title">💼 Portafoglio</div>', unsafe_allow_html=True)
     st.markdown(
