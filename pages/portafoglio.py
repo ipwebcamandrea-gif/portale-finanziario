@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import quote
 
 import streamlit as st
 
@@ -18,12 +19,16 @@ from utils.portfolio_storage import (
 )
 from utils.portfolio_tradingview import build_tradingview_symbol
 
+try:
+    from utils.symbols import url_tradingview as watchlist_url_tradingview
+except Exception:
+    watchlist_url_tradingview = None
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 COCKPIT_PAGE = "main.py"
-TRADINGVIEW_PAGE = "pages/grafico_tradingview.py"
 
 
 st.set_page_config(
@@ -46,7 +51,6 @@ def init_state() -> None:
     defaults = {
         "portfolio_edit_index": None,
         "portfolio_delete_index": None,
-        "portfolio_selected_symbol": None,
     }
 
     for key, value in defaults.items():
@@ -71,101 +75,25 @@ def go_to_cockpit() -> None:
         )
 
 
-def _split_tradingview_symbol(symbol: str) -> tuple[str, str]:
-    clean_symbol = str(symbol or "").strip().upper()
-    if ":" in clean_symbol:
-        market, ticker = clean_symbol.split(":", 1)
-        return market.strip(), ticker.strip()
-    return "", clean_symbol
+def portfolio_tradingview_url(mercato: str, ticker: str) -> str:
+    """Return the same TradingView external URL style used by WatchlistTradingView.
 
+    In WatchlistTradingView the `📊` button is an external link:
+    `st.link_button("📊", url_tradingview(symbol), ...)`.
 
-def set_tradingview_session_state(symbol: str) -> None:
-    """Set all known/likely session keys used by TradingView pages.
-
-    La pagina WatchlistTradingView esistente può leggere una chiave specifica.
-    Per evitare rotture, da Portafoglio valorizziamo sia le chiavi generiche
-    sia quelle con prefisso watchlist/tradingview/portfolio.
+    Here we build the TradingView symbol from market+ticker and then delegate to
+    `utils.symbols.url_tradingview` if available, otherwise we use a safe fallback.
     """
-    market, ticker = _split_tradingview_symbol(symbol)
+    symbol = build_tradingview_symbol(mercato, ticker)
 
-    symbol_keys = [
-        "portfolio_selected_symbol",
-        "selected_tradingview_symbol",
-        "tradingview_symbol",
-        "tv_symbol",
-        "selected_symbol",
-        "symbol",
-        "current_symbol",
-        "chart_symbol",
-        "selected_tv_symbol",
-        "tv_selected_symbol",
-        "watchlist_selected_symbol",
-        "watchlist_tradingview_symbol",
-        "watchlist_tv_symbol",
-        "watchlist_chart_symbol",
-        "selected_watchlist_symbol",
-        "selected_watchlist_tradingview_symbol",
-    ]
+    if watchlist_url_tradingview is not None:
+        try:
+            return watchlist_url_tradingview(symbol)
+        except Exception:
+            pass
 
-    ticker_keys = [
-        "selected_ticker",
-        "ticker",
-        "current_ticker",
-        "chart_ticker",
-        "tv_ticker",
-        "selected_tv_ticker",
-        "tradingview_ticker",
-        "selected_tradingview_ticker",
-        "watchlist_selected_ticker",
-        "watchlist_ticker",
-        "watchlist_tv_ticker",
-        "watchlist_chart_ticker",
-        "selected_watchlist_ticker",
-    ]
-
-    market_keys = [
-        "selected_market",
-        "market",
-        "mercato",
-        "selected_mercato",
-        "tv_market",
-        "tradingview_market",
-        "watchlist_market",
-    ]
-
-    for key in symbol_keys:
-        st.session_state[key] = symbol
-
-    for key in ticker_keys:
-        st.session_state[key] = ticker
-
-    for key in market_keys:
-        st.session_state[key] = market
-
-    st.session_state["tradingview_source"] = "portfolio"
-    st.session_state["chart_source"] = "portfolio"
-    st.session_state["opened_from_watchlist_tradingview"] = True
-    st.session_state["opened_from_portfolio"] = True
-
-
-def open_tradingview_page(symbol: str) -> None:
-    """Open the app TradingView page with the selected symbol."""
-    if not symbol:
-        st.warning("Simbolo TradingView non valido.")
-        return
-
-    set_tradingview_session_state(symbol)
-
-    try:
-        st.switch_page(TRADINGVIEW_PAGE)
-    except Exception:
-        st.error(
-            f"Non riesco ad aprire {TRADINGVIEW_PAGE}. Controlla il nome reale del file pagina e modifica TRADINGVIEW_PAGE in pages/portafoglio.py."
-        )
-        st.link_button(
-            "Apri su TradingView ↗",
-            url=f"https://www.tradingview.com/chart/?symbol={symbol}",
-        )
+    encoded_symbol = quote(symbol, safe=":")
+    return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
 
 
 def render_top_actions() -> None:
@@ -437,9 +365,12 @@ def render_portfolio_rows(df) -> None:
             action_cols = st.columns([1, 1, 1], gap="small")
 
             with action_cols[0]:
-                if st.button("📊", key=f"portfolio_chart_{idx}", help="Apri grafico TradingView"):
-                    symbol = build_tradingview_symbol(row["mercato"], row["ticker"])
-                    open_tradingview_page(symbol)
+                st.link_button(
+                    "📊",
+                    portfolio_tradingview_url(row["mercato"], row["ticker"]),
+                    use_container_width=True,
+                    help="Apri TradingView esterno",
+                )
 
             with action_cols[1]:
                 if st.button("✏️", key=f"portfolio_edit_{idx}", help="Modifica posizione"):
