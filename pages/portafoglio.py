@@ -78,9 +78,14 @@ def go_to_cockpit() -> None:
         )
 
 
-def portfolio_tradingview_url(mercato: str, ticker: str, tv_symbol: str = "") -> str:
+def portfolio_tradingview_url(
+    mercato: str,
+    ticker: str,
+    tv_symbol: str = "",
+    valuta: str = "",
+) -> str:
     """Return the same TradingView external URL style used by WatchlistTradingView."""
-    symbol = build_tradingview_symbol(mercato, ticker, tv_symbol)
+    symbol = build_tradingview_symbol(mercato, ticker, tv_symbol, valuta)
 
     if watchlist_url_tradingview is not None:
         try:
@@ -372,7 +377,12 @@ def render_portfolio_rows(df) -> None:
             with action_cols[0]:
                 st.link_button(
                     "📊",
-                    portfolio_tradingview_url(row["mercato"], row["ticker"], row.get("tv_symbol", "")),
+                    portfolio_tradingview_url(
+                        row["mercato"],
+                        row["ticker"],
+                        row.get("tv_symbol", ""),
+                        row.get("valuta", ""),
+                    ),
                     use_container_width=True,
                     help="Apri TradingView esterno",
                 )
