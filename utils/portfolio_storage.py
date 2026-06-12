@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+import base64
+import json
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
+import streamlit as st
 
 
 PORTFOLIO_COLUMNS = [
@@ -28,14 +35,66 @@ TEXT_COLUMNS = [
 ]
 NUMERIC_COLUMNS = ["quantita", "prezzo_medio", "prezzo_mercato", "prezzo_precedente"]
 
+DEFAULT_PORTFOLIO_BRANCH = "data-watchlists"
+DEFAULT_PORTFOLIO_JSON_PATH = "portfolio/portafoglio.json"
 
-def ensure_portfolio_file(csv_path: Path) -> None:
-    """Create the portfolio CSV if it does not exist yet."""
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if not csv_path.exists():
-        df = pd.DataFrame(columns=PORTFOLIO_COLUMNS)
-        df.to_csv(csv_path, index=False)
+# =========================
+# SECRETS / CONFIG
+# =========================
+
+def _secret_value(*names: str, default: str = "") -> str:
+    for name in names:
+        try:
+            value = st.secrets.get(name, "")
+            if value:
+                return str(value).strip()
+        except Exception:
+            continue
+    return default
+
+
+def get_portfolio_github_config() -> dict[str, str]:
+    return {
+        "token": _secret_value("GITHUB_TOKEN", "GH_TOKEN"),
+        "repo": _secret_value("GITHUB_REPO", "GITHUB_REPOSITORY"),
+        "branch": _secret_value("GITHUB_PORTFOLIO_BRANCH", default=DEFAULT_PORTFOLIO_BRANCH),
+        "path": _secret_value("GITHUB_PORTFOLIO_PATH", default=DEFAULT_PORTFOLIO_JSON_PATH),
+    }
+
+
+def is_github_configured() -> bool:
+    cfg = get_portfolio_github_config()
+    return bool(cfg["token"] and cfg["repo"] and cfg["branch"] and cfg["path"])
+
+
+def set_portfolio_storage_state(mode: str, error: str = "") -> None:
+    st.session_state["portfolio_storage_mode"] = mode
+    st.session_state["portfolio_last_github_error"] = error
+
+
+# =========================
+# NORMALIZZAZIONE DATI
+# =========================
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def ensure_portfolio_file(json_path: Path) -> None:
+    """Create the local portfolio JSON if it does not exist yet."""
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not json_path.exists():
+        payload = {
+            "version": 1,
+            "updated_at": _utc_now_iso(),
+            "positions": [],
+        }
+        json_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
 
 def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -60,31 +119,185 @@ def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_portfolio(csv_path: Path) -> pd.DataFrame:
-    """Load portfolio positions from CSV and normalize expected columns."""
-    ensure_portfolio_file(csv_path)
-    df = pd.read_csv(csv_path)
-    return _normalize_df(df)
+def _json_text_to_payload(json_text: str) -> dict[str, Any]:
+    if not json_text.strip():
+        return {"version": 1, "updated_at": _utc_now_iso(), "positions": []}
+
+    payload = json.loads(json_text)
+
+    if isinstance(payload, list):
+        return {"version": 1, "updated_at": _utc_now_iso(), "positions": payload}
+
+    if not isinstance(payload, dict):
+        return {"version": 1, "updated_at": _utc_now_iso(), "positions": []}
+
+    if "positions" not in payload:
+        payload["positions"] = []
+
+    return payload
 
 
-def save_portfolio(df: pd.DataFrame, csv_path: Path) -> None:
-    """Persist portfolio positions to CSV."""
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    df = _normalize_df(df)
-    df.to_csv(csv_path, index=False)
+def _payload_to_df(payload: dict[str, Any]) -> pd.DataFrame:
+    positions = payload.get("positions", [])
+    if not isinstance(positions, list):
+        positions = []
+    return _normalize_df(pd.DataFrame(positions))
 
 
-def add_position(csv_path: Path, position: dict) -> None:
+def _df_to_payload(df: pd.DataFrame) -> dict[str, Any]:
+    normalized = _normalize_df(df)
+    return {
+        "version": 1,
+        "updated_at": _utc_now_iso(),
+        "positions": normalized.to_dict(orient="records"),
+    }
+
+
+def _payload_to_json_text(payload: dict[str, Any]) -> str:
+    return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+
+
+def _read_local_payload(json_path: Path) -> dict[str, Any]:
+    ensure_portfolio_file(json_path)
+    return _json_text_to_payload(json_path.read_text(encoding="utf-8"))
+
+
+def _write_local_payload(json_path: Path, payload: dict[str, Any]) -> None:
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(_payload_to_json_text(payload), encoding="utf-8")
+
+
+# =========================
+# GITHUB API
+# =========================
+
+def _github_headers(token: str) -> dict[str, str]:
+    return {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "portale-finanziario-portfolio-storage-json",
+    }
+
+
+def _github_contents_url(repo: str, path: str) -> str:
+    clean_path = path.strip().lstrip("/")
+    return f"https://api.github.com/repos/{repo}/contents/{clean_path}"
+
+
+def _github_get_file() -> dict[str, Any]:
+    import requests
+
+    cfg = get_portfolio_github_config()
+    url = _github_contents_url(cfg["repo"], cfg["path"])
+    response = requests.get(
+        url,
+        headers=_github_headers(cfg["token"]),
+        params={"ref": cfg["branch"]},
+        timeout=20,
+    )
+
+    if response.status_code == 404:
+        return {"exists": False, "content": "", "sha": ""}
+
+    response.raise_for_status()
+    payload = response.json()
+    encoded_content = payload.get("content", "")
+    content = base64.b64decode(encoded_content).decode("utf-8") if encoded_content else ""
+    return {"exists": True, "content": content, "sha": payload.get("sha", "")}
+
+
+def _github_put_file(json_text: str, message: str) -> None:
+    import requests
+
+    cfg = get_portfolio_github_config()
+    url = _github_contents_url(cfg["repo"], cfg["path"])
+    current = _github_get_file()
+    encoded_content = base64.b64encode(json_text.encode("utf-8")).decode("ascii")
+
+    payload: dict[str, Any] = {
+        "message": message,
+        "content": encoded_content,
+        "branch": cfg["branch"],
+    }
+
+    if current.get("exists") and current.get("sha"):
+        payload["sha"] = current["sha"]
+
+    response = requests.put(
+        url,
+        headers=_github_headers(cfg["token"]),
+        json=payload,
+        timeout=20,
+    )
+    response.raise_for_status()
+
+
+# =========================
+# API PUBBLICA
+# =========================
+
+def load_portfolio(json_path: Path) -> pd.DataFrame:
+    """Load portfolio positions from GitHub JSON if configured, otherwise local JSON."""
+    ensure_portfolio_file(json_path)
+
+    if is_github_configured():
+        try:
+            remote = _github_get_file()
+
+            if remote.get("exists"):
+                payload = _json_text_to_payload(remote.get("content", ""))
+                _write_local_payload(json_path, payload)
+                set_portfolio_storage_state("github")
+                return _payload_to_df(payload)
+
+            local_payload = _read_local_payload(json_path)
+            _github_put_file(
+                _payload_to_json_text(local_payload),
+                "Create portfolio JSON from Streamlit app",
+            )
+            set_portfolio_storage_state("github")
+            return _payload_to_df(local_payload)
+        except Exception as exc:
+            set_portfolio_storage_state("locale_fallback", str(exc))
+    else:
+        set_portfolio_storage_state("locale")
+
+    return _payload_to_df(_read_local_payload(json_path))
+
+
+def save_portfolio(
+    df: pd.DataFrame,
+    json_path: Path,
+    commit_message: str = "Update portfolio JSON from Streamlit app",
+) -> None:
+    """Persist portfolio positions locally and, when configured, to GitHub JSON."""
+    payload = _df_to_payload(df)
+    _write_local_payload(json_path, payload)
+
+    if is_github_configured():
+        try:
+            _github_put_file(_payload_to_json_text(payload), commit_message)
+            set_portfolio_storage_state("github")
+            return
+        except Exception as exc:
+            set_portfolio_storage_state("locale_fallback", str(exc))
+            return
+
+    set_portfolio_storage_state("locale")
+
+
+def add_position(json_path: Path, position: dict) -> None:
     """Append a new portfolio position."""
-    df = load_portfolio(csv_path)
+    df = load_portfolio(json_path)
     new_row = {col: position.get(col, "") for col in PORTFOLIO_COLUMNS}
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-    save_portfolio(df, csv_path)
+    save_portfolio(df, json_path, "Add portfolio position")
 
 
-def update_position(csv_path: Path, row_index: int, position: dict) -> None:
-    """Update a portfolio position by row index."""
-    df = load_portfolio(csv_path)
+def update_position(json_path: Path, row_index: int, position: dict) -> None:
+    """Update a portfolio position by original JSON row index."""
+    df = load_portfolio(json_path)
 
     if row_index < 0 or row_index >= len(df):
         return
@@ -93,15 +306,15 @@ def update_position(csv_path: Path, row_index: int, position: dict) -> None:
         if col in position:
             df.at[row_index, col] = position[col]
 
-    save_portfolio(df, csv_path)
+    save_portfolio(df, json_path, "Update portfolio position")
 
 
-def delete_position(csv_path: Path, row_index: int) -> None:
-    """Delete a portfolio position by row index."""
-    df = load_portfolio(csv_path)
+def delete_position(json_path: Path, row_index: int) -> None:
+    """Delete a portfolio position by original JSON row index."""
+    df = load_portfolio(json_path)
 
     if row_index < 0 or row_index >= len(df):
         return
 
     df = df.drop(index=row_index).reset_index(drop=True)
-    save_portfolio(df, csv_path)
+    save_portfolio(df, json_path, "Delete portfolio position")
