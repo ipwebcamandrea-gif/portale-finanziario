@@ -166,7 +166,6 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.
     color: #d1d5db !important;
 }
 
-/* Allineamento pulsanti azione nella colonna Azioni. */
 .portfolio-action-spacer {
     height: 0.13rem;
 }
@@ -185,13 +184,15 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.
     justify-content: center;
 }
 
-.portfolio-action-row div[data-testid="stButton"] {
+.portfolio-action-row div[data-testid="stButton"],
+.portfolio-action-row div[data-testid="stLinkButton"] {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.portfolio-action-row button {
+.portfolio-action-row button,
+.portfolio-action-row a {
     width: 2.25rem !important;
     height: 2.25rem !important;
     min-height: 2.25rem !important;
@@ -214,14 +215,6 @@ div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.
     border-radius: 14px;
     background: rgba(127, 29, 29, 0.15);
     margin: 1rem 0;
-}
-
-.portfolio-tv-title {
-    margin-top: 1.5rem;
-    margin-bottom: 0.7rem;
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #f9fafb;
 }
 
 @media screen and (max-width: 768px) {
