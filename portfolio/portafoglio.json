@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T16:36:26+00:00",
+  "updated_at": "2026-06-12T16:36:55+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -92,19 +92,6 @@
       "prezzo_precedente": 41.24,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
-    },
-    {
-      "ticker": "ZETA",
-      "titolo": "ZETA GLOBAL HOLDINGS CORP.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 100.0,
-      "prezzo_medio": 12.34,
-      "prezzo_mercato": 20.1299991607666,
-      "prezzo_precedente": 20.4101,
-      "yf_symbol": "ZETA",
-      "tv_symbol": "NASDAQ:ZETA"
     }
   ]
 }
