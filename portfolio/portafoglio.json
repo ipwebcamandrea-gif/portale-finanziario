@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T16:33:54+00:00",
+  "updated_at": "2026-06-12T16:36:12+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -8,7 +8,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 1100,
+      "quantita": 1100.0,
       "prezzo_medio": 6.85531,
       "prezzo_mercato": 5.875,
       "prezzo_precedente": 5.77,
@@ -21,7 +21,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 40,
+      "quantita": 40.0,
       "prezzo_medio": 364.05947,
       "prezzo_mercato": 271.4150085449219,
       "prezzo_precedente": 277.75,
@@ -34,7 +34,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 700,
+      "quantita": 700.0,
       "prezzo_medio": 8.34849,
       "prezzo_mercato": 8.346699714660645,
       "prezzo_precedente": 8.27,
@@ -47,7 +47,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 330,
+      "quantita": 330.0,
       "prezzo_medio": 16.96324,
       "prezzo_mercato": 16.475000381469727,
       "prezzo_precedente": 16.655,
@@ -60,7 +60,7 @@
       "mercato": "NYSE",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 45,
+      "quantita": 45.0,
       "prezzo_medio": 491.67956,
       "prezzo_mercato": 491.7850036621094,
       "prezzo_precedente": 486.88,
@@ -73,7 +73,7 @@
       "mercato": "NASDAQ",
       "strumento": "",
       "valuta": "EUR",
-      "quantita": 134,
+      "quantita": 134.0,
       "prezzo_medio": 325.94,
       "prezzo_mercato": 335.1499938964844,
       "prezzo_precedente": 337.25,
@@ -86,12 +86,25 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 109,
+      "quantita": 109.0,
       "prezzo_medio": 63.29729,
       "prezzo_mercato": 41.30500030517578,
       "prezzo_precedente": 41.24,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
+    },
+    {
+      "ticker": "ZETA",
+      "titolo": "ZETA GLOBAL HOLDINGS CORP.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 100.0,
+      "prezzo_medio": 12.34,
+      "prezzo_mercato": 20.1299991607666,
+      "prezzo_precedente": 20.4101,
+      "yf_symbol": "ZETA",
+      "tv_symbol": "NASDAQ:ZETA"
     }
   ]
 }
