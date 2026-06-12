@@ -29,6 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 COCKPIT_PAGE = "main.py"
+AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
 
 
 st.set_page_config(
@@ -51,6 +52,8 @@ def init_state() -> None:
     defaults = {
         "portfolio_edit_index": None,
         "portfolio_delete_index": None,
+        "portfolio_quotes_refreshed_on_load": False,
+        "portfolio_last_auto_refresh_result": None,
     }
 
     for key, value in defaults.items():
@@ -76,14 +79,7 @@ def go_to_cockpit() -> None:
 
 
 def portfolio_tradingview_url(mercato: str, ticker: str) -> str:
-    """Return the same TradingView external URL style used by WatchlistTradingView.
-
-    In WatchlistTradingView the `📊` button is an external link:
-    `st.link_button("📊", url_tradingview(symbol), ...)`.
-
-    Here we build the TradingView symbol from market+ticker and then delegate to
-    `utils.symbols.url_tradingview` if available, otherwise we use a safe fallback.
-    """
+    """Return the same TradingView external URL style used by WatchlistTradingView."""
     symbol = build_tradingview_symbol(mercato, ticker)
 
     if watchlist_url_tradingview is not None:
@@ -94,6 +90,41 @@ def portfolio_tradingview_url(mercato: str, ticker: str) -> str:
 
     encoded_symbol = quote(symbol, safe=":")
     return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
+
+
+def auto_refresh_quotes_once() -> None:
+    """Refresh quotes automatically only once when the Portfolio page is first opened.
+
+    This keeps the first view updated without triggering yfinance calls on every
+    Streamlit rerun caused by buttons, forms, edit panels or delete confirmations.
+    """
+    if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
+        return
+
+    if st.session_state.get("portfolio_quotes_refreshed_on_load", False):
+        return
+
+    st.session_state["portfolio_quotes_refreshed_on_load"] = True
+
+    with st.spinner("Aggiornamento automatico quotazioni in corso..."):
+        result = refresh_portfolio_quotes(DATA_PATH)
+
+    st.session_state["portfolio_last_auto_refresh_result"] = result
+
+
+def render_auto_refresh_status() -> None:
+    result = st.session_state.get("portfolio_last_auto_refresh_result")
+
+    if not result:
+        return
+
+    updated = result.get("updated", 0)
+    total = result.get("total", 0)
+
+    if updated > 0:
+        st.caption(f"Quotazioni aggiornate automaticamente all'apertura: {updated} su {total}.")
+    else:
+        st.caption("Aggiornamento automatico eseguito: nessuna quotazione aggiornata, valori manuali mantenuti.")
 
 
 def render_top_actions() -> None:
@@ -107,6 +138,9 @@ def render_top_actions() -> None:
         if st.button("🔄 Aggiorna quotazioni", key="portfolio_refresh_quotes"):
             with st.spinner("Aggiornamento quotazioni in corso..."):
                 result = refresh_portfolio_quotes(DATA_PATH)
+
+            st.session_state["portfolio_last_auto_refresh_result"] = result
+            st.session_state["portfolio_quotes_refreshed_on_load"] = True
 
             if result["updated"] > 0:
                 st.success(f"Quotazioni aggiornate: {result['updated']} su {result['total']}.")
@@ -400,6 +434,9 @@ def main() -> None:
     )
 
     render_add_form()
+
+    auto_refresh_quotes_once()
+    render_auto_refresh_status()
 
     df = load_portfolio(DATA_PATH)
     df = enrich_portfolio_df(df)
