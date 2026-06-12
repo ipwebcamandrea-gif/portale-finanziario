@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T16:37:09+00:00",
+  "updated_at": "2026-06-12T16:45:59+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -84,10 +84,10 @@
       "ticker": "PYPL",
       "titolo": "PAYPAL HOLDINGS",
       "mercato": "NASDAQ",
-      "strumento": "Azione",
+      "strumento": "",
       "valuta": "USD",
-      "quantita": 109.0,
-      "prezzo_medio": 63.29729,
+      "quantita": 157.0,
+      "prezzo_medio": 56.565889,
       "prezzo_mercato": 41.279998779296875,
       "prezzo_precedente": 41.24,
       "yf_symbol": "PYPL",
