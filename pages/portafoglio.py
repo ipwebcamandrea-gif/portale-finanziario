@@ -1,155 +1,361 @@
+from pathlib import Path
+
 import streamlit as st
-from pathlib importfrom pathlib import Path
-from utils.auth import require_login
 
-# =========================
-# PROTEZIONE LOGIN
-# =========================
+from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
+from utils.portfolio_render import (
+    render_portfolio_summary,
+    render_portfolio_table_header,
+    render_position_values,
+)
+from utils.portfolio_storage import (
+    add_position,
+    delete_position,
+    load_portfolio,
+    update_position,
+)
+from utils.portfolio_tradingview import (
+    build_tradingview_symbol,
+    render_tradingview_chart,
+)
 
-require_login()
 
-# =========================
-# CONFIGURAZIONE FILE / CSS
-# =========================
-
-ROOT_DIR = Path(__file__).resolve().parent.parent
-
-GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
-PORTAFOGLIO_CSS = ROOT_DIR / "css" / "portafoglio.css"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
+CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 
 
-def local_css(file_path):
-    if file_path.exists():
-        with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(
-                f"<style>{file.read()}</style>",
-                unsafe_allow_html=True
+st.set_page_config(
+    page_title="Portafoglio",
+    page_icon="💼",
+    layout="wide",
+)
+
+
+def load_css() -> None:
+    if CSS_PATH.exists():
+        st.markdown(
+            f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>",
+            unsafe_allow_html=True,
+        )
+
+
+def init_state() -> None:
+    defaults = {
+        "portfolio_edit_index": None,
+        "portfolio_delete_index": None,
+        "portfolio_selected_symbol": None,
+    }
+
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+
+def reset_edit_state() -> None:
+    st.session_state["portfolio_edit_index"] = None
+
+
+def reset_delete_state() -> None:
+    st.session_state["portfolio_delete_index"] = None
+
+
+def render_add_form() -> None:
+    with st.expander("➕ Aggiungi posizione", expanded=False):
+        with st.form("portfolio_add_form", clear_on_submit=True):
+            col1, col2, col3 = st.columns(3)
+            col4, col5, col6, col7, col8 = st.columns(5)
+
+            with col1:
+                ticker = st.text_input("Ticker", placeholder="MSFT")
+
+            with col2:
+                titolo = st.text_input("Titolo", placeholder="MICROSOFT")
+
+            with col3:
+                mercato = st.text_input("Mercato TradingView", value="NASDAQ")
+
+            with col4:
+                strumento = st.selectbox(
+                    "Strumento",
+                    ["Azione", "ETF", "ETC", "Obbligazione", "Crypto", "Altro"],
+                )
+
+            with col5:
+                valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"])
+
+            with col6:
+                quantita = st.number_input(
+                    "Quantità",
+                    min_value=0.0,
+                    step=1.0,
+                    format="%.6f",
+                )
+
+            with col7:
+                prezzo_medio = st.number_input(
+                    "P.zo medio carico",
+                    min_value=0.0,
+                    step=0.01,
+                    format="%.6f",
+                )
+
+            with col8:
+                prezzo_mercato = st.number_input(
+                    "P.zo mercato",
+                    min_value=0.0,
+                    step=0.01,
+                    format="%.6f",
+                )
+
+            prezzo_precedente = st.number_input(
+                "P.zo precedente",
+                min_value=0.0,
+                step=0.01,
+                format="%.6f",
+                help="Per ora è manuale. Nella patch 002 verrà agganciato ai prezzi live.",
             )
 
+            submitted = st.form_submit_button("Aggiungi posizione")
 
-local_css(GLOBAL_CSS)
-local_css(PORTAFOGLIO_CSS)
+            if submitted:
+                if not ticker.strip() or not titolo.strip():
+                    st.warning("Ticker e Titolo sono obbligatori.")
+                    return
 
+                add_position(
+                    DATA_PATH,
+                    {
+                        "ticker": ticker.upper().strip(),
+                        "titolo": titolo.strip(),
+                        "mercato": mercato.upper().strip(),
+                        "strumento": strumento,
+                        "valuta": valuta,
+                        "quantita": quantita,
+                        "prezzo_medio": prezzo_medio,
+                        "prezzo_mercato": prezzo_mercato,
+                        "prezzo_precedente": prezzo_precedente,
+                    },
+                )
 
-# =========================
-# HEADER
-# =========================
-
-st.markdown(
-    """
-    <div class="portafoglio-header">
-        <div class="portafoglio-title">Il Mio Portafoglio</div>
-        <div class="portafoglio-subtitle">
-            Area dedicata al monitoraggio delle posizioni reali.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# =========================
-# PANNELLO INFORMATIVO
-# =========================
-
-st.markdown(
-    """
-    <div class="portafoglio-panel">
-        <div class="portafoglio-panel-title">Modulo in preparazione</div>
-        <div class="portafoglio-panel-subtitle">
-            Questa sezione è pronta per essere sviluppata nella prossima fase.
-            Qui potremo inserire quantità, prezzo medio di carico, valore attuale,
-            profit/loss, peso in portafoglio e suddivisione per asset.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+                st.success("Posizione aggiunta.")
+                st.rerun()
 
 
-# =========================
-# KPI PLACEHOLDER
-# =========================
+def render_edit_form(df) -> None:
+    edit_index = st.session_state.get("portfolio_edit_index")
 
-kpi_1, kpi_2, kpi_3, kpi_4 = st.columns(4)
+    if edit_index is None:
+        return
 
-with kpi_1:
+    if edit_index < 0 or edit_index >= len(df):
+        reset_edit_state()
+        return
+
+    row = df.iloc[edit_index]
+
+    st.markdown('<div class="portfolio-form-box">', unsafe_allow_html=True)
+    st.subheader(f"✏️ Modifica posizione: {row['titolo']}")
+
+    with st.form(f"portfolio_edit_form_{edit_index}"):
+        col1, col2, col3 = st.columns(3)
+        col4, col5, col6, col7, col8 = st.columns(5)
+
+        with col1:
+            ticker = st.text_input("Ticker", value=row["ticker"])
+
+        with col2:
+            titolo = st.text_input("Titolo", value=row["titolo"])
+
+        with col3:
+            mercato = st.text_input("Mercato TradingView", value=row["mercato"])
+
+        with col4:
+            strumenti = ["Azione", "ETF", "ETC", "Obbligazione", "Crypto", "Altro"]
+            current_strumento_index = (
+                strumenti.index(row["strumento"]) if row["strumento"] in strumenti else 0
+            )
+            strumento = st.selectbox(
+                "Strumento",
+                strumenti,
+                index=current_strumento_index,
+            )
+
+        with col5:
+            valute = ["EUR", "USD", "GBP", "CHF"]
+            current_valuta_index = valute.index(row["valuta"]) if row["valuta"] in valute else 0
+            valuta = st.selectbox("Valuta", valute, index=current_valuta_index)
+
+        with col6:
+            quantita = st.number_input(
+                "Quantità",
+                min_value=0.0,
+                value=float(row["quantita"]),
+                step=1.0,
+                format="%.6f",
+            )
+
+        with col7:
+            prezzo_medio = st.number_input(
+                "P.zo medio carico",
+                min_value=0.0,
+                value=float(row["prezzo_medio"]),
+                step=0.01,
+                format="%.6f",
+            )
+
+        with col8:
+            prezzo_mercato = st.number_input(
+                "P.zo mercato",
+                min_value=0.0,
+                value=float(row["prezzo_mercato"]),
+                step=0.01,
+                format="%.6f",
+            )
+
+        prezzo_precedente = st.number_input(
+            "P.zo precedente",
+            min_value=0.0,
+            value=float(row["prezzo_precedente"]),
+            step=0.01,
+            format="%.6f",
+        )
+
+        col_save, col_cancel = st.columns([1, 5])
+
+        with col_save:
+            submitted = st.form_submit_button("Salva")
+
+        with col_cancel:
+            cancelled = st.form_submit_button("Annulla")
+
+        if submitted:
+            if not ticker.strip() or not titolo.strip():
+                st.warning("Ticker e Titolo sono obbligatori.")
+                return
+
+            update_position(
+                DATA_PATH,
+                edit_index,
+                {
+                    "ticker": ticker.upper().strip(),
+                    "titolo": titolo.strip(),
+                    "mercato": mercato.upper().strip(),
+                    "strumento": strumento,
+                    "valuta": valuta,
+                    "quantita": quantita,
+                    "prezzo_medio": prezzo_medio,
+                    "prezzo_mercato": prezzo_mercato,
+                    "prezzo_precedente": prezzo_precedente,
+                },
+            )
+
+            reset_edit_state()
+            st.success("Posizione aggiornata.")
+            st.rerun()
+
+        if cancelled:
+            reset_edit_state()
+            st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_delete_confirmation(df) -> None:
+    delete_index = st.session_state.get("portfolio_delete_index")
+
+    if delete_index is None:
+        return
+
+    if delete_index < 0 or delete_index >= len(df):
+        reset_delete_state()
+        return
+
+    row = df.iloc[delete_index]
+
+    st.markdown('<div class="portfolio-warning-box">', unsafe_allow_html=True)
+    st.warning(f"Confermi l'eliminazione di {row['titolo']} ({row['mercato']}:{row['ticker']})?")
+
+    col_confirm, col_cancel = st.columns([1, 5])
+
+    with col_confirm:
+        if st.button("Conferma elimina", key=f"confirm_delete_{delete_index}"):
+            delete_position(DATA_PATH, delete_index)
+            reset_delete_state()
+            st.success("Posizione eliminata.")
+            st.rerun()
+
+    with col_cancel:
+        if st.button("Annulla", key=f"cancel_delete_{delete_index}"):
+            reset_delete_state()
+            st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_portfolio_rows(df) -> None:
+    render_portfolio_table_header()
+
+    for idx, row in df.iterrows():
+        st.markdown('<div class="portfolio-row">', unsafe_allow_html=True)
+
+        action_col = render_position_values(row)
+
+        with action_col:
+            action_cols = st.columns(3)
+
+            with action_cols[0]:
+                if st.button("📊", key=f"portfolio_chart_{idx}", help="Apri grafico TradingView"):
+                    st.session_state["portfolio_selected_symbol"] = build_tradingview_symbol(
+                        row["mercato"],
+                        row["ticker"],
+                    )
+
+            with action_cols[1]:
+                if st.button("✏️", key=f"portfolio_edit_{idx}", help="Modifica posizione"):
+                    st.session_state["portfolio_edit_index"] = idx
+                    st.session_state["portfolio_delete_index"] = None
+                    st.rerun()
+
+            with action_cols[2]:
+                if st.button("🗑️", key=f"portfolio_delete_{idx}", help="Elimina posizione"):
+                    st.session_state["portfolio_delete_index"] = idx
+                    st.session_state["portfolio_edit_index"] = None
+                    st.rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+def main() -> None:
+    load_css()
+    init_state()
+
+    st.markdown('<div class="portfolio-page-title">💼 Portafoglio</div>', unsafe_allow_html=True)
     st.markdown(
-        """
-        <div class="portafoglio-kpi-card">
-            <div class="portafoglio-kpi-label">Valore totale</div>
-            <div class="portafoglio-kpi-value">N/D</div>
-            <div class="portafoglio-kpi-note">In sviluppo</div>
-        </div>
-        """,
-        unsafe_allow_html=True
+        '<div class="portfolio-page-subtitle">Gestione posizioni, valori di mercato e grafico TradingView.</div>',
+        unsafe_allow_html=True,
     )
 
-with kpi_2:
-    st.markdown(
-        """
-        <div class="portafoglio-kpi-card">
-            <div class="portafoglio-kpi-label">Profit/Loss</div>
-            <div class="portafoglio-kpi-value">N/D</div>
-            <div class="portafoglio-kpi-note">In sviluppo</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    render_add_form()
 
-with kpi_3:
-    st.markdown(
-        """
-        <div class="portafoglio-kpi-card">
-            <div class="portafoglio-kpi-label">Posizioni</div>
-            <div class="portafoglio-kpi-value">N/D</div>
-            <div class="portafoglio-kpi-note">In sviluppo</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    df = load_portfolio(DATA_PATH)
+    df = enrich_portfolio_df(df)
 
-with kpi_4:
-    st.markdown(
-        """
-        <div class="portafoglio-kpi-card">
-            <div class="portafoglio-kpi-label">Esposizione</div>
-            <div class="portafoglio-kpi-value">N/D</div>
-            <div class="portafoglio-kpi-note">In sviluppo</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    totals = portfolio_totals(df)
+    render_portfolio_summary(totals)
+
+    if df.empty:
+        st.info("Il portafoglio è vuoto. Aggiungi la prima posizione.")
+        return
+
+    render_portfolio_rows(df)
+    render_edit_form(df)
+    render_delete_confirmation(df)
+
+    selected_symbol = st.session_state.get("portfolio_selected_symbol")
+    if selected_symbol:
+        render_tradingview_chart(selected_symbol)
 
 
-# =========================
-# PLACEHOLDER FUNZIONALE
-# =========================
-
-st.markdown(
-    """
-    <div class="portafoglio-placeholder">
-        <div class="placeholder-title">Prossimo sviluppo: portafoglio reale</div>
-        <div class="placeholder-text">
-            Nella prossima versione potremo aggiungere un file dedicato, ad esempio
-            <strong>portfolio.csv</strong>, con ticker, quantità, prezzo medio,
-            valuta e categoria. Da quei dati la pagina potrà calcolare valore attuale,
-            performance e allocazione.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# =========================
-# NAVIGAZIONE
-# =========================
-
-st.markdown("---")
-
-if st.button("⬅️ Torna al Cockpit"):
-    st.switch_page("pages/dashboard.py")
-
-
-# =========================
+if __name__ == "__main__":
+    main()
