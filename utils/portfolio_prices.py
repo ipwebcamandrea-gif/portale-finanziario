@@ -61,7 +61,7 @@ def build_yfinance_symbol(
     """Return the yfinance symbol to use for quotes.
 
     Priority:
-    1. explicit `yf_symbol` from CSV/form;
+    1. explicit `yf_symbol` from JSON/form;
     2. inferred EUR listing for US stocks traded in EUR;
     3. market suffix fallback;
     4. plain ticker.
@@ -120,7 +120,6 @@ def fetch_last_quote(yf_symbol: str) -> dict:
         except Exception:
             pass
 
-        # Intraday fallback for a more recent value when available.
         if last is None:
             try:
                 intraday = ticker.history(period="1d", interval="5m", auto_adjust=False)
@@ -151,9 +150,9 @@ def fetch_last_quote(yf_symbol: str) -> dict:
         return {"ok": False, "last": None, "previous": None, "error": str(exc)}
 
 
-def refresh_portfolio_quotes(csv_path: Path) -> dict:
-    """Refresh market and previous prices in CSV. Existing values are kept on errors."""
-    df = load_portfolio(csv_path)
+def refresh_portfolio_quotes(data_path: Path) -> dict:
+    """Refresh market and previous prices. Existing values are kept on errors."""
+    df = load_portfolio(data_path)
 
     updated = 0
     failed = []
@@ -176,7 +175,7 @@ def refresh_portfolio_quotes(csv_path: Path) -> dict:
                 f"{row.get('mercato', '')}:{row.get('ticker', '')} / {yf_symbol} ({result.get('error', 'errore')})"
             )
 
-    save_portfolio(df, csv_path)
+    save_portfolio(df, data_path, "Refresh portfolio quotes")
 
     return {
         "updated": updated,
