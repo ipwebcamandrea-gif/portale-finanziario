@@ -1,0 +1,26 @@
+/* Da aggiungere in fondo a css/portafoglio.css */
+
+.portfolio-persistence-note {
+    margin: 0.75rem 0 1rem 0;
+    padding: 0.72rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid rgba(48, 54, 61, 0.72);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%),
+        linear-gradient(135deg, rgba(13, 17, 23, 0.38) 0%, rgba(22, 27, 34, 0.78) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.portfolio-persistence-title {
+    color: #e6edf3;
+    font-size: 0.88rem;
+    font-weight: 950;
+    margin-bottom: 0.15rem;
+}
+
+.portfolio-persistence-text {
+    color: #9fb3d1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
