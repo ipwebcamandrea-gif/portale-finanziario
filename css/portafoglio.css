@@ -1,3 +1,19 @@
+/* Nasconde il menu laterale Streamlit solo nella pagina Portafoglio. */
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+[data-testid="stAppViewContainer"] > .main {
+    margin-left: 0;
+}
+
+.portfolio-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+}
+
 .portfolio-page-title {
     font-size: 1.6rem;
     font-weight: 800;
@@ -60,7 +76,7 @@
 }
 
 .portfolio-cell {
-    min-height: 2.4rem;
+    min-height: 2.7rem;
     display: flex;
     align-items: center;
     font-size: 0.86rem;
@@ -89,7 +105,7 @@
 }
 
 .portfolio-title-cell {
-    min-height: 2.4rem;
+    min-height: 2.7rem;
     display: flex;
     align-items: center;
     gap: 0.55rem;
@@ -139,6 +155,28 @@
     color: #d1d5db !important;
 }
 
+.portfolio-action-box {
+    min-height: 2.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Pulsanti azione riga: TradingView / modifica / elimina. */
+.portfolio-action-box div[data-testid="column"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio-action-box button {
+    width: 2.15rem !important;
+    height: 2.15rem !important;
+    min-height: 2.15rem !important;
+    padding: 0 !important;
+    border-radius: 0.55rem !important;
+}
+
 .portfolio-form-box {
     padding: 1rem;
     border: 1px solid #374151;
@@ -161,11 +199,6 @@
     font-size: 1.05rem;
     font-weight: 800;
     color: #f9fafb;
-}
-
-/* Streamlit action buttons in the Azioni column */
-div[data-testid="column"] button[kind="secondary"] {
-    min-height: 2.1rem;
 }
 
 @media screen and (max-width: 768px) {
