@@ -1,5 +1,97 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T11:06:00+00:00",
-  "positions": []
+  "updated_at": "2026-06-12T11:09:57+00:00",
+  "positions": [
+    {
+      "ticker": "WVE",
+      "titolo": "WAVE LIFE SCI",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 1100,
+      "prezzo_medio": 6.85531,
+      "prezzo_mercato": 5.8377,
+      "prezzo_precedente": 5.8377,
+      "yf_symbol": "WVE",
+      "tv_symbol": "NASDAQ:WVE"
+    },
+    {
+      "ticker": "INTU",
+      "titolo": "INTUIT",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 40,
+      "prezzo_medio": 364.05947,
+      "prezzo_mercato": 277.24,
+      "prezzo_precedente": 277.24,
+      "yf_symbol": "INTU",
+      "tv_symbol": "NASDAQ:INTU"
+    },
+    {
+      "ticker": "PERI",
+      "titolo": "PERION NETWORK",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 700,
+      "prezzo_medio": 8.34849,
+      "prezzo_mercato": 8.25,
+      "prezzo_precedente": 8.25,
+      "yf_symbol": "PERI",
+      "tv_symbol": "NASDAQ:PERI"
+    },
+    {
+      "ticker": "SOFI",
+      "titolo": "SOFI TECH",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 330,
+      "prezzo_medio": 16.96324,
+      "prezzo_mercato": 16.7877,
+      "prezzo_precedente": 16.7877,
+      "yf_symbol": "SOFI",
+      "tv_symbol": "NASDAQ:SOFI"
+    },
+    {
+      "ticker": "MA",
+      "titolo": "MASTERCARD RG-A",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 45,
+      "prezzo_medio": 491.67956,
+      "prezzo_mercato": 488.26,
+      "prezzo_precedente": 488.26,
+      "yf_symbol": "MA",
+      "tv_symbol": "NYSE:MA"
+    },
+    {
+      "ticker": "MSFT",
+      "titolo": "MICROSOFT",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "EUR",
+      "quantita": 116,
+      "prezzo_medio": 325.18181,
+      "prezzo_mercato": 338.85,
+      "prezzo_precedente": 338.85,
+      "yf_symbol": "1MSFT.MI",
+      "tv_symbol": "MIL:1MSFT"
+    },
+    {
+      "ticker": "PYPL",
+      "titolo": "PAYPAL HOLDINGS",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 109,
+      "prezzo_medio": 63.29729,
+      "prezzo_mercato": 41.37,
+      "prezzo_precedente": 41.37,
+      "yf_symbol": "PYPL",
+      "tv_symbol": "NASDAQ:PYPL"
+    }
+  ]
 }
