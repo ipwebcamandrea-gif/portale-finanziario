@@ -8,6 +8,7 @@ from utils.portfolio_render import (
     render_portfolio_summary,
     render_portfolio_table_header,
     render_position_values,
+    render_row_separator,
 )
 from utils.portfolio_storage import (
     add_position,
@@ -73,7 +74,7 @@ def go_to_cockpit() -> None:
 
 
 def render_top_actions() -> None:
-    col_back, col_refresh, col_spacer = st.columns([1.0, 1.2, 7.8])
+    col_back, col_refresh, col_spacer = st.columns([1.0, 1.35, 7.65])
 
     with col_back:
         if st.button("← Cockpit", key="portfolio_back_to_cockpit"):
@@ -334,12 +335,10 @@ def render_portfolio_rows(df) -> None:
     render_portfolio_table_header()
 
     for idx, row in df.iterrows():
-        st.markdown('<div class="portfolio-row">', unsafe_allow_html=True)
-
         action_col = render_position_values(row)
 
         with action_col:
-            st.markdown('<div class="portfolio-action-box">', unsafe_allow_html=True)
+            st.markdown('<div class="portfolio-action-spacer"></div>', unsafe_allow_html=True)
             action_cols = st.columns([1, 1, 1], gap="small")
 
             with action_cols[0]:
@@ -348,6 +347,7 @@ def render_portfolio_rows(df) -> None:
                         row["mercato"],
                         row["ticker"],
                     )
+                    st.rerun()
 
             with action_cols[1]:
                 if st.button("✏️", key=f"portfolio_edit_{idx}", help="Modifica posizione"):
@@ -361,9 +361,7 @@ def render_portfolio_rows(df) -> None:
                     st.session_state["portfolio_edit_index"] = None
                     st.rerun()
 
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
+        render_row_separator()
 
 
 def main() -> None:
