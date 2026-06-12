@@ -16,21 +16,28 @@ def _esc(value) -> str:
     return html.escape(str(value or ""), quote=True)
 
 
+def _money_with_currency(value: float, currency: str) -> str:
+    """Format a money amount and append the row currency."""
+    clean_currency = str(currency or "").strip().upper()
+    suffix = f" {clean_currency}" if clean_currency else ""
+    return f"{fmt_eur(value)}{suffix}"
+
+
 def render_portfolio_summary(totals: dict) -> None:
     html_summary = (
         '<div class="portfolio-summary-wrapper">'
         '<div class="portfolio-summary-card">'
         '<div class="portfolio-summary-label">Valorizzazione EUR</div>'
-        f'<div class="portfolio-summary-value">{fmt_eur(totals["valore_mercato"])}</div>'
+        f'<div class="portfolio-summary-value">{fmt_eur(totals["valore_mercato"])} EUR</div>'
         '</div>'
         '<div class="portfolio-summary-card">'
         '<div class="portfolio-summary-label">Var quotidiana EUR</div>'
-        f'<div class="portfolio-summary-value {value_class(totals["var_quotidiana"])}">{fmt_eur(totals["var_quotidiana"])}</div>'
+        f'<div class="portfolio-summary-value {value_class(totals["var_quotidiana"])}">{fmt_eur(totals["var_quotidiana"])} EUR</div>'
         '</div>'
         '<div class="portfolio-summary-card">'
-        '<div class="portfolio-summary-label">Guadagno</div>'
+        '<div class="portfolio-summary-label">Guadagno EUR</div>'
         f'<div class="portfolio-summary-value {value_class(totals["var_da_carico"])}">'
-        f'{fmt_eur(totals["var_da_carico"])}'
+        f'{fmt_eur(totals["var_da_carico"])} EUR'
         f'<span class="portfolio-summary-pct">{fmt_pct(totals["var_da_carico_pct"])}</span>'
         '</div>'
         '</div>'
@@ -49,9 +56,9 @@ def render_portfolio_table_header() -> None:
         "Quantità",
         "P.zo medio<br>di carico",
         "P.zo di<br>mercato",
-        "Var % quotidiana €",
+        "Var oggi<br>% / valuta",
         "Val di mercato €",
-        "Guadagno",
+        "Guadagno<br>valuta",
         "Azioni",
     ]
 
@@ -81,7 +88,8 @@ def render_position_values(row):
 
     ticker = _esc(row["ticker"])
     titolo = _esc(row["titolo"])
-    valuta = _esc(row["valuta"])
+    valuta_raw = str(row["valuta"] or "").strip().upper()
+    valuta = _esc(valuta_raw)
 
     effective_tv_symbol = build_tradingview_symbol(
         row.get("mercato", ""),
@@ -131,14 +139,14 @@ def render_position_values(row):
             _metric_html(
                 daily_class,
                 fmt_pct(row["var_quotidiana_pct"]),
-                fmt_eur(row["var_quotidiana_eur"]),
+                _money_with_currency(row["var_quotidiana_eur"], valuta_raw),
             ),
             unsafe_allow_html=True,
         )
 
     with cols[6]:
         st.markdown(
-            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])} EUR</div>',
             unsafe_allow_html=True,
         )
 
@@ -146,7 +154,7 @@ def render_position_values(row):
         st.markdown(
             _metric_html(
                 gain_class,
-                fmt_eur(row["var_da_carico_eur"]),
+                _money_with_currency(row["var_da_carico_eur"], valuta_raw),
                 fmt_pct(row["var_da_carico_pct"]),
             ),
             unsafe_allow_html=True,
