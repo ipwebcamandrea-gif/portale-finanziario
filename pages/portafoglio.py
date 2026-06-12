@@ -71,23 +71,90 @@ def go_to_cockpit() -> None:
         )
 
 
-def open_tradingview_page(symbol: str) -> None:
-    """Open the app TradingView page using the same session-state style as the Watchlist flow.
+def _split_tradingview_symbol(symbol: str) -> tuple[str, str]:
+    clean_symbol = str(symbol or "").strip().upper()
+    if ":" in clean_symbol:
+        market, ticker = clean_symbol.split(":", 1)
+        return market.strip(), ticker.strip()
+    return "", clean_symbol
 
-    We intentionally set multiple keys to remain compatible with the existing
-    TradingView page, even if the current implementation reads a slightly
-    different session-state key.
+
+def set_tradingview_session_state(symbol: str) -> None:
+    """Set all known/likely session keys used by TradingView pages.
+
+    La pagina WatchlistTradingView esistente può leggere una chiave specifica.
+    Per evitare rotture, da Portafoglio valorizziamo sia le chiavi generiche
+    sia quelle con prefisso watchlist/tradingview/portfolio.
     """
+    market, ticker = _split_tradingview_symbol(symbol)
+
+    symbol_keys = [
+        "portfolio_selected_symbol",
+        "selected_tradingview_symbol",
+        "tradingview_symbol",
+        "tv_symbol",
+        "selected_symbol",
+        "symbol",
+        "current_symbol",
+        "chart_symbol",
+        "selected_tv_symbol",
+        "tv_selected_symbol",
+        "watchlist_selected_symbol",
+        "watchlist_tradingview_symbol",
+        "watchlist_tv_symbol",
+        "watchlist_chart_symbol",
+        "selected_watchlist_symbol",
+        "selected_watchlist_tradingview_symbol",
+    ]
+
+    ticker_keys = [
+        "selected_ticker",
+        "ticker",
+        "current_ticker",
+        "chart_ticker",
+        "tv_ticker",
+        "selected_tv_ticker",
+        "tradingview_ticker",
+        "selected_tradingview_ticker",
+        "watchlist_selected_ticker",
+        "watchlist_ticker",
+        "watchlist_tv_ticker",
+        "watchlist_chart_ticker",
+        "selected_watchlist_ticker",
+    ]
+
+    market_keys = [
+        "selected_market",
+        "market",
+        "mercato",
+        "selected_mercato",
+        "tv_market",
+        "tradingview_market",
+        "watchlist_market",
+    ]
+
+    for key in symbol_keys:
+        st.session_state[key] = symbol
+
+    for key in ticker_keys:
+        st.session_state[key] = ticker
+
+    for key in market_keys:
+        st.session_state[key] = market
+
+    st.session_state["tradingview_source"] = "portfolio"
+    st.session_state["chart_source"] = "portfolio"
+    st.session_state["opened_from_watchlist_tradingview"] = True
+    st.session_state["opened_from_portfolio"] = True
+
+
+def open_tradingview_page(symbol: str) -> None:
+    """Open the app TradingView page with the selected symbol."""
     if not symbol:
         st.warning("Simbolo TradingView non valido.")
         return
 
-    st.session_state["portfolio_selected_symbol"] = symbol
-    st.session_state["selected_tradingview_symbol"] = symbol
-    st.session_state["tradingview_symbol"] = symbol
-    st.session_state["tv_symbol"] = symbol
-    st.session_state["watchlist_selected_symbol"] = symbol
-    st.session_state["watchlist_tradingview_symbol"] = symbol
+    set_tradingview_session_state(symbol)
 
     try:
         st.switch_page(TRADINGVIEW_PAGE)
