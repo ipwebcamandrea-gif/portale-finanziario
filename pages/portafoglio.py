@@ -78,9 +78,9 @@ def go_to_cockpit() -> None:
         )
 
 
-def portfolio_tradingview_url(mercato: str, ticker: str) -> str:
+def portfolio_tradingview_url(mercato: str, ticker: str, tv_symbol: str = "") -> str:
     """Return the same TradingView external URL style used by WatchlistTradingView."""
-    symbol = build_tradingview_symbol(mercato, ticker)
+    symbol = build_tradingview_symbol(mercato, ticker, tv_symbol)
 
     if watchlist_url_tradingview is not None:
         try:
@@ -93,11 +93,6 @@ def portfolio_tradingview_url(mercato: str, ticker: str) -> str:
 
 
 def auto_refresh_quotes_once() -> None:
-    """Refresh quotes automatically only once when the Portfolio page is first opened.
-
-    This keeps the first view updated without triggering yfinance calls on every
-    Streamlit rerun caused by buttons, forms, edit panels or delete confirmations.
-    """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
         return
 
@@ -159,48 +154,42 @@ def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         with st.form("portfolio_add_form", clear_on_submit=True):
             col1, col2, col3 = st.columns(3)
-            col4, col5, col6, col7, col8 = st.columns(5)
+            col4, col5, col6, col7 = st.columns(4)
+            col8, col9 = st.columns(2)
 
             with col1:
-                ticker = st.text_input("Ticker", placeholder="MSFT")
+                ticker = st.text_input("Ticker", placeholder="MSFT oppure 1MSFT")
 
             with col2:
                 titolo = st.text_input("Titolo", placeholder="MICROSOFT")
 
             with col3:
-                mercato = st.text_input("Mercato TradingView", value="NASDAQ")
+                mercato = st.text_input("Mercato TradingView", value="NASDAQ", help="Esempio: NASDAQ, NYSE, MIL")
 
             with col4:
-                strumento = st.selectbox(
-                    "Strumento",
-                    ["Azione", "ETF", "ETC", "Obbligazione", "Crypto", "Altro"],
-                )
-
-            with col5:
                 valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"])
 
+            with col5:
+                quantita = st.number_input("Quantità", min_value=0.0, step=1.0, format="%.6f")
+
             with col6:
-                quantita = st.number_input(
-                    "Quantità",
-                    min_value=0.0,
-                    step=1.0,
-                    format="%.6f",
-                )
+                prezzo_medio = st.number_input("P.zo medio carico", min_value=0.0, step=0.01, format="%.6f")
 
             with col7:
-                prezzo_medio = st.number_input(
-                    "P.zo medio carico",
-                    min_value=0.0,
-                    step=0.01,
-                    format="%.6f",
-                )
+                prezzo_mercato = st.number_input("P.zo mercato", min_value=0.0, step=0.01, format="%.6f")
 
             with col8:
-                prezzo_mercato = st.number_input(
-                    "P.zo mercato",
-                    min_value=0.0,
-                    step=0.01,
-                    format="%.6f",
+                yf_symbol = st.text_input(
+                    "Simbolo yfinance opzionale",
+                    placeholder="1MSFT.MI",
+                    help="Da usare se la posizione è quotata su mercato diverso dal ticker principale, es. EUR su Borsa Italiana.",
+                )
+
+            with col9:
+                tv_symbol = st.text_input(
+                    "Simbolo TradingView opzionale",
+                    placeholder="MIL:1MSFT",
+                    help="Da usare se il grafico deve aprire uno specifico mercato/strumento.",
                 )
 
             prezzo_precedente = st.number_input(
@@ -224,12 +213,14 @@ def render_add_form() -> None:
                         "ticker": ticker.upper().strip(),
                         "titolo": titolo.strip(),
                         "mercato": mercato.upper().strip(),
-                        "strumento": strumento,
+                        "strumento": "",
                         "valuta": valuta,
                         "quantita": quantita,
                         "prezzo_medio": prezzo_medio,
                         "prezzo_mercato": prezzo_mercato,
                         "prezzo_precedente": prezzo_precedente,
+                        "yf_symbol": yf_symbol.upper().strip(),
+                        "tv_symbol": tv_symbol.upper().strip(),
                     },
                 )
 
@@ -254,7 +245,8 @@ def render_edit_form(df) -> None:
 
     with st.form(f"portfolio_edit_form_{edit_index}"):
         col1, col2, col3 = st.columns(3)
-        col4, col5, col6, col7, col8 = st.columns(5)
+        col4, col5, col6, col7 = st.columns(4)
+        col8, col9 = st.columns(2)
 
         with col1:
             ticker = st.text_input("Ticker", value=row["ticker"])
@@ -266,47 +258,24 @@ def render_edit_form(df) -> None:
             mercato = st.text_input("Mercato TradingView", value=row["mercato"])
 
         with col4:
-            strumenti = ["Azione", "ETF", "ETC", "Obbligazione", "Crypto", "Altro"]
-            current_strumento_index = (
-                strumenti.index(row["strumento"]) if row["strumento"] in strumenti else 0
-            )
-            strumento = st.selectbox(
-                "Strumento",
-                strumenti,
-                index=current_strumento_index,
-            )
-
-        with col5:
             valute = ["EUR", "USD", "GBP", "CHF"]
             current_valuta_index = valute.index(row["valuta"]) if row["valuta"] in valute else 0
             valuta = st.selectbox("Valuta", valute, index=current_valuta_index)
 
+        with col5:
+            quantita = st.number_input("Quantità", min_value=0.0, value=float(row["quantita"]), step=1.0, format="%.6f")
+
         with col6:
-            quantita = st.number_input(
-                "Quantità",
-                min_value=0.0,
-                value=float(row["quantita"]),
-                step=1.0,
-                format="%.6f",
-            )
+            prezzo_medio = st.number_input("P.zo medio carico", min_value=0.0, value=float(row["prezzo_medio"]), step=0.01, format="%.6f")
 
         with col7:
-            prezzo_medio = st.number_input(
-                "P.zo medio carico",
-                min_value=0.0,
-                value=float(row["prezzo_medio"]),
-                step=0.01,
-                format="%.6f",
-            )
+            prezzo_mercato = st.number_input("P.zo mercato", min_value=0.0, value=float(row["prezzo_mercato"]), step=0.01, format="%.6f")
 
         with col8:
-            prezzo_mercato = st.number_input(
-                "P.zo mercato",
-                min_value=0.0,
-                value=float(row["prezzo_mercato"]),
-                step=0.01,
-                format="%.6f",
-            )
+            yf_symbol = st.text_input("Simbolo yfinance opzionale", value=row.get("yf_symbol", ""))
+
+        with col9:
+            tv_symbol = st.text_input("Simbolo TradingView opzionale", value=row.get("tv_symbol", ""))
 
         prezzo_precedente = st.number_input(
             "P.zo precedente",
@@ -336,12 +305,14 @@ def render_edit_form(df) -> None:
                     "ticker": ticker.upper().strip(),
                     "titolo": titolo.strip(),
                     "mercato": mercato.upper().strip(),
-                    "strumento": strumento,
+                    "strumento": "",
                     "valuta": valuta,
                     "quantita": quantita,
                     "prezzo_medio": prezzo_medio,
                     "prezzo_mercato": prezzo_mercato,
                     "prezzo_precedente": prezzo_precedente,
+                    "yf_symbol": yf_symbol.upper().strip(),
+                    "tv_symbol": tv_symbol.upper().strip(),
                 },
             )
 
@@ -401,7 +372,7 @@ def render_portfolio_rows(df) -> None:
             with action_cols[0]:
                 st.link_button(
                     "📊",
-                    portfolio_tradingview_url(row["mercato"], row["ticker"]),
+                    portfolio_tradingview_url(row["mercato"], row["ticker"], row.get("tv_symbol", "")),
                     use_container_width=True,
                     help="Apri TradingView esterno",
                 )
