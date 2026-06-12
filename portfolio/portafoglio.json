@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T13:36:31+00:00",
+  "updated_at": "2026-06-12T13:46:33+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -71,10 +71,10 @@
       "ticker": "MSFT",
       "titolo": "MICROSOFT",
       "mercato": "NASDAQ",
-      "strumento": "Azione",
+      "strumento": "",
       "valuta": "EUR",
-      "quantita": 116,
-      "prezzo_medio": 325.18181,
+      "quantita": 134,
+      "prezzo_medio": 325.94,
       "prezzo_mercato": 339.6499938964844,
       "prezzo_precedente": 337.25,
       "yf_symbol": "1MSFT.MI",
