@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T11:09:57+00:00",
+  "updated_at": "2026-06-12T11:11:41+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,8 +10,8 @@
       "valuta": "USD",
       "quantita": 1100,
       "prezzo_medio": 6.85531,
-      "prezzo_mercato": 5.8377,
-      "prezzo_precedente": 5.8377,
+      "prezzo_mercato": 5.804999828338623,
+      "prezzo_precedente": 5.659999847412109,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -23,8 +23,8 @@
       "valuta": "USD",
       "quantita": 40,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 277.24,
-      "prezzo_precedente": 277.24,
+      "prezzo_mercato": 276.9100036621094,
+      "prezzo_precedente": 277.75,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
     },
@@ -36,8 +36,8 @@
       "valuta": "USD",
       "quantita": 700,
       "prezzo_medio": 8.34849,
-      "prezzo_mercato": 8.25,
-      "prezzo_precedente": 8.25,
+      "prezzo_mercato": 8.270000457763672,
+      "prezzo_precedente": 8.27,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
     },
@@ -49,8 +49,8 @@
       "valuta": "USD",
       "quantita": 330,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 16.7877,
-      "prezzo_precedente": 16.7877,
+      "prezzo_mercato": 16.670000076293945,
+      "prezzo_precedente": 16.655,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
     },
@@ -62,8 +62,8 @@
       "valuta": "USD",
       "quantita": 45,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 488.26,
-      "prezzo_precedente": 488.26,
+      "prezzo_mercato": 486.510009765625,
+      "prezzo_precedente": 486.88,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
     },
@@ -75,8 +75,8 @@
       "valuta": "EUR",
       "quantita": 116,
       "prezzo_medio": 325.18181,
-      "prezzo_mercato": 338.85,
-      "prezzo_precedente": 338.85,
+      "prezzo_mercato": 339.25,
+      "prezzo_precedente": 337.25,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
     },
@@ -88,8 +88,8 @@
       "valuta": "USD",
       "quantita": 109,
       "prezzo_medio": 63.29729,
-      "prezzo_mercato": 41.37,
-      "prezzo_precedente": 41.37,
+      "prezzo_mercato": 41.2400016784668,
+      "prezzo_precedente": 41.24,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
     }
