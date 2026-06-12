@@ -5,7 +5,7 @@ import streamlit as st
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 
 
-COLUMN_WEIGHTS = [2.2, 1.0, 0.8, 0.9, 1.2, 1.1, 1.3, 1.3, 1.3, 1.2]
+COLUMN_WEIGHTS = [2.2, 1.0, 0.8, 0.9, 1.2, 1.1, 1.3, 1.3, 1.3, 1.45]
 
 
 def _esc(value) -> str:
