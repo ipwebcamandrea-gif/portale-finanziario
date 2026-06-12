@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from utils.portfolio_storage import load_portfolio, save_portfolio
@@ -23,7 +22,16 @@ MARKET_SUFFIX_FOR_YFINANCE = {
 }
 
 
-def build_yfinance_symbol(ticker: str, mercato: str) -> str:
+def build_yfinance_symbol(ticker: str, mercato: str, yf_symbol: str = "") -> str:
+    """Return the yfinance symbol to use for quotes.
+
+    `yf_symbol` wins when present. This is required for EUR listings such as
+    `1MSFT.MI`, because using plain `MSFT` would fetch the USD Nasdaq quote.
+    """
+    explicit_symbol = str(yf_symbol or "").strip().upper()
+    if explicit_symbol:
+        return explicit_symbol
+
     clean_ticker = str(ticker or "").strip().upper()
     clean_market = str(mercato or "").strip().upper()
 
@@ -55,19 +63,37 @@ def fetch_last_quote(yf_symbol: str) -> dict:
 
     try:
         ticker = yf.Ticker(yf_symbol)
+
+        # Prefer fast_info for the most recent price when available.
+        last = None
+        previous = None
+        try:
+            fast_info = ticker.fast_info
+            last = fast_info.get("last_price") or fast_info.get("lastPrice")
+            previous = fast_info.get("previous_close") or fast_info.get("previousClose")
+            if last is not None:
+                last = float(last)
+            if previous is not None:
+                previous = float(previous)
+        except Exception:
+            pass
+
         hist = ticker.history(period="5d", interval="1d", auto_adjust=False)
+        if hist is not None and not hist.empty and "Close" in hist.columns:
+            close_values = hist["Close"].dropna()
+            if not close_values.empty:
+                if last is None:
+                    last = float(close_values.iloc[-1])
+                if previous is None:
+                    previous = float(close_values.iloc[-2]) if len(close_values) >= 2 else last
 
-        if hist is None or hist.empty or "Close" not in hist.columns:
-            return {"ok": False, "last": None, "previous": None, "error": "Storico vuoto"}
+        if last is None:
+            return {"ok": False, "last": None, "previous": None, "error": "Prezzo non disponibile"}
 
-        close_values = hist["Close"].dropna()
-        if close_values.empty:
-            return {"ok": False, "last": None, "previous": None, "error": "Close vuoto"}
+        if previous is None:
+            previous = last
 
-        last = float(close_values.iloc[-1])
-        previous = float(close_values.iloc[-2]) if len(close_values) >= 2 else last
-
-        return {"ok": True, "last": last, "previous": previous, "error": ""}
+        return {"ok": True, "last": float(last), "previous": float(previous), "error": ""}
     except Exception as exc:
         return {"ok": False, "last": None, "previous": None, "error": str(exc)}
 
@@ -80,7 +106,11 @@ def refresh_portfolio_quotes(csv_path: Path) -> dict:
     failed = []
 
     for idx, row in df.iterrows():
-        yf_symbol = build_yfinance_symbol(row["ticker"], row["mercato"])
+        yf_symbol = build_yfinance_symbol(
+            row.get("ticker", ""),
+            row.get("mercato", ""),
+            row.get("yf_symbol", ""),
+        )
         result = fetch_last_quote(yf_symbol)
 
         if result.get("ok"):
@@ -88,7 +118,9 @@ def refresh_portfolio_quotes(csv_path: Path) -> dict:
             df.at[idx, "prezzo_precedente"] = result["previous"]
             updated += 1
         else:
-            failed.append(f"{row['mercato']}:{row['ticker']} ({result.get('error', 'errore')})")
+            failed.append(
+                f"{row.get('mercato', '')}:{row.get('ticker', '')} / {yf_symbol} ({result.get('error', 'errore')})"
+            )
 
     save_portfolio(df, csv_path)
 
