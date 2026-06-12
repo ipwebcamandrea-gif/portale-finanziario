@@ -13,9 +13,19 @@ PORTFOLIO_COLUMNS = [
     "prezzo_medio",
     "prezzo_mercato",
     "prezzo_precedente",
+    "yf_symbol",
+    "tv_symbol",
 ]
 
-TEXT_COLUMNS = ["ticker", "titolo", "mercato", "strumento", "valuta"]
+TEXT_COLUMNS = [
+    "ticker",
+    "titolo",
+    "mercato",
+    "strumento",
+    "valuta",
+    "yf_symbol",
+    "tv_symbol",
+]
 NUMERIC_COLUMNS = ["quantita", "prezzo_medio", "prezzo_mercato", "prezzo_precedente"]
 
 
@@ -44,6 +54,8 @@ def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
     df["ticker"] = df["ticker"].str.upper()
     df["mercato"] = df["mercato"].str.upper()
     df["valuta"] = df["valuta"].str.upper()
+    df["yf_symbol"] = df["yf_symbol"].str.upper()
+    df["tv_symbol"] = df["tv_symbol"].str.upper()
 
     return df
 
