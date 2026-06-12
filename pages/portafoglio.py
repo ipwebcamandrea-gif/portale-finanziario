@@ -26,7 +26,7 @@ except Exception:
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "data" / "portafoglio.csv"
+DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
@@ -54,6 +54,8 @@ def init_state() -> None:
         "portfolio_delete_index": None,
         "portfolio_quotes_refreshed_on_load": False,
         "portfolio_last_auto_refresh_result": None,
+        "portfolio_storage_mode": "locale",
+        "portfolio_last_github_error": "",
     }
 
     for key, value in defaults.items():
@@ -122,7 +124,7 @@ def render_refresh_details(result: dict) -> None:
     with st.expander("Dettaglio quotazioni non aggiornate", expanded=False):
         st.write(
             "Questi simboli non sono stati aggiornati da yfinance e quindi mantengono "
-            "i valori già presenti nel CSV:"
+            "i valori già presenti nel JSON:"
         )
         for item in failed:
             st.write(f"- {item}")
@@ -145,6 +147,31 @@ def render_auto_refresh_status() -> None:
     render_refresh_details(result)
 
 
+def render_persistence_note() -> None:
+    storage_mode = st.session_state.get("portfolio_storage_mode", "locale")
+    last_error = st.session_state.get("portfolio_last_github_error", "")
+
+    if storage_mode == "github":
+        title = "Modalità GitHub API"
+        text = "Le modifiche del portafoglio vengono salvate in portfolio/portafoglio.json sulla branch data-watchlists."
+    elif storage_mode == "locale_fallback":
+        title = "Modalità locale fallback"
+        text = "GitHub API non disponibile: modifiche salvate localmente e non persistenti dopo reboot."
+        if last_error:
+            text += " Ultimo errore: " + str(last_error)
+    else:
+        title = "Modalità JSON locale"
+        text = "GitHub API non configurata: modifiche salvate localmente e non persistenti dopo reboot."
+
+    note_html = (
+        '<div class="portfolio-persistence-note">'
+        f'<div class="portfolio-persistence-title">{title}</div>'
+        f'<div class="portfolio-persistence-text">{text}</div>'
+        '</div>'
+    )
+    st.markdown(note_html, unsafe_allow_html=True)
+
+
 def render_top_actions() -> None:
     """Render top navigation/actions using WatchlistTradingView-like modern buttons."""
     st.markdown('<div class="portfolio-top-actions-modern">', unsafe_allow_html=True)
@@ -161,7 +188,7 @@ def render_top_actions() -> None:
             if result["updated"] > 0:
                 st.success(f"Quotazioni aggiornate: {result['updated']} su {result['total']}.")
             else:
-                st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel CSV.")
+                st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel JSON.")
 
             render_refresh_details(result)
             st.rerun()
@@ -252,7 +279,7 @@ def render_add_form() -> None:
 
 
 def _get_row_by_original_index(df, original_index: int):
-    """Return row by original CSV index after display sorting."""
+    """Return row by original JSON index after display sorting."""
     if original_index not in df.index:
         return None
     return df.loc[original_index]
@@ -426,7 +453,7 @@ def render_portfolio_rows(df) -> None:
 
 
 def sort_portfolio_for_display(df):
-    """Sort portfolio by gain descending while preserving original CSV indexes."""
+    """Sort portfolio by gain descending while preserving original JSON indexes."""
     if df.empty or "var_da_carico_eur" not in df.columns:
         return df
 
@@ -457,6 +484,8 @@ def main() -> None:
 
     df = load_portfolio(DATA_PATH)
     df = enrich_portfolio_df(df)
+
+    render_persistence_note()
 
     totals = portfolio_totals(df)
     render_portfolio_summary(totals)
