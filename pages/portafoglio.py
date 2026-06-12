@@ -112,6 +112,22 @@ def auto_refresh_quotes_once() -> None:
     st.session_state["portfolio_last_auto_refresh_result"] = result
 
 
+def render_refresh_details(result: dict) -> None:
+    """Show details about quote refresh failures, if any."""
+    failed = result.get("failed", []) or []
+
+    if not failed:
+        return
+
+    with st.expander("Dettaglio quotazioni non aggiornate", expanded=False):
+        st.write(
+            "Questi simboli non sono stati aggiornati da yfinance e quindi mantengono "
+            "i valori già presenti nel CSV:"
+        )
+        for item in failed:
+            st.write(f"- {item}")
+
+
 def render_auto_refresh_status() -> None:
     result = st.session_state.get("portfolio_last_auto_refresh_result")
 
@@ -122,9 +138,11 @@ def render_auto_refresh_status() -> None:
     total = result.get("total", 0)
 
     if updated > 0:
-        st.caption(f"Quotazioni aggiornate automaticamente all'apertura: {updated} su {total}.")
+        st.caption(f"Quotazioni aggiornate automaticamente/all'ultimo refresh: {updated} su {total}.")
     else:
-        st.caption("Aggiornamento automatico eseguito: nessuna quotazione aggiornata, valori manuali mantenuti.")
+        st.caption("Aggiornamento eseguito: nessuna quotazione aggiornata, valori manuali mantenuti.")
+
+    render_refresh_details(result)
 
 
 def render_top_actions() -> None:
@@ -147,11 +165,7 @@ def render_top_actions() -> None:
             else:
                 st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel CSV.")
 
-            if result["failed"]:
-                with st.expander("Dettaglio quotazioni non aggiornate", expanded=False):
-                    for item in result["failed"]:
-                        st.write(f"- {item}")
-
+            render_refresh_details(result)
             st.rerun()
 
 
@@ -233,17 +247,23 @@ def render_add_form() -> None:
                 st.rerun()
 
 
+def _get_row_by_original_index(df, original_index: int):
+    """Return row by original CSV index after display sorting."""
+    if original_index not in df.index:
+        return None
+    return df.loc[original_index]
+
+
 def render_edit_form(df) -> None:
     edit_index = st.session_state.get("portfolio_edit_index")
 
     if edit_index is None:
         return
 
-    if edit_index < 0 or edit_index >= len(df):
+    row = _get_row_by_original_index(df, edit_index)
+    if row is None:
         reset_edit_state()
         return
-
-    row = df.iloc[edit_index]
 
     st.markdown('<div class="portfolio-form-box">', unsafe_allow_html=True)
     st.subheader(f"✏️ Modifica posizione: {row['titolo']}")
@@ -338,11 +358,10 @@ def render_delete_confirmation(df) -> None:
     if delete_index is None:
         return
 
-    if delete_index < 0 or delete_index >= len(df):
+    row = _get_row_by_original_index(df, delete_index)
+    if row is None:
         reset_delete_state()
         return
-
-    row = df.iloc[delete_index]
 
     st.markdown('<div class="portfolio-warning-box">', unsafe_allow_html=True)
     st.warning(f"Confermi l'eliminazione di {row['titolo']} ({row['mercato']}:{row['ticker']})?")
@@ -402,6 +421,19 @@ def render_portfolio_rows(df) -> None:
         render_row_separator()
 
 
+def sort_portfolio_for_display(df):
+    """Sort portfolio by gain descending while preserving original CSV indexes."""
+    if df.empty or "var_da_carico_eur" not in df.columns:
+        return df
+
+    return df.sort_values(
+        by="var_da_carico_eur",
+        ascending=False,
+        na_position="last",
+        kind="mergesort",
+    )
+
+
 def main() -> None:
     load_css()
     init_state()
@@ -429,9 +461,11 @@ def main() -> None:
         st.info("Il portafoglio è vuoto. Aggiungi la prima posizione.")
         return
 
-    render_portfolio_rows(df)
-    render_edit_form(df)
-    render_delete_confirmation(df)
+    df_display = sort_portfolio_for_display(df)
+
+    render_portfolio_rows(df_display)
+    render_edit_form(df_display)
+    render_delete_confirmation(df_display)
 
 
 if __name__ == "__main__":
