@@ -259,8 +259,6 @@ footer {
     margin: 0.25rem 0 0.35rem 0;
 }
 
-/* Explicit shared topbar keys. This prevents page-specific CSS from making
-   Portafoglio / Allocazione topbar buttons different from Watchlist TradingView. */
 div[class*="st-key-portfolio_mobile_view_back"] button,
 div[class*="st-key-portfolio_mobile_view_refresh"] button,
 div[class*="st-key-allocation_mobile_view_back"] button,
@@ -316,4 +314,3 @@ div[class*="st-key-watchlist_tv_mobile_view_refresh"] button:hover {
         font-size: 0.82rem !important;
     }
 }
-
