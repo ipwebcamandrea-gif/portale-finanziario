@@ -22,6 +22,10 @@ from utils.portfolio_storage import (
     update_position,
 )
 from utils.portfolio_tradingview import build_tradingview_symbol
+from utils.portafoglio_mobile.portfolio_mobile_render import (
+    render_mobile_portfolio_rows,
+    render_mobile_portfolio_summary,
+)
 
 try:
     from utils.symbols import url_tradingview as watchlist_url_tradingview
@@ -32,6 +36,7 @@ except Exception:
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
+MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
 
@@ -45,11 +50,12 @@ st.set_page_config(
 
 
 def load_css() -> None:
-    if CSS_PATH.exists():
-        st.markdown(
-            f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>",
-            unsafe_allow_html=True,
-        )
+    for css_path in (CSS_PATH, MOBILE_CSS_PATH):
+        if css_path.exists():
+            st.markdown(
+                f"<style>{css_path.read_text(encoding='utf-8')}</style>",
+                unsafe_allow_html=True,
+            )
 
 
 def init_state() -> None:
@@ -61,6 +67,7 @@ def init_state() -> None:
         "portfolio_last_auto_refresh_result": None,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
+        "portfolio_mobile_view": False,
     }
 
     for key, value in defaults.items():
@@ -181,10 +188,10 @@ def render_persistence_note() -> None:
     st.markdown(note_html, unsafe_allow_html=True)
 
 
-def render_top_actions() -> None:
-    """Render top navigation/actions using WatchlistTradingView-like modern buttons."""
+def render_top_actions() -> bool:
+    """Render top navigation/actions and return mobile-view flag."""
     st.markdown('<div class="portfolio-top-actions-modern">', unsafe_allow_html=True)
-    col_refresh, col_back, col_spacer = st.columns([0.48, 1.45, 8.07])
+    col_refresh, col_back, col_mobile, col_spacer = st.columns([0.48, 1.45, 1.35, 6.72])
 
     with col_refresh:
         if st.button("🔄", key="portfolio_refresh_quotes", help="Aggiorna quotazioni"):
@@ -206,7 +213,11 @@ def render_top_actions() -> None:
         if st.button("← Cockpit", key="portfolio_back_to_cockpit", use_container_width=True):
             go_to_cockpit()
 
+    with col_mobile:
+        mobile_view = st.toggle("Vista mobile", value=st.session_state.get("portfolio_mobile_view", False), key="portfolio_mobile_view")
+
     st.markdown('</div>', unsafe_allow_html=True)
+    return bool(mobile_view)
 
 
 def render_add_form() -> None:
@@ -696,7 +707,7 @@ def main() -> None:
     load_css()
     init_state()
 
-    render_top_actions()
+    mobile_view = render_top_actions()
 
     st.markdown('<div class="portfolio-page-title">💼 Portafoglio</div>', unsafe_allow_html=True)
     st.markdown(
@@ -715,7 +726,10 @@ def main() -> None:
     render_persistence_note()
 
     totals = portfolio_totals(df)
-    render_portfolio_summary(totals)
+    if mobile_view:
+        render_mobile_portfolio_summary(totals)
+    else:
+        render_portfolio_summary(totals)
 
     if df.empty:
         st.info("Il portafoglio è vuoto. Aggiungi la prima posizione.")
@@ -723,7 +737,10 @@ def main() -> None:
 
     df_display = sort_portfolio_for_display(df)
 
-    render_portfolio_rows(df_display)
+    if mobile_view:
+        render_mobile_portfolio_rows(df_display, portfolio_tradingview_url)
+    else:
+        render_portfolio_rows(df_display)
     render_buy_simulator(df_display)
     render_edit_form(df_display)
     render_delete_confirmation(df_display)
