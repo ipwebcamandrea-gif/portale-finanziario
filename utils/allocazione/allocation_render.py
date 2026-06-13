@@ -7,31 +7,6 @@ from utils.allocazione.portfolio_allocation import concentration_class, concentr
 from utils.portfolio_formatting import fmt_eur, fmt_pct
 
 
-def render_topbar() -> bool:
-    st.markdown('<div class="allocation-topbar">', unsafe_allow_html=True)
-    col_back, col_refresh, col_mobile, _ = st.columns([1.2, 0.85, 1.3, 6.65])
-
-    with col_back:
-        if st.button("← Cockpit", key="allocation_back_to_cockpit", use_container_width=True):
-            try:
-                st.switch_page("pages/dashboard.py")
-            except Exception:
-                st.switch_page("main.py")
-
-    with col_refresh:
-        if st.button("🔄", key="allocation_refresh", help="Ricarica allocazione", use_container_width=True):
-            st.rerun()
-
-    if "allocation_mobile_view" not in st.session_state:
-        st.session_state["allocation_mobile_view"] = True
-
-    with col_mobile:
-        mobile_view = st.toggle("Vista mobile", value=True, key="allocation_mobile_view")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-    return bool(mobile_view)
-
-
 def render_page_header() -> None:
     st.markdown('<div class="allocation-page-title">📊 Allocazione Portafoglio</div>', unsafe_allow_html=True)
     st.markdown('<div class="allocation-page-subtitle">Distribuzione attuale per titolo, valuta, mercato e concentrazione. Tutti i titoli sono sempre visibili.</div>', unsafe_allow_html=True)
