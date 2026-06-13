@@ -82,7 +82,7 @@ with col_allocazione:
         key="card_allocazione_portafoglio",
         use_container_width=True
     ):
-        st.switch_page("pages/allocazione/allocazione_portafoglio.py")
+        st.switch_page("pages/allocazione_portafoglio.py")
 
 with col_logout:
     if st.button(
