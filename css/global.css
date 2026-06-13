@@ -251,3 +251,44 @@ footer {
 #MainMenu {
     visibility: hidden;
 }
+
+/* =========================
+   UI SYSTEM TOPBAR
+   ========================= */
+.fp-topbar-anchor {
+    margin: 0.25rem 0 0.35rem 0;
+}
+
+/* Standard topbar buttons: keys end with _back / _refresh. */
+div[class*="_back"] .stButton > button,
+div[class*="_refresh"] .stButton > button,
+div[class*="_back"] button,
+div[class*="_refresh"] button {
+    min-height: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 176, 255, 0.42) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+        linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+    color: #e6edf3 !important;
+    font-weight: 950 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 14px rgba(0, 176, 255, 0.10) !important;
+}
+
+@media screen and (max-width: 768px) {
+    .fp-topbar-anchor {
+        margin: 0.15rem 0 0.25rem 0;
+    }
+
+    div[class*="_back"] .stButton > button,
+    div[class*="_refresh"] .stButton > button,
+    div[class*="_back"] button,
+    div[class*="_refresh"] button {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 0.82rem !important;
+    }
+}
