@@ -45,23 +45,44 @@ def render_persistence_note():
 
 
 # =========================
-# CONTROLLI HEADER
+# CONTROLLI HEADER WATCHLIST
 # =========================
 
 def render_header_controls():
-    """Render only Watchlist-specific controls.
+    """Header controls local to Watchlist TradingView.
 
-    The old private buttons `← Cockpit` and `🔄` have been removed from this
-    component. They are now rendered by the shared `utils.ui.topbar.render_topbar`.
+    This is intentionally private/safe for this page: Watchlist TradingView keeps
+    its own compact toggle, refresh and cockpit buttons so they never disappear.
     """
     if "tv_compact_rows" not in st.session_state:
         st.session_state["tv_compact_rows"] = True
 
-    st.toggle(
-        "📱 Vista compatta",
-        key="tv_compact_rows",
-        help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
+    compact_col, refresh_col, back_col = st.columns(
+        [1.55, 0.42, 1.10],
+        vertical_alignment="center",
+        gap="small",
     )
+
+    with compact_col:
+        st.toggle(
+            "📱 Vista compatta",
+            key="tv_compact_rows",
+            help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
+        )
+
+    with refresh_col:
+        if st.button(
+            "🔄",
+            key="tv_refresh_data",
+            use_container_width=True,
+            help="Aggiorna dati",
+        ):
+            st.cache_data.clear()
+            st.rerun()
+
+    with back_col:
+        if st.button("← Cockpit", key="tv_back_cockpit", use_container_width=True):
+            st.switch_page("pages/dashboard.py")
 
 
 # =========================
@@ -75,7 +96,7 @@ def render_watchlist_header():
     compact_mode = bool(st.session_state.get("tv_compact_rows", True))
 
     header_col_1, header_col_2 = st.columns(
-        [3.55, 1.45],
+        [3.55, 2.45],
         vertical_alignment="center",
     )
 
