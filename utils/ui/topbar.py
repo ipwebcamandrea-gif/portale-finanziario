@@ -15,11 +15,7 @@ def render_topbar(
     refresh_callback: Callable[[], None] | None = None,
     refresh_help: str = "Aggiorna",
 ) -> bool:
-    """Render a standard topbar shared by app pages.
-
-    The function returns the mobile-view state. If `show_mobile_toggle` is
-    False, the returned value still follows the session default for consistency.
-    """
+    """Render the standard app topbar and return the mobile-view state."""
 
     if mobile_key not in st.session_state:
         st.session_state[mobile_key] = mobile_default
