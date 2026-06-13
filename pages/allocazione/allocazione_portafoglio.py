@@ -1,7 +1,9 @@
-
 from pathlib import Path
 
 import streamlit as st
+
+from utils.ui.theme import apply_dark_theme_mobile
+from utils.ui.topbar import render_topbar
 
 from utils.auth import require_login
 from utils.portfolio_calculations import enrich_portfolio_df
@@ -16,7 +18,6 @@ from utils.allocazione.allocation_render import (
     render_desktop_allocation_dashboard,
     render_mobile_allocation_dashboard,
     render_page_header,
-    render_topbar,
 )
 
 
@@ -42,7 +43,12 @@ def load_css() -> None:
 
 def main() -> None:
     load_css()
-    mobile_view = render_topbar()
+    apply_dark_theme_mobile()
+    mobile_view = render_topbar(
+        mobile_key="allocation_mobile_view",
+        mobile_default=True,
+        refresh_help="Ricarica allocazione",
+    )
     render_page_header()
 
     df = load_portfolio(DATA_PATH)
