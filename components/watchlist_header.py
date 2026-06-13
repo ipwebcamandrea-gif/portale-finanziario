@@ -12,6 +12,7 @@ def render_header():
         """
         <div class="tv-page-header">
             <div class="tv-page-title">Watchlist TradingView</div>
+            <div class="tv-page-subtitle">Watchlist operativa con tab, SMA 200W, viste compatte e apertura grafici TradingView.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -48,43 +49,19 @@ def render_persistence_note():
 # =========================
 
 def render_header_controls():
-    """
-    Controlli globali su una sola riga header:
-    - toggle vista compatta
-    - refresh dati
-    - ritorno Cockpit
+    """Render only Watchlist-specific controls.
+
+    The old private buttons `← Cockpit` and `🔄` have been removed from this
+    component. They are now rendered by the shared `utils.ui.topbar.render_topbar`.
     """
     if "tv_compact_rows" not in st.session_state:
         st.session_state["tv_compact_rows"] = True
 
-    compact_col, refresh_col, back_col = st.columns(
-        [1.55, 0.42, 1.10],
-        vertical_alignment="center",
-        gap="small",
+    st.toggle(
+        "📱 Vista compatta",
+        key="tv_compact_rows",
+        help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
     )
-
-    with compact_col:
-        st.toggle(
-            "📱 Vista compatta",
-            key="tv_compact_rows",
-            help="Mostra righe compatte ottimizzate per smartphone. In questa vista il tap sulla riga apre TradingView.",
-        )
-
-    with refresh_col:
-        if st.button(
-            "🔄",
-            key="tv_refresh_data",
-            use_container_width=True,
-            help="Aggiorna dati",
-        ):
-            st.cache_data.clear()
-            st.rerun()
-
-    with back_col:
-        st.markdown('<div class="tv-modern-back-button">', unsafe_allow_html=True)
-        if st.button("← Cockpit", key="tv_back_cockpit", use_container_width=True):
-            st.switch_page("pages/dashboard.py")
-        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =========================
@@ -98,7 +75,7 @@ def render_watchlist_header():
     compact_mode = bool(st.session_state.get("tv_compact_rows", True))
 
     header_col_1, header_col_2 = st.columns(
-        [3.55, 2.45],
+        [3.55, 1.45],
         vertical_alignment="center",
     )
 
@@ -108,7 +85,5 @@ def render_watchlist_header():
     with header_col_2:
         render_header_controls()
 
-    # In vista compatta la nota gialla GitHub/fallback viene nascosta
-    # per lasciare spazio alla sola consultazione della watchlist.
     if not compact_mode:
         render_persistence_note()
