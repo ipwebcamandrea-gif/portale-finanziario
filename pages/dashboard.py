@@ -50,15 +50,7 @@ st.markdown(
 # MENU PRINCIPALE
 # =========================
 
-col_watchlist, col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(5)
-
-with col_watchlist:
-    if st.button(
-        "📊 Watchlist\n\nPrezzi, SMA 200W, stato tecnico e grafici.",
-        key="card_watchlist",
-        use_container_width=True
-    ):
-        st.switch_page("pages/watchlist.py")
+col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(4)
 
 with col_watchlist_tv:
     if st.button(
