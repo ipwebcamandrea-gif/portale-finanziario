@@ -87,10 +87,10 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
-        st.markdown('<div class="portfolio-mobile-actions-row">', unsafe_allow_html=True)
-        action_cols = st.columns(4, gap=None)
+        st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
 
-        with action_cols[0]:
+        row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
+        with row_1_col_1:
             st.link_button(
                 "📊",
                 tradingview_url_builder(
@@ -99,23 +99,25 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                     row.get("tv_symbol", ""),
                     row.get("valuta", ""),
                 ),
-                use_container_width=False,
+                use_container_width=True,
                 help="Apri TradingView esterno",
             )
-        with action_cols[1]:
-            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=False):
+        with row_1_col_2:
+            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
                 st.session_state["portfolio_simulation_index"] = idx
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_delete_index"] = None
                 st.rerun()
-        with action_cols[2]:
-            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=False):
+
+        row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
+        with row_2_col_1:
+            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
                 st.session_state["portfolio_edit_index"] = idx
                 st.session_state["portfolio_delete_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
-        with action_cols[3]:
-            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=False):
+        with row_2_col_2:
+            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
                 st.session_state["portfolio_delete_index"] = idx
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
