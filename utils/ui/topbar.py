@@ -15,7 +15,11 @@ def render_topbar(
     refresh_callback: Callable[[], None] | None = None,
     refresh_help: str = "Aggiorna",
 ) -> bool:
-    """Render the standard app topbar and return the mobile-view state."""
+    """Render the standard app topbar and return the mobile-view state.
+
+    The visual style is centralized in css/global.css and reinforced by
+    utils/ui/theme.py on mobile.
+    """
 
     if mobile_key not in st.session_state:
         st.session_state[mobile_key] = mobile_default
