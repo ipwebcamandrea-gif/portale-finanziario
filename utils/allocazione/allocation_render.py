@@ -128,8 +128,12 @@ def render_desktop_allocation_dashboard(position_allocation, currency_allocation
 
 
 def render_mobile_allocation_dashboard(position_allocation, currency_allocation, market_allocation, metrics, insights) -> None:
+    """Compact mobile view.
+
+    Mobile keeps the most useful position-level allocation chart and removes
+    currency/market bar charts to reduce vertical clutter.
+    """
     render_summary_cards(metrics)
     render_position_weight_list(position_allocation)
-    st.plotly_chart(create_group_bar(currency_allocation, "valuta", "Valute"), use_container_width=True)
-    st.plotly_chart(create_group_bar(market_allocation, "mercato", "Mercati"), use_container_width=True)
+    st.plotly_chart(create_position_bar(position_allocation), use_container_width=True)
     render_insights(insights)
