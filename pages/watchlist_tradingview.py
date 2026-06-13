@@ -276,6 +276,15 @@ def render_persistence_note():
 
 
 # =========================
+# TOPBAR REFRESH
+# =========================
+
+def refresh_watchlist_tradingview() -> None:
+    st.cache_data.clear()
+    st.rerun()
+
+
+# =========================
 # SESSION STATE
 # =========================
 
