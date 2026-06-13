@@ -140,30 +140,53 @@
 }
 
 /* =========================
-   PORTFOLIO MOBILE INLINE ACTIONS
+   PORTFOLIO MOBILE INLINE ACTIONS - STRONG FIX
    ========================= */
 .portfolio-mobile-actions-row {
-    margin-top: 0.2rem;
+    margin-top: 0.15rem;
 }
 
-/* Streamlit columns keep the buttons aligned; the keys keep each button compact. */
+/* Force Streamlit columns used by card action buttons to remain horizontal on mobile. */
+@media screen and (max-width: 768px) {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+        gap: 6px !important;
+        width: auto !important;
+        max-width: max-content !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) > div[data-testid="column"] {
+        flex: 0 0 36px !important;
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        padding: 0 !important;
+    }
+}
+
+/* Compact action button dimensions. */
 div[class*="st-key-portfolio_mobile_sim_"] button,
 div[class*="st-key-portfolio_mobile_edit_"] button,
-div[class*="st-key-portfolio_mobile_delete_"] button {
+div[class*="st-key-portfolio_mobile_delete_"] button,
+.portfolio-mobile-actions-row a,
+.portfolio-mobile-actions-row button {
     width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
     height: 34px !important;
     min-height: 34px !important;
     border-radius: 8px !important;
     padding: 0 !important;
     font-size: 0.92rem !important;
-}
-
-@media screen and (max-width: 768px) {
-    div[class*="st-key-portfolio_mobile_sim_"] button,
-    div[class*="st-key-portfolio_mobile_edit_"] button,
-    div[class*="st-key-portfolio_mobile_delete_"] button {
-        width: 34px !important;
-        min-width: 34px !important;
-        max-width: 34px !important;
-    }
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
