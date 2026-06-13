@@ -84,12 +84,14 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
             + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
             + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
             + '</div>'
-            '<div class="portfolio-mobile-actions">'
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
+        # Streamlit columns normally stack on mobile. CSS in portafoglio_mobile.css
+        # forces this specific action block to remain a compact inline row.
         st.markdown('<div class="portfolio-mobile-actions-row">', unsafe_allow_html=True)
-        action_cols = st.columns([0.46, 0.46, 0.46, 0.46, 6.16], gap="small")
+        action_cols = st.columns(4, gap="small")
+
         with action_cols[0]:
             st.link_button(
                 "📊",
@@ -99,27 +101,26 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                     row.get("tv_symbol", ""),
                     row.get("valuta", ""),
                 ),
-                use_container_width=True,
+                use_container_width=False,
                 help="Apri TradingView esterno",
             )
         with action_cols[1]:
-            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
+            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=False):
                 st.session_state["portfolio_simulation_index"] = idx
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_delete_index"] = None
                 st.rerun()
         with action_cols[2]:
-            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
+            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=False):
                 st.session_state["portfolio_edit_index"] = idx
                 st.session_state["portfolio_delete_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
         with action_cols[3]:
-            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
+            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=False):
                 st.session_state["portfolio_delete_index"] = idx
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div></div>', unsafe_allow_html=True)
