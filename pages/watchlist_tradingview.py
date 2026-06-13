@@ -3,6 +3,9 @@ from html import escape
 
 import streamlit as st
 
+from utils.ui.theme import apply_dark_theme_mobile
+from utils.ui.topbar import render_topbar
+
 from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
@@ -37,6 +40,7 @@ def local_css(file_path):
 
 local_css(GLOBAL_CSS)
 local_css(WATCHLIST_TV_CSS)
+apply_dark_theme_mobile()
 
 
 # =========================
