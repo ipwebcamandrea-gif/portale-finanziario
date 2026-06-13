@@ -138,3 +138,32 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* =========================
+   PORTFOLIO MOBILE INLINE ACTIONS
+   ========================= */
+.portfolio-mobile-actions-row {
+    margin-top: 0.2rem;
+}
+
+/* Streamlit columns keep the buttons aligned; the keys keep each button compact. */
+div[class*="st-key-portfolio_mobile_sim_"] button,
+div[class*="st-key-portfolio_mobile_edit_"] button,
+div[class*="st-key-portfolio_mobile_delete_"] button {
+    width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+    font-size: 0.92rem !important;
+}
+
+@media screen and (max-width: 768px) {
+    div[class*="st-key-portfolio_mobile_sim_"] button,
+    div[class*="st-key-portfolio_mobile_edit_"] button,
+    div[class*="st-key-portfolio_mobile_delete_"] button {
+        width: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+    }
+}
