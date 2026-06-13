@@ -50,11 +50,11 @@ st.markdown(
 # MENU PRINCIPALE
 # =========================
 
-col_watchlist, col_watchlist_tv, col_portafoglio, col_logout = st.columns(4)
+col_watchlist, col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(5)
 
 with col_watchlist:
     if st.button(
-        "📊  Watchlist\n\nPrezzi, SMA 200W, stato tecnico e grafici.",
+        "📊 Watchlist\n\nPrezzi, SMA 200W, stato tecnico e grafici.",
         key="card_watchlist",
         use_container_width=True
     ):
@@ -62,7 +62,7 @@ with col_watchlist:
 
 with col_watchlist_tv:
     if st.button(
-        "📺  Watchlist TradingView\n\nMulti-tab, SMA 200W, drag & drop e grafici.",
+        "📺 Watchlist TradingView\n\nMulti-tab, SMA 200W, drag & drop e grafici.",
         key="card_watchlist_tradingview",
         use_container_width=True
     ):
@@ -70,15 +70,23 @@ with col_watchlist_tv:
 
 with col_portafoglio:
     if st.button(
-        "💼  Portafoglio\n\nArea dedicata alle posizioni reali.",
+        "💼 Portafoglio\n\nArea dedicata alle posizioni reali.",
         key="card_portafoglio",
         use_container_width=True
     ):
         st.switch_page("pages/portafoglio.py")
 
+with col_allocazione:
+    if st.button(
+        "📊 Allocazione\n\nPesi, valute, mercati e concentrazione.",
+        key="card_allocazione_portafoglio",
+        use_container_width=True
+    ):
+        st.switch_page("pages/allocazione/allocazione_portafoglio.py")
+
 with col_logout:
     if st.button(
-        "🚪  Logout\n\nChiudi la sessione e torna al login.",
+        "🚪 Logout\n\nChiudi la sessione e torna al login.",
         key="card_logout",
         use_container_width=True
     ):
