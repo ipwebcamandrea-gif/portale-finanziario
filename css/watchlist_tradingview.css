@@ -467,3 +467,10 @@ div[data-testid="stVerticalBlock"] div[style*="background-color"] {
         font-size: 0.88rem;
     }
 }
+
+/* =========================
+   WATCHLIST TOPBAR NOTE
+   =========================
+   Back and refresh are now handled by the shared utils/ui/topbar.py component.
+   The compact-view toggle remains in components/watchlist_header.py.
+*/
