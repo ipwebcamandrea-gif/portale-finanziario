@@ -87,8 +87,8 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
-        # Streamlit columns normally stack on mobile. CSS in portafoglio_mobile.css
-        # forces this specific action block to remain a compact inline row.
+        # Do not add spacer columns here: on mobile Streamlit can stretch them
+        # and push the delete button out of screen.
         st.markdown('<div class="portfolio-mobile-actions-row">', unsafe_allow_html=True)
         action_cols = st.columns(4, gap="small")
 
