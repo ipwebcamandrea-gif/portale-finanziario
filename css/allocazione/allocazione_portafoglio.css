@@ -1,1 +1,227 @@
 
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+[data-testid="stAppViewContainer"] > .main {
+    margin-left: 0;
+}
+
+.allocation-topbar {
+    margin: 0.25rem 0 1.35rem 0;
+}
+
+div[class*="st-key-allocation_back_to_cockpit"] .stButton > button,
+div[class*="st-key-allocation_back_to_cockpit"] button,
+div[class*="st-key-allocation_refresh"] .stButton > button,
+div[class*="st-key-allocation_refresh"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 176, 255, 0.42) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+        linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+    color: #e6edf3 !important;
+    font-weight: 950 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 14px rgba(0, 176, 255, 0.10) !important;
+}
+
+.allocation-page-title {
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: #f9fafb;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.allocation-page-subtitle {
+    color: #9fb3d1;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+.allocation-summary-card,
+.allocation-insights-box,
+.allocation-heat-card,
+.allocation-weight-row {
+    border-radius: 14px;
+    border: 1px solid rgba(48, 54, 61, 0.78);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+.allocation-summary-card {
+    min-height: 112px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.allocation-summary-label {
+    color: #9fb3d1;
+    font-size: 0.72rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 0.35rem;
+}
+
+.allocation-summary-value {
+    color: #f9fafb;
+    font-size: 1.25rem;
+    font-weight: 950;
+    line-height: 1.16;
+}
+
+.allocation-summary-subtitle {
+    color: #8bd3ff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    margin-top: 0.28rem;
+}
+
+.allocation-panel-title,
+.allocation-section-title {
+    color: #f9fafb;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin: 0.6rem 0 0.75rem 0;
+}
+
+.allocation-weight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 0.48rem;
+}
+
+.allocation-weight-title {
+    color: #e6edf3;
+    font-size: 0.92rem;
+    font-weight: 900;
+    line-height: 1.15;
+}
+
+.allocation-weight-subtitle {
+    color: #9ca3af;
+    font-size: 0.74rem;
+    font-weight: 700;
+    margin-top: 0.12rem;
+}
+
+.allocation-weight-values {
+    text-align: right;
+    color: #f9fafb;
+    font-size: 0.86rem;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.allocation-heat-card {
+    min-height: 112px;
+    padding: 0.85rem 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.allocation-heat-title {
+    color: #f9fafb;
+    font-size: 0.92rem;
+    font-weight: 950;
+    margin-bottom: 0.2rem;
+}
+
+.allocation-heat-weight {
+    color: #e6edf3;
+    font-size: 1.18rem;
+    font-weight: 950;
+    margin-bottom: 0.18rem;
+}
+
+.allocation-heat-label {
+    color: #9fb3d1;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.allocation-concentration-very-high {
+    border-color: rgba(239, 68, 68, 0.42);
+    background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.86) 100%);
+}
+
+.allocation-concentration-high {
+    border-color: rgba(245, 158, 11, 0.42);
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.86) 100%);
+}
+
+.allocation-concentration-medium {
+    border-color: rgba(168, 85, 247, 0.36);
+}
+
+.allocation-concentration-low {
+    border-color: rgba(0, 176, 255, 0.24);
+}
+
+.allocation-insights-box {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+}
+
+.allocation-insights-title {
+    color: #f9fafb;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin-bottom: 0.45rem;
+}
+
+.allocation-insights-box ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.allocation-insights-box li {
+    color: #cfe7ff;
+    font-size: 0.9rem;
+    font-weight: 720;
+    margin-bottom: 0.32rem;
+}
+
+@media screen and (max-width: 768px) {
+    .allocation-page-title {
+        font-size: 1.3rem;
+    }
+
+    .allocation-page-subtitle {
+        font-size: 0.78rem;
+    }
+
+    .allocation-summary-card {
+        min-height: 92px;
+    }
+
+    .allocation-summary-value {
+        font-size: 1rem;
+    }
+
+    .allocation-weight-row {
+        align-items: flex-start;
+    }
+
+    .allocation-weight-title {
+        font-size: 0.82rem;
+    }
+
+    .allocation-weight-values {
+        font-size: 0.78rem;
+    }
+}
