@@ -88,7 +88,8 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
-        action_cols = st.columns(4, gap="small")
+        st.markdown('<div class="portfolio-mobile-actions-row">', unsafe_allow_html=True)
+        action_cols = st.columns([0.46, 0.46, 0.46, 0.46, 6.16], gap="small")
         with action_cols[0]:
             st.link_button(
                 "📊",
@@ -119,5 +120,6 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div></div>', unsafe_allow_html=True)
