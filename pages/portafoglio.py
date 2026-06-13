@@ -3,6 +3,9 @@ from urllib.parse import quote
 
 import streamlit as st
 
+from utils.ui.theme import apply_dark_theme_mobile
+from utils.ui.topbar import render_topbar
+
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
@@ -189,38 +192,31 @@ def render_persistence_note() -> None:
 
 
 def render_top_actions() -> bool:
-    """Render top navigation/actions and return mobile-view flag."""
-    st.markdown('<div class="portfolio-top-actions-modern">', unsafe_allow_html=True)
-    col_refresh, col_back, col_mobile, col_spacer = st.columns([0.48, 1.45, 1.35, 6.72])
+    """Render standard topbar and return mobile-view flag."""
 
-    with col_refresh:
-        if st.button("🔄", key="portfolio_refresh_quotes", help="Aggiorna quotazioni"):
-            with st.spinner("Aggiornamento quotazioni in corso..."):
-                result = refresh_portfolio_quotes(DATA_PATH)
+    def refresh_quotes() -> None:
+        with st.spinner("Aggiornamento quotazioni in corso..."):
+            result = refresh_portfolio_quotes(DATA_PATH)
 
-            st.session_state["portfolio_last_auto_refresh_result"] = result
-            st.session_state["portfolio_quotes_refreshed_on_load"] = True
+        st.session_state["portfolio_last_auto_refresh_result"] = result
+        st.session_state["portfolio_quotes_refreshed_on_load"] = True
 
-            if result["updated"] > 0:
-                st.success(f"Quotazioni aggiornate: {result['updated']} su {result['total']}.")
-            else:
-                st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel JSON.")
+        if result["updated"] > 0:
+            st.success(f"Quotazioni aggiornate: {result['updated']} su {result['total']}.")
+        else:
+            st.warning("Nessuna quotazione aggiornata. Mantengo i valori manuali presenti nel JSON.")
 
-            render_refresh_details(result)
-            st.rerun()
+        render_refresh_details(result)
+        st.rerun()
 
-    with col_back:
-        if st.button("← Cockpit", key="portfolio_back_to_cockpit", use_container_width=True):
-            go_to_cockpit()
-
-    if "portfolio_mobile_view" not in st.session_state:
-        st.session_state["portfolio_mobile_view"] = True
-
-    with col_mobile:
-        mobile_view = st.toggle("Vista mobile", value=True, key="portfolio_mobile_view")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-    return bool(mobile_view)
+    return render_topbar(
+        show_refresh=True,
+        show_mobile_toggle=True,
+        mobile_key="portfolio_mobile_view",
+        mobile_default=True,
+        refresh_callback=refresh_quotes,
+        refresh_help="Aggiorna quotazioni",
+    )
 
 
 def render_add_form() -> None:
@@ -708,6 +704,7 @@ def sort_portfolio_for_display(df):
 
 def main() -> None:
     load_css()
+    apply_dark_theme_mobile()
     init_state()
 
     mobile_view = render_top_actions()
