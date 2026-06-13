@@ -22,8 +22,11 @@ def render_topbar() -> bool:
         if st.button("🔄", key="allocation_refresh", help="Ricarica allocazione", use_container_width=True):
             st.rerun()
 
+    if "allocation_mobile_view" not in st.session_state:
+        st.session_state["allocation_mobile_view"] = True
+
     with col_mobile:
-        mobile_view = st.toggle("Vista mobile", value=False, key="allocation_mobile_view")
+        mobile_view = st.toggle("Vista mobile", value=True, key="allocation_mobile_view")
 
     st.markdown('</div>', unsafe_allow_html=True)
     return bool(mobile_view)
