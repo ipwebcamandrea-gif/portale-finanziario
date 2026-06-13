@@ -144,10 +144,12 @@
    ========================= */
 .portfolio-mobile-actions-row {
     margin-top: 0.15rem;
+    width: 154px !important;
+    max-width: 154px !important;
+    overflow: visible !important;
 }
 
 @media screen and (max-width: 768px) {
-    /* Target the horizontal block that contains the mobile row action buttons. */
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) {
@@ -156,7 +158,7 @@
         flex-wrap: nowrap !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 6px !important;
+        gap: 4px !important;
         width: 154px !important;
         min-width: 154px !important;
         max-width: 154px !important;
@@ -174,7 +176,6 @@
     }
 }
 
-/* Compact dimensions for action buttons and TradingView link button. */
 div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
 div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
 div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
@@ -193,4 +194,3 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
     align-items: center !important;
     justify-content: center !important;
 }
-
