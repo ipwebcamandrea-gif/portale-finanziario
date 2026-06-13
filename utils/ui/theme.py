@@ -3,7 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 
-_TOPBAR_DARK_CSS = """
+_TOPBAR_DARK_MOBILE_CSS = """
 <style>
 @media screen and (max-width: 768px) {
     html,
@@ -44,5 +44,5 @@ _TOPBAR_DARK_CSS = """
 
 
 def apply_dark_theme_mobile() -> None:
-    """Force dark mobile theme and the same topbar style across all pages."""
-    st.markdown(_TOPBAR_DARK_CSS, unsafe_allow_html=True)
+    """Force dark mobile theme and shared topbar style across pages."""
+    st.markdown(_TOPBAR_DARK_MOBILE_CSS, unsafe_allow_html=True)
