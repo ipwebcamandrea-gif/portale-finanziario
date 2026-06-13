@@ -67,7 +67,7 @@ def init_state() -> None:
         "portfolio_last_auto_refresh_result": None,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
-        "portfolio_mobile_view": False,
+        "portfolio_mobile_view": True,
     }
 
     for key, value in defaults.items():
@@ -213,8 +213,11 @@ def render_top_actions() -> bool:
         if st.button("← Cockpit", key="portfolio_back_to_cockpit", use_container_width=True):
             go_to_cockpit()
 
+    if "portfolio_mobile_view" not in st.session_state:
+        st.session_state["portfolio_mobile_view"] = True
+
     with col_mobile:
-        mobile_view = st.toggle("Vista mobile", value=st.session_state.get("portfolio_mobile_view", False), key="portfolio_mobile_view")
+        mobile_view = st.toggle("Vista mobile", value=True, key="portfolio_mobile_view")
 
     st.markdown('</div>', unsafe_allow_html=True)
     return bool(mobile_view)
