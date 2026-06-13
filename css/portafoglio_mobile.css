@@ -1,0 +1,140 @@
+/* =========================
+   PORTAFOGLIO MOBILE VIEW
+   ========================= */
+.portfolio-mobile-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin: 0.9rem 0 1rem 0;
+}
+
+.portfolio-mobile-summary-card {
+    padding: 0.82rem 0.9rem;
+    border-radius: 14px;
+    border: 1px solid rgba(48, 54, 61, 0.78);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+.portfolio-mobile-summary-wide {
+    grid-column: 1 / -1;
+}
+
+.portfolio-mobile-summary-label {
+    color: #9fb3d1;
+    font-size: 0.70rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 0.32rem;
+}
+
+.portfolio-mobile-summary-value {
+    color: #f9fafb;
+    font-size: 1.18rem;
+    font-weight: 950;
+    line-height: 1.1;
+}
+
+.portfolio-mobile-summary-subtitle {
+    margin-top: 0.18rem;
+    font-size: 0.88rem;
+    font-weight: 900;
+}
+
+.portfolio-mobile-list-title {
+    color: #f9fafb;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin: 1.1rem 0 0.65rem 0;
+}
+
+.portfolio-mobile-card {
+    margin: 0 0 0.85rem 0;
+    padding: 0.88rem 0.92rem 0.82rem 0.92rem;
+    border-radius: 16px;
+    border: 1px solid rgba(48, 54, 61, 0.84);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.12), transparent 35%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.88) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.035),
+        0 0 14px rgba(0, 176, 255, 0.06);
+}
+
+.portfolio-mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 0.72rem;
+}
+
+.portfolio-mobile-title {
+    color: #3b82f6;
+    font-size: 1rem;
+    font-weight: 950;
+    line-height: 1.12;
+}
+
+.portfolio-mobile-subtitle {
+    color: #e6edf3;
+    font-size: 0.78rem;
+    font-weight: 850;
+    margin-top: 0.18rem;
+}
+
+.portfolio-mobile-tv-symbol {
+    color: #9ca3af;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 0.10rem;
+}
+
+.portfolio-mobile-daily {
+    font-size: 0.92rem;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.portfolio-mobile-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.52rem;
+    margin-bottom: 0.72rem;
+}
+
+.portfolio-mobile-metric {
+    padding: 0.62rem 0.66rem;
+    border-radius: 12px;
+    border: 1px solid rgba(48, 54, 61, 0.58);
+    background: rgba(13, 17, 23, 0.34);
+}
+
+.portfolio-mobile-metric-label {
+    color: #9fb3d1;
+    font-size: 0.64rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+    margin-bottom: 0.22rem;
+}
+
+.portfolio-mobile-metric-value {
+    color: #f9fafb;
+    font-size: 0.82rem;
+    font-weight: 920;
+    line-height: 1.16;
+}
+
+.portfolio-mobile-actions {
+    margin-top: 0.1rem;
+}
+
+@media screen and (max-width: 768px) {
+    .portfolio-mobile-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
