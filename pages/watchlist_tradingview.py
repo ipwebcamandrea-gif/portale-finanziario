@@ -4,7 +4,6 @@ from html import escape
 import streamlit as st
 
 from utils.ui.theme import apply_dark_theme_mobile
-from utils.ui.topbar import render_topbar
 
 from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
@@ -273,15 +272,6 @@ def render_persistence_note():
         """,
         unsafe_allow_html=True,
     )
-
-
-# =========================
-# TOPBAR REFRESH
-# =========================
-
-def refresh_watchlist_tradingview() -> None:
-    st.cache_data.clear()
-    st.rerun()
 
 
 # =========================
