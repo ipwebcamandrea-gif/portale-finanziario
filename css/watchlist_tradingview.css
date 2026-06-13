@@ -474,3 +474,40 @@ div[data-testid="stVerticalBlock"] div[style*="background-color"] {
    Back and refresh are now handled by the shared utils/ui/topbar.py component.
    The compact-view toggle remains in components/watchlist_header.py.
 */
+
+/* =========================
+   WATCHLIST SAFE HEADER BUTTONS
+   ========================= */
+div[class*="st-key-tv_refresh_data"] button,
+div[class*="st-key-tv_back_cockpit"] button {
+    min-height: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 176, 255, 0.42) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+        linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+    color: #e6edf3 !important;
+    font-weight: 950 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 14px rgba(0, 176, 255, 0.10) !important;
+}
+
+div[class*="st-key-tv_refresh_data"] button:hover,
+div[class*="st-key-tv_back_cockpit"] button:hover {
+    border-color: rgba(0, 176, 255, 0.85) !important;
+    background:
+        radial-gradient(circle at top left, rgba(0, 176, 255, 0.28), transparent 36%),
+        linear-gradient(180deg, #263047 0%, #151b24 100%) !important;
+    color: #ffffff !important;
+}
+
+@media screen and (max-width: 768px) {
+    div[class*="st-key-tv_refresh_data"] button,
+    div[class*="st-key-tv_back_cockpit"] button {
+        min-height: 38px !important;
+        height: 38px !important;
+        font-size: 0.82rem !important;
+    }
+}
