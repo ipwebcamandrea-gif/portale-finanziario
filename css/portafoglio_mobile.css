@@ -209,3 +209,19 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         max-width: none !important;
     }
 }
+
+/* =========================
+   PORTFOLIO MOBILE INLINE PANEL SPACING
+   ========================= */
+.portfolio-mobile-card .portfolio-inline-panel-spacer {
+    height: 0.65rem;
+}
+
+@media screen and (max-width: 768px) {
+    .portfolio-mobile-card .portfolio-simulator-box,
+    .portfolio-mobile-card .portfolio-form-box,
+    .portfolio-mobile-card .portfolio-warning-box {
+        margin-top: 0.65rem;
+        margin-bottom: 0.65rem;
+    }
+}
