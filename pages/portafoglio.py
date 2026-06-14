@@ -55,7 +55,6 @@ st.set_page_config(
 
 require_login()
 
-
 def load_css() -> None:
     for css_path in (GLOBAL_CSS_PATH, CSS_PATH, MOBILE_CSS_PATH):
         if css_path.exists():
@@ -669,6 +668,28 @@ def render_delete_confirmation(df) -> None:
     st.markdown("</div>", unsafe_allow_html=True)
 
 
+def render_inline_position_panel(df, original_index: int) -> None:
+    """Render simulator/edit/delete panel immediately below the selected row/card."""
+    active_indexes = {
+        st.session_state.get("portfolio_simulation_index"),
+        st.session_state.get("portfolio_edit_index"),
+        st.session_state.get("portfolio_delete_index"),
+    }
+
+    if original_index not in active_indexes:
+        return
+
+    if original_index not in df.index:
+        return
+
+    st.markdown('<div class="portfolio-inline-panel-spacer"></div>', unsafe_allow_html=True)
+    row_df = df.loc[[original_index]]
+
+    render_buy_simulator(row_df)
+    render_edit_form(row_df)
+    render_delete_confirmation(row_df)
+
+
 def render_portfolio_rows(df) -> None:
     render_portfolio_table_header()
 
@@ -713,6 +734,7 @@ def render_portfolio_rows(df) -> None:
                     st.session_state["portfolio_simulation_index"] = None
                     st.rerun()
 
+        render_inline_position_panel(df, idx)
         render_row_separator()
 
 
@@ -767,12 +789,13 @@ def main() -> None:
     df_display = sort_portfolio_for_display(df)
 
     if mobile_view:
-        render_mobile_portfolio_rows(df_display, portfolio_tradingview_url)
+        render_mobile_portfolio_rows(
+            df_display,
+            portfolio_tradingview_url,
+            inline_renderer=render_inline_position_panel,
+        )
     else:
         render_portfolio_rows(df_display)
-    render_buy_simulator(df_display)
-    render_edit_form(df_display)
-    render_delete_confirmation(df_display)
 
 
 if __name__ == "__main__":
