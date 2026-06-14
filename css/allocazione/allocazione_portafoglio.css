@@ -7,28 +7,6 @@
     margin-left: 0;
 }
 
-.allocation-topbar {
-    margin: 0.25rem 0 1.35rem 0;
-}
-
-div[class*="st-key-allocation_back_to_cockpit"] .stButton > button,
-div[class*="st-key-allocation_back_to_cockpit"] button,
-div[class*="st-key-allocation_refresh"] .stButton > button,
-div[class*="st-key-allocation_refresh"] button {
-    min-height: 42px !important;
-    height: 42px !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(0, 176, 255, 0.42) !important;
-    background:
-        radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
-        linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
-    color: #e6edf3 !important;
-    font-weight: 950 !important;
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 0 14px rgba(0, 176, 255, 0.10) !important;
-}
-
 .allocation-page-title {
     font-size: 1.75rem;
     font-weight: 950;
@@ -225,3 +203,10 @@ div[class*="st-key-allocation_refresh"] button {
         font-size: 0.78rem;
     }
 }
+
+/* =========================
+   STANDARD HEADER NOTE
+   =========================
+   Page title and header controls are rendered by components/standard_header.py.
+   Existing allocation card/list styles remain below.
+*/
