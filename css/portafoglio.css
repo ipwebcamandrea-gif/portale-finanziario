@@ -555,3 +555,22 @@ div[class*="st-key-portfolio_sim_step_"] button:hover {
     font-size: 0.86rem;
     color: #cfe7ff;
 }
+
+/* =========================
+   PORTFOLIO INLINE ACTION PANELS
+   ========================= */
+.portfolio-inline-panel-spacer {
+    height: 0.75rem;
+}
+
+/* Make inline panels visually connected to the selected row/card without
+   changing simulator/edit/delete business logic. */
+.portfolio-inline-panel-spacer + div[data-testid="stVerticalBlock"] {
+    margin-top: 0 !important;
+}
+
+@media screen and (max-width: 768px) {
+    .portfolio-inline-panel-spacer {
+        height: 0.55rem;
+    }
+}
