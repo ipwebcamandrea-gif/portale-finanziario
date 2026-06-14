@@ -87,8 +87,11 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
+        # Safe 2x2 action grid. CSS forces these two st.columns rows to remain
+        # two columns also on smartphone.
         st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
 
+        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-1">', unsafe_allow_html=True)
         row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
         with row_1_col_1:
             st.link_button(
@@ -108,7 +111,9 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_delete_index"] = None
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
+        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-2">', unsafe_allow_html=True)
         row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
         with row_2_col_1:
             if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
@@ -122,5 +127,6 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div></div>', unsafe_allow_html=True)
