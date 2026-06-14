@@ -52,7 +52,7 @@ def _render_mobile_metric(label: str, value: str, css_class: str = "") -> str:
     )
 
 
-def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
+def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None) -> None:
     """Render positions as native mobile cards instead of a compressed desktop table."""
     st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
 
@@ -128,5 +128,8 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder) -> None:
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
+
+        if inline_renderer is not None:
+            inline_renderer(df, idx)
 
         st.markdown('</div></div>', unsafe_allow_html=True)
