@@ -152,7 +152,6 @@
     margin-top: 0 !important;
 }
 
-/* Buttons in the mobile action grid: compact but stable. */
 div[class*="st-key-portfolio_mobile_sim_"] button,
 div[class*="st-key-portfolio_mobile_edit_"] button,
 div[class*="st-key-portfolio_mobile_delete_"] button {
