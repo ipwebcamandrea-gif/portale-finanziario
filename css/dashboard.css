@@ -203,3 +203,29 @@ div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] p
         line-height: 1.42 !important;
     }
 }
+
+/* =========================
+   FIX ALLINEAMENTO CARD DASHBOARD DEFINITIVO
+   ========================= */
+
+/* forza struttura interna dei bottoni */
+div[class*="st-key-card_"] button {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;   /* <-- fondamentale */
+    text-align: left !important;
+}
+
+/* container markdown interno streamlit */
+div[class*="st-key-card_"] button div[data-testid="stMarkdownContainer"] {
+    width: 100% !important;
+    text-align: left !important;
+}
+
+/* testo interno */
+div[class*="st-key-card_"] button div[data-testid="stMarkdownContainer"] p {
+    width: 100% !important;
+    margin: 0 !important;
+    text-align: left !important;
+}
