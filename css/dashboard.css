@@ -68,35 +68,6 @@
 }
 
 /* =========================
-   CARD-LIKE STREAMLIT BUTTONS
-   ========================= */
-
-.stButton > button {
-    min-height: 170px;
-    width: 100%;
-    background: linear-gradient(180deg, #171b27 0%, #121622 100%);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-xl);
-    color: var(--text-main);
-    font-size: 1.02rem;
-    font-weight: 800;
-    text-align: left;
-    padding: 1.25rem;
-    white-space: pre-line;
-    line-height: 1.45;
-}
-
-.stButton > button:hover {
-    border-color: var(--border-accent);
-    background: linear-gradient(180deg, #1b2030 0%, #141927 100%);
-    color: var(--text-main);
-}
-
-.stButton > button:active {
-    transform: scale(0.99);
-}
-
-/* =========================
    INFO PANEL
    ========================= */
 
@@ -152,45 +123,74 @@
 }
 
 /* =========================
-   DASHBOARD MOBILE CARD ALIGNMENT - FIX02
+   COCKPIT HTML CARD GRID
    ========================= */
-/*
-   Streamlit wraps button labels inside an internal Markdown container.
-   On mobile, aligning only .stButton > button is not enough: the internal
-   markdown block can still center each text line. These rules target the
-   real inner containers used by Streamlit buttons.
-*/
-
-/* Global dashboard cards: keep desktop compatible. */
-div[class*="st-key-card_watchlist_tradingview"] button,
-div[class*="st-key-card_portafoglio"] button,
-div[class*="st-key-card_allocazione_portafoglio"] button,
-div[class*="st-key-card_logout"] button {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: stretch !important;
-    text-align: left !important;
+.cockpit-card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
 }
 
-div[class*="st-key-card_watchlist_tradingview"] button div[data-testid="stMarkdownContainer"],
-div[class*="st-key-card_portafoglio"] button div[data-testid="stMarkdownContainer"],
-div[class*="st-key-card_allocazione_portafoglio"] button div[data-testid="stMarkdownContainer"],
-div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    align-self: stretch !important;
+.cockpit-card-link,
+.cockpit-card-link:visited,
+.cockpit-card-link:hover,
+.cockpit-card-link:active {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
 }
 
-div[class*="st-key-card_watchlist_tradingview"] button div[data-testid="stMarkdownContainer"] p,
-div[class*="st-key-card_portafoglio"] button div[data-testid="stMarkdownContainer"] p,
-div[class*="st-key-card_allocazione_portafoglio"] button div[data-testid="stMarkdownContainer"] p,
-div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] p {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    text-align: left !important;
+.cockpit-menu-card {
+    min-height: 170px;
+    width: 100%;
+    background: linear-gradient(180deg, #171b27 0%, #121622 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-xl);
+    color: var(--text-main);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    box-sizing: border-box;
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.cockpit-menu-card:hover {
+    border-color: var(--border-accent);
+    background: linear-gradient(180deg, #1b2030 0%, #141927 100%);
+    transform: translateY(-1px);
+}
+
+.cockpit-card-title {
+    color: var(--text-main);
+    font-size: 1.02rem;
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 1.05rem;
+    width: 100%;
+    text-align: left;
+}
+
+.cockpit-card-description {
+    color: var(--text-main);
+    font-size: 0.98rem;
+    font-weight: 760;
+    line-height: 1.45;
+    width: 100%;
+    text-align: left;
+}
+
+@media (max-width: 1100px) {
+    .cockpit-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cockpit-menu-card {
+        min-height: 145px;
+    }
 }
 
 @media (max-width: 760px) {
@@ -200,51 +200,42 @@ div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] p
     }
 
     .cockpit-header {
-        margin-bottom: 1.35rem !important;
+        margin-bottom: 1.35rem;
     }
 
     .cockpit-eyebrow {
-        font-size: 0.72rem !important;
-        line-height: 1.25 !important;
+        font-size: 0.72rem;
+        line-height: 1.25;
     }
 
     .main-title {
-        font-size: 2rem !important;
-        line-height: 1.08 !important;
+        font-size: 2rem;
+        line-height: 1.08;
     }
 
-    /* Identical mobile geometry for all four Cockpit cards. */
-    div[class*="st-key-card_watchlist_tradingview"] button,
-    div[class*="st-key-card_portafoglio"] button,
-    div[class*="st-key-card_allocazione_portafoglio"] button,
-    div[class*="st-key-card_logout"] button {
-        min-height: 118px !important;
-        padding: 1rem 1.05rem !important;
-        font-size: 0.94rem !important;
-        line-height: 1.42 !important;
-        white-space: pre-line !important;
-        justify-content: flex-start !important;
-        align-items: stretch !important;
-        text-align: left !important;
+    .cockpit-card-grid {
+        grid-template-columns: 1fr;
+        gap: 0.95rem;
     }
 
-    /* Streamlit Markdown label inside the button: force left alignment. */
-    div[class*="st-key-card_watchlist_tradingview"] button div[data-testid="stMarkdownContainer"],
-    div[class*="st-key-card_portafoglio"] button div[data-testid="stMarkdownContainer"],
-    div[class*="st-key-card_allocazione_portafoglio"] button div[data-testid="stMarkdownContainer"],
-    div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] {
-        display: block !important;
-        width: 100% !important;
-        text-align: left !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    .cockpit-menu-card {
+        min-height: 118px;
+        padding: 1rem 1.05rem;
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
     }
 
-    div[class*="st-key-card_watchlist_tradingview"] button div[data-testid="stMarkdownContainer"] p,
-    div[class*="st-key-card_portafoglio"] button div[data-testid="stMarkdownContainer"] p,
-    div[class*="st-key-card_allocazione_portafoglio"] button div[data-testid="stMarkdownContainer"] p,
-    div[class*="st-key-card_logout"] button div[data-testid="stMarkdownContainer"] p {
-        text-align: left !important;
-        margin: 0 !important;
+    .cockpit-card-title {
+        font-size: 1rem;
+        line-height: 1.35;
+        margin-bottom: 0.95rem;
+        text-align: left;
+    }
+
+    .cockpit-card-description {
+        font-size: 0.94rem;
+        line-height: 1.42;
+        text-align: left;
     }
 }
