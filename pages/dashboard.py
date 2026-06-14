@@ -1,17 +1,18 @@
 import streamlit as st
 from pathlib import Path
+
 from utils.auth import require_login
+
 
 # =========================
 # PROTEZIONE LOGIN
 # =========================
-
 require_login()
+
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
 # =========================
-
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
@@ -23,7 +24,7 @@ def local_css(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             st.markdown(
                 f"<style>{file.read()}</style>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
 
@@ -34,7 +35,6 @@ local_css(DASHBOARD_CSS)
 # =========================
 # HEADER
 # =========================
-
 st.markdown(
     """
     <div class="cockpit-header">
@@ -42,21 +42,20 @@ st.markdown(
         <div class="main-title">Portafoglio Cockpit</div>
     </div>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
 # =========================
 # MENU PRINCIPALE
 # =========================
-
 col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(4)
 
 with col_watchlist_tv:
     if st.button(
         "📺 Watchlist TradingView\n\nMulti-tab, SMA 200W, drag & drop e grafici.",
         key="card_watchlist_tradingview",
-        use_container_width=True
+        use_container_width=True,
     ):
         st.switch_page("pages/watchlist_tradingview.py")
 
@@ -64,7 +63,7 @@ with col_portafoglio:
     if st.button(
         "💼 Portafoglio\n\nArea dedicata alle posizioni reali.",
         key="card_portafoglio",
-        use_container_width=True
+        use_container_width=True,
     ):
         st.switch_page("pages/portafoglio.py")
 
@@ -72,7 +71,7 @@ with col_allocazione:
     if st.button(
         "📊 Allocazione\n\nPesi, valute, mercati e concentrazione.",
         key="card_allocazione_portafoglio",
-        use_container_width=True
+        use_container_width=True,
     ):
         st.switch_page("pages/allocazione_portafoglio.py")
 
@@ -80,6 +79,6 @@ with col_logout:
     if st.button(
         "🚪 Logout\n\nChiudi la sessione e torna al login.",
         key="card_logout",
-        use_container_width=True
+        use_container_width=True,
     ):
         st.switch_page("pages/logout.py")
