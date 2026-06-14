@@ -150,3 +150,68 @@
         font-size: 0.94rem;
     }
 }
+
+/* =========================
+   DASHBOARD MOBILE CARD ALIGNMENT
+   ========================= */
+/* Dashboard cards are Streamlit buttons. On mobile, Streamlit may visually
+   center multi-line button content depending on line length. These rules force
+   a stable left-aligned card layout on smartphone while preserving desktop. */
+button[kind="secondary"] p,
+.stButton > button p {
+    text-align: left !important;
+    width: 100% !important;
+}
+
+.stButton > button {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+@media (max-width: 760px) {
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .cockpit-header {
+        margin-bottom: 1.4rem;
+    }
+
+    .cockpit-eyebrow {
+        font-size: 0.74rem;
+        line-height: 1.25;
+    }
+
+    .main-title {
+        font-size: 2.05rem;
+        line-height: 1.08;
+    }
+
+    /* Force all Cockpit menu cards to use identical text positioning. */
+    div[class*="st-key-card_watchlist_tradingview"] button,
+    div[class*="st-key-card_portafoglio"] button,
+    div[class*="st-key-card_allocazione_portafoglio"] button,
+    div[class*="st-key-card_logout"] button {
+        width: 100% !important;
+        min-height: 118px !important;
+        padding: 1rem 1.05rem !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        display: flex !important;
+        flex-direction: column !important;
+        white-space: pre-line !important;
+        line-height: 1.42 !important;
+    }
+
+    div[class*="st-key-card_watchlist_tradingview"] button p,
+    div[class*="st-key-card_portafoglio"] button p,
+    div[class*="st-key-card_allocazione_portafoglio"] button p,
+    div[class*="st-key-card_logout"] button p {
+        text-align: left !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
