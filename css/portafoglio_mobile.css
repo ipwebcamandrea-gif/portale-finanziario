@@ -140,37 +140,72 @@
 }
 
 /* =========================
-   PORTFOLIO MOBILE ACTIONS - SAFE 2X2
+   PORTFOLIO MOBILE ACTIONS - SAFE 2X2 FINAL
    ========================= */
 .portfolio-mobile-actions-grid {
     margin-top: 0.35rem;
     width: 100%;
-    max-width: 210px;
+    max-width: 100%;
 }
 
-.portfolio-mobile-actions-grid + div {
-    margin-top: 0 !important;
+/* Desktop/narrow desktop: keep action grid compact and aligned left. */
+.portfolio-mobile-actions-grid div[data-testid="stHorizontalBlock"] {
+    max-width: 240px !important;
 }
 
+/* Smartphone: Streamlit stacks columns by default. Force ONLY the portfolio
+   mobile action rows back to a true 2x2 grid. */
+@media screen and (max-width: 768px) {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        column-gap: 0.55rem !important;
+        row-gap: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        align-items: stretch !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) > div[data-testid="column"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        flex: none !important;
+        padding: 0 !important;
+    }
+}
+
+/* Compact but readable action buttons. */
+div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
 div[class*="st-key-portfolio_mobile_sim_"] button,
 div[class*="st-key-portfolio_mobile_edit_"] button,
 div[class*="st-key-portfolio_mobile_delete_"] button {
-    min-height: 34px !important;
-    height: 34px !important;
-    border-radius: 9px !important;
+    min-height: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
     padding: 0 !important;
-    font-size: 0.92rem !important;
+    font-size: 0.96rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 @media screen and (max-width: 768px) {
-    .portfolio-mobile-actions-grid {
-        max-width: 190px;
-    }
-
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
     div[class*="st-key-portfolio_mobile_sim_"] button,
     div[class*="st-key-portfolio_mobile_edit_"] button,
     div[class*="st-key-portfolio_mobile_delete_"] button {
-        min-height: 34px !important;
-        height: 34px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
     }
 }
