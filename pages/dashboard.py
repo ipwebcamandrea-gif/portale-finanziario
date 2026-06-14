@@ -1,6 +1,5 @@
 import streamlit as st
 from pathlib import Path
-from html import escape
 
 from utils.auth import require_login
 
@@ -48,53 +47,40 @@ st.markdown(
 
 
 # =========================
-# CARD HTML CLICKABLE
+# MENU PRINCIPALE
 # =========================
-def cockpit_card(icon: str, title: str, description: str, href: str) -> str:
-    return f"""
-    <a class="cockpit-card-link" href="{escape(href, quote=True)}" target="_self">
-        <div class="cockpit-menu-card">
-            <div class="cockpit-card-title">{escape(icon)} {escape(title)}</div>
-            <div class="cockpit-card-description">{escape(description)}</div>
-        </div>
-    </a>
-    """
+# IMPORTANT: use st.button + st.switch_page, not HTML <a> links.
+# This preserves Streamlit session_state, including the login state.
+col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(4)
 
+with col_watchlist_tv:
+    if st.button(
+        "📺 Watchlist TradingView\n\nMulti-tab, SMA 200W, drag & drop e grafici.",
+        key="card_watchlist_tradingview",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/watchlist_tradingview.py")
 
-cards_html = "".join(
-    [
-        cockpit_card(
-            "📺",
-            "Watchlist TradingView",
-            "Multi-tab, SMA 200W, drag & drop e grafici.",
-            "watchlist_tradingview",
-        ),
-        cockpit_card(
-            "💼",
-            "Portafoglio",
-            "Area dedicata alle posizioni reali.",
-            "portafoglio",
-        ),
-        cockpit_card(
-            "📊",
-            "Allocazione",
-            "Pesi, valute, mercati e concentrazione.",
-            "allocazione_portafoglio",
-        ),
-        cockpit_card(
-            "🚪",
-            "Logout",
-            "Chiudi la sessione e torna al login.",
-            "logout",
-        ),
-    ]
-)
+with col_portafoglio:
+    if st.button(
+        "💼 Portafoglio\n\nArea dedicata alle posizioni reali.",
+        key="card_portafoglio",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/portafoglio.py")
 
-st.markdown(
-    f"""
-    <div class="cockpit-card-grid">
-        {cards_html}
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+with col_allocazione:
+    if st.button(
+        "📊 Allocazione\n\nPesi, valute, mercati e concentrazione.",
+        key="card_allocazione_portafoglio",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/allocazione_portafoglio.py")
+
+with col_logout:
+    if st.button(
+        "🚪 Logout\n\nChiudi la sessione e torna al login.",
+        key="card_logout",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/logout.py")
