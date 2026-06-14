@@ -253,18 +253,37 @@ footer {
 }
 
 /* =========================
-   UI SYSTEM TOPBAR - STANDARD DARK
+   STANDARD PAGE HEADER
    ========================= */
-.fp-topbar-anchor {
-    margin: 0.25rem 0 0.35rem 0;
+.std-page-header {
+    margin-bottom: 1.2rem;
 }
 
-div[class*="st-key-portfolio_mobile_view_back"] button,
-div[class*="st-key-portfolio_mobile_view_refresh"] button,
-div[class*="st-key-allocation_mobile_view_back"] button,
-div[class*="st-key-allocation_mobile_view_refresh"] button,
-div[class*="st-key-watchlist_tv_mobile_view_back"] button,
-div[class*="st-key-watchlist_tv_mobile_view_refresh"] button {
+.std-page-title {
+    font-size: 2.45rem;
+    font-weight: 950;
+    line-height: 1.05;
+    letter-spacing: -0.055em;
+    background: linear-gradient(90deg, #00b0ff, #26a69a, #8e7dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.4rem;
+}
+
+.std-page-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    max-width: 980px;
+}
+
+/* Shared header buttons: Watchlist, Portafoglio, Allocazione. */
+div[class*="st-key-tv_refresh_data"] button,
+div[class*="st-key-tv_back_cockpit"] button,
+div[class*="st-key-portfolio_header_refresh"] button,
+div[class*="st-key-portfolio_header_back"] button,
+div[class*="st-key-allocation_header_refresh"] button,
+div[class*="st-key-allocation_header_back"] button {
     min-height: 40px !important;
     height: 40px !important;
     border-radius: 12px !important;
@@ -279,38 +298,42 @@ div[class*="st-key-watchlist_tv_mobile_view_refresh"] button {
         0 0 14px rgba(0, 176, 255, 0.10) !important;
 }
 
-div[class*="st-key-portfolio_mobile_view_back"] button:hover,
-div[class*="st-key-portfolio_mobile_view_refresh"] button:hover,
-div[class*="st-key-allocation_mobile_view_back"] button:hover,
-div[class*="st-key-allocation_mobile_view_refresh"] button:hover,
-div[class*="st-key-watchlist_tv_mobile_view_back"] button:hover,
-div[class*="st-key-watchlist_tv_mobile_view_refresh"] button:hover {
+div[class*="st-key-tv_refresh_data"] button:hover,
+div[class*="st-key-tv_back_cockpit"] button:hover,
+div[class*="st-key-portfolio_header_refresh"] button:hover,
+div[class*="st-key-portfolio_header_back"] button:hover,
+div[class*="st-key-allocation_header_refresh"] button:hover,
+div[class*="st-key-allocation_header_back"] button:hover {
     border-color: rgba(0, 176, 255, 0.85) !important;
     background:
         radial-gradient(circle at top left, rgba(0, 176, 255, 0.28), transparent 36%),
         linear-gradient(180deg, #263047 0%, #151b24 100%) !important;
     color: #ffffff !important;
-    transform: translateY(-1px) !important;
 }
 
 @media screen and (max-width: 768px) {
-    .fp-topbar-anchor {
-        margin: 0.15rem 0 0.25rem 0;
+    .std-page-header {
+        margin-bottom: 0.7rem;
     }
 
-    div[class*="st-key-portfolio_mobile_view_back"] button,
-    div[class*="st-key-portfolio_mobile_view_refresh"] button,
-    div[class*="st-key-allocation_mobile_view_back"] button,
-    div[class*="st-key-allocation_mobile_view_refresh"] button,
-    div[class*="st-key-watchlist_tv_mobile_view_back"] button,
-    div[class*="st-key-watchlist_tv_mobile_view_refresh"] button {
+    .std-page-title {
+        font-size: 1.72rem;
+        line-height: 1.12;
+    }
+
+    .std-page-subtitle {
+        font-size: 0.86rem;
+        line-height: 1.38;
+    }
+
+    div[class*="st-key-tv_refresh_data"] button,
+    div[class*="st-key-tv_back_cockpit"] button,
+    div[class*="st-key-portfolio_header_refresh"] button,
+    div[class*="st-key-portfolio_header_back"] button,
+    div[class*="st-key-allocation_header_refresh"] button,
+    div[class*="st-key-allocation_header_back"] button {
         min-height: 38px !important;
         height: 38px !important;
-        color: #e6edf3 !important;
-        background:
-            radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
-            linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
-        border-color: rgba(0, 176, 255, 0.42) !important;
         font-size: 0.82rem !important;
     }
 }
