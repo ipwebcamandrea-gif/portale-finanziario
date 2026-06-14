@@ -2,8 +2,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from utils.ui.theme import apply_dark_theme_mobile
-from utils.ui.topbar import render_topbar
+from components.standard_header import render_standard_page_header
+
 
 from utils.auth import require_login
 from utils.portfolio_calculations import enrich_portfolio_df
@@ -17,7 +17,6 @@ from utils.allocazione.portfolio_allocation import (
 from utils.allocazione.allocation_render import (
     render_desktop_allocation_dashboard,
     render_mobile_allocation_dashboard,
-    render_page_header,
 )
 
 
@@ -25,6 +24,7 @@ require_login()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
+GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "allocazione" / "allocazione_portafoglio.css"
 
 
@@ -37,19 +37,22 @@ st.set_page_config(
 
 
 def load_css() -> None:
-    if CSS_PATH.exists():
-        st.markdown(f"<style>{CSS_PATH.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+    for css_path in (GLOBAL_CSS_PATH, CSS_PATH):
+        if css_path.exists():
+            st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
 
 def main() -> None:
     load_css()
-    apply_dark_theme_mobile()
-    mobile_view = render_topbar(
-        mobile_key="allocation_mobile_view",
-        mobile_default=True,
-        refresh_help="Ricarica allocazione",
+    mobile_view = render_standard_page_header(
+        title="📊 Allocazione Portafoglio",
+        subtitle="Distribuzione attuale per titolo, valuta, mercato e concentrazione. Tutti i titoli sono sempre visibili.",
+        toggle_label="📱 Vista mobile",
+        toggle_key="allocation_mobile_view",
+        toggle_default=True,
+        refresh_key="allocation_header_refresh",
+        back_key="allocation_header_back",
     )
-    render_page_header()
 
     df = load_portfolio(DATA_PATH)
     df = enrich_portfolio_df(df)
