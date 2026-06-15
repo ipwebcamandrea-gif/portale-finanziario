@@ -134,6 +134,11 @@ def portfolio_tradingview_url(
     return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
 
 
+def clear_financial_data_cache() -> None:
+    """Force fresh financial data on the next yfinance calls."""
+    st.cache_data.clear()
+
+
 def auto_refresh_quotes_on_page_open() -> None:
     """Refresh portfolio quotes every time the Portafoglio page is opened/rerun.
 
@@ -144,6 +149,8 @@ def auto_refresh_quotes_on_page_open() -> None:
     """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
         return
+
+    clear_financial_data_cache()
 
     with st.spinner("Aggiornamento automatico quotazioni in corso..."):
         result = refresh_portfolio_quotes(DATA_PATH)
@@ -221,6 +228,8 @@ def render_top_actions() -> bool:
 
     with col_refresh:
         if st.button("🔄", key="portfolio_refresh_quotes", help="Aggiorna quotazioni"):
+            clear_financial_data_cache()
+
             with st.spinner("Aggiornamento quotazioni in corso..."):
                 result = refresh_portfolio_quotes(DATA_PATH)
 
@@ -251,6 +260,8 @@ def render_top_actions() -> bool:
 
 
 def refresh_portfolio_quotes_action() -> None:
+    clear_financial_data_cache()
+
     with st.spinner("Aggiornamento quotazioni in corso..."):
         result = refresh_portfolio_quotes(DATA_PATH)
 
