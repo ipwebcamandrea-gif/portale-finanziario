@@ -416,11 +416,17 @@ def render_buy_simulator(df) -> None:
     ticker = str(row.get("ticker", ""))
     market = str(row.get("mercato", ""))
 
+    fx_label = ""
+    if currency != "EUR":
+        fx_label = f" · FX {fmt_num(fx_eur, 4)}"
+        if fx_eur == 1.0:
+            fx_label += " ⚠️"
+
     header_html = (
         '<div class="portfolio-simulator-box">'
         '<div class="portfolio-simulator-kicker">Simulatore posizione</div>'
         f'<div class="portfolio-simulator-title">🧮 Simula acquisto aggiuntivo — {title}</div>'
-        f'<div class="portfolio-simulator-subtitle">{market}:{ticker} · valuta {currency} · simulazione non operativa</div>'
+        f'<div class="portfolio-simulator-subtitle">{market}:{ticker} · valuta {currency}{fx_label} · simulazione non operativa</div>'
         '</div>'
     )
     st.markdown(header_html, unsafe_allow_html=True)
