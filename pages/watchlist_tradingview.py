@@ -44,8 +44,30 @@ def force_watchlist_refresh_on_page_open() -> None:
 
 def render_watchlist_refresh_status() -> None:
     refresh_time = st.session_state.get("tv_last_refresh_timestamp", "")
-    if refresh_time:
-        st.caption(f"Dati Watchlist aggiornati all'apertura · Aggiornamento dati: {refresh_time}.")
+    if not refresh_time:
+        return
+
+    st.markdown(
+        f'''
+        <div style="
+            display:inline-flex;
+            align-items:center;
+            gap:0.45rem;
+            margin:0.10rem 0 0.95rem 0;
+            padding:0.42rem 0.72rem;
+            border-radius:999px;
+            border:1px solid rgba(0, 176, 255, 0.26);
+            background:rgba(0, 176, 255, 0.08);
+            color:#9ec5ff;
+            font-size:0.82rem;
+            font-weight:750;
+        ">
+            <span>🔄</span>
+            <span>Dati Watchlist aggiornati all'apertura · Aggiornamento dati: {refresh_time}</span>
+        </div>
+        ''',
+        unsafe_allow_html=True,
+    )
 
 
 def local_css(file_path):
@@ -56,6 +78,9 @@ def local_css(file_path):
 
 local_css(GLOBAL_CSS)
 local_css(WATCHLIST_TV_CSS)
+
+# Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
+force_watchlist_refresh_on_page_open()
 
 
 
@@ -319,6 +344,7 @@ if "tv_show_rename_panel" not in st.session_state:
 # =========================
 
 render_watchlist_header()
+render_watchlist_refresh_status()
 
 # =========================
 # TABS WATCHLIST + AZIONI
