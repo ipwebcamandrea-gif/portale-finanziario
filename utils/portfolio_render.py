@@ -24,6 +24,29 @@ def _money_with_currency(value: float, currency: str) -> str:
     return f"{fmt_eur(value)}{suffix}"
 
 
+
+
+def _fx_label(row, currency: str) -> str:
+    """Return a read-only FX label for non-EUR rows.
+
+    FX 1.0000 on a non-EUR position is highlighted because it usually means
+    the row is using the technical fallback instead of a real conversion rate.
+    """
+    clean_currency = str(currency or "").strip().upper()
+    if clean_currency == "EUR":
+        return ""
+
+    try:
+        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
+    except (TypeError, ValueError):
+        return " · FX n/d ⚠️"
+
+    label = f" · FX {fmt_num(fx_value, 4)}"
+    if fx_value == 1.0:
+        label += " ⚠️"
+    return label
+
+
 def render_portfolio_summary(totals: dict) -> None:
     html_summary = (
         '<div class="portfolio-summary-wrapper">'
@@ -98,7 +121,7 @@ def render_position_values(row):
         row.get("tv_symbol", ""),
         row.get("valuta", ""),
     )
-    subtitle = _esc(effective_tv_symbol)
+    subtitle = _esc(f"{effective_tv_symbol}{_fx_label(row, valuta_raw)}")
 
     cols = st.columns(COLUMN_WEIGHTS, gap="small")
 
