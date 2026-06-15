@@ -16,6 +16,25 @@ def _money(value: float, currency: str = "EUR") -> str:
     return f"{fmt_eur(value)}{suffix}"
 
 
+
+
+def _fx_label(row, currency: str) -> str:
+    """Return a read-only FX label for non-EUR rows."""
+    clean_currency = str(currency or "").strip().upper()
+    if clean_currency == "EUR":
+        return ""
+
+    try:
+        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
+    except (TypeError, ValueError):
+        return " · FX n/d ⚠️"
+
+    label = f" · FX {fmt_num(fx_value, 4)}"
+    if fx_value == 1.0:
+        label += " ⚠️"
+    return label
+
+
 def render_mobile_portfolio_summary(totals: dict) -> None:
     """Render a compact portfolio summary for mobile view."""
     gain_class = value_class(totals.get("var_da_carico", 0.0))
@@ -71,7 +90,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
             '<div class="portfolio-mobile-card-header">'
             '<div>'
             f'<div class="portfolio-mobile-title">{title}</div>'
-            f'<div class="portfolio-mobile-subtitle">{mercato}:{ticker} · {valuta}</div>'
+            f'<div class="portfolio-mobile-subtitle">{mercato}:{ticker} · {valuta}{_fx_label(row, valuta)}</div>'
             f'<div class="portfolio-mobile-tv-symbol">{tv_label}</div>'
             '</div>'
             f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
