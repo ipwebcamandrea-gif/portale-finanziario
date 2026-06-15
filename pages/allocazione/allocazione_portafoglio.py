@@ -1,4 +1,6 @@
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 
@@ -7,6 +9,7 @@ from components.standard_header import render_standard_page_header
 
 from utils.auth import require_login
 from utils.portfolio_calculations import enrich_portfolio_df
+from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_storage import load_portfolio
 from utils.allocazione.portfolio_allocation import (
     build_allocation_insights,
@@ -42,6 +45,55 @@ def load_css() -> None:
             st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
 
 
+def current_allocation_refresh_timestamp() -> str:
+    """Return current refresh timestamp in Europe/Rome time."""
+    return datetime.now(ZoneInfo("Europe/Rome")).strftime("%d/%m/%Y %H:%M:%S")
+
+
+def render_allocation_refresh_details(result: dict) -> None:
+    """Show details about quote refresh failures, if any."""
+    failed = result.get("failed", []) or []
+    if not failed:
+        return
+
+    with st.expander("Dettaglio quotazioni non aggiornate", expanded=False):
+        st.write(
+            "Questi simboli non sono stati aggiornati da yfinance e quindi mantengono "
+            "i valori già presenti nel JSON:"
+        )
+        for item in failed:
+            st.write(f"- {item}")
+
+
+def refresh_allocation_quotes() -> dict:
+    """Force fresh portfolio quotes before rendering allocation values."""
+    st.cache_data.clear()
+    with st.spinner("Aggiornamento automatico quotazioni in corso..."):
+        result = refresh_portfolio_quotes(DATA_PATH)
+    st.session_state["allocation_last_refresh_result"] = result
+    st.session_state["allocation_last_refresh_timestamp"] = current_allocation_refresh_timestamp()
+    return result
+
+
+def refresh_allocation_quotes_action() -> None:
+    refresh_allocation_quotes()
+    st.rerun()
+
+
+def render_allocation_refresh_status(result: dict) -> None:
+    updated = result.get("updated", 0)
+    total = result.get("total", 0)
+    refresh_time = st.session_state.get("allocation_last_refresh_timestamp", "")
+    refresh_suffix = f" · Aggiornamento dati: {refresh_time}" if refresh_time else ""
+
+    if updated > 0:
+        st.caption(f"Quotazioni aggiornate automaticamente/all'ultimo refresh: {updated} su {total}{refresh_suffix}.")
+    else:
+        st.caption(f"Aggiornamento eseguito: nessuna quotazione aggiornata, valori manuali mantenuti{refresh_suffix}.")
+
+    render_allocation_refresh_details(result)
+
+
 def main() -> None:
     load_css()
     mobile_view = render_standard_page_header(
@@ -52,7 +104,11 @@ def main() -> None:
         toggle_default=True,
         refresh_key="allocation_header_refresh",
         back_key="allocation_header_back",
+        refresh_callback=refresh_allocation_quotes_action,
     )
+
+    refresh_result = refresh_allocation_quotes()
+    render_allocation_refresh_status(refresh_result)
 
     df = load_portfolio(DATA_PATH)
     df = enrich_portfolio_df(df)
