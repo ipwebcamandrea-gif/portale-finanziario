@@ -218,7 +218,6 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 # DATI ANAGRAFICI TITOLO
 # =========================
 
-@st.cache_data(ttl=86400, show_spinner=False)
 def get_company_name_from_yfinance(symbol):
     try:
         import yfinance as yf
