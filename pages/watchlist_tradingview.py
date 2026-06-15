@@ -1,4 +1,6 @@
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from html import escape
 
 import streamlit as st
@@ -25,6 +27,25 @@ require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
+
+
+
+
+def current_watchlist_refresh_timestamp() -> str:
+    """Return current refresh timestamp in Europe/Rome time."""
+    return datetime.now(ZoneInfo("Europe/Rome")).strftime("%d/%m/%Y %H:%M:%S")
+
+
+def force_watchlist_refresh_on_page_open() -> None:
+    """Force fresh watchlist market data before rendering rows."""
+    st.cache_data.clear()
+    st.session_state["tv_last_refresh_timestamp"] = current_watchlist_refresh_timestamp()
+
+
+def render_watchlist_refresh_status() -> None:
+    refresh_time = st.session_state.get("tv_last_refresh_timestamp", "")
+    if refresh_time:
+        st.caption(f"Dati Watchlist aggiornati all'apertura · Aggiornamento dati: {refresh_time}.")
 
 
 def local_css(file_path):
