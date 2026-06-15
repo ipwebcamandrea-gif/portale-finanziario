@@ -121,19 +121,22 @@ def portfolio_tradingview_url(
     return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
 
 
-def auto_refresh_quotes_once() -> None:
+def auto_refresh_quotes_on_page_open() -> None:
+    """Refresh portfolio quotes every time the Portafoglio page is opened/rerun.
+
+    The page must never render stale prices from portfolio/portafoglio.json before
+    attempting a yfinance refresh. If yfinance fails for one or more symbols,
+    refresh_portfolio_quotes keeps the existing JSON values and exposes failures
+    in portfolio_last_auto_refresh_result.
+    """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
         return
-
-    if st.session_state.get("portfolio_quotes_refreshed_on_load", False):
-        return
-
-    st.session_state["portfolio_quotes_refreshed_on_load"] = True
 
     with st.spinner("Aggiornamento automatico quotazioni in corso..."):
         result = refresh_portfolio_quotes(DATA_PATH)
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
+    st.session_state["portfolio_quotes_refreshed_on_load"] = True
 
 
 def render_refresh_details(result: dict) -> None:
@@ -426,7 +429,7 @@ def render_buy_simulator(df) -> None:
         '<div class="portfolio-simulator-box">'
         '<div class="portfolio-simulator-kicker">Simulatore posizione</div>'
         f'<div class="portfolio-simulator-title">🧮 Simula acquisto aggiuntivo — {title}</div>'
-        f'<div class="portfolio-simulator-subtitle">{market}:{ticker} · valuta {currency}{fx_label} · simulazione non operativa</div>'
+        f'<div class="portfolio-simulator-subtitle">{market}:{ticker} · valuta {currency}{fx_label}</div>'
         '</div>'
     )
     st.markdown(header_html, unsafe_allow_html=True)
@@ -536,7 +539,6 @@ def render_buy_simulator(df) -> None:
         )
         st.markdown(note_html, unsafe_allow_html=True)
 
-    st.caption("Simulazione informativa: non modifica il portafoglio e non rappresenta un consiglio finanziario.")
 
     close_col, _ = st.columns([1, 6])
     with close_col:
@@ -774,7 +776,7 @@ def main() -> None:
 
     render_add_form()
 
-    auto_refresh_quotes_once()
+    auto_refresh_quotes_on_page_open()
     render_auto_refresh_status()
 
     df = load_portfolio(DATA_PATH)
