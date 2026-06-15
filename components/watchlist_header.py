@@ -1,4 +1,6 @@
+from datetime import datetime
 from html import escape
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 
@@ -34,8 +36,13 @@ def render_persistence_note():
     )
 
 
+def current_watchlist_refresh_timestamp() -> str:
+    return datetime.now(ZoneInfo("Europe/Rome")).strftime("%d/%m/%Y %H:%M:%S")
+
+
 def _refresh_watchlist() -> None:
     st.cache_data.clear()
+    st.session_state["tv_last_refresh_timestamp"] = current_watchlist_refresh_timestamp()
     st.rerun()
 
 
