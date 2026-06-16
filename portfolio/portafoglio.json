@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-16T14:02:16+00:00",
+  "updated_at": "2026-06-16T14:02:37+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 279.8500061035156,
+      "prezzo_mercato": 279.8800048828125,
       "prezzo_precedente": 281.45,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 17.704999923706055,
+      "prezzo_mercato": 17.72010040283203,
       "prezzo_precedente": 17.11,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 492.8598937988281,
+      "prezzo_mercato": 493.0,
       "prezzo_precedente": 490.92,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 134.0,
       "prezzo_medio": 326.02,
-      "prezzo_mercato": 339.25,
+      "prezzo_mercato": 339.79998779296875,
       "prezzo_precedente": 343.29998779296875,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 157.0,
       "prezzo_medio": 56.565889,
-      "prezzo_mercato": 43.779998779296875,
+      "prezzo_mercato": 43.77000045776367,
       "prezzo_precedente": 42.47,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
