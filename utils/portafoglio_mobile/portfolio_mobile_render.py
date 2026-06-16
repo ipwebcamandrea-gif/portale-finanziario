@@ -80,7 +80,10 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
         ticker = _esc(row.get("ticker", ""))
         mercato = _esc(row.get("mercato", ""))
         valuta = str(row.get("valuta", "")).strip().upper()
-        tv_label = _esc(row.get("tv_symbol", "") or f"{mercato}:{ticker}")
+
+        tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
+        fallback_symbol = f"{row.get('mercato', '')}:{row.get('ticker', '')}"
+        display_symbol = _esc(tv_symbol_raw if tv_symbol_raw else fallback_symbol)
 
         gain_class = value_class(row.get("var_da_carico_eur", 0.0))
         daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
@@ -90,8 +93,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
             '<div class="portfolio-mobile-card-header">'
             '<div>'
             f'<div class="portfolio-mobile-title">{title}</div>'
-            f'<div class="portfolio-mobile-subtitle">{mercato}:{ticker} · {valuta}{_fx_label(row, valuta)}</div>'
-            f'<div class="portfolio-mobile-tv-symbol">{tv_label}</div>'
+            f'<div class="portfolio-mobile-subtitle">{display_symbol} · {valuta}{_fx_label(row, valuta)}</div>'
             '</div>'
             f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
             '</div>'
