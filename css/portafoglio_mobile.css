@@ -227,51 +227,68 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
 }
 
 /* =========================
-   PORTFOLIO MOBILE ACTION ROW COMPACT TARGET
+   PORTFOLIO MOBILE ACTION ROWS - ATTACHED FINAL
    ========================= */
-.portfolio-mobile-actions-grid {
-    margin-top: 0.18rem !important;
-}
-
-.portfolio-mobile-action-row {
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-.portfolio-mobile-action-row + .portfolio-mobile-action-row {
-    margin-top: 0.16rem !important;
-}
-
-.portfolio-mobile-action-placeholder {
-    min-height: 38px;
-    height: 38px;
-}
-
 @media screen and (max-width: 768px) {
-    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        column-gap: 0.55rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: -1.05rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
-    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        column-gap: 0.55rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-top: -1.05rem !important;
+        margin-bottom: -1.05rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
         column-gap: 0.55rem !important;
-        row-gap: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-        align-items: stretch !important;
-        margin-bottom: 0.08rem !important;
+        margin-top: -1.05rem !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     }
 
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) > div[data-testid="column"],
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) > div[data-testid="column"] {
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
         flex: none !important;
-        padding: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
     }
 
-    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
+    div[class*="st-key-portfolio_mobile_sim_"] button,
+    div[class*="st-key-portfolio_mobile_edit_"] button,
+    div[class*="st-key-portfolio_mobile_delete_"] button {
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
