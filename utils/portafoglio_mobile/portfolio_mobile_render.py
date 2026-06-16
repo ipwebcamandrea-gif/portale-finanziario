@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+from urllib.parse import parse_qs, unquote, urlparse
 
 import streamlit as st
 
@@ -33,6 +34,30 @@ def _fx_label(row, currency: str) -> str:
     if fx_value == 1.0:
         label += " ⚠️"
     return label
+
+
+def _target_url_from_tradingview_url(tv_url: str) -> str:
+    """Convert a TradingView chart URL into the analyst forecast URL."""
+    try:
+        parsed = urlparse(tv_url)
+        path_parts = [part for part in parsed.path.split("/") if part]
+
+        if "symbols" in path_parts:
+            symbols_index = path_parts.index("symbols")
+            if symbols_index + 1 < len(path_parts):
+                tv_symbol_path = path_parts[symbols_index + 1].strip()
+                if tv_symbol_path:
+                    return f"https://www.tradingview.com/symbols/{tv_symbol_path}/forecast/"
+
+        query_symbol = parse_qs(parsed.query).get("symbol", [""])[0]
+        query_symbol = unquote(query_symbol).strip()
+        if query_symbol:
+            tv_symbol_path = query_symbol.replace(":", "-")
+            return f"https://www.tradingview.com/symbols/{tv_symbol_path}/forecast/"
+    except Exception:
+        pass
+
+    return tv_url
 
 
 def render_mobile_portfolio_summary(totals: dict) -> None:
@@ -108,24 +133,21 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
-        # Safe 2x2 action grid. CSS forces these two st.columns rows to remain
-        # two columns also on smartphone.
+        tv_url = tradingview_url_builder(
+            row.get("mercato", ""),
+            row.get("ticker", ""),
+            row.get("tv_symbol", ""),
+            row.get("valuta", ""),
+        )
+        target_url = _target_url_from_tradingview_url(tv_url)
+
+        # Safe compact 2-column action grid. CSS keeps rows close on smartphone.
         st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
 
         st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-1">', unsafe_allow_html=True)
         row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
         with row_1_col_1:
-            st.link_button(
-                "📊",
-                tradingview_url_builder(
-                    row.get("mercato", ""),
-                    row.get("ticker", ""),
-                    row.get("tv_symbol", ""),
-                    row.get("valuta", ""),
-                ),
-                use_container_width=True,
-                help="Apri TradingView esterno",
-            )
+            st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
         with row_1_col_2:
             if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
                 st.session_state["portfolio_simulation_index"] = idx
@@ -148,6 +170,15 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-3">', unsafe_allow_html=True)
+        row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
+        with row_3_col_1:
+            with st.container(key=f"portfolio_mobile_target_{idx}"):
+                st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
+        with row_3_col_2:
+            st.markdown('<div class="portfolio-mobile-action-placeholder"></div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         if inline_renderer is not None:
