@@ -417,6 +417,33 @@ def _money(value: float, currency: str) -> str:
     return f"{fmt_eur(value)}{suffix}"
 
 
+def portfolio_display_symbol(row) -> str:
+    """Return the best display symbol for a position.
+
+    Prefer tv_symbol when present, e.g. MIL:1MSFT, otherwise fallback to
+    mercato:ticker, e.g. NASDAQ:MSFT. This is generic and not hardcoded for
+    Microsoft.
+    """
+    tv_symbol = str(row.get("tv_symbol", "") or "").strip().upper()
+    if tv_symbol:
+        return tv_symbol
+
+    market = str(row.get("mercato", "") or "").strip().upper()
+    ticker = str(row.get("ticker", "") or "").strip().upper()
+
+    if market and ticker:
+        return f"{market}:{ticker}"
+    return ticker or market or "-"
+
+
+def portfolio_display_market(row) -> str:
+    """Return market part from tv_symbol if available, otherwise mercato."""
+    display_symbol = portfolio_display_symbol(row)
+    if ":" in display_symbol:
+        return display_symbol.split(":", 1)[0].strip().upper()
+    return str(row.get("mercato", "") or "").strip().upper()
+
+
 def _sim_card(label: str, value: str, css_class: str = "") -> None:
     html = (
         f'<div class="portfolio-sim-card {css_class}">'
@@ -446,8 +473,7 @@ def render_buy_simulator(df) -> None:
     currency = str(row.get("valuta", "")).upper()
     fx_eur = float(row.get("fx_eur", 1.0) or 1.0)
     title = str(row.get("titolo", ""))
-    ticker = str(row.get("ticker", ""))
-    market = str(row.get("mercato", ""))
+    display_symbol = portfolio_display_symbol(row)
 
     fx_label = ""
     if currency != "EUR":
@@ -459,7 +485,7 @@ def render_buy_simulator(df) -> None:
         '<div class="portfolio-simulator-box">'
         '<div class="portfolio-simulator-kicker">Simulatore posizione</div>'
         f'<div class="portfolio-simulator-title">🧮 Simula acquisto aggiuntivo — {title}</div>'
-        f'<div class="portfolio-simulator-subtitle">{market}:{ticker} · valuta {currency}{fx_label}</div>'
+        f'<div class="portfolio-simulator-subtitle">{display_symbol} · valuta {currency}{fx_label}</div>'
         '</div>'
     )
     st.markdown(header_html, unsafe_allow_html=True)
@@ -603,7 +629,7 @@ def render_edit_form(df) -> None:
             titolo = st.text_input("Titolo", value=row["titolo"])
 
         with col3:
-            mercato = st.text_input("Mercato TradingView", value=row["mercato"])
+            mercato = st.text_input("Mercato TradingView", value=portfolio_display_market(row))
 
         with col4:
             valute = ["EUR", "USD", "GBP", "CHF"]
@@ -687,7 +713,7 @@ def render_delete_confirmation(df) -> None:
         return
 
     st.markdown('<div class="portfolio-warning-box">', unsafe_allow_html=True)
-    st.warning(f"Confermi l'eliminazione di {row['titolo']} ({row['mercato']}:{row['ticker']})?")
+    st.warning(f"Confermi l'eliminazione di {row['titolo']} ({portfolio_display_symbol(row)})?")
 
     col_confirm, col_cancel = st.columns([1, 5])
 
