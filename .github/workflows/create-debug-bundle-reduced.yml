@@ -95,7 +95,7 @@ jobs:
 
               return False
 
-          def collect_files() -> list[Path]:
+          def collect_files():
               files = []
 
               for root in include_roots:
@@ -164,4 +164,3 @@ jobs:
             git commit -m "debug: create reduced project bundle"
             git push
           fi
-``
