@@ -141,10 +141,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
         )
         target_url = _target_url_from_tradingview_url(tv_url)
 
-        # Safe compact 2-column action grid. CSS keeps rows close on smartphone.
-        st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
-
-        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-1">', unsafe_allow_html=True)
+        # Mobile action rows: no wrapper markdown between rows, so CSS can attach rows tightly.
         row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
         with row_1_col_1:
             st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
@@ -154,9 +151,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_delete_index"] = None
                 st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-2">', unsafe_allow_html=True)
         row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
         with row_2_col_1:
             if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
@@ -170,16 +165,13 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
                 st.session_state["portfolio_edit_index"] = None
                 st.session_state["portfolio_simulation_index"] = None
                 st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="portfolio-mobile-action-row portfolio-mobile-action-row-3">', unsafe_allow_html=True)
         row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
         with row_3_col_1:
             with st.container(key=f"portfolio_mobile_target_{idx}"):
                 st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
         with row_3_col_2:
-            st.markdown('<div class="portfolio-mobile-action-placeholder"></div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.empty()
 
         if inline_renderer is not None:
             inline_renderer(df, idx)
