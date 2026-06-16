@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
 
@@ -132,6 +132,37 @@ def portfolio_tradingview_url(
 
     encoded_symbol = quote(symbol, safe=":")
     return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
+
+
+def portfolio_tradingview_forecast_url(
+    mercato: str,
+    ticker: str,
+    tv_symbol: str = "",
+    valuta: str = "",
+) -> str:
+    """Return TradingView analyst forecast URL, same logic used in Watchlist."""
+    tv_url = portfolio_tradingview_url(mercato, ticker, tv_symbol, valuta)
+
+    try:
+        parsed = urlparse(tv_url)
+        path_parts = [part for part in parsed.path.split("/") if part]
+
+        if "symbols" in path_parts:
+            symbols_index = path_parts.index("symbols")
+            if symbols_index + 1 < len(path_parts):
+                tv_symbol_path = path_parts[symbols_index + 1].strip()
+                if tv_symbol_path:
+                    return f"https://www.tradingview.com/symbols/{tv_symbol_path}/forecast/"
+
+        query_symbol = parse_qs(parsed.query).get("symbol", [""])[0]
+        query_symbol = unquote(query_symbol).strip()
+        if query_symbol:
+            tv_symbol_path = query_symbol.replace(":", "-")
+            return f"https://www.tradingview.com/symbols/{tv_symbol_path}/forecast/"
+    except Exception:
+        pass
+
+    return tv_url
 
 
 def clear_financial_data_cache() -> None:
@@ -762,7 +793,7 @@ def render_portfolio_rows(df) -> None:
 
         with action_col:
             st.markdown('<div class="portfolio-action-spacer"></div>', unsafe_allow_html=True)
-            action_cols = st.columns([1, 1, 1, 1], gap="small")
+            action_cols = st.columns([1, 1, 1, 1, 1], gap="small")
 
             with action_cols[0]:
                 st.link_button(
@@ -778,20 +809,33 @@ def render_portfolio_rows(df) -> None:
                 )
 
             with action_cols[1]:
+                st.link_button(
+                    "🎯",
+                    portfolio_tradingview_forecast_url(
+                        row["mercato"],
+                        row["ticker"],
+                        row.get("tv_symbol", ""),
+                        row.get("valuta", ""),
+                    ),
+                    use_container_width=True,
+                    help="Apri target analisti TradingView",
+                )
+
+            with action_cols[2]:
                 if st.button("🧮", key=f"portfolio_sim_{idx}", help="Simula acquisto aggiuntivo"):
                     st.session_state["portfolio_simulation_index"] = idx
                     st.session_state["portfolio_edit_index"] = None
                     st.session_state["portfolio_delete_index"] = None
                     st.rerun()
 
-            with action_cols[2]:
+            with action_cols[3]:
                 if st.button("✏️", key=f"portfolio_edit_{idx}", help="Modifica posizione"):
                     st.session_state["portfolio_edit_index"] = idx
                     st.session_state["portfolio_delete_index"] = None
                     st.session_state["portfolio_simulation_index"] = None
                     st.rerun()
 
-            with action_cols[3]:
+            with action_cols[4]:
                 if st.button("🗑️", key=f"portfolio_delete_{idx}", help="Elimina posizione"):
                     st.session_state["portfolio_delete_index"] = idx
                     st.session_state["portfolio_edit_index"] = None
