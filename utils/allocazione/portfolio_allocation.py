@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+
 import pandas as pd
 
 
@@ -19,6 +20,32 @@ def _safe_text(value, default: str = "") -> str:
     return text if text else default
 
 
+def _display_symbol_from_row(row) -> str:
+    """Return the best symbol to show in allocation rows.
+
+    Prefer tv_symbol when present, e.g. MIL:1MSFT, otherwise fallback to
+    mercato:ticker, e.g. NASDAQ:MSFT.
+    """
+    tv_symbol = _safe_text(row.get("tv_symbol", "")).upper()
+    if tv_symbol:
+        return tv_symbol
+
+    market = _safe_text(row.get("mercato", "")).upper()
+    ticker = _safe_text(row.get("ticker", "")).upper()
+
+    if market and ticker:
+        return f"{market}:{ticker}"
+    return ticker or market or "-"
+
+
+def _display_market_from_row(row) -> str:
+    """Return market part from tv_symbol if available, otherwise mercato."""
+    display_symbol = _display_symbol_from_row(row)
+    if ":" in display_symbol:
+        return display_symbol.split(":", 1)[0].strip().upper()
+    return _safe_text(row.get("mercato", "N/D"), "N/D").upper()
+
+
 def _weight_series(df: pd.DataFrame, value_col: str) -> pd.Series:
     values = pd.to_numeric(df[value_col], errors="coerce").fillna(0.0)
     total = float(values.sum())
@@ -29,13 +56,33 @@ def _weight_series(df: pd.DataFrame, value_col: str) -> pd.Series:
 
 def calculate_position_allocation(df: pd.DataFrame, value_col: str = "valore_mercato_eur") -> pd.DataFrame:
     if df.empty:
-        return pd.DataFrame(columns=["ticker", "titolo", "mercato", "valuta", "value_eur", "weight_pct"])
+        return pd.DataFrame(
+            columns=[
+                "ticker",
+                "titolo",
+                "mercato",
+                "valuta",
+                "tv_symbol",
+                "display_symbol",
+                "display_market",
+                "value_eur",
+                "weight_pct",
+            ]
+        )
 
     allocation = df.copy()
     allocation["ticker"] = allocation["ticker"].apply(_safe_text)
     allocation["titolo"] = allocation["titolo"].apply(lambda value: _safe_text(value, "-").upper())
     allocation["mercato"] = allocation["mercato"].apply(_safe_text)
     allocation["valuta"] = allocation["valuta"].apply(_safe_text)
+
+    if "tv_symbol" not in allocation.columns:
+        allocation["tv_symbol"] = ""
+    allocation["tv_symbol"] = allocation["tv_symbol"].apply(_safe_text)
+
+    allocation["display_symbol"] = allocation.apply(_display_symbol_from_row, axis=1)
+    allocation["display_market"] = allocation.apply(_display_market_from_row, axis=1)
+
     allocation["value_eur"] = pd.to_numeric(allocation[value_col], errors="coerce").fillna(0.0)
     allocation["weight_pct"] = _weight_series(allocation, "value_eur")
 
@@ -46,16 +93,27 @@ def calculate_group_allocation(df: pd.DataFrame, group_col: str, value_col: str 
     if df.empty or group_col not in df.columns:
         return pd.DataFrame(columns=[group_col, "value_eur", "weight_pct"])
 
+    source = df.copy()
+
+    # Market allocation should use the market actually shown by tv_symbol when available.
+    # Example: tv_symbol MIL:1MSFT means market MIL, even if the legacy mercato field is NASDAQ.
+    if group_col == "mercato":
+        if "tv_symbol" not in source.columns:
+            source["tv_symbol"] = ""
+        source[group_col] = source.apply(_display_market_from_row, axis=1)
+
     grouped = (
-        df.assign(_value=pd.to_numeric(df[value_col], errors="coerce").fillna(0.0))
+        source.assign(_value=pd.to_numeric(source[value_col], errors="coerce").fillna(0.0))
         .groupby(group_col, dropna=False)["_value"]
         .sum()
         .reset_index()
         .rename(columns={"_value": "value_eur"})
     )
+
     grouped[group_col] = grouped[group_col].apply(lambda value: _safe_text(value, "N/D").upper())
     total = float(grouped["value_eur"].sum())
     grouped["weight_pct"] = grouped["value_eur"] / total * 100 if total > 0 else 0.0
+
     return grouped.sort_values(by="value_eur", ascending=False, kind="mergesort").reset_index(drop=True)
 
 
