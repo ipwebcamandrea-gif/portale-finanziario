@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-16T14:06:32+00:00",
+  "updated_at": "2026-06-16T14:06:34+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -96,7 +96,7 @@
     {
       "ticker": "ORCL",
       "titolo": "ORACLE CORPORATION",
-      "mercato": "NYSE",
+      "mercato": "",
       "strumento": "",
       "valuta": "USD",
       "quantita": 55.0,
@@ -104,7 +104,7 @@
       "prezzo_mercato": 192.13999938964844,
       "prezzo_precedente": 191.71,
       "yf_symbol": "ORCL",
-      "tv_symbol": "NASDAQ:ORCL"
+      "tv_symbol": "NYSE:ORCL"
     }
   ]
 }
