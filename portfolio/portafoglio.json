@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-16T15:21:58+00:00",
+  "updated_at": "2026-06-16T15:22:01+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 55.0,
       "prezzo_medio": 194.0,
-      "prezzo_mercato": 190.25999450683594,
+      "prezzo_mercato": 190.22000122070312,
       "prezzo_precedente": 191.71,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
