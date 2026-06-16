@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-16T15:21:55+00:00",
+  "updated_at": "2026-06-16T15:21:56+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 280.20001220703125,
+      "prezzo_mercato": 280.1700134277344,
       "prezzo_precedente": 281.45,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 17.424999237060547,
+      "prezzo_mercato": 17.420000076293945,
       "prezzo_precedente": 17.11,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 498.0199890136719,
+      "prezzo_mercato": 497.989990234375,
       "prezzo_precedente": 490.92,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
