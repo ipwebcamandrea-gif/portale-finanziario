@@ -1,4 +1,5 @@
 from html import escape
+from urllib.parse import parse_qs, unquote, urlparse
 
 import streamlit as st
 
@@ -215,6 +216,41 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
 
 # =========================
+# URL TRADINGVIEW FORECAST
+# =========================
+
+def url_tradingview_forecast(symbol):
+    """Return the TradingView forecast page URL using the existing TradingView mapping.
+
+    The project already builds the external TradingView URL through url_tradingview(symbol).
+    This helper reuses that URL and converts the TradingView symbol to the /symbols/.../forecast/
+    page without introducing a second yfinance -> TradingView mapping.
+    """
+    tv_url = url_tradingview(symbol)
+
+    try:
+        parsed = urlparse(tv_url)
+        path_parts = [part for part in parsed.path.split("/") if part]
+
+        if "symbols" in path_parts:
+            symbols_index = path_parts.index("symbols")
+            if symbols_index + 1 < len(path_parts):
+                tv_symbol = path_parts[symbols_index + 1].strip()
+                if tv_symbol:
+                    return f"https://www.tradingview.com/symbols/{tv_symbol}/forecast/"
+
+        query_symbol = parse_qs(parsed.query).get("symbol", [""])[0]
+        query_symbol = unquote(query_symbol).strip()
+        if query_symbol:
+            tv_symbol = query_symbol.replace(":", "-")
+            return f"https://www.tradingview.com/symbols/{tv_symbol}/forecast/"
+    except Exception:
+        pass
+
+    return tv_url
+
+
+# =========================
 # DATI ANAGRAFICI TITOLO
 # =========================
 
@@ -372,27 +408,30 @@ def render_row_streamlit(symbol, metrics, current):
 
         with row_col_6:
             st.markdown('<div class="tv-cell-label">Azioni</div>', unsafe_allow_html=True)
-            action_col_0, action_col_1, action_col_2, action_col_3, action_col_4 = st.columns(5)
+            action_col_0, action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(6)
 
             with action_col_0:
                 st.link_button("📊", url_tradingview(symbol), use_container_width=True, help="Apri TradingView esterno")
 
             with action_col_1:
+                st.link_button("🎯", url_tradingview_forecast(symbol), use_container_width=True, help="Apri target analisti TradingView")
+
+            with action_col_2:
                 if st.button("📈", key="tv_graph_" + symbol + "_" + current, use_container_width=True, help="Apri grafico tecnico weekly"):
                     st.session_state["ticker_selezionato"] = symbol
                     st.switch_page("pages/grafico.py")
 
-            with action_col_2:
+            with action_col_3:
                 if st.button("▲", key="tv_up_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in alto"):
                     sposta_simbolo(current, symbol, -1)
                     st.rerun()
 
-            with action_col_3:
+            with action_col_4:
                 if st.button("▼", key="tv_down_" + symbol + "_" + current, use_container_width=True, help="Sposta simbolo in basso"):
                     sposta_simbolo(current, symbol, 1)
                     st.rerun()
 
-            with action_col_4:
+            with action_col_5:
                 if st.button("×", key="tv_delete_" + symbol + "_" + current, use_container_width=True, help="Elimina simbolo dalla watchlist"):
                     if symbol in st.session_state["tv_watchlists_data"]["watchlists"][current]:
                         st.session_state["tv_watchlists_data"]["watchlists"][current].remove(symbol)
