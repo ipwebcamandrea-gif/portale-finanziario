@@ -136,5 +136,5 @@ def render_mobile_allocation_dashboard(position_allocation, currency_allocation,
     """
     render_summary_cards(metrics)
     render_position_weight_list(position_allocation)
-    st.plotly_chart(create_position_bar(position_allocation), use_container_width=True)
+    st.plotly_chart(create_position_bar(position_allocation, mobile=True), use_container_width=True, config={"displayModeBar": False})
     render_insights(insights)
