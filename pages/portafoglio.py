@@ -19,7 +19,12 @@ from utils.portfolio_input_formatting import (
     normalize_price,
     normalize_quantity,
 )
-from utils.portfolio_market_suggest import MARKET_OPTIONS, suggest_market_for_ticker
+from utils.portfolio_market_suggest import (
+    MARKET_OPTIONS,
+    currency_for_market,
+    currency_note_for_market,
+    suggest_market_for_ticker,
+)
 from utils.portfolio_add_smart import build_smart_position
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
@@ -326,7 +331,7 @@ def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         st.markdown(
             '<div class="portfolio-add-smart-title">Aggiunta minima smart</div>'
-            '<div class="portfolio-add-smart-subtitle">Inserisci ticker, controlla il mercato suggerito, valuta, quantità e prezzo medio Fineco.</div>',
+            '<div class="portfolio-add-smart-subtitle">Inserisci ticker, controlla il mercato suggerito, quantità e prezzo medio Fineco. La valuta viene dedotta automaticamente dal mercato.</div>',
             unsafe_allow_html=True,
         )
 
@@ -360,10 +365,23 @@ def render_add_form() -> None:
                 key=market_key,
                 help="Suggerito automaticamente da mappa locale/yfinance. Puoi modificarlo manualmente.",
             )
-            st.caption(market_suggestion.get("message", ""))
+            suggestion_message = market_suggestion.get("message", "")
+            if suggestion_message:
+                st.caption(f"{suggestion_message} · Mercato selezionato: {mercato}")
+            else:
+                st.caption(f"Mercato selezionato: {mercato}")
+
+        valuta = currency_for_market(mercato)
 
         with col3:
-            valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"], index=1, key="portfolio_add_currency")
+            st.text_input(
+                "Valuta dedotta",
+                value=valuta,
+                disabled=True,
+                key=f"portfolio_add_currency_readonly_{mercato}",
+                help="La valuta viene calcolata dal mercato selezionato e non va inserita manualmente.",
+            )
+            st.caption(currency_note_for_market(mercato))
 
         with col4:
             quantita = st.number_input(
