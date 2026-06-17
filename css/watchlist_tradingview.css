@@ -474,3 +474,51 @@ div[data-testid="stVerticalBlock"] div[style*="background-color"] {
    Header layout is now provided by components/standard_header.py.
    Page-specific button styling remains compatible with the shared header keys.
 */
+
+/* =========================
+   WATCHLIST DESKTOP ACTIONS - CENTERING FIX
+   ========================= */
+@media (min-width: 761px) {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) {
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.34rem !important;
+        margin-top: 0.04rem !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) > div[data-testid="column"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-left: 0.10rem !important;
+        padding-right: 0.10rem !important;
+        min-width: 0 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) div[data-testid="stButton"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) div[data-testid="stLinkButton"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) button,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) a {
+        width: 2.15rem !important;
+        min-width: 2.15rem !important;
+        max-width: 2.15rem !important;
+        height: 2.15rem !important;
+        min-height: 2.15rem !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        border-radius: 0.55rem !important;
+    }
+}
+
