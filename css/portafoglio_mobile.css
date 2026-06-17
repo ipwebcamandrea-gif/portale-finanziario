@@ -344,24 +344,96 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
 }
 
 /* =========================
-   PORTFOLIO MOBILE ACTIONS - OVERLAP KILL SWITCH
+   PORTFOLIO MOBILE ACTIONS - COMPACT 3X2 FINAL
    =========================
-   Last-resort override loaded at the end of the file: the action buttons must
-   stay tappable and separated on smartphone. */
+   Final override: compact action rows on smartphone.
+   Layout target:
+   [📊][🧮]
+   [✏️][🗑️]
+   [🎯][ ]
+*/
 @media screen and (max-width: 768px) {
+    /* The .portfolio-mobile-actions-grid element may not always be present in
+       Streamlit output. Keep this rule harmless when absent. */
     .portfolio-mobile-actions-grid {
-        row-gap: 0.55rem !important;
-        margin-top: 0.65rem !important;
-        margin-bottom: 0.45rem !important;
+        width: auto !important;
+        max-width: 312px !important;
+        margin-top: 0.62rem !important;
+        margin-bottom: 0.72rem !important;
+        display: block !important;
     }
 
+    /* Restore each Streamlit action row as a real 2-column row. This overrides
+       the previous display:contents safety patch, which made buttons expand to
+       the full screen width on some smartphones. */
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        column-gap: 0.55rem !important;
+        row-gap: 0 !important;
+        width: 100% !important;
+        max-width: 312px !important;
+        min-width: 0 !important;
+        margin: 0.26rem 0 0.26rem 0 !important;
+        padding: 0 !important;
         transform: none !important;
+        overflow: visible !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) > div[data-testid="column"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) > div[data-testid="column"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        flex: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) div[data-testid="stElementContainer"] {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
+    div[class*="st-key-portfolio_mobile_sim_"] button,
+    div[class*="st-key-portfolio_mobile_edit_"] button,
+    div[class*="st-key-portfolio_mobile_delete_"] button,
+    div[class*="st-key-portfolio_mobile_target_"] button {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        min-height: 42px !important;
+        height: 42px !important;
+        border-radius: 11px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 0.98rem !important;
+        line-height: 1 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        z-index: 1 !important;
+        touch-action: manipulation !important;
+    }
+
+    /* Last row target: keep it as the left cell of the third 2-column row. */
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
+        margin-bottom: 0.70rem !important;
     }
 }
 
