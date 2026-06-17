@@ -74,9 +74,9 @@ def create_position_donut(position_allocation, total_label: str):
 def create_position_bar(position_allocation, mobile: bool = False):
     display_col = _display_col(position_allocation)
 
-    # Desktop keeps the existing visual order. Mobile explicitly shows the
-    # largest position first, because on a narrow screen the allocation chart is
-    # easier to read from the biggest weight down to the smallest one.
+    # Use ascending data plus a reversed y-axis so horizontal bars are displayed
+    # top-to-bottom from the largest position to the smallest one on both
+    # desktop and mobile.
     chart_df = position_allocation.sort_values("weight_pct", ascending=True).copy()
 
     fig = px.bar(
@@ -103,10 +103,9 @@ def create_position_bar(position_allocation, mobile: bool = False):
     fig.update_xaxes(range=[0, safe_x_max])
     fig.update_yaxes(automargin=True)
 
+    fig.update_yaxes(autorange="reversed")
+
     if mobile:
-        # Reversing the horizontal-bar y axis turns the existing ascending data
-        # into a top-to-bottom view from largest to smallest.
-        fig.update_yaxes(autorange="reversed")
         fig.update_layout(
             height=max(420, 42 * len(chart_df) + 120),
             margin=dict(l=0, r=78, t=46, b=46),
