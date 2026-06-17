@@ -9,7 +9,6 @@ from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
 from utils.auth import require_login
-from utils.auto_refresh import render_auto_refresh_timer
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
     salva_sessione_su_disco,
@@ -28,7 +27,7 @@ require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
-AUTO_REFRESH_PAGE_SECONDS = 120
+MANUAL_REFRESH_MODE = True
 
 
 
@@ -93,11 +92,7 @@ local_css(WATCHLIST_TV_CSS)
 
 # Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
 force_watchlist_refresh_on_page_open()
-render_auto_refresh_timer(
-    key="watchlist_page_auto_refresh_120s",
-    interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
-    enabled=is_watchlist_auto_refresh_safe(),
-)
+# Refresh automatico browser disattivato: usare pulsante 🔄 o refresh manuale.
 
 
 
