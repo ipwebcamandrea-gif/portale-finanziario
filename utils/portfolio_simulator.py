@@ -59,6 +59,17 @@ def calculate_buy_simulation(
     }
 
 
+
+def calculate_suggested_quantity_from_budget(budget: float, buy_price: float) -> int:
+    """Return whole quantity buyable with a budget and a unit buy price."""
+    budget = safe_float(budget)
+    buy_price = safe_float(buy_price)
+
+    if budget <= 0 or buy_price <= 0:
+        return 0
+
+    return max(0, int(budget // buy_price))
+
 def calculate_budget_capacity(budget: float, buy_price: float) -> dict:
     """Calculate how many whole shares can be bought with a budget."""
     budget = safe_float(budget)
