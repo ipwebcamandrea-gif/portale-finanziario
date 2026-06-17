@@ -11,6 +11,15 @@ from utils.auth import require_login
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
+from utils.portfolio_input_formatting import (
+    PRICE_INPUT_FORMAT,
+    PRICE_INPUT_STEP,
+    QTY_INPUT_FORMAT,
+    QTY_INPUT_STEP,
+    normalize_price,
+    normalize_quantity,
+)
+from utils.portfolio_market_suggest import MARKET_OPTIONS, suggest_market_for_ticker
 from utils.portfolio_add_smart import build_smart_position
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
@@ -19,7 +28,11 @@ from utils.portfolio_render import (
     render_position_values,
     render_row_separator,
 )
-from utils.portfolio_simulator import calculate_budget_capacity, calculate_buy_simulation
+from utils.portfolio_simulator import (
+    calculate_budget_capacity,
+    calculate_buy_simulation,
+    calculate_suggested_quantity_from_budget,
+)
 from utils.portfolio_storage import (
     add_position,
     delete_position,
@@ -313,7 +326,7 @@ def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         st.markdown(
             '<div class="portfolio-add-smart-title">Aggiunta minima smart</div>'
-            '<div class="portfolio-add-smart-subtitle">Inserisci solo ticker, mercato opzionale, valuta, quantità e prezzo medio Fineco.</div>',
+            '<div class="portfolio-add-smart-subtitle">Inserisci ticker, controlla il mercato suggerito, valuta, quantità e prezzo medio Fineco.</div>',
             unsafe_allow_html=True,
         )
 
@@ -323,13 +336,31 @@ def render_add_form() -> None:
         with col1:
             ticker = st.text_input("Ticker", placeholder="SOFI, MSFT, MA", key="portfolio_add_ticker")
 
+        clean_ticker = str(ticker or "").strip().upper()
+        market_suggestion = suggest_market_for_ticker(clean_ticker)
+        suggested_market = str(market_suggestion.get("market") or "NASDAQ").upper()
+        if suggested_market not in MARKET_OPTIONS:
+            suggested_market = "NASDAQ"
+
+        last_ticker_key = "portfolio_add_last_ticker_for_market"
+        market_key = "portfolio_add_market_select"
+        if st.session_state.get(last_ticker_key) != clean_ticker:
+            st.session_state[last_ticker_key] = clean_ticker
+            st.session_state[market_key] = suggested_market
+
+        current_market = str(st.session_state.get(market_key, suggested_market) or suggested_market).upper()
+        if current_market not in MARKET_OPTIONS:
+            current_market = suggested_market
+
         with col2:
-            mercato = st.text_input(
-                "Mercato opzionale",
-                value="NASDAQ",
-                help="Se vuoto usa NASDAQ. Esempio: NYSE per Mastercard.",
-                key="portfolio_add_market",
+            mercato = st.selectbox(
+                "Mercato suggerito",
+                MARKET_OPTIONS,
+                index=MARKET_OPTIONS.index(current_market),
+                key=market_key,
+                help="Suggerito automaticamente da mappa locale/yfinance. Puoi modificarlo manualmente.",
             )
+            st.caption(market_suggestion.get("message", ""))
 
         with col3:
             valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"], index=1, key="portfolio_add_currency")
@@ -337,9 +368,10 @@ def render_add_form() -> None:
         with col4:
             quantita = st.number_input(
                 "Quantità azioni",
-                min_value=0.0,
-                step=1.0,
-                format="%.6f",
+                min_value=0,
+                value=0,
+                step=QTY_INPUT_STEP,
+                format=QTY_INPUT_FORMAT,
                 key="portfolio_add_qty",
             )
 
@@ -347,12 +379,15 @@ def render_add_form() -> None:
             prezzo_medio = st.number_input(
                 "Prezzo medio per azione",
                 min_value=0.0,
-                step=0.01,
-                format="%.6f",
+                value=0.0,
+                step=PRICE_INPUT_STEP,
+                format=PRICE_INPUT_FORMAT,
                 key="portfolio_add_avg_price",
             )
 
-        investimento = float(quantita or 0.0) * float(prezzo_medio or 0.0)
+        clean_qty = normalize_quantity(quantita)
+        clean_avg_price = normalize_price(prezzo_medio)
+        investimento = float(clean_qty) * float(clean_avg_price)
         conversion = convert_to_eur(investimento, valuta)
 
         preview_cols = st.columns(3)
@@ -401,16 +436,15 @@ def render_add_form() -> None:
         submitted = st.button("Aggiungi posizione", key="portfolio_add_smart_submit")
 
         if submitted:
-            clean_ticker = str(ticker or "").strip().upper()
             if not clean_ticker:
                 st.warning("Ticker obbligatorio.")
                 return
 
-            if float(quantita or 0.0) <= 0:
+            if clean_qty <= 0:
                 st.warning("Quantità obbligatoria e maggiore di zero.")
                 return
 
-            if float(prezzo_medio or 0.0) <= 0:
+            if clean_avg_price <= 0:
                 st.warning("Prezzo medio per azione obbligatorio e maggiore di zero.")
                 return
 
@@ -418,8 +452,8 @@ def render_add_form() -> None:
                 ticker=clean_ticker,
                 mercato=mercato,
                 valuta=valuta,
-                quantita=quantita,
-                prezzo_medio=prezzo_medio,
+                quantita=clean_qty,
+                prezzo_medio=clean_avg_price,
             )
 
             add_position(DATA_PATH, result["position"])
@@ -532,8 +566,8 @@ def render_buy_simulator(df) -> None:
             f"Prezzo ipotetico di acquisto ({currency})",
             min_value=0.0,
             value=round(float(current_market_price), 2),
-            step=0.01,
-            format="%.2f",
+            step=PRICE_INPUT_STEP,
+            format=PRICE_INPUT_FORMAT,
             key=f"portfolio_sim_buy_price_{simulation_index}",
         )
 
@@ -543,19 +577,27 @@ def render_buy_simulator(df) -> None:
             min_value=0.0,
             value=0.0,
             step=100.0,
-            format="%.2f",
+            format=PRICE_INPUT_FORMAT,
             key=f"portfolio_sim_budget_{simulation_index}",
             help="Se valorizzato, il simulatore calcola quante azioni puoi comprare con quel budget.",
         )
 
     budget_capacity = calculate_budget_capacity(budget, buy_price)
-    suggested_max = max(10, int(current_qty), int(budget_capacity["buyable_qty"]), 100)
+    suggested_budget_qty = calculate_suggested_quantity_from_budget(budget, buy_price)
+    suggested_max = max(10, int(current_qty), int(suggested_budget_qty), 100)
     slider_max = min(max(suggested_max * 2, 100), 10000)
 
     slider_key = f"portfolio_sim_add_qty_{simulation_index}"
+    budget_signature_key = f"portfolio_sim_budget_signature_{simulation_index}"
+    budget_signature = (round(float(budget or 0.0), 2), round(float(buy_price or 0.0), 2))
 
     if slider_key not in st.session_state:
         st.session_state[slider_key] = 0
+
+    if budget_signature != st.session_state.get(budget_signature_key):
+        st.session_state[budget_signature_key] = budget_signature
+        if float(budget or 0.0) > 0:
+            st.session_state[slider_key] = min(int(slider_max), int(suggested_budget_qty))
 
     st.session_state[slider_key] = max(
         0,
@@ -663,18 +705,18 @@ def render_edit_form(df) -> None:
         with col4:
             quantita = st.number_input(
                 "Quantità",
-                min_value=0.0,
-                value=float(row.get("quantita", 0.0) or 0.0),
-                step=1.0,
-                format="%.6f",
+                min_value=0,
+                value=normalize_quantity(row.get("quantita", 0.0)),
+                step=QTY_INPUT_STEP,
+                format=QTY_INPUT_FORMAT,
             )
         with col5:
             prezzo_medio = st.number_input(
                 "P.zo medio carico",
                 min_value=0.0,
-                value=float(row.get("prezzo_medio", 0.0) or 0.0),
-                step=0.01,
-                format="%.6f",
+                value=normalize_price(row.get("prezzo_medio", 0.0)),
+                step=PRICE_INPUT_STEP,
+                format=PRICE_INPUT_FORMAT,
             )
 
         # Riga 3: dati tecnici solo in lettura.
@@ -699,8 +741,8 @@ def render_edit_form(df) -> None:
                 DATA_PATH,
                 edit_index,
                 {
-                    "quantita": quantita,
-                    "prezzo_medio": prezzo_medio,
+                    "quantita": normalize_quantity(quantita),
+                    "prezzo_medio": normalize_price(prezzo_medio),
                 },
             )
 
