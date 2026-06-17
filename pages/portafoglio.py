@@ -7,6 +7,7 @@ import streamlit as st
 
 from components.standard_header import render_standard_page_header
 from utils.auth import require_login
+from utils.auto_refresh import render_auto_refresh_timer
 
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
@@ -63,6 +64,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
+AUTO_REFRESH_PAGE_SECONDS = 120
 
 
 st.set_page_config(
@@ -207,6 +209,16 @@ def auto_refresh_quotes_on_page_open() -> None:
     st.session_state["portfolio_last_auto_refresh_result"] = result
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     set_last_refresh_timestamp()
+
+
+def is_portfolio_auto_refresh_safe() -> bool:
+    """Return True when auto-refresh can run without interrupting inline panels."""
+    blocking_keys = (
+        "portfolio_edit_index",
+        "portfolio_delete_index",
+        "portfolio_simulation_index",
+    )
+    return all(st.session_state.get(key) is None for key in blocking_keys)
 
 
 def render_refresh_details(result: dict) -> None:
@@ -906,6 +918,12 @@ def sort_portfolio_for_display(df):
 def main() -> None:
     load_css()
     init_state()
+
+    render_auto_refresh_timer(
+        key="portfolio_page_auto_refresh_120s",
+        interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
+        enabled=is_portfolio_auto_refresh_safe(),
+    )
 
     mobile_view = render_standard_page_header(
         title="💼 Portafoglio",
