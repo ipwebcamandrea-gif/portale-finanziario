@@ -117,24 +117,16 @@ def render_desktop_allocation_dashboard(position_allocation, currency_allocation
         render_position_weight_list(position_allocation)
 
     st.plotly_chart(create_position_bar(position_allocation), use_container_width=True)
-
-    col_currency, col_market = st.columns(2)
-    with col_currency:
-        st.plotly_chart(create_group_bar(currency_allocation, "valuta", "Allocazione per valuta"), use_container_width=True)
-    with col_market:
-        st.plotly_chart(create_group_bar(market_allocation, "mercato", "Allocazione per mercato"), use_container_width=True)
+    st.plotly_chart(create_group_bar(market_allocation, "mercato", "Allocazione per mercato"), use_container_width=True)
 
     render_concentration_heatmap(position_allocation)
-    render_insights(insights)
-
 
 def render_mobile_allocation_dashboard(position_allocation, currency_allocation, market_allocation, metrics, insights) -> None:
     """Compact mobile view.
 
     Mobile keeps the most useful position-level allocation chart and removes
-    currency/market bar charts to reduce vertical clutter.
+    currency/market bar charts and insights to reduce vertical clutter.
     """
     render_summary_cards(metrics)
     render_position_weight_list(position_allocation)
     st.plotly_chart(create_position_bar(position_allocation, mobile=True), use_container_width=True, config={"displayModeBar": False})
-    render_insights(insights)
