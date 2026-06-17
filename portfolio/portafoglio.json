@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-17T15:36:50+00:00",
+  "updated_at": "2026-06-17T15:36:52+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 501.489990234375,
+      "prezzo_mercato": 501.364990234375,
       "prezzo_precedente": 501.5,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
