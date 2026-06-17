@@ -19,12 +19,28 @@ ALLOCATION_COLORS = [
 
 
 def _base_layout(fig):
+    current_margin = fig.layout.margin
+    margin = dict(l=18, r=18, t=42, b=18)
+    if current_margin is not None:
+        margin = dict(
+            l=current_margin.l if current_margin.l is not None else 18,
+            r=current_margin.r if current_margin.r is not None else 18,
+            t=current_margin.t if current_margin.t is not None else 42,
+            b=current_margin.b if current_margin.b is not None else 18,
+        )
+
+    current_font = fig.layout.font
+    font_size = current_font.size if current_font is not None and current_font.size is not None else None
+    font = dict(color="#e6edf3", family="Arial")
+    if font_size is not None:
+        font["size"] = font_size
+
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=18, r=18, t=42, b=18),
-        font=dict(color="#e6edf3", family="Arial"),
+        margin=margin,
+        font=font,
         legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5, font=dict(size=11)),
     )
     return fig
@@ -55,10 +71,16 @@ def create_position_donut(position_allocation, total_label: str):
     return _base_layout(fig)
 
 
-def create_position_bar(position_allocation):
+def create_position_bar(position_allocation, mobile: bool = False):
     display_col = _display_col(position_allocation)
+
+    # Desktop keeps the existing visual order. Mobile explicitly shows the
+    # largest position first, because on a narrow screen the allocation chart is
+    # easier to read from the biggest weight down to the smallest one.
+    chart_df = position_allocation.sort_values("weight_pct", ascending=True).copy()
+
     fig = px.bar(
-        position_allocation.sort_values("weight_pct", ascending=True),
+        chart_df,
         x="weight_pct",
         y="titolo",
         orientation="h",
@@ -70,9 +92,27 @@ def create_position_bar(position_allocation):
     fig.update_traces(
         texttemplate="%{text:.2f}%",
         textposition="outside",
+        cliponaxis=False,
         hovertemplate="**%{y}**<br>Simbolo: %{customdata[0]}<br>Peso: %{x:.2f}%<br>Valore: %{customdata[1]:,.2f} EUR",
     )
+
+    max_weight = float(chart_df["weight_pct"].max()) if not chart_df.empty else 0.0
+    safe_x_max = max(10.0, max_weight * (1.22 if mobile else 1.12))
+
     fig.update_layout(title="Peso posizioni", xaxis_title="Peso %", yaxis_title="", showlegend=False)
+    fig.update_xaxes(range=[0, safe_x_max])
+    fig.update_yaxes(automargin=True)
+
+    if mobile:
+        # Reversing the horizontal-bar y axis turns the existing ascending data
+        # into a top-to-bottom view from largest to smallest.
+        fig.update_yaxes(autorange="reversed")
+        fig.update_layout(
+            height=max(420, 42 * len(chart_df) + 120),
+            margin=dict(l=0, r=78, t=46, b=46),
+            font=dict(size=12),
+        )
+
     return _base_layout(fig)
 
 
