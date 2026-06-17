@@ -7,8 +7,6 @@ import streamlit as st
 
 from components.standard_header import render_standard_page_header
 from utils.auth import require_login
-from utils.auto_refresh import render_auto_refresh_timer
-
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
@@ -64,7 +62,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
-AUTO_REFRESH_PAGE_SECONDS = 120
+MANUAL_REFRESH_MODE = True
 
 
 st.set_page_config(
@@ -919,11 +917,9 @@ def main() -> None:
     load_css()
     init_state()
 
-    render_auto_refresh_timer(
-        key="portfolio_page_auto_refresh_120s",
-        interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
-        enabled=is_portfolio_auto_refresh_safe(),
-    )
+    # Refresh automatico browser disattivato: evita reload forzati che possono
+    # interrompere la sessione Streamlit/login. I dati si aggiornano con il
+    # pulsante 🔄 dell'header, con il refresh manuale browser o al cambio pagina.
 
     mobile_view = render_standard_page_header(
         title="💼 Portafoglio",
