@@ -5519,46 +5519,42 @@ def render_edit_form(df) -> None:
     st.subheader(f"✏️ Modifica posizione: {row['titolo']}")
 
     with st.form(f"portfolio_edit_form_{edit_index}"):
+        # Riga 1: dati anagrafici solo in lettura.
         col1, col2, col3 = st.columns(3)
-        col4, col5, col6, col7 = st.columns(4)
-        col8, col9 = st.columns(2)
-
         with col1:
-            ticker = st.text_input("Ticker", value=row["ticker"])
-
+            st.text_input("Ticker", value=str(row.get("ticker", "")), disabled=True)
         with col2:
-            titolo = st.text_input("Titolo", value=row["titolo"])
-
+            st.text_input("Titolo", value=str(row.get("titolo", "")), disabled=True)
         with col3:
-            mercato = st.text_input("Mercato TradingView", value=portfolio_display_market(row))
+            st.text_input("Mercato TradingView", value=portfolio_display_market(row), disabled=True)
 
+        # Riga 2: unici campi modificabili.
+        col4, col5 = st.columns(2)
         with col4:
-            valute = ["EUR", "USD", "GBP", "CHF"]
-            current_valuta_index = valute.index(row["valuta"]) if row["valuta"] in valute else 0
-            valuta = st.selectbox("Valuta", valute, index=current_valuta_index)
-
+            quantita = st.number_input(
+                "Quantità",
+                min_value=0.0,
+                value=float(row.get("quantita", 0.0) or 0.0),
+                step=1.0,
+                format="%.6f",
+            )
         with col5:
-            quantita = st.number_input("Quantità", min_value=0.0, value=float(row["quantita"]), step=1.0, format="%.6f")
+            prezzo_medio = st.number_input(
+                "P.zo medio carico",
+                min_value=0.0,
+                value=float(row.get("prezzo_medio", 0.0) or 0.0),
+                step=0.01,
+                format="%.6f",
+            )
 
+        # Riga 3: dati tecnici solo in lettura.
+        col6, col7, col8 = st.columns(3)
         with col6:
-            prezzo_medio = st.number_input("P.zo medio carico", min_value=0.0, value=float(row["prezzo_medio"]), step=0.01, format="%.6f")
-
+            st.text_input("Valuta", value=str(row.get("valuta", "")), disabled=True)
         with col7:
-            prezzo_mercato = st.number_input("P.zo mercato", min_value=0.0, value=float(row["prezzo_mercato"]), step=0.01, format="%.6f")
-
+            st.text_input("Simbolo yfinance", value=str(row.get("yf_symbol", "")), disabled=True)
         with col8:
-            yf_symbol = st.text_input("Simbolo yfinance opzionale", value=row.get("yf_symbol", ""))
-
-        with col9:
-            tv_symbol = st.text_input("Simbolo TradingView opzionale", value=row.get("tv_symbol", ""))
-
-        prezzo_precedente = st.number_input(
-            "P.zo precedente",
-            min_value=0.0,
-            value=float(row["prezzo_precedente"]),
-            step=0.01,
-            format="%.6f",
-        )
+            st.text_input("Simbolo TradingView", value=str(row.get("tv_symbol", "")), disabled=True)
 
         col_save, col_cancel = st.columns([1, 5])
 
@@ -5569,25 +5565,12 @@ def render_edit_form(df) -> None:
             cancelled = st.form_submit_button("Annulla")
 
         if submitted:
-            if not ticker.strip() or not titolo.strip():
-                st.warning("Ticker e Titolo sono obbligatori.")
-                return
-
             update_position(
                 DATA_PATH,
                 edit_index,
                 {
-                    "ticker": ticker.upper().strip(),
-                    "titolo": titolo.strip(),
-                    "mercato": mercato.upper().strip(),
-                    "strumento": "",
-                    "valuta": valuta,
                     "quantita": quantita,
                     "prezzo_medio": prezzo_medio,
-                    "prezzo_mercato": prezzo_mercato,
-                    "prezzo_precedente": prezzo_precedente,
-                    "yf_symbol": yf_symbol.upper().strip(),
-                    "tv_symbol": tv_symbol.upper().strip(),
                 },
             )
 
@@ -5600,6 +5583,7 @@ def render_edit_form(df) -> None:
             st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 def render_delete_confirmation(df) -> None:
