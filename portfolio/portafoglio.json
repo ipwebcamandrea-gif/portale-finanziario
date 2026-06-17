@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-17T15:03:49+00:00",
+  "updated_at": "2026-06-17T15:03:59+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 1100.0,
       "prezzo_medio": 6.85531,
-      "prezzo_mercato": 5.889999866485596,
+      "prezzo_mercato": 5.894999980926514,
       "prezzo_precedente": 5.86,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 279.7250061035156,
+      "prezzo_mercato": 279.7950134277344,
       "prezzo_precedente": 281.22,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 18.315000534057617,
+      "prezzo_mercato": 18.31999969482422,
       "prezzo_precedente": 18.05,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 500.2799987792969,
+      "prezzo_mercato": 500.2865905761719,
       "prezzo_precedente": 501.5,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 55.0,
       "prezzo_medio": 194.0,
-      "prezzo_mercato": 187.36500549316406,
+      "prezzo_mercato": 187.22999572753906,
       "prezzo_precedente": 186.7115,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
