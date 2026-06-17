@@ -302,3 +302,43 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         justify-content: center !important;
     }
 }
+
+/* =========================
+   PORTFOLIO MOBILE ACTION BUTTONS - FORCE DARK THEME
+   =========================
+   Prevents Streamlit mobile/light-theme fallback from rendering portfolio
+   action buttons as white when the phone/browser opens the app in light mode.
+*/
+@media screen and (max-width: 768px) {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
+    div[class*="st-key-portfolio_mobile_sim_"] button,
+    div[class*="st-key-portfolio_mobile_edit_"] button,
+    div[class*="st-key-portfolio_mobile_delete_"] button,
+    div[class*="st-key-portfolio_mobile_target_"] button {
+        background: radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+                    linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+        color: #e6edf3 !important;
+        border: 1px solid rgba(0, 176, 255, 0.42) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
+                    0 0 14px rgba(0, 176, 255, 0.10) !important;
+        -webkit-text-fill-color: #e6edf3 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a:hover,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a:hover,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a:hover,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a:hover,
+    div[class*="st-key-portfolio_mobile_sim_"] button:hover,
+    div[class*="st-key-portfolio_mobile_edit_"] button:hover,
+    div[class*="st-key-portfolio_mobile_delete_"] button:hover,
+    div[class*="st-key-portfolio_mobile_target_"] button:hover {
+        background: radial-gradient(circle at top left, rgba(0, 176, 255, 0.28), transparent 36%),
+                    linear-gradient(180deg, #263047 0%, #151b24 100%) !important;
+        color: #ffffff !important;
+        border-color: rgba(0, 176, 255, 0.85) !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+}
