@@ -68,6 +68,8 @@
             "SOFI",
             "INTU"
         ],
-        "TLI Others": []
+        "TLI Others": [
+            "ASTS"
+        ]
     }
 }
