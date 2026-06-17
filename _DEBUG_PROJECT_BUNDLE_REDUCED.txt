@@ -705,12 +705,42 @@ def render_watchlist_rows(current, symbols):
 ====================================================================================================
 
 import streamlit as st
+
+from utils.portfolio_market_suggest import MARKET_OPTIONS, suggest_market_for_ticker
 from utils.watchlist_storage import salva_sessione_su_disco
 
 
 # =========================
 # FORM AGGIUNTA SIMBOLO
 # =========================
+
+def _clean_watchlist_ticker(value: str) -> str:
+    return str(value or "").strip().upper().replace(" ", "")
+
+
+def _symbol_for_selected_market(ticker: str, market: str) -> str:
+    """Build the yfinance symbol saved in the watchlist from ticker + selected market.
+
+    The Watchlist data pipeline reads yfinance symbols. For USA markets we keep
+    the plain ticker, while for Borsa Italiana we add the .MI suffix when the
+    user has not already written it.
+    """
+    clean_market = str(market or "").strip().upper()
+    clean_symbol = _clean_watchlist_ticker(ticker)
+
+    if ":" in clean_symbol:
+        clean_symbol = clean_symbol.split(":", 1)[1].strip().upper()
+
+    if clean_market == "MIL":
+        if clean_symbol.endswith(".MI"):
+            return clean_symbol
+        return clean_symbol + ".MI"
+
+    if clean_symbol.endswith(".MI"):
+        return clean_symbol[:-3]
+
+    return clean_symbol
+
 
 def render_add_symbol_form(current):
     # In vista compatta la pagina e solo consultiva:
@@ -721,29 +751,61 @@ def render_add_symbol_form(current):
     # Chiave dinamica per reset automatico input dopo aggiunta.
     add_input_key = "tv_add_symbol_input_" + str(st.session_state.get("tv_add_symbol_nonce", 0))
 
-    col1, col2 = st.columns([5, 1])
+    col_ticker, col_market, col_add = st.columns([4.2, 1.6, 1.1], vertical_alignment="bottom")
 
-    with col1:
-        new_symbol = st.text_input(
+    with col_ticker:
+        raw_symbol = st.text_input(
             "Aggiungi simbolo",
             placeholder="Es. AAPL, MSFT, TSLA, SWDA.MI",
             label_visibility="collapsed",
             key=add_input_key,
-        ).upper().strip()
+        )
 
-    with col2:
+    new_symbol = _clean_watchlist_ticker(raw_symbol)
+    market_suggestion = suggest_market_for_ticker(new_symbol)
+    suggested_market = str(market_suggestion.get("market") or "NASDAQ").upper()
+    if suggested_market not in MARKET_OPTIONS:
+        suggested_market = "NASDAQ"
+
+    last_ticker_key = "tv_add_last_ticker_for_market"
+    market_key = "tv_add_market_select"
+    if st.session_state.get(last_ticker_key) != new_symbol:
+        st.session_state[last_ticker_key] = new_symbol
+        st.session_state[market_key] = suggested_market
+
+    current_market = str(st.session_state.get(market_key, suggested_market) or suggested_market).upper()
+    if current_market not in MARKET_OPTIONS:
+        current_market = suggested_market
+
+    with col_market:
+        selected_market = st.selectbox(
+            "Mercato",
+            MARKET_OPTIONS,
+            index=MARKET_OPTIONS.index(current_market),
+            key=market_key,
+            help="Mercato suggerito automaticamente. Puoi modificarlo manualmente prima di aggiungere il titolo.",
+        )
+
+    symbol_to_save = _symbol_for_selected_market(new_symbol, selected_market) if new_symbol else ""
+    suggestion_message = market_suggestion.get("message", "")
+    if suggestion_message:
+        st.caption(f"{suggestion_message} · Selezionato: {selected_market} · Simbolo salvato: {symbol_to_save or '-'}")
+    else:
+        st.caption(f"Mercato selezionato: {selected_market} · Simbolo salvato: {symbol_to_save or '-'}")
+
+    with col_add:
         if st.button("Aggiungi", key="tv_add_symbol_btn", use_container_width=True):
-            if not new_symbol:
+            if not symbol_to_save:
                 st.warning("Inserisci un simbolo valido.")
                 return
 
             watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
 
-            if new_symbol in watchlists[current]:
+            if symbol_to_save in watchlists[current]:
                 st.warning("Simbolo gia presente nella watchlist.")
                 return
 
-            watchlists[current].append(new_symbol)
+            watchlists[current].append(symbol_to_save)
 
             # Reset input tramite nonce.
             st.session_state["tv_add_symbol_nonce"] = st.session_state.get("tv_add_symbol_nonce", 0) + 1
@@ -755,7 +817,7 @@ def render_add_symbol_form(current):
             salva_sessione_su_disco()
             st.cache_data.clear()
 
-            st.success(new_symbol + " aggiunto.")
+            st.success(symbol_to_save + " aggiunto.")
             st.rerun()
 
 
@@ -3762,6 +3824,54 @@ div[data-testid="stVerticalBlock"] div[style*="background-color"] {
    Page-specific button styling remains compatible with the shared header keys.
 */
 
+/* =========================
+   WATCHLIST DESKTOP ACTIONS - CENTERING FIX
+   ========================= */
+@media (min-width: 761px) {
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) {
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.34rem !important;
+        margin-top: 0.04rem !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) > div[data-testid="column"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-left: 0.10rem !important;
+        padding-right: 0.10rem !important;
+        min-width: 0 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) div[data-testid="stButton"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) div[data-testid="stLinkButton"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) button,
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-tv_graph_"]) a {
+        width: 2.15rem !important;
+        min-width: 2.15rem !important;
+        max-width: 2.15rem !important;
+        height: 2.15rem !important;
+        min-height: 2.15rem !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        border-radius: 0.55rem !important;
+    }
+}
+
+
 
 
 ====================================================================================================
@@ -6433,9 +6543,9 @@ def create_position_donut(position_allocation, total_label: str):
 def create_position_bar(position_allocation, mobile: bool = False):
     display_col = _display_col(position_allocation)
 
-    # Desktop keeps the existing visual order. Mobile explicitly shows the
-    # largest position first, because on a narrow screen the allocation chart is
-    # easier to read from the biggest weight down to the smallest one.
+    # Use ascending data plus a reversed y-axis so horizontal bars are displayed
+    # top-to-bottom from the largest position to the smallest one on both
+    # desktop and mobile.
     chart_df = position_allocation.sort_values("weight_pct", ascending=True).copy()
 
     fig = px.bar(
@@ -6462,10 +6572,9 @@ def create_position_bar(position_allocation, mobile: bool = False):
     fig.update_xaxes(range=[0, safe_x_max])
     fig.update_yaxes(automargin=True)
 
+    fig.update_yaxes(autorange="reversed")
+
     if mobile:
-        # Reversing the horizontal-bar y axis turns the existing ascending data
-        # into a top-to-bottom view from largest to smallest.
-        fig.update_yaxes(autorange="reversed")
         fig.update_layout(
             height=max(420, 42 * len(chart_df) + 120),
             margin=dict(l=0, r=78, t=46, b=46),
@@ -6619,27 +6728,19 @@ def render_desktop_allocation_dashboard(position_allocation, currency_allocation
         render_position_weight_list(position_allocation)
 
     st.plotly_chart(create_position_bar(position_allocation), use_container_width=True)
-
-    col_currency, col_market = st.columns(2)
-    with col_currency:
-        st.plotly_chart(create_group_bar(currency_allocation, "valuta", "Allocazione per valuta"), use_container_width=True)
-    with col_market:
-        st.plotly_chart(create_group_bar(market_allocation, "mercato", "Allocazione per mercato"), use_container_width=True)
+    st.plotly_chart(create_group_bar(market_allocation, "mercato", "Allocazione per mercato"), use_container_width=True)
 
     render_concentration_heatmap(position_allocation)
-    render_insights(insights)
-
 
 def render_mobile_allocation_dashboard(position_allocation, currency_allocation, market_allocation, metrics, insights) -> None:
     """Compact mobile view.
 
     Mobile keeps the most useful position-level allocation chart and removes
-    currency/market bar charts to reduce vertical clutter.
+    currency/market bar charts and insights to reduce vertical clutter.
     """
     render_summary_cards(metrics)
     render_position_weight_list(position_allocation)
     st.plotly_chart(create_position_bar(position_allocation, mobile=True), use_container_width=True, config={"displayModeBar": False})
-    render_insights(insights)
 
 
 
