@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TLI TOP 10",
+    "active_watchlist": "TLI Others",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -67,6 +67,7 @@
             "PERI",
             "SOFI",
             "INTU"
-        ]
+        ],
+        "TLI Others": []
     }
 }
