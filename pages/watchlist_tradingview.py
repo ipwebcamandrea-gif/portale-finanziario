@@ -9,6 +9,7 @@ from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
 from utils.auth import require_login
+from utils.auto_refresh import render_auto_refresh_timer
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
     salva_sessione_su_disco,
@@ -27,6 +28,7 @@ require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
+AUTO_REFRESH_PAGE_SECONDS = 120
 
 
 
@@ -40,6 +42,16 @@ def force_watchlist_refresh_on_page_open() -> None:
     """Force fresh watchlist market data before rendering rows."""
     st.cache_data.clear()
     st.session_state["tv_last_refresh_timestamp"] = current_watchlist_refresh_timestamp()
+
+
+def is_watchlist_auto_refresh_safe() -> bool:
+    """Return True when auto-refresh can run without interrupting tab panels."""
+    blocking_flags = (
+        "tv_show_create_panel",
+        "tv_show_rename_panel",
+        "tv_confirm_delete_tab",
+    )
+    return not any(bool(st.session_state.get(key, False)) for key in blocking_flags)
 
 
 def render_watchlist_refresh_status() -> None:
@@ -81,6 +93,11 @@ local_css(WATCHLIST_TV_CSS)
 
 # Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
 force_watchlist_refresh_on_page_open()
+render_auto_refresh_timer(
+    key="watchlist_page_auto_refresh_120s",
+    interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
+    enabled=is_watchlist_auto_refresh_safe(),
+)
 
 
 
