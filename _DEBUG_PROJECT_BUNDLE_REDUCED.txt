@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 45
+# Files included: 47
 
 
 
@@ -3068,47 +3068,33 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
 }
 
 /* =========================
-   PORTFOLIO MOBILE ACTION ROWS - ATTACHED FINAL
+   PORTFOLIO MOBILE ACTION ROWS - SAFE TAP TARGETS FINAL
    ========================= */
 @media screen and (max-width: 768px) {
-    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) {
+    .portfolio-mobile-actions-grid {
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-        column-gap: 0.55rem !important;
+        column-gap: 0.75rem !important;
+        row-gap: 0.55rem !important;
         width: 100% !important;
         max-width: 100% !important;
-        min-width: 0 !important;
-        margin-top: 0 !important;
-        margin-bottom: -1.05rem !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        margin-top: 0.65rem !important;
+        margin-bottom: 0.45rem !important;
+        overflow: visible !important;
     }
 
+    /* Streamlit renders each action pair as a horizontal block. Keep every row
+       in the normal document flow: no negative margins, no overlap. */
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
-    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-        column-gap: 0.55rem !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        margin-top: -1.05rem !important;
-        margin-bottom: -1.05rem !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-    }
-
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]),
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-        column-gap: 0.55rem !important;
+        display: contents !important;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
-        margin-top: -1.05rem !important;
-        margin-bottom: 0 !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
@@ -3119,8 +3105,8 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         min-width: 0 !important;
         max-width: none !important;
         flex: none !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
@@ -3129,18 +3115,32 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
     div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
     div[class*="st-key-portfolio_mobile_sim_"] button,
     div[class*="st-key-portfolio_mobile_edit_"] button,
-    div[class*="st-key-portfolio_mobile_delete_"] button {
+    div[class*="st-key-portfolio_mobile_delete_"] button,
+    div[class*="st-key-portfolio_mobile_target_"] button {
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
-        min-height: 38px !important;
-        height: 38px !important;
-        border-radius: 10px !important;
+        min-height: 48px !important;
+        height: 48px !important;
+        border-radius: 12px !important;
         padding: 0 !important;
-        font-size: 0.96rem !important;
+        margin: 0 !important;
+        font-size: 1.02rem !important;
+        line-height: 1 !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
+        position: relative !important;
+        z-index: 1 !important;
+        touch-action: manipulation !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) div[data-testid="stElementContainer"],
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) div[data-testid="stElementContainer"] {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 }
 
@@ -3183,6 +3183,29 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         -webkit-text-fill-color: #ffffff !important;
     }
 }
+
+/* =========================
+   PORTFOLIO MOBILE ACTIONS - OVERLAP KILL SWITCH
+   =========================
+   Last-resort override loaded at the end of the file: the action buttons must
+   stay tappable and separated on smartphone. */
+@media screen and (max-width: 768px) {
+    .portfolio-mobile-actions-grid {
+        row-gap: 0.55rem !important;
+        margin-top: 0.65rem !important;
+        margin-bottom: 0.45rem !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]),
+    div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        transform: none !important;
+    }
+}
+
 
 
 
@@ -4881,6 +4904,15 @@ from utils.auth import require_login
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
+from utils.portfolio_input_formatting import (
+    PRICE_INPUT_FORMAT,
+    PRICE_INPUT_STEP,
+    QTY_INPUT_FORMAT,
+    QTY_INPUT_STEP,
+    normalize_price,
+    normalize_quantity,
+)
+from utils.portfolio_market_suggest import MARKET_OPTIONS, suggest_market_for_ticker
 from utils.portfolio_add_smart import build_smart_position
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
@@ -4889,7 +4921,11 @@ from utils.portfolio_render import (
     render_position_values,
     render_row_separator,
 )
-from utils.portfolio_simulator import calculate_budget_capacity, calculate_buy_simulation
+from utils.portfolio_simulator import (
+    calculate_budget_capacity,
+    calculate_buy_simulation,
+    calculate_suggested_quantity_from_budget,
+)
 from utils.portfolio_storage import (
     add_position,
     delete_position,
@@ -5183,7 +5219,7 @@ def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         st.markdown(
             '<div class="portfolio-add-smart-title">Aggiunta minima smart</div>'
-            '<div class="portfolio-add-smart-subtitle">Inserisci solo ticker, mercato opzionale, valuta, quantità e prezzo medio Fineco.</div>',
+            '<div class="portfolio-add-smart-subtitle">Inserisci ticker, controlla il mercato suggerito, valuta, quantità e prezzo medio Fineco.</div>',
             unsafe_allow_html=True,
         )
 
@@ -5193,13 +5229,31 @@ def render_add_form() -> None:
         with col1:
             ticker = st.text_input("Ticker", placeholder="SOFI, MSFT, MA", key="portfolio_add_ticker")
 
+        clean_ticker = str(ticker or "").strip().upper()
+        market_suggestion = suggest_market_for_ticker(clean_ticker)
+        suggested_market = str(market_suggestion.get("market") or "NASDAQ").upper()
+        if suggested_market not in MARKET_OPTIONS:
+            suggested_market = "NASDAQ"
+
+        last_ticker_key = "portfolio_add_last_ticker_for_market"
+        market_key = "portfolio_add_market_select"
+        if st.session_state.get(last_ticker_key) != clean_ticker:
+            st.session_state[last_ticker_key] = clean_ticker
+            st.session_state[market_key] = suggested_market
+
+        current_market = str(st.session_state.get(market_key, suggested_market) or suggested_market).upper()
+        if current_market not in MARKET_OPTIONS:
+            current_market = suggested_market
+
         with col2:
-            mercato = st.text_input(
-                "Mercato opzionale",
-                value="NASDAQ",
-                help="Se vuoto usa NASDAQ. Esempio: NYSE per Mastercard.",
-                key="portfolio_add_market",
+            mercato = st.selectbox(
+                "Mercato suggerito",
+                MARKET_OPTIONS,
+                index=MARKET_OPTIONS.index(current_market),
+                key=market_key,
+                help="Suggerito automaticamente da mappa locale/yfinance. Puoi modificarlo manualmente.",
             )
+            st.caption(market_suggestion.get("message", ""))
 
         with col3:
             valuta = st.selectbox("Valuta", ["EUR", "USD", "GBP", "CHF"], index=1, key="portfolio_add_currency")
@@ -5207,9 +5261,10 @@ def render_add_form() -> None:
         with col4:
             quantita = st.number_input(
                 "Quantità azioni",
-                min_value=0.0,
-                step=1.0,
-                format="%.6f",
+                min_value=0,
+                value=0,
+                step=QTY_INPUT_STEP,
+                format=QTY_INPUT_FORMAT,
                 key="portfolio_add_qty",
             )
 
@@ -5217,12 +5272,15 @@ def render_add_form() -> None:
             prezzo_medio = st.number_input(
                 "Prezzo medio per azione",
                 min_value=0.0,
-                step=0.01,
-                format="%.6f",
+                value=0.0,
+                step=PRICE_INPUT_STEP,
+                format=PRICE_INPUT_FORMAT,
                 key="portfolio_add_avg_price",
             )
 
-        investimento = float(quantita or 0.0) * float(prezzo_medio or 0.0)
+        clean_qty = normalize_quantity(quantita)
+        clean_avg_price = normalize_price(prezzo_medio)
+        investimento = float(clean_qty) * float(clean_avg_price)
         conversion = convert_to_eur(investimento, valuta)
 
         preview_cols = st.columns(3)
@@ -5271,16 +5329,15 @@ def render_add_form() -> None:
         submitted = st.button("Aggiungi posizione", key="portfolio_add_smart_submit")
 
         if submitted:
-            clean_ticker = str(ticker or "").strip().upper()
             if not clean_ticker:
                 st.warning("Ticker obbligatorio.")
                 return
 
-            if float(quantita or 0.0) <= 0:
+            if clean_qty <= 0:
                 st.warning("Quantità obbligatoria e maggiore di zero.")
                 return
 
-            if float(prezzo_medio or 0.0) <= 0:
+            if clean_avg_price <= 0:
                 st.warning("Prezzo medio per azione obbligatorio e maggiore di zero.")
                 return
 
@@ -5288,8 +5345,8 @@ def render_add_form() -> None:
                 ticker=clean_ticker,
                 mercato=mercato,
                 valuta=valuta,
-                quantita=quantita,
-                prezzo_medio=prezzo_medio,
+                quantita=clean_qty,
+                prezzo_medio=clean_avg_price,
             )
 
             add_position(DATA_PATH, result["position"])
@@ -5402,8 +5459,8 @@ def render_buy_simulator(df) -> None:
             f"Prezzo ipotetico di acquisto ({currency})",
             min_value=0.0,
             value=round(float(current_market_price), 2),
-            step=0.01,
-            format="%.2f",
+            step=PRICE_INPUT_STEP,
+            format=PRICE_INPUT_FORMAT,
             key=f"portfolio_sim_buy_price_{simulation_index}",
         )
 
@@ -5413,19 +5470,27 @@ def render_buy_simulator(df) -> None:
             min_value=0.0,
             value=0.0,
             step=100.0,
-            format="%.2f",
+            format=PRICE_INPUT_FORMAT,
             key=f"portfolio_sim_budget_{simulation_index}",
             help="Se valorizzato, il simulatore calcola quante azioni puoi comprare con quel budget.",
         )
 
     budget_capacity = calculate_budget_capacity(budget, buy_price)
-    suggested_max = max(10, int(current_qty), int(budget_capacity["buyable_qty"]), 100)
+    suggested_budget_qty = calculate_suggested_quantity_from_budget(budget, buy_price)
+    suggested_max = max(10, int(current_qty), int(suggested_budget_qty), 100)
     slider_max = min(max(suggested_max * 2, 100), 10000)
 
     slider_key = f"portfolio_sim_add_qty_{simulation_index}"
+    budget_signature_key = f"portfolio_sim_budget_signature_{simulation_index}"
+    budget_signature = (round(float(budget or 0.0), 2), round(float(buy_price or 0.0), 2))
 
     if slider_key not in st.session_state:
         st.session_state[slider_key] = 0
+
+    if budget_signature != st.session_state.get(budget_signature_key):
+        st.session_state[budget_signature_key] = budget_signature
+        if float(budget or 0.0) > 0:
+            st.session_state[slider_key] = min(int(slider_max), int(suggested_budget_qty))
 
     st.session_state[slider_key] = max(
         0,
@@ -5533,18 +5598,18 @@ def render_edit_form(df) -> None:
         with col4:
             quantita = st.number_input(
                 "Quantità",
-                min_value=0.0,
-                value=float(row.get("quantita", 0.0) or 0.0),
-                step=1.0,
-                format="%.6f",
+                min_value=0,
+                value=normalize_quantity(row.get("quantita", 0.0)),
+                step=QTY_INPUT_STEP,
+                format=QTY_INPUT_FORMAT,
             )
         with col5:
             prezzo_medio = st.number_input(
                 "P.zo medio carico",
                 min_value=0.0,
-                value=float(row.get("prezzo_medio", 0.0) or 0.0),
-                step=0.01,
-                format="%.6f",
+                value=normalize_price(row.get("prezzo_medio", 0.0)),
+                step=PRICE_INPUT_STEP,
+                format=PRICE_INPUT_FORMAT,
             )
 
         # Riga 3: dati tecnici solo in lettura.
@@ -5569,8 +5634,8 @@ def render_edit_form(df) -> None:
                 DATA_PATH,
                 edit_index,
                 {
-                    "quantita": quantita,
-                    "prezzo_medio": prezzo_medio,
+                    "quantita": normalize_quantity(quantita),
+                    "prezzo_medio": normalize_price(prezzo_medio),
                 },
             )
 
@@ -7438,6 +7503,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
 from __future__ import annotations
 
 from utils.portfolio_fx import convert_to_eur
+from utils.portfolio_input_formatting import normalize_price, normalize_quantity
 from utils.portfolio_prices import build_yfinance_symbol, fetch_last_quote
 from utils.portfolio_tradingview import build_tradingview_symbol
 
@@ -7490,8 +7556,8 @@ def build_smart_position(
     clean_ticker = _clean_text(ticker)
     clean_market = _clean_text(mercato) or DEFAULT_MARKET
     clean_currency = _clean_text(valuta) or "USD"
-    qty = _safe_float(quantita)
-    avg_price = _safe_float(prezzo_medio)
+    qty = normalize_quantity(quantita)
+    avg_price = normalize_price(prezzo_medio)
 
     yf_symbol = build_yfinance_symbol(
         clean_ticker,
@@ -7881,6 +7947,166 @@ def convert_to_eur(amount: float, currency: str) -> dict:
         "source": fx.get("source", ""),
         "error": "",
     }
+
+
+
+====================================================================================================
+===== FILE: utils/portfolio_input_formatting.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+
+QTY_INPUT_STEP = 1
+QTY_INPUT_FORMAT = "%d"
+
+PRICE_INPUT_STEP = 0.01
+PRICE_INPUT_FORMAT = "%.2f"
+
+
+def _safe_float(value, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def normalize_quantity(value) -> int:
+    """Normalize portfolio quantity inputs to whole units."""
+    number = _safe_float(value)
+    if number < 0:
+        return 0
+    return int(round(number))
+
+
+def normalize_price(value) -> float:
+    """Normalize portfolio price inputs to two decimals."""
+    number = _safe_float(value)
+    if number < 0:
+        return 0.0
+    return round(number, 2)
+
+
+
+====================================================================================================
+===== FILE: utils/portfolio_market_suggest.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+from functools import lru_cache
+
+
+DEFAULT_MARKET = "NASDAQ"
+MARKET_OPTIONS = ["NASDAQ", "NYSE", "AMEX", "ARCA", "MIL"]
+
+NASDAQ_TICKERS = {
+    "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA",
+    "NFLX", "ADBE", "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN",
+    "PEP", "COST", "AMAT", "MU", "PYPL", "SBUX", "ISRG", "BKNG",
+    "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI", "SOFI", "MSTR",
+    "PLTR", "ASML", "ADP", "INTU", "REGN", "VRTX", "ABNB", "MELI",
+}
+
+NYSE_TICKERS = {
+    "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "KO", "PG", "JNJ",
+    "UNH", "HD", "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT",
+    "MCD", "NKE", "CAT", "BA", "GS", "MS", "AXP", "GE", "T", "VZ",
+    "PFE", "MRK", "LLY", "ABBV", "TMO", "LIN", "NOW", "UBER", "SQ",
+}
+
+YFINANCE_EXCHANGE_TO_MARKET = {
+    "NMS": "NASDAQ",
+    "NGM": "NASDAQ",
+    "NCM": "NASDAQ",
+    "NASDAQ": "NASDAQ",
+    "NASDAQGS": "NASDAQ",
+    "NASDAQGM": "NASDAQ",
+    "NASDAQCM": "NASDAQ",
+    "NYQ": "NYSE",
+    "NYSE": "NYSE",
+    "NYE": "NYSE",
+    "ASE": "AMEX",
+    "AMEX": "AMEX",
+    "PCX": "ARCA",
+    "ARCA": "ARCA",
+    "MIL": "MIL",
+    "MILAN": "MIL",
+}
+
+
+def clean_ticker(ticker: str) -> str:
+    return str(ticker or "").strip().upper()
+
+
+def _result(ticker: str, market: str, confidence: str, source: str, message: str) -> dict:
+    return {
+        "ticker": clean_ticker(ticker),
+        "market": market,
+        "confidence": confidence,
+        "source": source,
+        "message": message,
+    }
+
+
+@lru_cache(maxsize=256)
+def _fetch_yfinance_exchange(ticker: str) -> tuple[str, str]:
+    """Return yfinance exchange and display exchange, without raising."""
+    try:
+        import yfinance as yf
+
+        info = yf.Ticker(ticker).get_info() or {}
+        exchange = str(info.get("exchange") or "").strip().upper()
+        full_exchange = str(info.get("fullExchangeName") or "").strip()
+        return exchange, full_exchange
+    except Exception:
+        return "", ""
+
+
+def suggest_market_for_ticker(ticker: str) -> dict:
+    """Suggest the most likely TradingView market for a portfolio ticker.
+
+    The function first uses a small local map for common US tickers, then falls
+    back to yfinance exchange metadata. The UI must still expose a selectbox so
+    the user can override the suggestion manually.
+    """
+    symbol = clean_ticker(ticker)
+
+    if not symbol:
+        return _result(symbol, DEFAULT_MARKET, "low", "default", "Mercato default: NASDAQ")
+
+    if ":" in symbol:
+        market = symbol.split(":", 1)[0].strip().upper() or DEFAULT_MARKET
+        if market not in MARKET_OPTIONS:
+            market = DEFAULT_MARKET
+        return _result(symbol, market, "high", "ticker_prefix", f"Mercato letto dal prefisso: {market}")
+
+    if symbol.endswith(".MI") or symbol.startswith("1"):
+        return _result(symbol, "MIL", "medium", "local_rule", "Mercato suggerito: MIL")
+
+    if symbol in NASDAQ_TICKERS:
+        return _result(symbol, "NASDAQ", "high", "local_map", "Mercato suggerito: NASDAQ")
+
+    if symbol in NYSE_TICKERS:
+        return _result(symbol, "NYSE", "high", "local_map", "Mercato suggerito: NYSE")
+
+    exchange, full_exchange = _fetch_yfinance_exchange(symbol)
+    market = YFINANCE_EXCHANGE_TO_MARKET.get(exchange)
+
+    if market:
+        detail = f" da yfinance ({exchange}"
+        if full_exchange:
+            detail += f" · {full_exchange}"
+        detail += ")"
+        return _result(symbol, market, "medium", "yfinance", f"Mercato suggerito: {market}{detail}")
+
+    return _result(
+        symbol,
+        DEFAULT_MARKET,
+        "low",
+        "default",
+        "Mercato non determinato: verifica la selectbox prima di aggiungere.",
+    )
 
 
 
@@ -8337,6 +8563,17 @@ def calculate_buy_simulation(
         "estimated_gain_pct": estimated_gain_pct,
     }
 
+
+
+def calculate_suggested_quantity_from_budget(budget: float, buy_price: float) -> int:
+    """Return whole quantity buyable with a budget and a unit buy price."""
+    budget = safe_float(budget)
+    buy_price = safe_float(buy_price)
+
+    if budget <= 0 or buy_price <= 0:
+        return 0
+
+    return max(0, int(budget // buy_price))
 
 def calculate_budget_capacity(budget: float, buy_price: float) -> dict:
     """Calculate how many whole shares can be bought with a budget."""
