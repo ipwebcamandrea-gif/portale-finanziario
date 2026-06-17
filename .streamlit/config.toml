@@ -1,2 +1,10 @@
 [server]
 disconnectedSessionTTL = 1800
+
+[theme]
+base = "dark"
+primaryColor = "#00B0FF"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#161A25"
+textColor = "#FFFFFF"
+font = "sans serif"
