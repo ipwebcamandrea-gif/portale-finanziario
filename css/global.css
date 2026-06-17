@@ -337,3 +337,24 @@ div[class*="st-key-allocation_header_back"] button:hover {
         font-size: 0.82rem !important;
     }
 }
+
+/* =========================
+   GLOBAL MOBILE BUTTON DARK FALLBACK
+   =========================
+   Extra protection when mobile/browser starts Streamlit in light theme before
+   project CSS and theme state settle.
+*/
+@media screen and (max-width: 768px) {
+    div[class*="st-key-tv_refresh_data"] button,
+    div[class*="st-key-tv_back_cockpit"] button,
+    div[class*="st-key-portfolio_header_refresh"] button,
+    div[class*="st-key-portfolio_header_back"] button,
+    div[class*="st-key-allocation_header_refresh"] button,
+    div[class*="st-key-allocation_header_back"] button {
+        background: radial-gradient(circle at top left, rgba(0, 176, 255, 0.18), transparent 36%),
+                    linear-gradient(180deg, #202733 0%, #151b24 100%) !important;
+        color: #e6edf3 !important;
+        border: 1px solid rgba(0, 176, 255, 0.42) !important;
+        -webkit-text-fill-color: #e6edf3 !important;
+    }
+}
