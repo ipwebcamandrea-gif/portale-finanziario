@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 47
+# Files included: 48
 
 
 
@@ -5082,6 +5082,7 @@ import streamlit as st
 
 from components.standard_header import render_standard_page_header
 from utils.auth import require_login
+from utils.auto_refresh import render_auto_refresh_timer
 
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
@@ -5138,6 +5139,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
+AUTO_REFRESH_PAGE_SECONDS = 120
 
 
 st.set_page_config(
@@ -5282,6 +5284,16 @@ def auto_refresh_quotes_on_page_open() -> None:
     st.session_state["portfolio_last_auto_refresh_result"] = result
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     set_last_refresh_timestamp()
+
+
+def is_portfolio_auto_refresh_safe() -> bool:
+    """Return True when auto-refresh can run without interrupting inline panels."""
+    blocking_keys = (
+        "portfolio_edit_index",
+        "portfolio_delete_index",
+        "portfolio_simulation_index",
+    )
+    return all(st.session_state.get(key) is None for key in blocking_keys)
 
 
 def render_refresh_details(result: dict) -> None:
@@ -5982,6 +5994,12 @@ def main() -> None:
     load_css()
     init_state()
 
+    render_auto_refresh_timer(
+        key="portfolio_page_auto_refresh_120s",
+        interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
+        enabled=is_portfolio_auto_refresh_safe(),
+    )
+
     mobile_view = render_standard_page_header(
         title="💼 Portafoglio",
         subtitle="Gestione posizioni, valori di mercato e grafico TradingView.",
@@ -6045,6 +6063,7 @@ from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
 from utils.auth import require_login
+from utils.auto_refresh import render_auto_refresh_timer
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
     salva_sessione_su_disco,
@@ -6063,6 +6082,7 @@ require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
+AUTO_REFRESH_PAGE_SECONDS = 120
 
 
 
@@ -6076,6 +6096,16 @@ def force_watchlist_refresh_on_page_open() -> None:
     """Force fresh watchlist market data before rendering rows."""
     st.cache_data.clear()
     st.session_state["tv_last_refresh_timestamp"] = current_watchlist_refresh_timestamp()
+
+
+def is_watchlist_auto_refresh_safe() -> bool:
+    """Return True when auto-refresh can run without interrupting tab panels."""
+    blocking_flags = (
+        "tv_show_create_panel",
+        "tv_show_rename_panel",
+        "tv_confirm_delete_tab",
+    )
+    return not any(bool(st.session_state.get(key, False)) for key in blocking_flags)
 
 
 def render_watchlist_refresh_status() -> None:
@@ -6117,6 +6147,11 @@ local_css(WATCHLIST_TV_CSS)
 
 # Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
 force_watchlist_refresh_on_page_open()
+render_auto_refresh_timer(
+    key="watchlist_page_auto_refresh_120s",
+    interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
+    enabled=is_watchlist_auto_refresh_safe(),
+)
 
 
 
@@ -7090,6 +7125,69 @@ def logout_user(session_expired: bool = False) -> None:
 def logout_and_redirect() -> None:
     logout_user()
     st.switch_page("main.py")
+
+
+
+====================================================================================================
+===== FILE: utils/auto_refresh.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import json
+
+import streamlit.components.v1 as components
+
+
+# =========================
+# AUTO REFRESH PAGE HELPER
+# =========================
+
+def render_auto_refresh_timer(*, key: str, interval_seconds: int = 120, enabled: bool = True) -> None:
+    """Render a browser-side timer that reloads the current Streamlit page.
+
+    Streamlit reruns Python code only after a user interaction or a browser
+    reload. This helper creates the missing browser-side timer. The timer is
+    intentionally isolated in this utility module so the rest of the project
+    stays free from scattered JavaScript.
+
+    If enabled is False, any existing timer for the same key is cancelled. This
+    is useful while edit/delete/simulation panels are open.
+    """
+    safe_key = str(key or "auto_refresh")
+    interval_ms = max(int(interval_seconds), 10) * 1000
+    enabled_js = "true" if enabled else "false"
+    key_js = json.dumps(safe_key)
+
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            const timerKey = {key_js};
+            const intervalMs = {interval_ms};
+            const enabled = {enabled_js};
+            const parentWindow = window.parent || window;
+
+            parentWindow.__financePortalAutoRefreshTimers = parentWindow.__financePortalAutoRefreshTimers || {{}};
+
+            if (parentWindow.__financePortalAutoRefreshTimers[timerKey]) {{
+                clearTimeout(parentWindow.__financePortalAutoRefreshTimers[timerKey]);
+                delete parentWindow.__financePortalAutoRefreshTimers[timerKey];
+            }}
+
+            if (!enabled) {{
+                return;
+            }}
+
+            parentWindow.__financePortalAutoRefreshTimers[timerKey] = setTimeout(function() {{
+                parentWindow.location.reload();
+            }}, intervalMs);
+        }})();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
 
 
 
