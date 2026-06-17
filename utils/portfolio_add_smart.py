@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from utils.portfolio_fx import convert_to_eur
+from utils.portfolio_market_suggest import currency_for_market
 from utils.portfolio_input_formatting import normalize_price, normalize_quantity
 from utils.portfolio_prices import build_yfinance_symbol, fetch_last_quote
 from utils.portfolio_tradingview import build_tradingview_symbol
@@ -53,7 +54,8 @@ def build_smart_position(
     """Build a portfolio position from the minimal add form."""
     clean_ticker = _clean_text(ticker)
     clean_market = _clean_text(mercato) or DEFAULT_MARKET
-    clean_currency = _clean_text(valuta) or "USD"
+    # Currency is derived from market to prevent inconsistent combinations such as MIL + USD.
+    clean_currency = currency_for_market(clean_market)
     qty = normalize_quantity(quantita)
     avg_price = normalize_price(prezzo_medio)
 
