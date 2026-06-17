@@ -21,6 +21,31 @@ NYSE_TICKERS = {
     "PFE", "MRK", "LLY", "ABBV", "TMO", "LIN", "NOW", "UBER", "SQ",
 }
 
+MARKET_CURRENCY_MAP = {
+    "NASDAQ": "USD",
+    "NYSE": "USD",
+    "AMEX": "USD",
+    "ARCA": "USD",
+    "MIL": "EUR",
+}
+
+
+def currency_for_market(market: str, default: str = "USD") -> str:
+    """Return the operational trading currency inferred from the selected market.
+
+    The add-position form must not let the user choose a stale currency manually:
+    if the selected market changes, the currency follows the market.
+    """
+    clean_market = str(market or "").strip().upper()
+    return MARKET_CURRENCY_MAP.get(clean_market, default).upper()
+
+
+def currency_note_for_market(market: str) -> str:
+    clean_market = str(market or "").strip().upper() or DEFAULT_MARKET
+    currency = currency_for_market(clean_market)
+    return f"Valuta dedotta dal mercato selezionato: {clean_market} → {currency}"
+
+
 YFINANCE_EXCHANGE_TO_MARKET = {
     "NMS": "NASDAQ",
     "NGM": "NASDAQ",
