@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T12:17:25+00:00",
+    "updated_at": "2026-06-18T12:59:33+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -35,6 +35,23 @@
             "analyst_count": 36,
             "rating": "strong_buy",
             "updated_at": "2026-06-18T12:17:25+00:00"
+        },
+        "V": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "V",
+            "ticker": "V",
+            "tv_symbol": "NYSE:V",
+            "name": "Visa Inc.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 330.3800048828125,
+            "target_low": 330.0,
+            "target_mean": 398.83362,
+            "target_high": 450.0,
+            "analyst_count": 36,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-18T12:59:33+00:00"
         }
     }
 }
