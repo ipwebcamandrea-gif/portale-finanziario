@@ -51,7 +51,7 @@ st.markdown(
 # =========================
 # IMPORTANT: use st.button + st.switch_page, not HTML <a> links.
 # This preserves Streamlit session_state, including the login state.
-col_watchlist_tv, col_portafoglio, col_allocazione, col_logout = st.columns(4)
+col_watchlist_tv, col_portafoglio, col_allocazione = st.columns(3)
 
 with col_watchlist_tv:
     if st.button(
@@ -76,6 +76,16 @@ with col_allocazione:
         use_container_width=True,
     ):
         st.switch_page("pages/allocazione_portafoglio.py")
+
+col_target, col_logout, col_spacer = st.columns(3)
+
+with col_target:
+    if st.button(
+        "🎯 Target Analisti\n\nTarget, upside e simulazione investimento.",
+        key="card_target_analisti",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/target_analisti.py")
 
 with col_logout:
     if st.button(
