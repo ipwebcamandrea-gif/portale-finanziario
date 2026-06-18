@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T13:21:12+00:00",
+    "updated_at": "2026-06-18T13:37:06+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -86,6 +86,23 @@
             "analyst_count": 39,
             "rating": "buy",
             "updated_at": "2026-06-18T13:21:11+00:00"
+        },
+        "INTU": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "INTU",
+            "ticker": "INTU",
+            "tv_symbol": "NASDAQ:INTU",
+            "name": "Intuit Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 261.92999267578125,
+            "target_low": 276.0,
+            "target_mean": 491.29718,
+            "target_high": 921.0,
+            "analyst_count": 32,
+            "rating": "buy",
+            "updated_at": "2026-06-18T13:37:06+00:00"
         }
     }
 }
