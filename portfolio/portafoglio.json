@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-18T09:52:25+00:00",
+  "updated_at": "2026-06-18T09:52:27+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -105,19 +105,6 @@
       "prezzo_precedente": 185.33,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
-    },
-    {
-      "ticker": "1AMZN",
-      "titolo": "Amazon.com, Inc.",
-      "mercato": "MIL",
-      "strumento": "Azione",
-      "valuta": "EUR",
-      "quantita": 1.0,
-      "prezzo_medio": 10.0,
-      "prezzo_mercato": 209.14999389648438,
-      "prezzo_precedente": 207.5500030517578,
-      "yf_symbol": "1AMZN.MI",
-      "tv_symbol": "MIL:1AMZN"
     }
   ]
 }
