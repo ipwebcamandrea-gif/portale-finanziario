@@ -5082,8 +5082,6 @@ import streamlit as st
 
 from components.standard_header import render_standard_page_header
 from utils.auth import require_login
-from utils.auto_refresh import render_auto_refresh_timer
-
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
@@ -5139,7 +5137,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
-AUTO_REFRESH_PAGE_SECONDS = 120
+MANUAL_REFRESH_MODE = True
 
 
 st.set_page_config(
@@ -5994,11 +5992,9 @@ def main() -> None:
     load_css()
     init_state()
 
-    render_auto_refresh_timer(
-        key="portfolio_page_auto_refresh_120s",
-        interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
-        enabled=is_portfolio_auto_refresh_safe(),
-    )
+    # Refresh automatico browser disattivato: evita reload forzati che possono
+    # interrompere la sessione Streamlit/login. I dati si aggiornano con il
+    # pulsante 🔄 dell'header, con il refresh manuale browser o al cambio pagina.
 
     mobile_view = render_standard_page_header(
         title="💼 Portafoglio",
@@ -6063,7 +6059,6 @@ from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
 from components.watchlist_rows import render_watchlist_rows
 from utils.auth import require_login
-from utils.auto_refresh import render_auto_refresh_timer
 from utils.watchlist_storage import (
     aggiorna_sessione_da_disco,
     salva_sessione_su_disco,
@@ -6082,7 +6077,7 @@ require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
-AUTO_REFRESH_PAGE_SECONDS = 120
+MANUAL_REFRESH_MODE = True
 
 
 
@@ -6147,11 +6142,7 @@ local_css(WATCHLIST_TV_CSS)
 
 # Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
 force_watchlist_refresh_on_page_open()
-render_auto_refresh_timer(
-    key="watchlist_page_auto_refresh_120s",
-    interval_seconds=AUTO_REFRESH_PAGE_SECONDS,
-    enabled=is_watchlist_auto_refresh_safe(),
-)
+# Refresh automatico browser disattivato: usare pulsante 🔄 o refresh manuale.
 
 
 
