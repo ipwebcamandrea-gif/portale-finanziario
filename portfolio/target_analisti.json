@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T17:27:29+00:00",
+    "updated_at": "2026-06-18T17:28:19+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -170,6 +170,23 @@
             "analyst_count": 3,
             "rating": "none",
             "updated_at": "2026-06-18T17:25:49+00:00"
+        },
+        "WVE": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "WVE",
+            "ticker": "WVE",
+            "tv_symbol": "NASDAQ:WVE",
+            "name": "Wave Life Sciences Ltd.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 6.090000152587891,
+            "target_low": 12.0,
+            "target_mean": 21.9375,
+            "target_high": 43.0,
+            "analyst_count": 16,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-18T17:28:18+00:00"
         }
     }
 }
