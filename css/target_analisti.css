@@ -1,0 +1,18 @@
+/* ========================= TARGET ANALISTI PAGE ========================= */
+.target-page-title { font-size: 2.25rem; font-weight: 950; line-height: 1.08; letter-spacing: -0.045em; background: linear-gradient(90deg,#00b0ff,#26a69a,#8e7dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; }
+.target-page-subtitle { color:#9fb3d1; font-size:0.92rem; font-weight:720; margin-bottom:1rem; }
+.target-status-pill { display:inline-flex; gap:0.45rem; align-items:center; padding:0.42rem 0.72rem; border-radius:999px; border:1px solid rgba(0,176,255,0.28); background:rgba(0,176,255,0.08); color:#9ec5ff; font-size:0.82rem; font-weight:800; margin:0.15rem 0 0.9rem 0; }
+.target-card { min-height:118px; padding:0.9rem 1rem; border-radius:16px; border:1px solid rgba(48,54,61,0.78); background:radial-gradient(circle at top right,rgba(0,176,255,0.12),transparent 35%),linear-gradient(180deg,rgba(32,39,51,0.78) 0%,rgba(21,27,36,0.86) 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,0.035); margin-bottom:0.75rem; }
+.target-card-label { color:#9fb3d1; font-size:0.72rem; font-weight:950; text-transform:uppercase; letter-spacing:0.055em; margin-bottom:0.35rem; }
+.target-card-value { color:#f9fafb; font-size:1.25rem; font-weight:950; line-height:1.14; }
+.target-card-subtitle { margin-top:0.22rem; font-size:0.84rem; font-weight:850; color:#8bd3ff; }
+.target-section-title { color:#f9fafb; font-size:1.08rem; font-weight:950; margin:1.1rem 0 0.65rem 0; }
+.target-scenario-row { display:flex; justify-content:space-between; gap:0.75rem; align-items:flex-start; padding:0.72rem 0.82rem; margin-bottom:0.48rem; border-radius:14px; border:1px solid rgba(48,54,61,0.72); background:linear-gradient(180deg,rgba(32,39,51,0.62) 0%,rgba(21,27,36,0.72) 100%); }
+.target-scenario-title { color:#e6edf3; font-size:0.92rem; font-weight:950; }
+.target-scenario-note { color:#9ca3af; font-size:0.76rem; font-weight:720; margin-top:0.14rem; }
+.target-scenario-values { color:#f9fafb; text-align:right; font-size:0.86rem; font-weight:900; white-space:nowrap; }
+.target-positive { color:#22c55e !important; }
+.target-negative { color:#ef4444 !important; }
+.target-neutral { color:#d1d5db !important; }
+.target-warning-box { padding:0.85rem 1rem; border-radius:14px; border:1px solid rgba(245,158,11,0.36); background:rgba(245,158,11,0.08); color:#f8d48a; font-weight:780; margin:0.8rem 0; }
+@media screen and (max-width:768px){ .target-page-title{font-size:1.65rem;} .target-card-value{font-size:1.02rem;} .target-scenario-row{flex-direction:column;} .target-scenario-values{text-align:left; white-space:normal;} }
