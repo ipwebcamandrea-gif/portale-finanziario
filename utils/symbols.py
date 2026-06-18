@@ -160,3 +160,15 @@ def simbolo_tradingview(symbol):
 def url_tradingview(symbol):
     tv_symbol = simbolo_tradingview(symbol)
     return "https://www.tradingview.com/chart/?symbol=" + quote(tv_symbol, safe=":.")
+
+
+def yfinance_to_tradingview_symbol(symbol: str) -> str:
+    """Convert yfinance Milano symbols to TradingView format, e.g. 1AMZN.MI -> MIL:1AMZN."""
+    clean_symbol = str(symbol or "").strip().upper()
+    if not clean_symbol:
+        return ""
+    if ":" in clean_symbol:
+        return clean_symbol
+    if clean_symbol.endswith(".MI"):
+        return "MIL:" + clean_symbol[:-3]
+    return "NASDAQ:" + clean_symbol
