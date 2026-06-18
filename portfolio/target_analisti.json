@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T12:59:33+00:00",
+    "updated_at": "2026-06-18T13:15:00+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -52,6 +52,23 @@
             "analyst_count": 36,
             "rating": "strong_buy",
             "updated_at": "2026-06-18T12:59:33+00:00"
+        },
+        "SOFI": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "SOFI",
+            "ticker": "SOFI",
+            "tv_symbol": "NASDAQ:SOFI",
+            "name": "SoFi Technologies, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 17.420000076293945,
+            "target_low": 12.0,
+            "target_mean": 20.9,
+            "target_high": 31.0,
+            "analyst_count": 20,
+            "rating": "hold",
+            "updated_at": "2026-06-18T13:15:00+00:00"
         }
     }
 }
