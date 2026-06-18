@@ -1,0 +1,23 @@
+{
+    "version": 1,
+    "updated_at": "2026-06-18T12:12:33+00:00",
+    "targets": {
+        "MSFT": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MSFT",
+            "ticker": "MSFT",
+            "tv_symbol": "NASDAQ:MSFT",
+            "name": "Microsoft Corporation",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 378.9100036621094,
+            "target_low": 400.0,
+            "target_mean": 561.38763,
+            "target_high": 870.0,
+            "analyst_count": 55,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-18T12:12:33+00:00"
+        }
+    }
+}
