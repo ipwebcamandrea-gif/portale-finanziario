@@ -50,6 +50,9 @@ def build_smart_position(
     valuta: str,
     quantita: float,
     prezzo_medio: float,
+    titolo: str = "",
+    yf_symbol: str = "",
+    tv_symbol: str = "",
 ) -> dict:
     """Build a portfolio position from the minimal add form."""
     clean_ticker = _clean_text(ticker)
@@ -62,13 +65,13 @@ def build_smart_position(
     yf_symbol = build_yfinance_symbol(
         clean_ticker,
         clean_market,
-        "",
+        yf_symbol,
         clean_currency,
     )
     tv_symbol = build_tradingview_symbol(
         clean_market,
         clean_ticker,
-        "",
+        tv_symbol,
         clean_currency,
     )
 
@@ -77,7 +80,7 @@ def build_smart_position(
     market_price = float(quote.get("last")) if quote_ok else avg_price
     previous_price = float(quote.get("previous")) if quote_ok else avg_price
 
-    title = fetch_position_title(yf_symbol, clean_ticker)
+    title = str(titolo or "").strip() or fetch_position_title(yf_symbol, clean_ticker)
 
     invested_amount = qty * avg_price
     eur_conversion = convert_to_eur(invested_amount, clean_currency)
