@@ -16,6 +16,7 @@ from utils.market_data import (
     is_in_sma200_zone,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
+from utils.target_symbol_resolver import resolve_target_symbol
 
 
 # =========================
@@ -256,26 +257,13 @@ def open_target_page(symbol: str, source: str = "watchlist") -> None:
         metrics = get_stock_metrics(symbol)
     except Exception:
         metrics = {}
-    tv_url = url_tradingview(symbol)
-    tv_symbol = ""
-    try:
-        parsed = urlparse(tv_url)
-        parts = [part for part in parsed.path.split("/") if part]
-        if "symbols" in parts:
-            idx = parts.index("symbols")
-            if idx + 1 < len(parts):
-                tv_symbol = parts[idx + 1].replace("-", ":")
-    except Exception:
-        tv_symbol = ""
-    st.session_state["target_selected"] = {
-        "yf_symbol": str(symbol or "").strip().upper(),
-        "ticker": str(symbol or "").strip().upper().replace(".MI", ""),
-        "tv_symbol": tv_symbol,
-        "name": get_company_name(symbol, metrics) if metrics else "",
-        "market": "MIL" if str(symbol).upper().endswith(".MI") else "",
-        "currency": str(metrics.get("currency") or "").upper() if metrics else "",
-        "source": source,
-    }
+
+    st.session_state["target_selected"] = resolve_target_symbol(
+        symbol,
+        name=get_company_name(symbol, metrics) if metrics else "",
+        currency=str(metrics.get("currency") or "").upper() if metrics else "",
+        source=source,
+    )
     st.switch_page("pages/target_analisti.py")
 
 
@@ -534,8 +522,6 @@ def render_row_compact(symbol, metrics, current):
 
     with st.container(key=row_key):
         st.markdown(html, unsafe_allow_html=True)
-        if st.button("🎯 Target", key="tv_compact_target_" + symbol + "_" + current, use_container_width=True, help="Apri Target Analisti interno"):
-            open_target_page(symbol, "watchlist")
 
 
 # =========================
