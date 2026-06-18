@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
@@ -18,12 +19,7 @@ from utils.portfolio_input_formatting import (
     normalize_price,
     normalize_quantity,
 )
-from utils.portfolio_market_suggest import (
-    MARKET_OPTIONS,
-    currency_for_market,
-    currency_note_for_market,
-    suggest_market_for_ticker,
-)
+from utils.ticker_lookup import format_candidate_label, search_ticker_candidates
 from utils.portfolio_add_smart import build_smart_position
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_render import (
@@ -337,166 +333,97 @@ def refresh_portfolio_quotes_action() -> None:
     st.rerun()
 
 
+def _portfolio_add_select_key(query: str) -> str:
+    safe = re.sub(r"[^A-Za-z0-9_]+", "_", str(query or "")).strip("_") or "empty"
+    return "portfolio_add_candidate_select_" + safe
+
+
 def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         st.markdown(
             '<div class="portfolio-add-smart-title">Aggiunta minima smart</div>'
-            '<div class="portfolio-add-smart-subtitle">Inserisci ticker, controlla il mercato suggerito, quantità e prezzo medio Fineco. La valuta viene dedotta automaticamente dal mercato.</div>',
+            '<div class="portfolio-add-smart-subtitle">Cerca per nome o ticker, scegli lo strumento corretto tra NASDAQ, NYSE e Milano, poi inserisci quantità e prezzo medio Fineco.</div>',
             unsafe_allow_html=True,
         )
-
-        col1, col2, col3 = st.columns([1.2, 1.2, 0.8])
+        col1, col2, col3 = st.columns([1.6, 2.6, 0.8])
         col4, col5 = st.columns([1, 1])
-
         with col1:
-            ticker = st.text_input("Ticker", placeholder="SOFI, MSFT, MA", key="portfolio_add_ticker")
-
-        clean_ticker = str(ticker or "").strip().upper()
-        market_suggestion = suggest_market_for_ticker(clean_ticker)
-        suggested_market = str(market_suggestion.get("market") or "NASDAQ").upper()
-        if suggested_market not in MARKET_OPTIONS:
-            suggested_market = "NASDAQ"
-
-        last_ticker_key = "portfolio_add_last_ticker_for_market"
-        market_key = "portfolio_add_market_select"
-        if st.session_state.get(last_ticker_key) != clean_ticker:
-            st.session_state[last_ticker_key] = clean_ticker
-            st.session_state[market_key] = suggested_market
-
-        current_market = str(st.session_state.get(market_key, suggested_market) or suggested_market).upper()
-        if current_market not in MARKET_OPTIONS:
-            current_market = suggested_market
-
+            ticker_query = st.text_input("Cerca titolo o ticker", placeholder="AMAZON, AMZN, MICROSOFT, 1AMZN.MI", key="portfolio_add_ticker")
+        clean_query = str(ticker_query or "").strip()
+        candidates = search_ticker_candidates(clean_query) if clean_query else []
+        selected_candidate = None
         with col2:
-            mercato = st.selectbox(
-                "Mercato suggerito",
-                MARKET_OPTIONS,
-                index=MARKET_OPTIONS.index(current_market),
-                key=market_key,
-                help="Suggerito automaticamente da mappa locale/yfinance. Puoi modificarlo manualmente.",
-            )
-            suggestion_message = market_suggestion.get("message", "")
-            if suggestion_message:
-                st.caption(f"{suggestion_message} · Mercato selezionato: {mercato}")
+            if clean_query and not candidates:
+                st.warning("Nessun risultato trovato. Prova con il ticker esatto, es. AMZN o 1AMZN.MI.")
+            elif candidates:
+                selected_index = st.selectbox(
+                    "Titolo / mercato",
+                    options=list(range(len(candidates))),
+                    format_func=lambda idx: format_candidate_label(candidates[idx]),
+                    key=_portfolio_add_select_key(clean_query),
+                    help="La lista mostra simbolo yfinance, nome, mercato e valuta.",
+                )
+                selected_candidate = candidates[selected_index]
+                st.caption(
+                    "Scelta: "
+                    f"{selected_candidate.get('yf_symbol', '-')} · {selected_candidate.get('name', '-')} · "
+                    f"{selected_candidate.get('market', '-')} · {selected_candidate.get('currency', '-')} · "
+                    f"TradingView {selected_candidate.get('tv_symbol', '-')}"
+                )
             else:
-                st.caption(f"Mercato selezionato: {mercato}")
-
-        valuta = currency_for_market(mercato)
-
+                st.caption("Scrivi un nome o ticker per vedere le alternative NASDAQ, NYSE e Milano.")
+        valuta = str(selected_candidate.get("currency") or "USD") if selected_candidate else "USD"
+        mercato = str(selected_candidate.get("market") or "NASDAQ") if selected_candidate else "NASDAQ"
         with col3:
-            st.text_input(
-                "Valuta dedotta",
-                value=valuta,
-                disabled=True,
-                key=f"portfolio_add_currency_readonly_{mercato}",
-                help="La valuta viene calcolata dal mercato selezionato e non va inserita manualmente.",
-            )
-            st.caption(currency_note_for_market(mercato))
-
+            st.text_input("Valuta", value=valuta, disabled=True, key=f"portfolio_add_currency_readonly_{mercato}_{valuta}", help="La valuta viene calcolata dallo strumento selezionato e non va inserita manualmente.")
+            st.caption(f"Mercato: {mercato}")
         with col4:
-            quantita = st.number_input(
-                "Quantità azioni",
-                min_value=0,
-                value=0,
-                step=QTY_INPUT_STEP,
-                format=QTY_INPUT_FORMAT,
-                key="portfolio_add_qty",
-            )
-
+            quantita = st.number_input("Quantità azioni", min_value=0, value=0, step=QTY_INPUT_STEP, format=QTY_INPUT_FORMAT, key="portfolio_add_qty")
         with col5:
-            prezzo_medio = st.number_input(
-                "Prezzo medio per azione",
-                min_value=0.0,
-                value=0.0,
-                step=PRICE_INPUT_STEP,
-                format=PRICE_INPUT_FORMAT,
-                key="portfolio_add_avg_price",
-            )
-
+            prezzo_medio = st.number_input("Prezzo medio per azione", min_value=0.0, value=0.0, step=PRICE_INPUT_STEP, format=PRICE_INPUT_FORMAT, key="portfolio_add_avg_price")
         clean_qty = normalize_quantity(quantita)
         clean_avg_price = normalize_price(prezzo_medio)
         investimento = float(clean_qty) * float(clean_avg_price)
         conversion = convert_to_eur(investimento, valuta)
-
         preview_cols = st.columns(3)
         with preview_cols[0]:
-            st.markdown(
-                '<div class="portfolio-add-preview-card">'
-                '<div class="portfolio-add-preview-label">Investimento di carico</div>'
-                f'<div class="portfolio-add-preview-value">{fmt_eur(investimento)} {valuta}</div>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-
+            st.markdown('<div class="portfolio-add-preview-card"><div class="portfolio-add-preview-label">Investimento di carico</div>' f'<div class="portfolio-add-preview-value">{fmt_eur(investimento)} {valuta}</div></div>', unsafe_allow_html=True)
         with preview_cols[1]:
-            if conversion.get("ok"):
-                eur_text = f"{fmt_eur(conversion.get('value'))} EUR"
-            else:
-                eur_text = "Cambio non disponibile"
-
-            st.markdown(
-                '<div class="portfolio-add-preview-card">'
-                '<div class="portfolio-add-preview-label">Investimento in EUR</div>'
-                f'<div class="portfolio-add-preview-value">{eur_text}</div>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-
+            eur_text = f"{fmt_eur(conversion.get('value'))} EUR" if conversion.get("ok") else "Cambio non disponibile"
+            st.markdown('<div class="portfolio-add-preview-card"><div class="portfolio-add-preview-label">Investimento in EUR</div>' f'<div class="portfolio-add-preview-value">{eur_text}</div></div>', unsafe_allow_html=True)
         with preview_cols[2]:
-            if conversion.get("ok"):
-                fx_text = f"{fmt_num(conversion.get('rate'), 6)} · {conversion.get('source', '')}"
-            else:
-                fx_text = conversion.get("error", "Cambio non disponibile")
-
-            st.markdown(
-                '<div class="portfolio-add-preview-card">'
-                '<div class="portfolio-add-preview-label">Cambio usato</div>'
-                f'<div class="portfolio-add-preview-value small">{fx_text}</div>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-
+            fx_text = f"{fmt_num(conversion.get('rate'), 6)} · {conversion.get('source', '')}" if conversion.get("ok") else conversion.get("error", "Cambio non disponibile")
+            st.markdown('<div class="portfolio-add-preview-card"><div class="portfolio-add-preview-label">Cambio usato</div>' f'<div class="portfolio-add-preview-value small">{fx_text}</div></div>', unsafe_allow_html=True)
         if not conversion.get("ok") and valuta != "EUR":
-            st.warning(
-                f"Cambio {valuta}/EUR non disponibile da yfinance. Non aggiungo valori EUR stimati con fallback finti."
-            )
-
+            st.warning(f"Cambio {valuta}/EUR non disponibile da yfinance. Non aggiungo valori EUR stimati con fallback finti.")
         submitted = st.button("Aggiungi posizione", key="portfolio_add_smart_submit")
-
         if submitted:
-            if not clean_ticker:
-                st.warning("Ticker obbligatorio.")
+            if not selected_candidate:
+                st.warning("Cerca e seleziona un titolo valido.")
                 return
-
             if clean_qty <= 0:
                 st.warning("Quantità obbligatoria e maggiore di zero.")
                 return
-
             if clean_avg_price <= 0:
                 st.warning("Prezzo medio per azione obbligatorio e maggiore di zero.")
                 return
-
             result = build_smart_position(
-                ticker=clean_ticker,
-                mercato=mercato,
-                valuta=valuta,
+                ticker=selected_candidate.get("ticker", ""),
+                mercato=selected_candidate.get("market", ""),
+                valuta=selected_candidate.get("currency", ""),
                 quantita=clean_qty,
                 prezzo_medio=clean_avg_price,
+                titolo=selected_candidate.get("name", ""),
+                yf_symbol=selected_candidate.get("yf_symbol", ""),
+                tv_symbol=selected_candidate.get("tv_symbol", ""),
             )
-
             add_position(DATA_PATH, result["position"])
-
             if not result.get("quote_ok"):
                 quote_error = result.get("quote", {}).get("error", "prezzo non disponibile")
-                st.warning(
-                    f"Posizione aggiunta, ma quotazione non recuperata da yfinance ({quote_error}). "
-                    "Uso temporaneamente il prezzo medio come prezzo mercato/precedente."
-                )
+                st.warning(f"Posizione aggiunta, ma quotazione non recuperata da yfinance ({quote_error}). Uso temporaneamente il prezzo medio come prezzo mercato/precedente.")
             else:
                 st.success("Posizione aggiunta con quotazione recuperata da yfinance.")
-
             st.rerun()
-
 
 def _get_row_by_original_index(df, original_index: int):
     """Return row by original JSON index after display sorting."""
