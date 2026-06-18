@@ -15,10 +15,10 @@ from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct
 from utils.portfolio_prices import fetch_last_quote
 from utils.portfolio_storage import load_portfolio
 from utils.portfolio_tradingview import build_tradingview_symbol
-from utils.symbols import url_tradingview
 from utils.target_calculations import build_simulation_scenarios, build_target_scenarios, pct_change, safe_float
 from utils.target_data import fetch_yfinance_targets, now_iso
 from utils.target_storage import get_saved_target, load_targets, upsert_target
+from utils.target_symbol_resolver import resolve_target_symbol, tradingview_forecast_url
 
 
 require_login()
@@ -60,14 +60,8 @@ def value_class(value) -> str:
     return "target-neutral"
 
 
-def forecast_url(tv_symbol: str, yf_symbol: str) -> str:
-    if tv_symbol:
-        return f"https://www.tradingview.com/symbols/{tv_symbol.replace(':', '-')}/forecast/"
-    try:
-        tv_url = url_tradingview(yf_symbol)
-        return tv_url.rstrip("/") + "/forecast/"
-    except Exception:
-        return "https://www.tradingview.com/"
+def forecast_url(tv_symbol: str, yf_symbol: str, market: str = "", ticker: str = "") -> str:
+    return tradingview_forecast_url(tv_symbol, yf_symbol=yf_symbol, market=market, ticker=ticker)
 
 
 def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "", name: str = "", market: str = "", currency: str = "", source: str = "") -> None:
@@ -85,19 +79,27 @@ def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "
 def get_selection_from_state() -> dict:
     selected = st.session_state.get("target_selected")
     if isinstance(selected, dict) and selected.get("yf_symbol"):
-        return selected
+        return resolve_target_symbol(
+            selected.get("yf_symbol", ""),
+            ticker=selected.get("ticker", ""),
+            tv_symbol=selected.get("tv_symbol", ""),
+            name=selected.get("name", ""),
+            market=selected.get("market", ""),
+            currency=selected.get("currency", ""),
+            source=selected.get("source", ""),
+        )
     # Compatibility with simple keys set by old/new buttons.
     yf_symbol = st.session_state.get("target_yf_symbol") or st.session_state.get("ticker_selezionato") or ""
     if yf_symbol:
-        return {
-            "yf_symbol": str(yf_symbol).strip().upper(),
-            "ticker": str(st.session_state.get("target_ticker") or yf_symbol).strip().upper(),
-            "tv_symbol": str(st.session_state.get("target_tv_symbol") or "").strip().upper(),
-            "name": str(st.session_state.get("target_name") or "").strip(),
-            "market": str(st.session_state.get("target_market") or "").strip().upper(),
-            "currency": str(st.session_state.get("target_currency") or "").strip().upper(),
-            "source": str(st.session_state.get("target_source") or ""),
-        }
+        return resolve_target_symbol(
+            str(yf_symbol).strip().upper(),
+            ticker=str(st.session_state.get("target_ticker") or yf_symbol).strip().upper(),
+            tv_symbol=str(st.session_state.get("target_tv_symbol") or "").strip().upper(),
+            name=str(st.session_state.get("target_name") or "").strip(),
+            market=str(st.session_state.get("target_market") or "").strip().upper(),
+            currency=str(st.session_state.get("target_currency") or "").strip().upper(),
+            source=str(st.session_state.get("target_source") or ""),
+        )
     return {}
 
 
@@ -127,7 +129,7 @@ def render_header(selection: dict, target_data: dict | None) -> None:
             st.switch_page("pages/dashboard.py")
     with c2:
         tv_symbol = (target_data or {}).get("tv_symbol") or selection.get("tv_symbol", "")
-        st.link_button("Apri TradingView 🎯", forecast_url(tv_symbol, yf_symbol), use_container_width=True)
+        st.link_button("Apri TradingView 🎯", forecast_url(tv_symbol, yf_symbol, market=market, ticker=selection.get("ticker", "")), use_container_width=True)
 
 
 def fetch_and_save(selection: dict) -> dict | None:
