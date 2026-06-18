@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-18T19:19:53+00:00",
+  "updated_at": "2026-06-18T19:20:11+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -105,6 +105,19 @@
       "prezzo_precedente": 185.33,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
+    },
+    {
+      "ticker": "ASTS",
+      "titolo": "ASTS",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 77.0,
+      "prezzo_medio": 78.17,
+      "prezzo_mercato": 78.66999816894531,
+      "prezzo_precedente": 86.7,
+      "yf_symbol": "ASTS",
+      "tv_symbol": "NASDAQ:ASTS"
     }
   ]
 }
