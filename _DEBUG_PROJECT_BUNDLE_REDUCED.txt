@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 54
+# Files included: 55
 
 
 
@@ -272,6 +272,7 @@ from utils.market_data import (
     is_in_sma200_zone,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
+from utils.target_symbol_resolver import resolve_target_symbol
 
 
 # =========================
@@ -512,26 +513,13 @@ def open_target_page(symbol: str, source: str = "watchlist") -> None:
         metrics = get_stock_metrics(symbol)
     except Exception:
         metrics = {}
-    tv_url = url_tradingview(symbol)
-    tv_symbol = ""
-    try:
-        parsed = urlparse(tv_url)
-        parts = [part for part in parsed.path.split("/") if part]
-        if "symbols" in parts:
-            idx = parts.index("symbols")
-            if idx + 1 < len(parts):
-                tv_symbol = parts[idx + 1].replace("-", ":")
-    except Exception:
-        tv_symbol = ""
-    st.session_state["target_selected"] = {
-        "yf_symbol": str(symbol or "").strip().upper(),
-        "ticker": str(symbol or "").strip().upper().replace(".MI", ""),
-        "tv_symbol": tv_symbol,
-        "name": get_company_name(symbol, metrics) if metrics else "",
-        "market": "MIL" if str(symbol).upper().endswith(".MI") else "",
-        "currency": str(metrics.get("currency") or "").upper() if metrics else "",
-        "source": source,
-    }
+
+    st.session_state["target_selected"] = resolve_target_symbol(
+        symbol,
+        name=get_company_name(symbol, metrics) if metrics else "",
+        currency=str(metrics.get("currency") or "").upper() if metrics else "",
+        source=source,
+    )
     st.switch_page("pages/target_analisti.py")
 
 
@@ -790,8 +778,6 @@ def render_row_compact(symbol, metrics, current):
 
     with st.container(key=row_key):
         st.markdown(html, unsafe_allow_html=True)
-        if st.button("🎯 Target", key="tv_compact_target_" + symbol + "_" + current, use_container_width=True, help="Apri Target Analisti interno"):
-            open_target_page(symbol, "watchlist")
 
 
 # =========================
@@ -5239,6 +5225,7 @@ from utils.portfolio_storage import (
     update_position,
 )
 from utils.portfolio_tradingview import build_tradingview_symbol
+from utils.target_symbol_resolver import resolve_target_symbol
 from utils.portafoglio_mobile.portfolio_mobile_render import (
     render_mobile_portfolio_rows,
     render_mobile_portfolio_summary,
@@ -5381,15 +5368,15 @@ def portfolio_tradingview_forecast_url(
 def open_portfolio_target_page(row) -> None:
     """Open internal Target Analisti page for a portfolio row."""
     yf_symbol = str(row.get("yf_symbol") or row.get("ticker") or "").strip().upper()
-    st.session_state["target_selected"] = {
-        "yf_symbol": yf_symbol,
-        "ticker": str(row.get("ticker") or yf_symbol).strip().upper(),
-        "tv_symbol": str(row.get("tv_symbol") or "").strip().upper(),
-        "name": str(row.get("titolo") or row.get("ticker") or yf_symbol).strip(),
-        "market": str(row.get("mercato") or "").strip().upper(),
-        "currency": str(row.get("valuta") or "").strip().upper(),
-        "source": "portfolio",
-    }
+    st.session_state["target_selected"] = resolve_target_symbol(
+        yf_symbol,
+        ticker=str(row.get("ticker") or yf_symbol).strip().upper(),
+        tv_symbol=str(row.get("tv_symbol") or "").strip().upper(),
+        name=str(row.get("titolo") or row.get("ticker") or yf_symbol).strip(),
+        market=str(row.get("mercato") or "").strip().upper(),
+        currency=str(row.get("valuta") or "").strip().upper(),
+        source="portfolio",
+    )
     st.switch_page("pages/target_analisti.py")
 
 
@@ -6159,10 +6146,10 @@ from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct
 from utils.portfolio_prices import fetch_last_quote
 from utils.portfolio_storage import load_portfolio
 from utils.portfolio_tradingview import build_tradingview_symbol
-from utils.symbols import url_tradingview
 from utils.target_calculations import build_simulation_scenarios, build_target_scenarios, pct_change, safe_float
 from utils.target_data import fetch_yfinance_targets, now_iso
 from utils.target_storage import get_saved_target, load_targets, upsert_target
+from utils.target_symbol_resolver import resolve_target_symbol, tradingview_forecast_url
 
 
 require_login()
@@ -6204,14 +6191,8 @@ def value_class(value) -> str:
     return "target-neutral"
 
 
-def forecast_url(tv_symbol: str, yf_symbol: str) -> str:
-    if tv_symbol:
-        return f"https://www.tradingview.com/symbols/{tv_symbol.replace(':', '-')}/forecast/"
-    try:
-        tv_url = url_tradingview(yf_symbol)
-        return tv_url.rstrip("/") + "/forecast/"
-    except Exception:
-        return "https://www.tradingview.com/"
+def forecast_url(tv_symbol: str, yf_symbol: str, market: str = "", ticker: str = "") -> str:
+    return tradingview_forecast_url(tv_symbol, yf_symbol=yf_symbol, market=market, ticker=ticker)
 
 
 def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "", name: str = "", market: str = "", currency: str = "", source: str = "") -> None:
@@ -6229,19 +6210,27 @@ def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "
 def get_selection_from_state() -> dict:
     selected = st.session_state.get("target_selected")
     if isinstance(selected, dict) and selected.get("yf_symbol"):
-        return selected
+        return resolve_target_symbol(
+            selected.get("yf_symbol", ""),
+            ticker=selected.get("ticker", ""),
+            tv_symbol=selected.get("tv_symbol", ""),
+            name=selected.get("name", ""),
+            market=selected.get("market", ""),
+            currency=selected.get("currency", ""),
+            source=selected.get("source", ""),
+        )
     # Compatibility with simple keys set by old/new buttons.
     yf_symbol = st.session_state.get("target_yf_symbol") or st.session_state.get("ticker_selezionato") or ""
     if yf_symbol:
-        return {
-            "yf_symbol": str(yf_symbol).strip().upper(),
-            "ticker": str(st.session_state.get("target_ticker") or yf_symbol).strip().upper(),
-            "tv_symbol": str(st.session_state.get("target_tv_symbol") or "").strip().upper(),
-            "name": str(st.session_state.get("target_name") or "").strip(),
-            "market": str(st.session_state.get("target_market") or "").strip().upper(),
-            "currency": str(st.session_state.get("target_currency") or "").strip().upper(),
-            "source": str(st.session_state.get("target_source") or ""),
-        }
+        return resolve_target_symbol(
+            str(yf_symbol).strip().upper(),
+            ticker=str(st.session_state.get("target_ticker") or yf_symbol).strip().upper(),
+            tv_symbol=str(st.session_state.get("target_tv_symbol") or "").strip().upper(),
+            name=str(st.session_state.get("target_name") or "").strip(),
+            market=str(st.session_state.get("target_market") or "").strip().upper(),
+            currency=str(st.session_state.get("target_currency") or "").strip().upper(),
+            source=str(st.session_state.get("target_source") or ""),
+        )
     return {}
 
 
@@ -6271,7 +6260,7 @@ def render_header(selection: dict, target_data: dict | None) -> None:
             st.switch_page("pages/dashboard.py")
     with c2:
         tv_symbol = (target_data or {}).get("tv_symbol") or selection.get("tv_symbol", "")
-        st.link_button("Apri TradingView 🎯", forecast_url(tv_symbol, yf_symbol), use_container_width=True)
+        st.link_button("Apri TradingView 🎯", forecast_url(tv_symbol, yf_symbol, market=market, ticker=selection.get("ticker", "")), use_container_width=True)
 
 
 def fetch_and_save(selection: dict) -> dict | None:
@@ -8177,7 +8166,7 @@ def _render_mobile_metric(label: str, value: str, css_class: str = "") -> str:
     )
 
 
-def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None) -> None:
+def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
     """Render positions as native mobile cards instead of a compressed desktop table."""
     st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
 
@@ -10412,6 +10401,106 @@ def upsert_target(json_path: Path, yf_symbol: str, data: dict) -> dict:
     targets[clean_key] = item
     save_targets(json_path, payload)
     return item
+
+
+
+====================================================================================================
+===== FILE: utils/target_symbol_resolver.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+from utils.ticker_lookup import search_ticker_candidates
+from utils.portfolio_tradingview import build_tradingview_symbol
+
+
+def _clean(value: str) -> str:
+    return str(value or "").strip().upper()
+
+
+def _candidate_for_yf_symbol(yf_symbol: str) -> dict | None:
+    clean_yf = _clean(yf_symbol)
+    if not clean_yf:
+        return None
+    candidates = search_ticker_candidates(clean_yf)
+    for candidate in candidates:
+        if _clean(candidate.get("yf_symbol")) == clean_yf:
+            return candidate
+    return candidates[0] if candidates else None
+
+
+def resolve_target_symbol(
+    yf_symbol: str,
+    *,
+    ticker: str = "",
+    name: str = "",
+    market: str = "",
+    currency: str = "",
+    tv_symbol: str = "",
+    source: str = "",
+) -> dict:
+    """Build a complete Target Analisti selection from a yfinance/watchlist symbol.
+
+    Watchlist rows usually only know the yfinance symbol, while Target Analisti
+    needs a correct TradingView symbol for the forecast page plus market/currency
+    metadata. This resolver centralizes that conversion.
+    """
+    clean_yf = _clean(yf_symbol)
+    clean_ticker = _clean(ticker) or clean_yf.replace(".MI", "")
+    clean_market = _clean(market)
+    clean_currency = _clean(currency)
+    clean_tv = _clean(tv_symbol)
+    clean_name = str(name or "").strip()
+
+    candidate = _candidate_for_yf_symbol(clean_yf)
+    if candidate:
+        clean_ticker = _clean(candidate.get("ticker")) or clean_ticker
+        clean_market = _clean(candidate.get("market")) or clean_market
+        clean_currency = _clean(candidate.get("currency")) or clean_currency
+        clean_tv = _clean(candidate.get("tv_symbol")) or clean_tv
+        clean_name = str(candidate.get("name") or clean_name or clean_yf).strip()
+
+    if not clean_market:
+        clean_market = "MIL" if clean_yf.endswith(".MI") else "NASDAQ"
+
+    if not clean_currency:
+        clean_currency = "EUR" if clean_market == "MIL" else "USD"
+
+    if not clean_tv:
+        tv_ticker = clean_ticker
+        if clean_market == "MIL" and tv_ticker.endswith(".MI"):
+            tv_ticker = tv_ticker[:-3]
+        clean_tv = build_tradingview_symbol(clean_market, tv_ticker, "", clean_currency)
+
+    if not clean_name:
+        clean_name = clean_yf
+
+    return {
+        "yf_symbol": clean_yf,
+        "ticker": clean_ticker,
+        "tv_symbol": clean_tv,
+        "name": clean_name,
+        "market": clean_market,
+        "currency": clean_currency,
+        "source": source,
+    }
+
+
+def tradingview_forecast_url(tv_symbol: str, yf_symbol: str = "", market: str = "", ticker: str = "") -> str:
+    """Return a robust TradingView Forecast URL.
+
+    Examples:
+    NASDAQ:AAPL -> /symbols/NASDAQ-AAPL/forecast/
+    NYSE:KO -> /symbols/NYSE-KO/forecast/
+    MIL:1AMZN -> /symbols/MIL-1AMZN/forecast/
+    """
+    clean_tv = _clean(tv_symbol)
+    if not clean_tv:
+        resolved = resolve_target_symbol(yf_symbol, market=market, ticker=ticker)
+        clean_tv = _clean(resolved.get("tv_symbol"))
+    if clean_tv:
+        return f"https://www.tradingview.com/symbols/{clean_tv.replace(':', '-')}/forecast/"
+    return "https://www.tradingview.com/"
 
 
 
