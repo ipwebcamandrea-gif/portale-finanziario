@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T13:37:06+00:00",
+    "updated_at": "2026-06-18T13:37:53+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -103,6 +103,23 @@
             "analyst_count": 32,
             "rating": "buy",
             "updated_at": "2026-06-18T13:37:06+00:00"
+        },
+        "META": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "META",
+            "ticker": "META",
+            "tv_symbol": "NASDAQ:META",
+            "name": "Meta Platforms, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 570.375,
+            "target_low": 664.46,
+            "target_mean": 827.3183,
+            "target_high": 1015.0,
+            "analyst_count": 59,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-18T13:37:52+00:00"
         }
     }
 }
