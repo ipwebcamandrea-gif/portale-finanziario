@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T17:25:49+00:00",
+    "updated_at": "2026-06-18T17:27:29+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -79,13 +79,13 @@
             "name": "Oracle Corporation",
             "market": "NYSE",
             "currency": "USD",
-            "current_price": 183.52999877929688,
+            "current_price": 186.55999755859375,
             "target_low": 155.0,
             "target_mean": 252.6405,
             "target_high": 400.0,
             "analyst_count": 39,
             "rating": "buy",
-            "updated_at": "2026-06-18T13:21:11+00:00"
+            "updated_at": "2026-06-18T17:27:29+00:00"
         },
         "INTU": {
             "ok": true,
