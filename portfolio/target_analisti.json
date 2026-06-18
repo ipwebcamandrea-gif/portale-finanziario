@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T13:37:53+00:00",
+    "updated_at": "2026-06-18T14:58:01+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -120,6 +120,22 @@
             "analyst_count": 59,
             "rating": "strong_buy",
             "updated_at": "2026-06-18T13:37:52+00:00"
+        },
+        "BRK.B": {
+            "source": "manuale",
+            "yf_symbol": "BRK.B",
+            "ticker": "BRK.B",
+            "tv_symbol": "NYSE:BRK.B",
+            "name": "Berkshire Hathaway Inc.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": null,
+            "target_low": 463.0,
+            "target_mean": 509.0,
+            "target_high": 570.0,
+            "analyst_count": 4,
+            "rating": "Buy ",
+            "updated_at": "2026-06-18T14:58:00+00:00"
         }
     }
 }
