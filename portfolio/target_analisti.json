@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T12:12:33+00:00",
+    "updated_at": "2026-06-18T12:17:25+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -18,6 +18,23 @@
             "analyst_count": 55,
             "rating": "strong_buy",
             "updated_at": "2026-06-18T12:12:33+00:00"
+        },
+        "MA": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MA",
+            "ticker": "MA",
+            "tv_symbol": "NYSE:MA",
+            "name": "Mastercard Incorporated",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 492.989990234375,
+            "target_low": 550.0,
+            "target_mean": 644.8889,
+            "target_high": 735.0,
+            "analyst_count": 36,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-18T12:17:25+00:00"
         }
     }
 }
