@@ -32,6 +32,27 @@ local_css(GLOBAL_CSS)
 local_css(DASHBOARD_CSS)
 
 
+
+# =========================
+# TARGET ANALISTI STATE RESET
+# =========================
+
+def clear_target_navigation_state() -> None:
+    """Open Target Analisti from Cockpit without reusing the last selected title."""
+    for key in (
+        "target_selected",
+        "target_yf_symbol",
+        "target_ticker",
+        "target_tv_symbol",
+        "target_name",
+        "target_market",
+        "target_currency",
+        "target_source",
+        "ticker_selezionato",
+    ):
+        st.session_state.pop(key, None)
+    st.session_state["target_source"] = "cockpit"
+
 # =========================
 # HEADER
 # =========================
@@ -85,6 +106,7 @@ with col_target:
         key="card_target_analisti",
         use_container_width=True,
     ):
+        clear_target_navigation_state()
         st.switch_page("pages/target_analisti.py")
 
 with col_logout:
