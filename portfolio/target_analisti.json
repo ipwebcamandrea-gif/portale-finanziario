@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T14:58:01+00:00",
+    "updated_at": "2026-06-18T17:24:27+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -136,6 +136,23 @@
             "analyst_count": 4,
             "rating": "Buy ",
             "updated_at": "2026-06-18T14:58:00+00:00"
+        },
+        "PYPL": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "PYPL",
+            "ticker": "PYPL",
+            "tv_symbol": "NASDAQ:PYPL",
+            "name": "PayPal Holdings, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 42.54499816894531,
+            "target_low": 32.0,
+            "target_mean": 51.54212,
+            "target_high": 147.39,
+            "analyst_count": 33,
+            "rating": "hold",
+            "updated_at": "2026-06-18T17:24:27+00:00"
         }
     }
 }
