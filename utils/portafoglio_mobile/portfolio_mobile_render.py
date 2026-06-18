@@ -169,7 +169,11 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
         row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
         with row_3_col_1:
             with st.container(key=f"portfolio_mobile_target_{idx}"):
-                st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
+                if target_renderer is not None:
+                    if st.button("🎯", key=f"portfolio_mobile_target_btn_{idx}", use_container_width=True, help="Apri Target Analisti interno"):
+                        target_renderer(row)
+                else:
+                    st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
         with row_3_col_2:
             st.empty()
 
