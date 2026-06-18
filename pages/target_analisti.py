@@ -63,6 +63,28 @@ def value_class(value) -> str:
 def forecast_url(tv_symbol: str, yf_symbol: str, market: str = "", ticker: str = "") -> str:
     return tradingview_forecast_url(tv_symbol, yf_symbol=yf_symbol, market=market, ticker=ticker)
 
+def target_source_from_state(selection: dict | None = None) -> str:
+    """Return the navigation source that opened Target Analisti."""
+    selection = selection or {}
+    source = str(selection.get("source") or st.session_state.get("target_source") or "").strip().lower()
+    if source in ("watchlist", "portfolio", "cockpit", "direct"):
+        return source
+    return "cockpit"
+
+
+def back_page_from_source(selection: dict | None = None) -> str:
+    source = target_source_from_state(selection)
+    if source == "watchlist":
+        return "pages/watchlist_tradingview.py"
+    if source == "portfolio":
+        return "pages/portafoglio.py"
+    return "pages/dashboard.py"
+
+
+def go_back_from_target(selection: dict | None = None) -> None:
+    st.switch_page(back_page_from_source(selection))
+
+
 
 def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "", name: str = "", market: str = "", currency: str = "", source: str = "") -> None:
     st.session_state["target_selected"] = {
@@ -125,8 +147,8 @@ def render_header(selection: dict, target_data: dict | None) -> None:
 
     c1, c2, c3 = st.columns([1.05, 1.35, 4.0])
     with c1:
-        if st.button("← Cockpit", key="target_back_cockpit", use_container_width=True):
-            st.switch_page("pages/dashboard.py")
+        if st.button("← Indietro", key="target_back", use_container_width=True):
+            go_back_from_target(selection)
     with c2:
         tv_symbol = (target_data or {}).get("tv_symbol") or selection.get("tv_symbol", "")
         st.link_button("Apri TradingView 🎯", forecast_url(tv_symbol, yf_symbol, market=market, ticker=selection.get("ticker", "")), use_container_width=True)
@@ -317,6 +339,8 @@ def main() -> None:
     selection = get_selection_from_state()
     if not selection.get("yf_symbol"):
         st.markdown('<div class="target-page-title">🎯 Target Analisti</div>', unsafe_allow_html=True)
+        if st.button("← Indietro", key="target_back_no_selection", use_container_width=False):
+            go_back_from_target({"source": st.session_state.get("target_source", "cockpit")})
         render_direct_selector()
         return
 
