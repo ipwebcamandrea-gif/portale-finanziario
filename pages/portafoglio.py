@@ -39,6 +39,7 @@ from utils.portfolio_storage import (
     update_position,
 )
 from utils.portfolio_tradingview import build_tradingview_symbol
+from utils.target_symbol_resolver import resolve_target_symbol
 from utils.portafoglio_mobile.portfolio_mobile_render import (
     render_mobile_portfolio_rows,
     render_mobile_portfolio_summary,
@@ -181,15 +182,15 @@ def portfolio_tradingview_forecast_url(
 def open_portfolio_target_page(row) -> None:
     """Open internal Target Analisti page for a portfolio row."""
     yf_symbol = str(row.get("yf_symbol") or row.get("ticker") or "").strip().upper()
-    st.session_state["target_selected"] = {
-        "yf_symbol": yf_symbol,
-        "ticker": str(row.get("ticker") or yf_symbol).strip().upper(),
-        "tv_symbol": str(row.get("tv_symbol") or "").strip().upper(),
-        "name": str(row.get("titolo") or row.get("ticker") or yf_symbol).strip(),
-        "market": str(row.get("mercato") or "").strip().upper(),
-        "currency": str(row.get("valuta") or "").strip().upper(),
-        "source": "portfolio",
-    }
+    st.session_state["target_selected"] = resolve_target_symbol(
+        yf_symbol,
+        ticker=str(row.get("ticker") or yf_symbol).strip().upper(),
+        tv_symbol=str(row.get("tv_symbol") or "").strip().upper(),
+        name=str(row.get("titolo") or row.get("ticker") or yf_symbol).strip(),
+        market=str(row.get("mercato") or "").strip().upper(),
+        currency=str(row.get("valuta") or "").strip().upper(),
+        source="portfolio",
+    )
     st.switch_page("pages/target_analisti.py")
 
 
