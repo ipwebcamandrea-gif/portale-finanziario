@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T13:15:00+00:00",
+    "updated_at": "2026-06-18T13:21:12+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -69,6 +69,23 @@
             "analyst_count": 20,
             "rating": "hold",
             "updated_at": "2026-06-18T13:15:00+00:00"
+        },
+        "ORCL": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "ORCL",
+            "ticker": "ORCL",
+            "tv_symbol": "NYSE:ORCL",
+            "name": "Oracle Corporation",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 183.52999877929688,
+            "target_low": 155.0,
+            "target_mean": 252.6405,
+            "target_high": 400.0,
+            "analyst_count": 39,
+            "rating": "buy",
+            "updated_at": "2026-06-18T13:21:11+00:00"
         }
     }
 }
