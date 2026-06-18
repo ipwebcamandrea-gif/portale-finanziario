@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-18T09:54:05+00:00",
+  "updated_at": "2026-06-18T09:54:07+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -112,7 +112,7 @@
       "mercato": "MIL",
       "strumento": "Azione",
       "valuta": "EUR",
-      "quantita": 1.0,
+      "quantita": 2.0,
       "prezzo_medio": 10.0,
       "prezzo_mercato": 209.14999389648438,
       "prezzo_precedente": 207.5500030517578,
