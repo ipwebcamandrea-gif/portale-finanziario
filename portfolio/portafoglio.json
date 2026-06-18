@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-18T17:25:33+00:00",
+  "updated_at": "2026-06-18T17:25:44+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 17.79949951171875,
+      "prezzo_mercato": 17.800100326538086,
       "prezzo_precedente": 17.948,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 490.44000244140625,
+      "prezzo_mercato": 490.4599914550781,
       "prezzo_precedente": 498.0,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 157.0,
       "prezzo_medio": 56.565889,
-      "prezzo_mercato": 42.560001373291016,
+      "prezzo_mercato": 42.55500030517578,
       "prezzo_precedente": 42.31,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 69.0,
       "prezzo_medio": 192.05,
-      "prezzo_mercato": 186.63999938964844,
+      "prezzo_mercato": 186.6649932861328,
       "prezzo_precedente": 185.33,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
