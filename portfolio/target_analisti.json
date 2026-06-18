@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-18T17:24:27+00:00",
+    "updated_at": "2026-06-18T17:25:49+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -153,6 +153,23 @@
             "analyst_count": 33,
             "rating": "hold",
             "updated_at": "2026-06-18T17:24:27+00:00"
+        },
+        "PERI": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "PERI",
+            "ticker": "PERI",
+            "tv_symbol": "NASDAQ:PERI",
+            "name": "Perion Network Ltd",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 8.569999694824219,
+            "target_low": 12.0,
+            "target_mean": 13.0,
+            "target_high": 14.0,
+            "analyst_count": 3,
+            "rating": "none",
+            "updated_at": "2026-06-18T17:25:49+00:00"
         }
     }
 }
