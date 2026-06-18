@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-18T17:32:00+00:00",
+  "updated_at": "2026-06-18T17:32:08+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 264.4700012207031,
+      "prezzo_mercato": 264.67999267578125,
       "prezzo_precedente": 269.89,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 69.0,
       "prezzo_medio": 192.05,
-      "prezzo_mercato": 186.91000366210938,
+      "prezzo_mercato": 186.87989807128906,
       "prezzo_precedente": 185.33,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
