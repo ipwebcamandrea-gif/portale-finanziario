@@ -178,6 +178,21 @@ def portfolio_tradingview_forecast_url(
     return tv_url
 
 
+def open_portfolio_target_page(row) -> None:
+    """Open internal Target Analisti page for a portfolio row."""
+    yf_symbol = str(row.get("yf_symbol") or row.get("ticker") or "").strip().upper()
+    st.session_state["target_selected"] = {
+        "yf_symbol": yf_symbol,
+        "ticker": str(row.get("ticker") or yf_symbol).strip().upper(),
+        "tv_symbol": str(row.get("tv_symbol") or "").strip().upper(),
+        "name": str(row.get("titolo") or row.get("ticker") or yf_symbol).strip(),
+        "market": str(row.get("mercato") or "").strip().upper(),
+        "currency": str(row.get("valuta") or "").strip().upper(),
+        "source": "portfolio",
+    }
+    st.switch_page("pages/target_analisti.py")
+
+
 def clear_financial_data_cache() -> None:
     """Force fresh financial data on the next yfinance calls."""
     st.cache_data.clear()
@@ -825,17 +840,8 @@ def render_portfolio_rows(df) -> None:
                 )
 
             with action_cols[1]:
-                st.link_button(
-                    "🎯",
-                    portfolio_tradingview_forecast_url(
-                        row["mercato"],
-                        row["ticker"],
-                        row.get("tv_symbol", ""),
-                        row.get("valuta", ""),
-                    ),
-                    use_container_width=True,
-                    help="Apri target analisti TradingView",
-                )
+                if st.button("🎯", key=f"portfolio_target_{idx}", help="Apri Target Analisti interno", use_container_width=True):
+                    open_portfolio_target_page(row)
 
             with action_cols[2]:
                 if st.button("🧮", key=f"portfolio_sim_{idx}", help="Simula acquisto aggiuntivo"):
@@ -921,6 +927,7 @@ def main() -> None:
             df_display,
             portfolio_tradingview_url,
             inline_renderer=render_inline_position_panel,
+            target_renderer=open_portfolio_target_page,
         )
     else:
         render_portfolio_rows(df_display)
