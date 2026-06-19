@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-19T10:17:51+00:00",
+    "updated_at": "2026-06-19T11:27:09+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -221,6 +221,23 @@
             "analyst_count": 44,
             "rating": "strong_buy",
             "updated_at": "2026-06-19T10:17:51+00:00"
+        },
+        "1MSFT.MI": {
+            "source": "manuale",
+            "yf_symbol": "1MSFT.MI",
+            "ticker": "1MSFT",
+            "tv_symbol": "MIL:1MSFT",
+            "name": "MICROSOFT CORP",
+            "market": "MIL",
+            "currency": "EUR",
+            "current_price": 330.0,
+            "quote_error": "",
+            "target_low": 345.0,
+            "target_mean": 483.0,
+            "target_high": 751.0,
+            "analyst_count": null,
+            "rating": "",
+            "updated_at": "2026-06-19T11:27:09+00:00"
         }
     }
 }
