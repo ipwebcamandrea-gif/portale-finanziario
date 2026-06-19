@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
+from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
 from components.ticker_lookup_selector import render_ticker_add_intro, render_ticker_lookup_selector
@@ -39,7 +40,7 @@ from utils.portfolio_storage import (
     update_position,
 )
 from utils.portfolio_tradingview import build_tradingview_symbol
-from utils.target_symbol_resolver import resolve_target_symbol
+from utils.target_symbol_resolver import resolve_target_symbol, tradingview_chart_url
 from utils.portafoglio_mobile.portfolio_mobile_render import (
     render_mobile_portfolio_rows,
     render_mobile_portfolio_summary,
@@ -63,7 +64,7 @@ MANUAL_REFRESH_MODE = True
 
 st.set_page_config(
     page_title="Portafoglio",
-    page_icon="💼",
+    page_icon=get_app_icon(),
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -135,17 +136,20 @@ def portfolio_tradingview_url(
     tv_symbol: str = "",
     valuta: str = "",
 ) -> str:
-    """Return the same TradingView external URL style used by WatchlistTradingView."""
+    """Return TradingView chart URL with correct exchange mapping.
+
+    This avoids old fallback cases such as NOW -> NASDAQ:NOW. If a tv_symbol is
+    stored in the portfolio row it is used first; otherwise the shared resolver
+    infers the exchange.
+    """
     symbol = build_tradingview_symbol(mercato, ticker, tv_symbol, valuta)
+    return tradingview_chart_url(
+        symbol,
+        yf_symbol=ticker,
+        market=mercato,
+        ticker=ticker,
+    )
 
-    if watchlist_url_tradingview is not None:
-        try:
-            return watchlist_url_tradingview(symbol)
-        except Exception:
-            pass
-
-    encoded_symbol = quote(symbol, safe=":")
-    return f"https://www.tradingview.com/chart/?symbol={encoded_symbol}"
 
 
 def portfolio_tradingview_forecast_url(
