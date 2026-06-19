@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from urllib.parse import quote
 from utils.ticker_lookup import search_ticker_candidates
 from utils.portfolio_tradingview import build_tradingview_symbol
 
@@ -91,3 +92,15 @@ def tradingview_forecast_url(tv_symbol: str, yf_symbol: str = "", market: str = 
     if clean_tv:
         return f"https://www.tradingview.com/symbols/{clean_tv.replace(':', '-')}/forecast/"
     return "https://www.tradingview.com/"
+
+
+def tradingview_chart_url(tv_symbol: str = "", yf_symbol: str = "", market: str = "", ticker: str = "") -> str:
+    """Return a robust TradingView chart URL using the resolved exchange symbol."""
+    clean_tv = _clean(tv_symbol)
+    if not clean_tv:
+        resolved = resolve_target_symbol(yf_symbol, market=market, ticker=ticker)
+        clean_tv = _clean(resolved.get("tv_symbol"))
+    if clean_tv:
+        encoded = quote(clean_tv, safe=":")
+        return f"https://www.tradingview.com/chart/?symbol={encoded}"
+    return "https://www.tradingview.com/chart/"
