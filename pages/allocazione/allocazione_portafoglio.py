@@ -3,7 +3,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import streamlit as st
-from utils.app_branding import apply_mobile_app_branding, get_app_icon
+from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
 
@@ -38,9 +38,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-apply_mobile_app_branding()
-
-
 def load_css() -> None:
     for css_path in (GLOBAL_CSS_PATH, CSS_PATH):
         if css_path.exists():
