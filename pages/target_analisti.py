@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from utils.app_branding import get_app_icon
 
 from components.ticker_lookup_selector import render_ticker_lookup_selector
 from utils.auth import require_login
@@ -29,7 +30,7 @@ TARGET_PATH = BASE_DIR / "portfolio" / "target_analisti.json"
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "target_analisti.css"
 
-st.set_page_config(page_title="Target Analisti", page_icon="🎯", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Target Analisti", page_icon=get_app_icon(), layout="wide", initial_sidebar_state="collapsed")
 
 
 def load_css() -> None:
@@ -137,6 +138,34 @@ def portfolio_rows_for_symbol(yf_symbol: str) -> pd.DataFrame:
     return df.loc[mask]
 
 
+def build_quote_only_target_data(selection: dict, saved_data: dict | None = None) -> dict:
+    """Return target data enriched with current price even when analyst targets are missing."""
+    base = dict(saved_data or {})
+    yf_symbol = selection.get("yf_symbol", "")
+    base.setdefault("source", "prezzo_corrente")
+    base.setdefault("yf_symbol", yf_symbol)
+    base.setdefault("ticker", selection.get("ticker") or yf_symbol)
+    base.setdefault("tv_symbol", selection.get("tv_symbol", ""))
+    base.setdefault("name", selection.get("name") or yf_symbol)
+    base.setdefault("market", selection.get("market", ""))
+    base.setdefault("currency", selection.get("currency") or "USD")
+
+    quote = fetch_last_quote(yf_symbol)
+    if quote.get("ok"):
+        base["current_price"] = quote.get("last")
+        base["quote_error"] = ""
+    elif "current_price" not in base:
+        base["current_price"] = None
+        base["quote_error"] = quote.get("error", "Prezzo corrente non disponibile")
+    return base
+
+
+def has_any_target_value(target_data: dict | None) -> bool:
+    if not target_data:
+        return False
+    return any(safe_float(target_data.get(key)) is not None for key in ("target_low", "target_mean", "target_high"))
+
+
 def render_header(selection: dict, target_data: dict | None) -> None:
     yf_symbol = selection.get("yf_symbol", "")
     title_name = (target_data or {}).get("name") or selection.get("name") or yf_symbol
@@ -175,23 +204,44 @@ def load_effective_target(selection: dict) -> tuple[dict | None, str]:
     yf_symbol = selection.get("yf_symbol", "")
     saved = get_saved_target(TARGET_PATH, yf_symbol) if yf_symbol else None
     if saved:
-        # Always refresh current price from quote if possible, without overwriting saved targets.
-        quote = fetch_last_quote(yf_symbol)
-        if quote.get("ok"):
-            saved = {**saved, "current_price": quote.get("last")}
-        return saved, "saved"
+        return build_quote_only_target_data(selection, saved), "saved"
+    if yf_symbol:
+        return build_quote_only_target_data(selection), "quote_only"
     return None, "none"
+
 
 
 def render_status(target_data: dict | None, mode: str) -> None:
     if not target_data:
-        st.markdown('<div class="target-warning-box">Nessun target salvato per questo titolo. Prova con “Aggiorna target da yfinance” oppure inserisci i valori manualmente.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="target-warning-box">Nessun titolo selezionato.</div>', unsafe_allow_html=True)
         return
     updated = target_data.get("updated_at", "")
     source = target_data.get("source", mode)
     analysts = target_data.get("analyst_count") or "N/D"
     rating = target_data.get("rating") or "N/D"
-    st.markdown(f'<div class="target-status-pill">Fonte: {source} · Aggiornato: {updated or "N/D"} · Analisti: {analysts} · Rating: {rating}</div>', unsafe_allow_html=True)
+    current_price = safe_float(target_data.get("current_price"))
+    currency = target_data.get("currency", "")
+
+    if has_any_target_value(target_data):
+        st.markdown(f'<div class="target-status-pill">Fonte: {source} · Aggiornato: {updated or "N/D"} · Analisti: {analysts} · Rating: {rating}</div>', unsafe_allow_html=True)
+    elif current_price is not None:
+        st.markdown(
+            '<div class="target-warning-box">'
+            f'Target analisti non ancora salvati per questo titolo. Prezzo attuale recuperato: <b>{fmt_money(current_price, currency)}</b>. '
+            'Puoi inserirli manualmente usando il form qui sotto.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        error = target_data.get("quote_error") or "Prezzo corrente non disponibile"
+        st.markdown(
+            '<div class="target-warning-box">'
+            f'Nessun target salvato e prezzo corrente non disponibile: {error}. '
+            'Riprova più tardi oppure inserisci i target quando il prezzo corrente è disponibile.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
 
 
 def render_target_cards(target_data: dict) -> None:
@@ -284,6 +334,12 @@ def render_simulation(target_data: dict) -> None:
 def render_manual_editor(selection: dict, current_data: dict | None) -> None:
     with st.expander("Modifica manualmente target", expanded=False):
         st.caption("Fallback manuale: usa questi campi solo se yfinance non espone i target. I valori vengono salvati nel JSON target_analisti.")
+        current_price = safe_float((current_data or {}).get("current_price"))
+        current_currency = (current_data or {}).get("currency") or selection.get("currency") or "USD"
+        if current_price is not None:
+            st.info(f"Prezzo attuale recuperato automaticamente: {fmt_money(current_price, current_currency)}")
+        else:
+            st.warning("Prezzo attuale non disponibile: non posso calcolare gli upside finché il prezzo non viene recuperato.")
         currency_default = (current_data or {}).get("currency") or selection.get("currency") or "USD"
         c1, c2, c3 = st.columns(3)
         with c1:
@@ -304,7 +360,7 @@ def render_manual_editor(selection: dict, current_data: dict | None) -> None:
                 "name": (current_data or {}).get("name") or selection.get("name") or selection.get("yf_symbol"),
                 "market": selection.get("market") or (current_data or {}).get("market") or "",
                 "currency": currency_default,
-                "current_price": (current_data or {}).get("current_price"),
+                "current_price": current_price,
                 "target_low": low or None,
                 "target_mean": mean or None,
                 "target_high": high or None,
