@@ -16,7 +16,7 @@ from utils.market_data import (
     is_in_sma200_zone,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
-from utils.target_symbol_resolver import resolve_target_symbol
+from utils.target_symbol_resolver import resolve_target_symbol, tradingview_chart_url
 
 
 # =========================
@@ -227,7 +227,7 @@ def url_tradingview_forecast(symbol):
     This helper reuses that URL and converts the TradingView symbol to the /symbols/.../forecast/
     page without introducing a second yfinance -> TradingView mapping.
     """
-    tv_url = url_tradingview(symbol)
+    tv_url = url_tradingview_chart_resolved(symbol, metrics)
 
     try:
         parsed = urlparse(tv_url)
@@ -428,7 +428,7 @@ def render_row_streamlit(symbol, metrics, current):
             action_col_0, action_col_1, action_col_2, action_col_3, action_col_4, action_col_5 = st.columns(6)
 
             with action_col_0:
-                st.link_button("📊", url_tradingview(symbol), use_container_width=True, help="Apri TradingView esterno")
+                st.link_button("📊", url_tradingview_chart_resolved(symbol, metrics), use_container_width=True, help="Apri TradingView esterno")
 
             with action_col_1:
                 if st.button("🎯", key="tv_target_" + symbol + "_" + current, use_container_width=True, help="Apri Target Analisti interno"):
@@ -480,7 +480,7 @@ def render_row_compact(symbol, metrics, current):
     row_key = "tv_compact_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
 
     company_name = get_company_name(symbol, metrics)
-    tv_url = url_tradingview(symbol)
+    tv_url = url_tradingview_chart_resolved(symbol, metrics)
 
     company_name_html = ""
     if company_name:
