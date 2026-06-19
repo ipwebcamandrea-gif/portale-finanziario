@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
-from utils.app_branding import apply_mobile_app_branding, get_app_icon
+from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
 from components.ticker_lookup_selector import render_ticker_add_intro, render_ticker_lookup_selector
@@ -68,9 +68,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-apply_mobile_app_branding()
-
-
 require_login()
 
 def load_css() -> None:
@@ -120,8 +117,6 @@ def go_to_cockpit() -> None:
         )
 
 
-
-
 def current_refresh_timestamp() -> str:
     """Return current refresh timestamp in Europe/Rome time."""
     return datetime.now(ZoneInfo("Europe/Rome")).strftime("%d/%m/%Y %H:%M:%S")
@@ -150,7 +145,6 @@ def portfolio_tradingview_url(
         market=mercato,
         ticker=ticker,
     )
-
 
 
 def portfolio_tradingview_forecast_url(
@@ -766,7 +760,6 @@ def render_edit_form(df) -> None:
             st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
-
 
 
 def render_delete_confirmation(df) -> None:
