@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 from html import escape
 
 import streamlit as st
+from utils.app_branding import apply_mobile_app_branding
 from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
@@ -19,6 +20,7 @@ from utils.watchlist_storage import (
 # =========================
 
 require_login()
+apply_mobile_app_branding()
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
