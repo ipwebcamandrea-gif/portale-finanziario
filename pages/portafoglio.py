@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
-from utils.app_branding import get_app_icon
+from utils.app_branding import apply_mobile_app_branding, get_app_icon
 
 from components.standard_header import render_standard_page_header
 from components.ticker_lookup_selector import render_ticker_add_intro, render_ticker_lookup_selector
@@ -68,6 +68,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+apply_mobile_app_branding()
 
 
 require_login()
