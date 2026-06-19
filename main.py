@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-from utils.app_branding import apply_mobile_app_branding, get_app_icon
+from utils.app_branding import get_app_icon
 
 from utils.auth import (
     is_authenticated,
@@ -18,9 +18,6 @@ st.set_page_config(
     page_icon=get_app_icon(),
     layout="centered"
 )
-apply_mobile_app_branding()
-
-
 # =========================
 # CONFIGURAZIONE FILE / CSS
 # =========================
