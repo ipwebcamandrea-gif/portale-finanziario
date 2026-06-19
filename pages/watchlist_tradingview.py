@@ -4,7 +4,6 @@ from zoneinfo import ZoneInfo
 from html import escape
 
 import streamlit as st
-from utils.app_branding import apply_mobile_app_branding
 from components.watchlist_symbol_form import render_add_symbol_form
 from components.watchlist_header import render_watchlist_header
 from components.watchlist_tabs import render_watchlist_tabs
@@ -20,8 +19,6 @@ from utils.watchlist_storage import (
 # =========================
 
 require_login()
-apply_mobile_app_branding()
-
 # =========================
 # CONFIGURAZIONE FILE / CSS
 # =========================
@@ -30,8 +27,6 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 WATCHLIST_TV_CSS = ROOT_DIR / "css" / "watchlist_tradingview.css"
 MANUAL_REFRESH_MODE = True
-
-
 
 
 def current_watchlist_refresh_timestamp() -> str:
@@ -95,7 +90,6 @@ local_css(WATCHLIST_TV_CSS)
 # Forza dati freschi a ogni apertura/rerun della pagina Watchlist.
 force_watchlist_refresh_on_page_open()
 # Refresh automatico browser disattivato: usare pulsante 🔄 o refresh manuale.
-
 
 
 # =========================
