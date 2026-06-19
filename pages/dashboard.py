@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.app_branding import apply_mobile_app_branding
 from pathlib import Path
 
 from utils.auth import require_login
@@ -8,6 +9,7 @@ from utils.auth import require_login
 # PROTEZIONE LOGIN
 # =========================
 require_login()
+apply_mobile_app_branding()
 
 
 # =========================
