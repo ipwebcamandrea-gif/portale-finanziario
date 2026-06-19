@@ -227,7 +227,7 @@ def url_tradingview_forecast(symbol):
     This helper reuses that URL and converts the TradingView symbol to the /symbols/.../forecast/
     page without introducing a second yfinance -> TradingView mapping.
     """
-    tv_url = url_tradingview_chart_resolved(symbol, metrics)
+    tv_url = url_tradingview_chart_resolved(symbol)
 
     try:
         parsed = urlparse(tv_url)
