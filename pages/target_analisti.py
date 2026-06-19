@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from utils.app_branding import get_app_icon
+from utils.app_branding import apply_mobile_app_branding, get_app_icon
 
 from components.ticker_lookup_selector import render_ticker_lookup_selector
 from utils.auth import require_login
@@ -31,6 +31,7 @@ GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "target_analisti.css"
 
 st.set_page_config(page_title="Target Analisti", page_icon=get_app_icon(), layout="wide", initial_sidebar_state="collapsed")
+apply_mobile_app_branding()
 
 
 def load_css() -> None:
