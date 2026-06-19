@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-19T05:46:44+00:00",
+    "updated_at": "2026-06-19T10:17:51+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -204,6 +204,23 @@
             "analyst_count": 9,
             "rating": "hold",
             "updated_at": "2026-06-19T05:46:44+00:00"
+        },
+        "NOW": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "NOW",
+            "ticker": "NOW",
+            "tv_symbol": "NYSE:NOW",
+            "name": "ServiceNow, Inc.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 95.04,
+            "target_low": 85.0,
+            "target_mean": 141.9766,
+            "target_high": 236.0,
+            "analyst_count": 44,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-19T10:17:51+00:00"
         }
     }
 }
