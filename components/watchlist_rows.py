@@ -267,6 +267,24 @@ def open_target_page(symbol: str, source: str = "watchlist") -> None:
     st.switch_page("pages/target_analisti.py")
 
 
+
+
+def url_tradingview_chart_resolved(symbol: str, metrics: dict | None = None) -> str:
+    """Return TradingView chart URL with correct exchange, including NYSE tickers like NOW."""
+    metrics = metrics or {}
+    resolved = resolve_target_symbol(
+        symbol,
+        name=get_company_name(symbol, metrics) if metrics else "",
+        currency=str(metrics.get("currency") or "").upper() if metrics else "",
+        source="watchlist",
+    )
+    return tradingview_chart_url(
+        resolved.get("tv_symbol", ""),
+        yf_symbol=resolved.get("yf_symbol", symbol),
+        market=resolved.get("market", ""),
+        ticker=resolved.get("ticker", symbol),
+    )
+
 # =========================
 # DATI ANAGRAFICI TITOLO
 # =========================
