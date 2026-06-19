@@ -1,5 +1,6 @@
 import streamlit as st
 from pathlib import Path
+from utils.app_branding import get_app_icon
 
 from utils.auth import (
     is_authenticated,
@@ -14,7 +15,7 @@ from utils.auth import (
 
 st.set_page_config(
     page_title="FinancePortal 2026",
-    page_icon="📊",
+    page_icon=get_app_icon(),
     layout="centered"
 )
 
