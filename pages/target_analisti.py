@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from utils.app_branding import apply_mobile_app_branding, get_app_icon
+from utils.app_branding import get_app_icon
 
 from components.ticker_lookup_selector import render_ticker_lookup_selector
 from utils.auth import require_login
@@ -31,9 +31,6 @@ GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "target_analisti.css"
 
 st.set_page_config(page_title="Target Analisti", page_icon=get_app_icon(), layout="wide", initial_sidebar_state="collapsed")
-apply_mobile_app_branding()
-
-
 def load_css() -> None:
     for css_path in (GLOBAL_CSS_PATH, CSS_PATH):
         if css_path.exists():
@@ -85,7 +82,6 @@ def back_page_from_source(selection: dict | None = None) -> str:
 
 def go_back_from_target(selection: dict | None = None) -> None:
     st.switch_page(back_page_from_source(selection))
-
 
 
 def set_target_selection(*, yf_symbol: str, ticker: str = "", tv_symbol: str = "", name: str = "", market: str = "", currency: str = "", source: str = "") -> None:
@@ -211,7 +207,6 @@ def load_effective_target(selection: dict) -> tuple[dict | None, str]:
     return None, "none"
 
 
-
 def render_status(target_data: dict | None, mode: str) -> None:
     if not target_data:
         st.markdown('<div class="target-warning-box">Nessun titolo selezionato.</div>', unsafe_allow_html=True)
@@ -242,7 +237,6 @@ def render_status(target_data: dict | None, mode: str) -> None:
             '</div>',
             unsafe_allow_html=True,
         )
-
 
 
 def render_target_cards(target_data: dict) -> None:
