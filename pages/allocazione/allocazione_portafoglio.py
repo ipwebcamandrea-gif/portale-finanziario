@@ -3,6 +3,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import streamlit as st
+from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
 
@@ -33,7 +34,7 @@ CSS_PATH = BASE_DIR / "css" / "allocazione" / "allocazione_portafoglio.css"
 
 st.set_page_config(
     page_title="Allocazione Portafoglio",
-    page_icon="📊",
+    page_icon=get_app_icon(),
     layout="wide",
     initial_sidebar_state="collapsed",
 )
