@@ -86,6 +86,8 @@ def init_state() -> None:
         "portfolio_delete_index": None,
         "portfolio_simulation_index": None,
         "portfolio_quotes_refreshed_on_load": False,
+        "portfolio_auto_refresh_render_synced": False,
+        "portfolio_auto_refresh_skipped_reason": "",
         "portfolio_last_auto_refresh_result": None,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
@@ -200,14 +202,24 @@ def clear_financial_data_cache() -> None:
 
 
 def auto_refresh_quotes_on_page_open() -> None:
-    """Refresh portfolio quotes every time the Portafoglio page is opened/rerun.
+    """Refresh portfolio quotes once on page opening and rerun before rendering rows.
 
-    The page must never render stale prices from portfolio/portafoglio.json before
-    attempting a yfinance refresh. If yfinance fails for one or more symbols,
-    refresh_portfolio_quotes keeps the existing JSON values and exposes failures
-    in portfolio_last_auto_refresh_result.
+    First pass updates/saves quotes and immediately triggers a controlled rerun.
+    Second pass reads the JSON already updated by the first pass, so timestamp and
+    rendered data stay aligned.
     """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
+        return
+
+    if st.session_state.get("portfolio_auto_refresh_render_synced", False):
+        return
+
+    if st.session_state.get("portfolio_quotes_refreshed_on_load", False):
+        st.session_state["portfolio_auto_refresh_render_synced"] = True
+        return
+
+    if not is_portfolio_auto_refresh_safe():
+        st.session_state["portfolio_auto_refresh_skipped_reason"] = "pannello modifica/simulazione/eliminazione aperto"
         return
 
     clear_financial_data_cache()
@@ -217,7 +229,13 @@ def auto_refresh_quotes_on_page_open() -> None:
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
+    st.session_state["portfolio_auto_refresh_render_synced"] = False
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
     set_last_refresh_timestamp()
+
+    # Rerun controllato: evita timestamp nuovo + tabella ancora renderizzata
+    # con dati precedenti. Al giro successivo la pagina legge il JSON aggiornato.
+    st.rerun()
 
 
 def is_portfolio_auto_refresh_safe() -> bool:
@@ -250,18 +268,21 @@ def render_auto_refresh_status() -> None:
     result = st.session_state.get("portfolio_last_auto_refresh_result")
 
     if not result:
+        skipped_reason = st.session_state.get("portfolio_auto_refresh_skipped_reason", "")
+        if skipped_reason:
+            st.caption("Aggiornamento automatico quotazioni non eseguito: " + skipped_reason + ".")
         return
 
     updated = result.get("updated", 0)
     total = result.get("total", 0)
 
     refresh_time = st.session_state.get("portfolio_last_refresh_timestamp", "")
-    refresh_suffix = f" · Aggiornamento dati: {refresh_time}" if refresh_time else ""
+    refresh_suffix = f" · dati mostrati aggiornati alle {refresh_time}" if refresh_time else ""
 
     if updated > 0:
-        st.caption(f"Quotazioni aggiornate automaticamente/all'ultimo refresh: {updated} su {total}{refresh_suffix}.")
+        st.caption(f"Quotazioni mostrate aggiornate: {updated} su {total}{refresh_suffix}.")
     else:
-        st.caption(f"Aggiornamento eseguito: nessuna quotazione aggiornata, valori manuali mantenuti{refresh_suffix}.")
+        st.caption(f"Aggiornamento eseguito: nessuna quotazione aggiornata, valori già presenti mantenuti{refresh_suffix}.")
 
     render_refresh_details(result)
 
@@ -315,6 +336,8 @@ def render_top_actions() -> bool:
 
             st.session_state["portfolio_last_auto_refresh_result"] = result
             st.session_state["portfolio_quotes_refreshed_on_load"] = True
+            st.session_state["portfolio_auto_refresh_render_synced"] = True
+            st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
             set_last_refresh_timestamp()
 
             if result["updated"] > 0:
@@ -347,6 +370,8 @@ def refresh_portfolio_quotes_action() -> None:
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
+    st.session_state["portfolio_auto_refresh_render_synced"] = True
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
     set_last_refresh_timestamp()
 
     if result["updated"] > 0:
@@ -914,10 +939,10 @@ def main() -> None:
         refresh_callback=refresh_portfolio_quotes_action,
     )
 
-    render_add_form()
-
     auto_refresh_quotes_on_page_open()
     render_auto_refresh_status()
+
+    render_add_form()
 
     df = load_portfolio(DATA_PATH)
     df = enrich_portfolio_df(df)
