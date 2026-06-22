@@ -4,6 +4,8 @@ import time
 
 import streamlit as st
 
+from utils.user_context import clear_current_user, get_current_user, set_current_user
+
 
 # =========================
 # SESSION CONFIG
@@ -20,6 +22,29 @@ _AUTH_EXPIRES_AT_TS_KEY = "auth_expires_at_ts"
 _AUTH_EXPIRED_FLAG_KEY = "auth_session_expired"
 
 
+# Session keys that can leak page selections/data between users if not cleared.
+_VOLATILE_SESSION_PREFIXES = (
+    "target_",
+    "ticker_",
+    "tv_",
+    "portfolio_",
+    "allocation_",
+)
+
+_VOLATILE_SESSION_KEYS = {
+    "ticker_selezionato",
+    "lista_tickers",
+    "target_selected",
+    "target_source",
+    "target_yf_symbol",
+    "target_ticker",
+    "target_tv_symbol",
+    "target_name",
+    "target_market",
+    "target_currency",
+}
+
+
 def _now_ts() -> float:
     return time.time()
 
@@ -30,6 +55,20 @@ def _clear_auth_timestamps() -> None:
         _AUTH_LAST_ACTIVITY_TS_KEY,
         _AUTH_EXPIRES_AT_TS_KEY,
     ):
+        st.session_state.pop(key, None)
+
+
+def _clear_volatile_session_state() -> None:
+    """Clear page-specific state so users cannot inherit another user's UI state."""
+    keys_to_delete = []
+    for key in list(st.session_state.keys()):
+        if key in _VOLATILE_SESSION_KEYS:
+            keys_to_delete.append(key)
+            continue
+        if any(str(key).startswith(prefix) for prefix in _VOLATILE_SESSION_PREFIXES):
+            keys_to_delete.append(key)
+
+    for key in keys_to_delete:
         st.session_state.pop(key, None)
 
 
@@ -89,8 +128,12 @@ def get_session_remaining_seconds() -> int:
 # =========================
 
 def is_authenticated() -> bool:
-    """Return True only if user is logged in and inactivity timeout is valid."""
+    """Return True only if user is logged in, has a current user and timeout is valid."""
     if not bool(st.session_state.get(_AUTHENTICATED_KEY, False)):
+        return False
+
+    if not get_current_user():
+        logout_user()
         return False
 
     if _is_session_expired():
@@ -124,9 +167,10 @@ def require_login() -> None:
 # LOGIN / LOGOUT
 # =========================
 
-def login_user() -> None:
+def login_user(user_id: str, display_name: str = "") -> None:
     """Mark user as authenticated and start inactivity timer."""
     now = _now_ts()
+    set_current_user(user_id, display_name)
     st.session_state[_AUTHENTICATED_KEY] = True
     st.session_state[_AUTH_LOGIN_TS_KEY] = now
     st.session_state[_AUTH_LAST_ACTIVITY_TS_KEY] = now
@@ -137,21 +181,14 @@ def login_user() -> None:
 def logout_user(session_expired: bool = False) -> None:
     """Logout user and clear auth-related/volatile session state."""
     st.session_state[_AUTHENTICATED_KEY] = False
+    clear_current_user()
     _clear_auth_timestamps()
+    _clear_volatile_session_state()
 
     if session_expired:
         st.session_state[_AUTH_EXPIRED_FLAG_KEY] = True
     else:
         st.session_state.pop(_AUTH_EXPIRED_FLAG_KEY, None)
-
-    chiavi_da_rimuovere = [
-        "ticker_selezionato",
-        "lista_tickers",
-    ]
-
-    for chiave in chiavi_da_rimuovere:
-        if chiave in st.session_state:
-            del st.session_state[chiave]
 
 
 def logout_and_redirect() -> None:
