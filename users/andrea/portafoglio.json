@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-22T18:34:56+00:00",
+  "updated_at": "2026-06-22T18:36:03+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -118,6 +118,19 @@
       "prezzo_precedente": 80.4,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
+    },
+    {
+      "ticker": "MIR",
+      "titolo": "Mirion Technologies, Inc.",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 390.0,
+      "prezzo_medio": 18.66,
+      "prezzo_mercato": 18.65999984741211,
+      "prezzo_precedente": 18.51,
+      "yf_symbol": "MIR",
+      "tv_symbol": "NYSE:MIR"
     }
   ]
 }
