@@ -1,19 +1,5 @@
 {
   "version": 1,
-  "updated_at": "2026-06-22T12:43:44+00:00",
-  "positions": [
-    {
-      "ticker": "MSFT",
-      "titolo": "Microsoft Corporation",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 33,
-      "prezzo_medio": 389.19,
-      "prezzo_mercato": 379.3999938964844,
-      "prezzo_precedente": 379.14,
-      "yf_symbol": "MSFT",
-      "tv_symbol": "NASDAQ:MSFT"
-    }
-  ]
+  "updated_at": "2026-06-22T12:43:45+00:00",
+  "positions": []
 }
