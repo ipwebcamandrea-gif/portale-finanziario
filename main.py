@@ -53,6 +53,22 @@ st.markdown(
         max-width: 440px;
         margin: 0 auto;
     }
+    .login-subtitle {
+        max-width: 440px;
+        margin: 0 auto 1rem auto;
+        color: var(--text-main);
+        font-size: 1.45rem;
+        font-weight: 850;
+        line-height: 1.2;
+        text-align: left;
+    }
+    @media screen and (max-width: 768px) {
+        .login-subtitle {
+            max-width: 100%;
+            font-size: 1.25rem;
+            margin-bottom: 0.85rem;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -157,7 +173,7 @@ st.markdown(
 )
 
 with st.container(key="login_card"):
-    st.subheader("Accedi al sistema")
+    st.markdown('<div class="login-subtitle">Accedi al sistema</div>', unsafe_allow_html=True)
 
     if not USERS:
         st.error(
