@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 56
+# Files included: 57
 
 
 
@@ -4007,13 +4007,14 @@ div[data-testid="stVerticalBlock"] div[style*="background-color"] {
 
 import streamlit as st
 from pathlib import Path
-from utils.app_branding import get_app_icon
 
+from utils.app_branding import get_app_icon
 from utils.auth import (
     is_authenticated,
     login_user,
     logout_user,
 )
+from utils.user_context import normalize_user_id
 
 
 # =========================
@@ -4025,11 +4026,14 @@ st.set_page_config(
     page_icon=get_app_icon(),
     layout="centered"
 )
+
+
 # =========================
 # CONFIGURAZIONE FILE / CSS
 # =========================
 
 ROOT_DIR = Path(__file__).resolve().parent
+
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 
 
@@ -4052,42 +4056,9 @@ local_css(GLOBAL_CSS)
 st.markdown(
     """
     <style>
-    div[class*="st-key-login_card"] {
-        max-width: 460px;
+    div[data-testid="stForm"] {
+        max-width: 440px;
         margin: 0 auto;
-        padding: 2.2rem 2.4rem 2.3rem 2.4rem;
-        border-radius: 16px;
-        border: 1px solid rgba(48, 54, 61, 0.92);
-        background:
-            radial-gradient(circle at top right, rgba(0, 176, 255, 0.13), transparent 36%),
-            linear-gradient(135deg, rgba(22, 27, 34, 0.98) 0%, rgba(13, 17, 23, 0.98) 100%);
-        box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.04),
-            0 0 24px rgba(0, 176, 255, 0.08);
-    }
-
-    div[class*="st-key-login_card"] h3 {
-        text-align: center;
-        margin-top: 0;
-        margin-bottom: 1.1rem;
-    }
-
-    div[class*="st-key-login_card"] .stButton > button,
-    div[class*="st-key-login_card"] [data-testid="stFormSubmitButton"] > button {
-        min-height: 40px;
-        border-radius: 10px;
-        font-weight: 900;
-        border-color: rgba(0, 176, 255, 0.56);
-        background:
-            radial-gradient(circle at top left, rgba(0, 176, 255, 0.22), transparent 36%),
-            linear-gradient(135deg, rgba(0, 176, 255, 0.15) 0%, rgba(22, 27, 34, 0.95) 100%);
-    }
-
-    div[class*="st-key-login_card"] .stButton > button:hover,
-    div[class*="st-key-login_card"] [data-testid="stFormSubmitButton"] > button:hover {
-        border-color: rgba(0, 176, 255, 0.88);
-        box-shadow: 0 0 18px rgba(0, 176, 255, 0.18);
-        transform: translateY(-1px);
     }
     </style>
     """,
@@ -4104,26 +4075,75 @@ if "authenticated" not in st.session_state:
 
 
 # =========================
-# CREDENZIALI
+# CREDENZIALI MULTIUTENTE
 # =========================
 
-def get_admin_password():
-    """
-    Legge la password admin dai Secrets di Streamlit.
+def _as_plain_dict(value):
+    """Convert Streamlit secrets/AttrDict objects to regular dictionaries."""
+    if hasattr(value, "items"):
+        return {key: _as_plain_dict(item) for key, item in value.items()}
+    return value
 
-    Formato consigliato nei Secrets:
+
+def _is_enabled(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() not in {"0", "false", "no", "off", "disabled"}
+
+
+def load_users_from_secrets() -> dict:
+    """Load enabled users from Streamlit Secrets.
+
+    Supported simple format:
 
     [credentials.usernames]
-    admin = "LA_TUA_PASSWORD"
+    andrea = "PASSWORD"
+    test = "PASSWORD"
+
+    Supported extended format:
+
+    [credentials.usernames.andrea]
+    password = "PASSWORD"
+    display_name = "Andrea"
+    enabled = true
     """
     try:
-        return st.secrets["credentials"]["usernames"]["admin"]
+        raw_usernames = st.secrets["credentials"]["usernames"]
     except Exception:
-        return None
+        return {}
+
+    raw_usernames = _as_plain_dict(raw_usernames)
+    if not hasattr(raw_usernames, "items"):
+        return {}
+
+    users = {}
+    for raw_username, raw_config in raw_usernames.items():
+        user_id = normalize_user_id(raw_username)
+        if not user_id:
+            continue
+
+        if hasattr(raw_config, "items"):
+            config = _as_plain_dict(raw_config)
+            password = str(config.get("password") or config.get("pwd") or config.get("pass") or "")
+            display_name = str(config.get("display_name") or config.get("name") or raw_username).strip()
+            enabled = _is_enabled(config.get("enabled", True))
+        else:
+            password = str(raw_config or "")
+            display_name = str(raw_username).strip()
+            enabled = True
+
+        if not enabled or not password:
+            continue
+
+        users[user_id] = {
+            "password": password,
+            "display_name": display_name or user_id,
+        }
+
+    return users
 
 
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = get_admin_password()
+USERS = load_users_from_secrets()
 
 
 # =========================
@@ -4146,25 +4166,28 @@ st.markdown(
 with st.container(key="login_card"):
     st.subheader("Accedi al sistema")
 
+    if not USERS:
+        st.error(
+            "Nessun utente configurato nei Secrets di Streamlit. "
+            "Configura almeno un utente in [credentials.usernames]."
+        )
+        st.stop()
+
     with st.form("login_form"):
         user = st.text_input("Username")
         password = st.text_input("Password", type="password")
         submitted = st.form_submit_button("Entra nella Dashboard")
 
-        if submitted:
-            if ADMIN_PASSWORD is None:
-                logout_user()
-                st.error(
-                    "Password admin non configurata nei Secrets di Streamlit."
-                )
+    if submitted:
+        user_id = normalize_user_id(user)
+        credentials = USERS.get(user_id)
 
-            elif user.strip() == ADMIN_USERNAME and password.strip() == ADMIN_PASSWORD:
-                login_user()
-                st.switch_page("pages/dashboard.py")
-
-            else:
-                logout_user()
-                st.error("Credenziali non valide")
+        if credentials and password.strip() == str(credentials.get("password", "")):
+            login_user(user_id, credentials.get("display_name", user_id))
+            st.switch_page("pages/dashboard.py")
+        else:
+            logout_user()
+            st.error("Credenziali non valide")
 
 
 
@@ -4338,9 +4361,11 @@ runpy.run_path(str(TARGET_PAGE), run_name="__main__")
 ====================================================================================================
 
 import streamlit as st
+from html import escape
 from pathlib import Path
 
 from utils.auth import require_login
+from utils.user_context import get_current_user_display_name
 
 
 # =========================
@@ -4390,8 +4415,17 @@ def clear_target_navigation_state() -> None:
     st.session_state["target_source"] = "cockpit"
 
 # =========================
+# UTENTE CORRENTE
+# =========================
+
+current_user_display_name = get_current_user_display_name("Utente")
+
+
+# =========================
 # HEADER
 # =========================
+
+st.caption(f"Utente attivo: {current_user_display_name}")
 st.markdown(
     """
     <div class="cockpit-header">
@@ -5163,7 +5197,10 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 import streamlit as st
 from pathlib import Path
+
 from utils.auth import logout_user
+from utils.user_context import get_current_user_display_name
+
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
@@ -5190,7 +5227,9 @@ local_css(GLOBAL_CSS)
 # LOGOUT
 # =========================
 
+logged_out_user_display_name = get_current_user_display_name("utente")
 logout_user()
+
 
 # =========================
 # INTERFACCIA
@@ -5203,7 +5242,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.success("Logout effettuato correttamente.")
+st.success(f"Logout effettuato correttamente per {logged_out_user_display_name}.")
 
 st.info(
     "La sessione è stata chiusa. "
@@ -7525,6 +7564,8 @@ import time
 
 import streamlit as st
 
+from utils.user_context import clear_current_user, get_current_user, set_current_user
+
 
 # =========================
 # SESSION CONFIG
@@ -7541,6 +7582,29 @@ _AUTH_EXPIRES_AT_TS_KEY = "auth_expires_at_ts"
 _AUTH_EXPIRED_FLAG_KEY = "auth_session_expired"
 
 
+# Session keys that can leak page selections/data between users if not cleared.
+_VOLATILE_SESSION_PREFIXES = (
+    "target_",
+    "ticker_",
+    "tv_",
+    "portfolio_",
+    "allocation_",
+)
+
+_VOLATILE_SESSION_KEYS = {
+    "ticker_selezionato",
+    "lista_tickers",
+    "target_selected",
+    "target_source",
+    "target_yf_symbol",
+    "target_ticker",
+    "target_tv_symbol",
+    "target_name",
+    "target_market",
+    "target_currency",
+}
+
+
 def _now_ts() -> float:
     return time.time()
 
@@ -7551,6 +7615,20 @@ def _clear_auth_timestamps() -> None:
         _AUTH_LAST_ACTIVITY_TS_KEY,
         _AUTH_EXPIRES_AT_TS_KEY,
     ):
+        st.session_state.pop(key, None)
+
+
+def _clear_volatile_session_state() -> None:
+    """Clear page-specific state so users cannot inherit another user's UI state."""
+    keys_to_delete = []
+    for key in list(st.session_state.keys()):
+        if key in _VOLATILE_SESSION_KEYS:
+            keys_to_delete.append(key)
+            continue
+        if any(str(key).startswith(prefix) for prefix in _VOLATILE_SESSION_PREFIXES):
+            keys_to_delete.append(key)
+
+    for key in keys_to_delete:
         st.session_state.pop(key, None)
 
 
@@ -7610,8 +7688,12 @@ def get_session_remaining_seconds() -> int:
 # =========================
 
 def is_authenticated() -> bool:
-    """Return True only if user is logged in and inactivity timeout is valid."""
+    """Return True only if user is logged in, has a current user and timeout is valid."""
     if not bool(st.session_state.get(_AUTHENTICATED_KEY, False)):
+        return False
+
+    if not get_current_user():
+        logout_user()
         return False
 
     if _is_session_expired():
@@ -7645,9 +7727,10 @@ def require_login() -> None:
 # LOGIN / LOGOUT
 # =========================
 
-def login_user() -> None:
+def login_user(user_id: str, display_name: str = "") -> None:
     """Mark user as authenticated and start inactivity timer."""
     now = _now_ts()
+    set_current_user(user_id, display_name)
     st.session_state[_AUTHENTICATED_KEY] = True
     st.session_state[_AUTH_LOGIN_TS_KEY] = now
     st.session_state[_AUTH_LAST_ACTIVITY_TS_KEY] = now
@@ -7658,21 +7741,14 @@ def login_user() -> None:
 def logout_user(session_expired: bool = False) -> None:
     """Logout user and clear auth-related/volatile session state."""
     st.session_state[_AUTHENTICATED_KEY] = False
+    clear_current_user()
     _clear_auth_timestamps()
+    _clear_volatile_session_state()
 
     if session_expired:
         st.session_state[_AUTH_EXPIRED_FLAG_KEY] = True
     else:
         st.session_state.pop(_AUTH_EXPIRED_FLAG_KEY, None)
-
-    chiavi_da_rimuovere = [
-        "ticker_selezionato",
-        "lista_tickers",
-    ]
-
-    for chiave in chiavi_da_rimuovere:
-        if chiave in st.session_state:
-            del st.session_state[chiave]
 
 
 def logout_and_redirect() -> None:
@@ -10891,6 +10967,61 @@ def get_candidate_by_key(candidates: list[dict], key: str) -> dict | None:
         if candidate.get("key") == key:
             return candidate
     return None
+
+
+
+====================================================================================================
+===== FILE: utils/user_context.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import re
+
+import streamlit as st
+
+CURRENT_USER_KEY = "current_user"
+CURRENT_USER_DISPLAY_NAME_KEY = "current_user_display_name"
+
+
+def normalize_user_id(value: str) -> str:
+    """Return a filesystem/session safe lowercase user id.
+
+    Examples:
+    Andrea -> andrea
+    andrea.rosso -> andrea_rosso
+    """
+    cleaned = str(value or "").strip().lower()
+    cleaned = re.sub(r"[^a-z0-9_-]+", "_", cleaned)
+    cleaned = cleaned.strip("_")
+    return cleaned
+
+
+def get_current_user(default: str = "") -> str:
+    """Return current authenticated user id from session_state."""
+    return normalize_user_id(st.session_state.get(CURRENT_USER_KEY, default))
+
+
+def get_current_user_display_name(default: str = "") -> str:
+    """Return display name for the current authenticated user."""
+    value = str(st.session_state.get(CURRENT_USER_DISPLAY_NAME_KEY, "") or "").strip()
+    if value:
+        return value
+    user_id = get_current_user()
+    return user_id or default
+
+
+def set_current_user(user_id: str, display_name: str = "") -> None:
+    """Store current user identity in session_state."""
+    normalized = normalize_user_id(user_id)
+    st.session_state[CURRENT_USER_KEY] = normalized
+    st.session_state[CURRENT_USER_DISPLAY_NAME_KEY] = str(display_name or normalized).strip() or normalized
+
+
+def clear_current_user() -> None:
+    """Remove current user identity from session_state."""
+    st.session_state.pop(CURRENT_USER_KEY, None)
+    st.session_state.pop(CURRENT_USER_DISPLAY_NAME_KEY, None)
 
 
 
