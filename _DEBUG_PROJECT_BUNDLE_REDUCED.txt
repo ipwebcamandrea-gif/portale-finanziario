@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 57
+# Files included: 59
 
 
 
@@ -4366,6 +4366,7 @@ from pathlib import Path
 
 from utils.auth import require_login
 from utils.user_context import get_current_user_display_name
+from utils.user_migration import ensure_current_user_workspace
 
 
 # =========================
@@ -4419,6 +4420,7 @@ def clear_target_navigation_state() -> None:
 # =========================
 
 current_user_display_name = get_current_user_display_name("Utente")
+ensure_current_user_workspace()
 
 
 # =========================
@@ -11022,6 +11024,264 @@ def clear_current_user() -> None:
     """Remove current user identity from session_state."""
     st.session_state.pop(CURRENT_USER_KEY, None)
     st.session_state.pop(CURRENT_USER_DISPLAY_NAME_KEY, None)
+
+
+
+====================================================================================================
+===== FILE: utils/user_migration.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import json
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+
+import streamlit as st
+
+from utils.user_context import get_current_user
+from utils.user_paths import (
+    ensure_user_data_dir,
+    get_legacy_portfolio_path,
+    get_legacy_targets_path,
+    get_legacy_watchlists_path,
+    get_user_portfolio_path,
+    get_user_targets_path,
+    get_user_watchlists_path,
+)
+
+
+MIGRATION_SOURCE_USER = "andrea"
+_MIGRATION_DONE_SESSION_PREFIX = "multiuser_workspace_ready_"
+
+
+# =========================
+# DEFAULT EMPTY DATA
+# =========================
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def empty_watchlists_payload() -> dict:
+    """Return empty Watchlist payload for new users."""
+    return {
+        "version": 1,
+        "active_watchlist": "Default",
+        "watchlists": {
+            "Default": [],
+        },
+    }
+
+
+def empty_portfolio_payload() -> dict:
+    """Return empty Portafoglio payload for new users."""
+    return {
+        "version": 1,
+        "updated_at": _utc_now_iso(),
+        "positions": [],
+    }
+
+
+def empty_targets_payload() -> dict:
+    """Return empty Target Analisti payload for new users."""
+    return {
+        "version": 1,
+        "updated_at": _utc_now_iso(),
+        "targets": {},
+    }
+
+
+def _write_json_if_missing(path: Path, payload: dict) -> bool:
+    """Write JSON only when path does not already exist. Return True if created."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        return False
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
+def _copy_if_source_exists_and_target_missing(source: Path, target: Path) -> bool:
+    """Copy source to target only if source exists and target is missing."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists() or not source.exists():
+        return False
+    shutil.copy2(source, target)
+    return True
+
+
+# =========================
+# USER WORKSPACE SETUP
+# =========================
+
+def ensure_user_workspace(user_id: str) -> dict:
+    """Create local user workspace and initial JSON files.
+
+    Andrea receives a copy of the current legacy data when available.
+    All other users receive empty JSON files.
+
+    This function is intentionally non-destructive: it never overwrites existing
+    user files and never moves/deletes legacy files.
+    """
+    user_id = str(user_id or "").strip().lower()
+    if not user_id:
+        raise RuntimeError("Utente non disponibile: impossibile preparare workspace multiutente.")
+
+    ensure_user_data_dir(user_id)
+
+    user_watchlists_path = get_user_watchlists_path(user_id)
+    user_portfolio_path = get_user_portfolio_path(user_id)
+    user_targets_path = get_user_targets_path(user_id)
+
+    result = {
+        "user_id": user_id,
+        "copied": [],
+        "created_empty": [],
+        "existing": [],
+    }
+
+    if user_id == MIGRATION_SOURCE_USER:
+        copy_plan = [
+            (get_legacy_watchlists_path(), user_watchlists_path, "watchlists"),
+            (get_legacy_portfolio_path(), user_portfolio_path, "portfolio"),
+            (get_legacy_targets_path(), user_targets_path, "targets"),
+        ]
+        for source, target, label in copy_plan:
+            if _copy_if_source_exists_and_target_missing(source, target):
+                result["copied"].append(label)
+
+    empty_plan = [
+        (user_watchlists_path, empty_watchlists_payload(), "watchlists"),
+        (user_portfolio_path, empty_portfolio_payload(), "portfolio"),
+        (user_targets_path, empty_targets_payload(), "targets"),
+    ]
+    for path, payload, label in empty_plan:
+        if _write_json_if_missing(path, payload):
+            result["created_empty"].append(label)
+        else:
+            result["existing"].append(label)
+
+    return result
+
+
+def ensure_current_user_workspace() -> dict | None:
+    """Create current user's workspace once per Streamlit session."""
+    user_id = get_current_user()
+    if not user_id:
+        return None
+
+    session_key = _MIGRATION_DONE_SESSION_PREFIX + user_id
+    if st.session_state.get(session_key):
+        return st.session_state.get(session_key + "_result")
+
+    result = ensure_user_workspace(user_id)
+    st.session_state[session_key] = True
+    st.session_state[session_key + "_result"] = result
+    return result
+
+
+
+====================================================================================================
+===== FILE: utils/user_paths.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from utils.user_context import get_current_user, normalize_user_id
+
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+USER_DATA_ROOT = ROOT_DIR / "data" / "users"
+
+# GitHub persistence uses branch "data-watchlists"; paths below are branch-relative.
+GITHUB_DATA_BRANCH = "data-watchlists"
+GITHUB_USERS_ROOT = "users"
+
+
+# =========================
+# LOCAL USER PATHS
+# =========================
+
+def get_user_id(user_id: str | None = None) -> str:
+    """Return a normalized user id, using the current session user by default."""
+    normalized = normalize_user_id(user_id or get_current_user())
+    if not normalized:
+        raise RuntimeError("Utente corrente non disponibile: impossibile risolvere i path dati.")
+    return normalized
+
+
+def get_user_data_dir(user_id: str | None = None) -> Path:
+    """Return local data directory for a user."""
+    return USER_DATA_ROOT / get_user_id(user_id)
+
+
+def get_user_watchlists_path(user_id: str | None = None) -> Path:
+    """Return local Watchlist JSON path for a user."""
+    return get_user_data_dir(user_id) / "watchlists.json"
+
+
+def get_user_portfolio_path(user_id: str | None = None) -> Path:
+    """Return local Portafoglio JSON path for a user."""
+    return get_user_data_dir(user_id) / "portafoglio.json"
+
+
+def get_user_targets_path(user_id: str | None = None) -> Path:
+    """Return local Target Analisti JSON path for a user."""
+    return get_user_data_dir(user_id) / "target_analisti.json"
+
+
+def ensure_user_data_dir(user_id: str | None = None) -> Path:
+    """Create and return the local data directory for a user."""
+    data_dir = get_user_data_dir(user_id)
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return data_dir
+
+
+# =========================
+# GITHUB USER PATHS
+# =========================
+
+def get_user_github_watchlists_path(user_id: str | None = None) -> str:
+    """Return branch-relative GitHub Watchlist path for a user.
+
+    The full logical location is:
+    data-watchlists/users/<utente>/watchlists.json
+    """
+    return f"{GITHUB_USERS_ROOT}/{get_user_id(user_id)}/watchlists.json"
+
+
+def get_user_github_watchlists_display_path(user_id: str | None = None) -> str:
+    """Return human-readable GitHub Watchlist path including branch name."""
+    return f"{GITHUB_DATA_BRANCH}/{get_user_github_watchlists_path(user_id)}"
+
+
+def get_user_github_portfolio_path(user_id: str | None = None) -> str:
+    """Return branch-relative GitHub Portafoglio path for a user."""
+    return f"{GITHUB_USERS_ROOT}/{get_user_id(user_id)}/portafoglio.json"
+
+
+def get_user_github_targets_path(user_id: str | None = None) -> str:
+    """Return branch-relative GitHub Target Analisti path for a user."""
+    return f"{GITHUB_USERS_ROOT}/{get_user_id(user_id)}/target_analisti.json"
+
+
+# =========================
+# LEGACY GLOBAL PATHS
+# =========================
+
+def get_legacy_watchlists_path() -> Path:
+    return ROOT_DIR / "watchlists.json"
+
+
+def get_legacy_portfolio_path() -> Path:
+    return ROOT_DIR / "portfolio" / "portafoglio.json"
+
+
+def get_legacy_targets_path() -> Path:
+    return ROOT_DIR / "portfolio" / "target_analisti.json"
 
 
 
