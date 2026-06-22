@@ -1,6 +1,9 @@
 import streamlit as st
 from pathlib import Path
+
 from utils.auth import logout_user
+from utils.user_context import get_current_user_display_name
+
 
 # =========================
 # CONFIGURAZIONE FILE / CSS
@@ -27,7 +30,9 @@ local_css(GLOBAL_CSS)
 # LOGOUT
 # =========================
 
+logged_out_user_display_name = get_current_user_display_name("utente")
 logout_user()
+
 
 # =========================
 # INTERFACCIA
@@ -40,7 +45,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.success("Logout effettuato correttamente.")
+st.success(f"Logout effettuato correttamente per {logged_out_user_display_name}.")
 
 st.info(
     "La sessione è stata chiusa. "
