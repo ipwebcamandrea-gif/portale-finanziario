@@ -198,15 +198,22 @@ def render_persistence_note():
     storage_mode = st.session_state.get("tv_storage_mode", "locale")
     last_error = st.session_state.get("tv_last_github_error", "")
 
+    storage_path = st.session_state.get("tv_storage_path", "")
     if storage_mode == "github":
         title = "Modalita GitHub API"
-        text = "Le modifiche vengono salvate su watchlists.json nel branch data-watchlists del repository GitHub."
+        text = "Le modifiche vengono salvate nel file Watchlist dell'utente corrente"
+        if storage_path:
+            text += ": " + storage_path
+        else:
+            text += " sul branch data-watchlists del repository GitHub."
     elif storage_mode == "locale_fallback":
         title = "Modalita locale fallback"
         text = "GitHub API non disponibile: le modifiche vengono salvate localmente. Ultimo errore: " + last_error
     else:
         title = "Modalita JSON locale"
-        text = "Le modifiche vengono salvate su watchlists.json nell'ambiente dell'app."
+        text = "Le modifiche vengono salvate nel file Watchlist locale dell'utente corrente."
+        if storage_path:
+            text += " Path: " + storage_path
 
     st.markdown(
         f"""
@@ -7884,6 +7891,7 @@ def cell_html(label, value, css_class="tv-cell-value"):
 import base64
 import json
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
@@ -7911,17 +7919,23 @@ def github_storage_enabled():
         return False
 
 
-def get_github_config():
-    """Legge la configurazione GitHub dai Secrets Streamlit."""
+def get_github_config(watchlists_path=None):
+    """Legge la configurazione GitHub dai Secrets Streamlit.
+
+    watchlists_path opzionale permette alla multiutenza di usare un file diverso
+    per ogni utente, ad esempio users/andrea/watchlists.json sul branch
+    data-watchlists.
+    """
     github = st.secrets.get("github", {})
 
     token = github.get("token", "")
     owner = github.get("owner", "")
     repo = github.get("repo", "")
     branch = github.get("branch", "data-watchlists")
-    watchlists_path = github.get("watchlists_path", "watchlists.json")
+    configured_watchlists_path = github.get("watchlists_path", "watchlists.json")
+    resolved_watchlists_path = watchlists_path or configured_watchlists_path
 
-    if not token or not owner or not repo or not branch or not watchlists_path:
+    if not token or not owner or not repo or not branch or not resolved_watchlists_path:
         raise ValueError("Configurazione GitHub incompleta nei Secrets Streamlit.")
 
     return {
@@ -7929,7 +7943,7 @@ def get_github_config():
         "owner": owner,
         "repo": repo,
         "branch": branch,
-        "watchlists_path": watchlists_path,
+        "watchlists_path": str(resolved_watchlists_path).strip().lstrip("/"),
     }
 
 
@@ -7937,7 +7951,8 @@ def github_api_url(config):
     owner = config["owner"]
     repo = config["repo"]
     path = config["watchlists_path"].lstrip("/")
-    return f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+    quoted_path = urllib.parse.quote(path, safe="/")
+    return f"https://api.github.com/repos/{owner}/{repo}/contents/{quoted_path}"
 
 
 def github_headers(config):
@@ -7985,7 +8000,7 @@ def github_request(method, url, config, payload=None):
 # READ / WRITE WATCHLISTS
 # =========================
 
-def read_watchlists_from_github():
+def read_watchlists_from_github(watchlists_path=None):
     """
     Legge watchlists.json dal branch dati GitHub.
 
@@ -7993,7 +8008,7 @@ def read_watchlists_from_github():
     - data: dict JSON
     - sha: SHA del file GitHub, necessario per aggiornamenti successivi
     """
-    config = get_github_config()
+    config = get_github_config(watchlists_path=watchlists_path)
     url = github_api_url(config) + "?ref=" + config["branch"]
 
     response = github_request("GET", url, config)
@@ -8019,28 +8034,39 @@ def _write_watchlists_to_github_once(config, data, previous_sha, commit_message)
     payload = {
         "message": commit_message,
         "content": encoded_content,
-        "sha": previous_sha,
         "branch": config["branch"],
     }
+
+    # GitHub richiede sha per aggiornare un file esistente, ma non per crearlo.
+    if previous_sha:
+        payload["sha"] = previous_sha
 
     return github_request("PUT", github_api_url(config), config, payload)
 
 
-def write_watchlists_to_github(data, previous_sha=None, commit_message=None, retry_on_sha_conflict=True):
+def write_watchlists_to_github(
+    data,
+    previous_sha=None,
+    commit_message=None,
+    retry_on_sha_conflict=True,
+    watchlists_path=None,
+):
     """
     Scrive watchlists.json sul branch dati GitHub creando un commit.
 
     Se previous_sha non viene passato, viene letto prima lo SHA attuale del file.
-
-    Gestione errore 409:
-    - GitHub restituisce 409 quando lo SHA usato non corrisponde più alla versione attuale del file.
-    - In quel caso questa funzione rilegge lo SHA aggiornato e riprova una sola volta.
-    - Questo rende robusti i salvataggi ravvicinati da Streamlit.
+    Se il file non esiste ancora, viene creato senza SHA. Questo serve alla
+    multiutenza per creare users/<utente>/watchlists.json al primo accesso.
     """
-    config = get_github_config()
+    config = get_github_config(watchlists_path=watchlists_path)
 
     if previous_sha is None:
-        _, previous_sha = read_watchlists_from_github()
+        try:
+            _, previous_sha = read_watchlists_from_github(watchlists_path=config["watchlists_path"])
+        except GitHubStorageError as error:
+            if error.status_code != 404:
+                raise
+            previous_sha = None
 
     if commit_message is None:
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -8056,17 +8082,17 @@ def write_watchlists_to_github(data, previous_sha=None, commit_message=None, ret
             raise
 
         # Lo SHA locale è vecchio: rileggo lo SHA corrente da GitHub e riprovo una volta.
-        _, fresh_sha = read_watchlists_from_github()
+        _, fresh_sha = read_watchlists_from_github(watchlists_path=config["watchlists_path"])
         retry_message = commit_message + " [retry sha aggiornata]"
         return _write_watchlists_to_github_once(config, data, fresh_sha, retry_message)
 
 
-def test_github_storage_connection():
+def test_github_storage_connection(watchlists_path=None):
     """
     Test leggero: prova a leggere watchlists.json da GitHub.
     Utile per verificare token, repo, branch e path.
     """
-    data, sha = read_watchlists_from_github()
+    data, sha = read_watchlists_from_github(watchlists_path=watchlists_path)
     return {
         "ok": True,
         "sha": sha,
@@ -11294,20 +11320,41 @@ from pathlib import Path
 
 import streamlit as st
 
+from utils.user_context import get_current_user
+from utils.user_paths import (
+    get_legacy_watchlists_path,
+    get_user_github_watchlists_display_path,
+    get_user_github_watchlists_path,
+    get_user_watchlists_path,
+)
+
 try:
     from utils.github_storage import (
+        GitHubStorageError,
         github_storage_enabled,
         read_watchlists_from_github,
         write_watchlists_to_github,
     )
 except Exception:
+    class GitHubStorageError(RuntimeError):
+        def __init__(self, message, status_code=None, response_body=""):
+            super().__init__(message)
+            self.status_code = status_code
+            self.response_body = response_body
+
     def github_storage_enabled():
         return False
 
-    def read_watchlists_from_github():
+    def read_watchlists_from_github(watchlists_path=None):
         raise RuntimeError("Modulo github_storage non disponibile.")
 
-    def write_watchlists_to_github(data, previous_sha=None, commit_message=None):
+    def write_watchlists_to_github(
+        data,
+        previous_sha=None,
+        commit_message=None,
+        retry_on_sha_conflict=True,
+        watchlists_path=None,
+    ):
         raise RuntimeError("Modulo github_storage non disponibile.")
 
 
@@ -11316,7 +11363,8 @@ except Exception:
 # =========================
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-WATCHLISTS_JSON = ROOT_DIR / "watchlists.json"
+WATCHLISTS_JSON = ROOT_DIR / "watchlists.json"  # legacy fallback only
+MIGRATION_SOURCE_USER = "andrea"
 
 
 # =========================
@@ -11327,9 +11375,7 @@ DEFAULT_DATA = {
     "version": 1,
     "active_watchlist": "Default",
     "watchlists": {
-        "Default": ["AAPL", "MSFT", "GOOGL"],
-        "Finanza": ["JPM", "BAC", "V", "MA"],
-        "ETF": ["SWDA.MI", "EIMI.MI"]
+        "Default": []
     }
 }
 
@@ -11337,6 +11383,31 @@ DEFAULT_DATA = {
 # =========================
 # PERSISTENZA JSON + GITHUB
 # =========================
+
+def _current_user_id() -> str:
+    return get_current_user() or "default"
+
+
+def _current_local_watchlists_path() -> Path:
+    try:
+        return get_user_watchlists_path()
+    except Exception:
+        return WATCHLISTS_JSON
+
+
+def _current_github_watchlists_path() -> str:
+    try:
+        return get_user_github_watchlists_path()
+    except Exception:
+        return "watchlists.json"
+
+
+def _current_github_display_path() -> str:
+    try:
+        return get_user_github_watchlists_display_path()
+    except Exception:
+        return "data-watchlists/watchlists.json"
+
 
 def copia_default_data():
     return json.loads(json.dumps(DEFAULT_DATA))
@@ -11401,40 +11472,112 @@ def normalizza_dati_watchlists(data):
 
 def salva_watchlists_locale(data):
     data = normalizza_dati_watchlists(data)
+    json_path = _current_local_watchlists_path()
+    json_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(WATCHLISTS_JSON, "w", encoding="utf-8") as file:
+    with open(json_path, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4, ensure_ascii=False)
 
 
+def _carica_watchlists_locale():
+    json_path = _current_local_watchlists_path()
+
+    if json_path.exists():
+        with open(json_path, "r", encoding="utf-8") as file:
+            return normalizza_dati_watchlists(json.load(file))
+
+    # Safety fallback: for Andrea, if local user file is missing, copy legacy local data.
+    legacy_path = get_legacy_watchlists_path()
+    if _current_user_id() == MIGRATION_SOURCE_USER and legacy_path.exists():
+        with open(legacy_path, "r", encoding="utf-8") as file:
+            data = normalizza_dati_watchlists(json.load(file))
+    else:
+        data = copia_default_data()
+
+    salva_watchlists_locale(data)
+    return data
+
+
+def _create_or_migrate_github_user_watchlists(user_path: str):
+    """Create user Watchlist file on GitHub, copying Andrea legacy data when possible."""
+    data = None
+
+    if _current_user_id() == MIGRATION_SOURCE_USER:
+        try:
+            legacy_data, _legacy_sha = read_watchlists_from_github()
+            data = normalizza_dati_watchlists(legacy_data)
+        except Exception:
+            data = None
+
+    if data is None:
+        data = copia_default_data()
+
+    response = write_watchlists_to_github(
+        data,
+        previous_sha=None,
+        commit_message="multiuser: crea watchlists utente " + _current_user_id(),
+        watchlists_path=user_path,
+    )
+    sha = ""
+    try:
+        sha = response.get("content", {}).get("sha", "") if isinstance(response, dict) else ""
+    except Exception:
+        sha = ""
+
+    return data, sha
+
+
 def carica_watchlists_da_json():
+    user_path = _current_github_watchlists_path()
+
     if github_storage_enabled():
         try:
-            data, sha = read_watchlists_from_github()
+            data, sha = read_watchlists_from_github(watchlists_path=user_path)
             data = normalizza_dati_watchlists(data)
             st.session_state["tv_github_watchlists_sha"] = sha
+            st.session_state["tv_github_watchlists_path"] = user_path
+            st.session_state["tv_storage_path"] = _current_github_display_path()
             st.session_state["tv_storage_mode"] = "github"
             st.session_state["tv_last_github_error"] = ""
             salva_watchlists_locale(data)
             return data
-        except Exception as error:
+
+        except GitHubStorageError as errore:
+            if getattr(errore, "status_code", None) == 404:
+                try:
+                    data, sha = _create_or_migrate_github_user_watchlists(user_path)
+                    data = normalizza_dati_watchlists(data)
+                    st.session_state["tv_github_watchlists_sha"] = sha
+                    st.session_state["tv_github_watchlists_path"] = user_path
+                    st.session_state["tv_storage_path"] = _current_github_display_path()
+                    st.session_state["tv_storage_mode"] = "github"
+                    st.session_state["tv_last_github_error"] = ""
+                    salva_watchlists_locale(data)
+                    return data
+                except Exception as create_error:
+                    st.session_state["tv_storage_mode"] = "locale_fallback"
+                    st.session_state["tv_last_github_error"] = str(create_error)
+                    return _carica_watchlists_locale()
+
             st.session_state["tv_storage_mode"] = "locale_fallback"
-            st.session_state["tv_last_github_error"] = str(error)
+            st.session_state["tv_last_github_error"] = str(errore)
+            return _carica_watchlists_locale()
 
-    if not WATCHLISTS_JSON.exists():
-        salva_watchlists_locale(copia_default_data())
-        return copia_default_data()
+        except Exception as errore:
+            st.session_state["tv_storage_mode"] = "locale_fallback"
+            st.session_state["tv_last_github_error"] = str(errore)
+            return _carica_watchlists_locale()
 
-    try:
-        with open(WATCHLISTS_JSON, "r", encoding="utf-8") as file:
-            data = json.load(file)
-        return normalizza_dati_watchlists(data)
-    except Exception:
-        return copia_default_data()
+    st.session_state["tv_storage_mode"] = "locale"
+    st.session_state["tv_storage_path"] = str(_current_local_watchlists_path())
+    return _carica_watchlists_locale()
 
 
 def salva_watchlists_su_json(data):
     data = normalizza_dati_watchlists(data)
     salva_watchlists_locale(data)
+
+    user_path = _current_github_watchlists_path()
 
     if github_storage_enabled():
         try:
@@ -11442,30 +11585,46 @@ def salva_watchlists_su_json(data):
             response = write_watchlists_to_github(
                 data,
                 previous_sha=previous_sha,
-                commit_message="update: aggiorna watchlists.json da Streamlit"
+                commit_message="update: aggiorna watchlists utente " + _current_user_id(),
+                watchlists_path=user_path,
             )
-            new_sha = response.get("content", {}).get("sha")
-            if new_sha:
-                st.session_state["tv_github_watchlists_sha"] = new_sha
+
+            try:
+                new_sha = response.get("content", {}).get("sha", "")
+                if new_sha:
+                    st.session_state["tv_github_watchlists_sha"] = new_sha
+            except Exception:
+                pass
+
+            st.session_state["tv_github_watchlists_path"] = user_path
+            st.session_state["tv_storage_path"] = _current_github_display_path()
             st.session_state["tv_storage_mode"] = "github"
-            st.session_state["tv_last_github_save_ok"] = True
             st.session_state["tv_last_github_error"] = ""
-        except Exception as error:
+
+        except Exception as errore:
             st.session_state["tv_storage_mode"] = "locale_fallback"
-            st.session_state["tv_last_github_save_ok"] = False
-            st.session_state["tv_last_github_error"] = str(error)
+            st.session_state["tv_last_github_error"] = str(errore)
 
 
 def aggiorna_sessione_da_disco():
     st.session_state["tv_watchlists_data"] = carica_watchlists_da_json()
-    st.session_state["tv_current_list"] = st.session_state["tv_watchlists_data"].get(
-        "active_watchlist",
-        list(st.session_state["tv_watchlists_data"]["watchlists"].keys())[0]
-    )
+
+    current = st.session_state["tv_watchlists_data"].get("active_watchlist")
+    watchlists = st.session_state["tv_watchlists_data"].get("watchlists", {})
+
+    if current not in watchlists:
+        current = list(watchlists.keys())[0]
+        st.session_state["tv_watchlists_data"]["active_watchlist"] = current
+
+    st.session_state["tv_current_list"] = current
 
 
 def salva_sessione_su_disco():
-    data = st.session_state["tv_watchlists_data"]
-    data["active_watchlist"] = st.session_state.get("tv_current_list")
-    salva_watchlists_su_json(data)
+    if "tv_watchlists_data" in st.session_state:
+        data = st.session_state["tv_watchlists_data"]
+        data["active_watchlist"] = st.session_state.get(
+            "tv_current_list",
+            data.get("active_watchlist", "Default")
+        )
+        salva_watchlists_su_json(data)
 
