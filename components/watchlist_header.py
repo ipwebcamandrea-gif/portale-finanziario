@@ -15,15 +15,22 @@ def render_persistence_note():
     storage_mode = st.session_state.get("tv_storage_mode", "locale")
     last_error = st.session_state.get("tv_last_github_error", "")
 
+    storage_path = st.session_state.get("tv_storage_path", "")
     if storage_mode == "github":
         title = "Modalita GitHub API"
-        text = "Le modifiche vengono salvate su watchlists.json nel branch data-watchlists del repository GitHub."
+        text = "Le modifiche vengono salvate nel file Watchlist dell'utente corrente"
+        if storage_path:
+            text += ": " + storage_path
+        else:
+            text += " sul branch data-watchlists del repository GitHub."
     elif storage_mode == "locale_fallback":
         title = "Modalita locale fallback"
         text = "GitHub API non disponibile: le modifiche vengono salvate localmente. Ultimo errore: " + last_error
     else:
         title = "Modalita JSON locale"
-        text = "Le modifiche vengono salvate su watchlists.json nell'ambiente dell'app."
+        text = "Le modifiche vengono salvate nel file Watchlist locale dell'utente corrente."
+        if storage_path:
+            text += " Path: " + storage_path
 
     st.markdown(
         f"""
