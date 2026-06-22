@@ -191,7 +191,11 @@ def fetch_and_save(selection: dict) -> dict | None:
         tv_symbol=selection.get("tv_symbol", ""),
     )
     if result.get("ok"):
-        saved = upsert_target(TARGET_PATH, yf_symbol, result)
+        try:
+            saved = upsert_target(TARGET_PATH, yf_symbol, result)
+        except Exception as exc:
+            st.error("Salvataggio Target Analisti non completato su GitHub. Modifica annullata: " + str(exc))
+            return None
         st.success("Target aggiornati da yfinance e salvati.")
         return saved
     st.warning(result.get("error", "Target automatici non disponibili."))
@@ -364,7 +368,11 @@ def render_manual_editor(selection: dict, current_data: dict | None) -> None:
                 "rating": rating,
                 "updated_at": now_iso(),
             }
-            upsert_target(TARGET_PATH, selection.get("yf_symbol", ""), data)
+            try:
+                upsert_target(TARGET_PATH, selection.get("yf_symbol", ""), data)
+            except Exception as exc:
+                st.error("Salvataggio Target Analisti non completato su GitHub. Modifica annullata: " + str(exc))
+                return
             st.success("Target manuali salvati.")
             st.rerun()
 
