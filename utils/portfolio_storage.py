@@ -325,6 +325,20 @@ def _github_put_file(json_text: str, message: str, path_override: str | None = N
         json=payload,
         timeout=20,
     )
+
+    # GitHub può restituire 409 se lo SHA è diventato vecchio tra GET e PUT.
+    # In quel caso rileggo lo SHA corrente e riprovo una sola volta.
+    if response.status_code == 409:
+        fresh = _github_get_file(path_override=path_override)
+        if fresh.get("exists") and fresh.get("sha"):
+            payload["sha"] = fresh["sha"]
+        response = requests.put(
+            url,
+            headers=_github_headers(cfg["token"]),
+            json=payload,
+            timeout=20,
+        )
+
     response.raise_for_status()
 
 
@@ -393,7 +407,11 @@ def save_portfolio(
             return
         except Exception as exc:
             set_portfolio_storage_state("locale_fallback", str(exc))
-            return
+            raise RuntimeError(
+                "Salvataggio GitHub Portafoglio non riuscito. "
+                "La modifica NON è stata confermata come persistente su data-watchlists. "
+                + str(exc)
+            ) from exc
 
     cfg = get_portfolio_github_config()
     if cfg.get("enabled") != "true":
