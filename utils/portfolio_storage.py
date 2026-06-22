@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import base64
 import json
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import streamlit as st
+
+from utils.user_context import get_current_user
+from utils.user_paths import (
+    get_user_github_portfolio_path,
+    get_user_portfolio_path,
+)
 
 
 PORTFOLIO_COLUMNS = [
@@ -81,7 +88,7 @@ def _github_storage_enabled() -> bool:
     return True
 
 
-def get_portfolio_github_config() -> dict[str, str]:
+def get_portfolio_github_config(path_override: str | None = None) -> dict[str, str]:
     """Return GitHub configuration for portfolio persistence.
 
     Supports the project's nested secrets format:
@@ -118,10 +125,14 @@ def get_portfolio_github_config() -> dict[str, str]:
         default=(nested_branch or flat_branch or DEFAULT_PORTFOLIO_BRANCH),
     )
 
-    path = _secret_value(
-        "GITHUB_PORTFOLIO_PATH",
-        default=DEFAULT_PORTFOLIO_JSON_PATH,
-    )
+    try:
+        user_portfolio_path = get_user_github_portfolio_path()
+    except Exception:
+        user_portfolio_path = DEFAULT_PORTFOLIO_JSON_PATH
+
+    # Multiutenza: il path predefinito è sempre quello dell'utente corrente.
+    # GITHUB_PORTFOLIO_PATH resta supportato solo come fallback se non esiste un utente in sessione.
+    path = str(path_override or user_portfolio_path or DEFAULT_PORTFOLIO_JSON_PATH).strip().lstrip("/")
 
     return {
         "token": token,
@@ -146,6 +157,14 @@ def is_github_configured() -> bool:
 def set_portfolio_storage_state(mode: str, error: str = "") -> None:
     st.session_state["portfolio_storage_mode"] = mode
     st.session_state["portfolio_last_github_error"] = error
+    try:
+        cfg = get_portfolio_github_config()
+        st.session_state["portfolio_storage_path"] = f"{cfg.get('branch', 'data-watchlists')}/{cfg.get('path', '')}"
+    except Exception:
+        try:
+            st.session_state["portfolio_storage_path"] = str(get_user_portfolio_path())
+        except Exception:
+            st.session_state["portfolio_storage_path"] = DEFAULT_PORTFOLIO_JSON_PATH
 
 
 # =========================
@@ -257,13 +276,14 @@ def _github_headers(token: str) -> dict[str, str]:
 
 def _github_contents_url(repo: str, path: str) -> str:
     clean_path = path.strip().lstrip("/")
-    return f"https://api.github.com/repos/{repo}/contents/{clean_path}"
+    quoted_path = urllib.parse.quote(clean_path, safe="/")
+    return f"https://api.github.com/repos/{repo}/contents/{quoted_path}"
 
 
-def _github_get_file() -> dict[str, Any]:
+def _github_get_file(path_override: str | None = None) -> dict[str, Any]:
     import requests
 
-    cfg = get_portfolio_github_config()
+    cfg = get_portfolio_github_config(path_override=path_override)
     url = _github_contents_url(cfg["repo"], cfg["path"])
     response = requests.get(
         url,
@@ -282,12 +302,12 @@ def _github_get_file() -> dict[str, Any]:
     return {"exists": True, "content": content, "sha": payload.get("sha", "")}
 
 
-def _github_put_file(json_text: str, message: str) -> None:
+def _github_put_file(json_text: str, message: str, path_override: str | None = None) -> None:
     import requests
 
-    cfg = get_portfolio_github_config()
+    cfg = get_portfolio_github_config(path_override=path_override)
     url = _github_contents_url(cfg["repo"], cfg["path"])
-    current = _github_get_file()
+    current = _github_get_file(path_override=path_override)
     encoded_content = base64.b64encode(json_text.encode("utf-8")).decode("ascii")
 
     payload: dict[str, Any] = {
@@ -313,7 +333,7 @@ def _github_put_file(json_text: str, message: str) -> None:
 # =========================
 
 def load_portfolio(json_path: Path) -> pd.DataFrame:
-    """Load portfolio positions from GitHub JSON if configured, otherwise local JSON."""
+    """Load portfolio positions from the current user's GitHub/local JSON."""
     ensure_portfolio_file(json_path)
 
     if is_github_configured():
@@ -326,13 +346,25 @@ def load_portfolio(json_path: Path) -> pd.DataFrame:
                 set_portfolio_storage_state("github")
                 return _payload_to_df(payload)
 
-            local_payload = _read_local_payload(json_path)
+            # First access for this user: create users/<utente>/portafoglio.json.
+            # Andrea receives a copy of the legacy GitHub portfolio if it exists;
+            # all other users start from the already-created empty local payload.
+            payload = None
+            if get_current_user() == "andrea":
+                legacy_remote = _github_get_file(path_override=DEFAULT_PORTFOLIO_JSON_PATH)
+                if legacy_remote.get("exists"):
+                    payload = _json_text_to_payload(legacy_remote.get("content", ""))
+
+            if payload is None:
+                payload = _read_local_payload(json_path)
+
+            _write_local_payload(json_path, payload)
             _github_put_file(
-                _payload_to_json_text(local_payload),
-                "Create portfolio JSON from Streamlit app",
+                _payload_to_json_text(payload),
+                "multiuser: crea portafoglio utente " + (get_current_user() or "unknown"),
             )
             set_portfolio_storage_state("github")
-            return _payload_to_df(local_payload)
+            return _payload_to_df(payload)
         except Exception as exc:
             set_portfolio_storage_state("locale_fallback", str(exc))
     else:
