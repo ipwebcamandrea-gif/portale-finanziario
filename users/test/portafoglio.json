@@ -1,5 +1,19 @@
 {
   "version": 1,
-  "updated_at": "2026-06-22T16:29:43+00:00",
-  "positions": []
+  "updated_at": "2026-06-22T16:30:30+00:00",
+  "positions": [
+    {
+      "ticker": "MA",
+      "titolo": "Mastercard Incorporated",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 100,
+      "prezzo_medio": 10.0,
+      "prezzo_mercato": 485.4100036621094,
+      "prezzo_precedente": 490.972,
+      "yf_symbol": "MA",
+      "tv_symbol": "NYSE:MA"
+    }
+  ]
 }
