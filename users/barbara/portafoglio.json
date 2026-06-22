@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-22T12:46:21+00:00",
+  "updated_at": "2026-06-22T12:46:34+00:00",
   "positions": [
     {
       "ticker": "MSFT",
@@ -14,6 +14,19 @@
       "prezzo_precedente": 379.14,
       "yf_symbol": "MSFT",
       "tv_symbol": "NASDAQ:MSFT"
+    },
+    {
+      "ticker": "MA",
+      "titolo": "Mastercard Incorporated",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 25,
+      "prezzo_medio": 494.76,
+      "prezzo_mercato": 489.7900085449219,
+      "prezzo_precedente": 490.972,
+      "yf_symbol": "MA",
+      "tv_symbol": "NYSE:MA"
     }
   ]
 }
