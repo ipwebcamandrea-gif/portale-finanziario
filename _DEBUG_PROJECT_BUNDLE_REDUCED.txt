@@ -4067,6 +4067,22 @@ st.markdown(
         max-width: 440px;
         margin: 0 auto;
     }
+    .login-subtitle {
+        max-width: 440px;
+        margin: 0 auto 1rem auto;
+        color: var(--text-main);
+        font-size: 1.45rem;
+        font-weight: 850;
+        line-height: 1.2;
+        text-align: left;
+    }
+    @media screen and (max-width: 768px) {
+        .login-subtitle {
+            max-width: 100%;
+            font-size: 1.25rem;
+            margin-bottom: 0.85rem;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -4171,7 +4187,7 @@ st.markdown(
 )
 
 with st.container(key="login_card"):
-    st.subheader("Accedi al sistema")
+    st.markdown('<div class="login-subtitle">Accedi al sistema</div>', unsafe_allow_html=True)
 
     if not USERS:
         st.error(
@@ -4221,6 +4237,7 @@ from components.standard_header import render_standard_page_header
 
 
 from utils.auth import require_login
+from utils.user_paths import get_user_portfolio_path
 from utils.portfolio_calculations import enrich_portfolio_df
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_storage import load_portfolio
@@ -4239,7 +4256,7 @@ from utils.allocazione.allocation_render import (
 require_login()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
+DATA_PATH = get_user_portfolio_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "allocazione" / "allocazione_portafoglio.css"
 
@@ -5278,6 +5295,7 @@ from utils.app_branding import get_app_icon
 from components.standard_header import render_standard_page_header
 from components.ticker_lookup_selector import render_ticker_add_intro, render_ticker_lookup_selector
 from utils.auth import require_login
+from utils.user_paths import get_user_portfolio_path
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
@@ -5322,7 +5340,7 @@ except Exception:
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
+DATA_PATH = get_user_portfolio_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
@@ -5538,17 +5556,27 @@ def render_persistence_note() -> None:
     storage_mode = st.session_state.get("portfolio_storage_mode", "locale")
     last_error = st.session_state.get("portfolio_last_github_error", "")
 
+    storage_path = st.session_state.get("portfolio_storage_path", "")
+
     if storage_mode == "github":
         title = "Modalità GitHub API"
-        text = "Le modifiche del portafoglio vengono salvate in portfolio/portafoglio.json sulla branch data-watchlists."
+        text = "Le modifiche del portafoglio vengono salvate nel file dell'utente corrente"
+        if storage_path:
+            text += ": " + storage_path
+        else:
+            text += " sulla branch data-watchlists."
     elif storage_mode == "locale_fallback":
         title = "Modalità locale fallback"
-        text = "GitHub API non disponibile: modifiche salvate localmente e non persistenti dopo reboot."
+        text = "GitHub API non disponibile: modifiche salvate localmente nel file utente."
+        if storage_path:
+            text += " Path: " + storage_path
         if last_error:
             text += " Ultimo errore: " + str(last_error)
     else:
         title = "Modalità JSON locale"
-        text = "GitHub API non configurata: modifiche salvate localmente e non persistenti dopo reboot."
+        text = "GitHub API non configurata: modifiche salvate localmente nel file utente."
+        if storage_path:
+            text += " Path: " + storage_path
 
     note_html = (
         '<div class="portfolio-persistence-note">'
@@ -9623,12 +9651,19 @@ from __future__ import annotations
 
 import base64
 import json
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import streamlit as st
+
+from utils.user_context import get_current_user
+from utils.user_paths import (
+    get_user_github_portfolio_path,
+    get_user_portfolio_path,
+)
 
 
 PORTFOLIO_COLUMNS = [
@@ -9702,7 +9737,7 @@ def _github_storage_enabled() -> bool:
     return True
 
 
-def get_portfolio_github_config() -> dict[str, str]:
+def get_portfolio_github_config(path_override: str | None = None) -> dict[str, str]:
     """Return GitHub configuration for portfolio persistence.
 
     Supports the project's nested secrets format:
@@ -9739,10 +9774,14 @@ def get_portfolio_github_config() -> dict[str, str]:
         default=(nested_branch or flat_branch or DEFAULT_PORTFOLIO_BRANCH),
     )
 
-    path = _secret_value(
-        "GITHUB_PORTFOLIO_PATH",
-        default=DEFAULT_PORTFOLIO_JSON_PATH,
-    )
+    try:
+        user_portfolio_path = get_user_github_portfolio_path()
+    except Exception:
+        user_portfolio_path = DEFAULT_PORTFOLIO_JSON_PATH
+
+    # Multiutenza: il path predefinito è sempre quello dell'utente corrente.
+    # GITHUB_PORTFOLIO_PATH resta supportato solo come fallback se non esiste un utente in sessione.
+    path = str(path_override or user_portfolio_path or DEFAULT_PORTFOLIO_JSON_PATH).strip().lstrip("/")
 
     return {
         "token": token,
@@ -9767,6 +9806,14 @@ def is_github_configured() -> bool:
 def set_portfolio_storage_state(mode: str, error: str = "") -> None:
     st.session_state["portfolio_storage_mode"] = mode
     st.session_state["portfolio_last_github_error"] = error
+    try:
+        cfg = get_portfolio_github_config()
+        st.session_state["portfolio_storage_path"] = f"{cfg.get('branch', 'data-watchlists')}/{cfg.get('path', '')}"
+    except Exception:
+        try:
+            st.session_state["portfolio_storage_path"] = str(get_user_portfolio_path())
+        except Exception:
+            st.session_state["portfolio_storage_path"] = DEFAULT_PORTFOLIO_JSON_PATH
 
 
 # =========================
@@ -9878,13 +9925,14 @@ def _github_headers(token: str) -> dict[str, str]:
 
 def _github_contents_url(repo: str, path: str) -> str:
     clean_path = path.strip().lstrip("/")
-    return f"https://api.github.com/repos/{repo}/contents/{clean_path}"
+    quoted_path = urllib.parse.quote(clean_path, safe="/")
+    return f"https://api.github.com/repos/{repo}/contents/{quoted_path}"
 
 
-def _github_get_file() -> dict[str, Any]:
+def _github_get_file(path_override: str | None = None) -> dict[str, Any]:
     import requests
 
-    cfg = get_portfolio_github_config()
+    cfg = get_portfolio_github_config(path_override=path_override)
     url = _github_contents_url(cfg["repo"], cfg["path"])
     response = requests.get(
         url,
@@ -9903,12 +9951,12 @@ def _github_get_file() -> dict[str, Any]:
     return {"exists": True, "content": content, "sha": payload.get("sha", "")}
 
 
-def _github_put_file(json_text: str, message: str) -> None:
+def _github_put_file(json_text: str, message: str, path_override: str | None = None) -> None:
     import requests
 
-    cfg = get_portfolio_github_config()
+    cfg = get_portfolio_github_config(path_override=path_override)
     url = _github_contents_url(cfg["repo"], cfg["path"])
-    current = _github_get_file()
+    current = _github_get_file(path_override=path_override)
     encoded_content = base64.b64encode(json_text.encode("utf-8")).decode("ascii")
 
     payload: dict[str, Any] = {
@@ -9934,7 +9982,7 @@ def _github_put_file(json_text: str, message: str) -> None:
 # =========================
 
 def load_portfolio(json_path: Path) -> pd.DataFrame:
-    """Load portfolio positions from GitHub JSON if configured, otherwise local JSON."""
+    """Load portfolio positions from the current user's GitHub/local JSON."""
     ensure_portfolio_file(json_path)
 
     if is_github_configured():
@@ -9947,13 +9995,25 @@ def load_portfolio(json_path: Path) -> pd.DataFrame:
                 set_portfolio_storage_state("github")
                 return _payload_to_df(payload)
 
-            local_payload = _read_local_payload(json_path)
+            # First access for this user: create users/<utente>/portafoglio.json.
+            # Andrea receives a copy of the legacy GitHub portfolio if it exists;
+            # all other users start from the already-created empty local payload.
+            payload = None
+            if get_current_user() == "andrea":
+                legacy_remote = _github_get_file(path_override=DEFAULT_PORTFOLIO_JSON_PATH)
+                if legacy_remote.get("exists"):
+                    payload = _json_text_to_payload(legacy_remote.get("content", ""))
+
+            if payload is None:
+                payload = _read_local_payload(json_path)
+
+            _write_local_payload(json_path, payload)
             _github_put_file(
-                _payload_to_json_text(local_payload),
-                "Create portfolio JSON from Streamlit app",
+                _payload_to_json_text(payload),
+                "multiuser: crea portafoglio utente " + (get_current_user() or "unknown"),
             )
             set_portfolio_storage_state("github")
-            return _payload_to_df(local_payload)
+            return _payload_to_df(payload)
         except Exception as exc:
             set_portfolio_storage_state("locale_fallback", str(exc))
     else:
