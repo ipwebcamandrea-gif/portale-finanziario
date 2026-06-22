@@ -11,6 +11,7 @@ from utils.app_branding import get_app_icon
 
 from components.ticker_lookup_selector import render_ticker_lookup_selector
 from utils.auth import require_login
+from utils.user_paths import get_user_portfolio_path, get_user_targets_path
 from utils.portfolio_calculations import enrich_portfolio_df
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct
 from utils.portfolio_prices import fetch_last_quote
@@ -25,8 +26,8 @@ from utils.target_symbol_resolver import resolve_target_symbol, tradingview_fore
 require_login()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
-TARGET_PATH = BASE_DIR / "portfolio" / "target_analisti.json"
+DATA_PATH = get_user_portfolio_path()
+TARGET_PATH = get_user_targets_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "target_analisti.css"
 
@@ -411,10 +412,19 @@ def main() -> None:
 
     storage_mode = st.session_state.get("target_storage_mode", "locale")
     last_error = st.session_state.get("target_last_github_error", "")
+    storage_path = st.session_state.get("target_storage_path", "")
     if storage_mode == "github":
-        st.caption("Target salvati su GitHub branch data-watchlists · portfolio/target_analisti.json")
+        caption = "Target salvati su GitHub nel file dell'utente corrente"
+        if storage_path:
+            caption += " · " + storage_path
+        st.caption(caption)
     elif storage_mode == "locale_fallback":
-        st.warning("GitHub non disponibile per target_analisti.json: salvataggio locale. " + last_error)
+        message = "GitHub non disponibile per target_analisti.json: salvataggio locale."
+        if storage_path:
+            message += " Path: " + storage_path
+        if last_error:
+            message += " " + last_error
+        st.warning(message)
 
 
 if __name__ == "__main__":
