@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-22T10:38:13+00:00",
+  "positions": [
+    {
+      "ticker": "WVE",
+      "titolo": "WAVE LIFE SCI",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 1100.0,
+      "prezzo_medio": 6.85531,
+      "prezzo_mercato": 6.159999847412109,
+      "prezzo_precedente": 6.15,
+      "yf_symbol": "WVE",
+      "tv_symbol": "NASDAQ:WVE"
+    },
+    {
+      "ticker": "INTU",
+      "titolo": "INTUIT",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 40.0,
+      "prezzo_medio": 364.05947,
+      "prezzo_mercato": 267.0,
+      "prezzo_precedente": 267.13,
+      "yf_symbol": "INTU",
+      "tv_symbol": "NASDAQ:INTU"
+    },
+    {
+      "ticker": "PERI",
+      "titolo": "PERION NETWORK",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 700.0,
+      "prezzo_medio": 8.34849,
+      "prezzo_mercato": 8.510000228881836,
+      "prezzo_precedente": 8.47,
+      "yf_symbol": "PERI",
+      "tv_symbol": "NASDAQ:PERI"
+    },
+    {
+      "ticker": "SOFI",
+      "titolo": "SOFI TECH",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 330.0,
+      "prezzo_medio": 16.96324,
+      "prezzo_mercato": 17.90999984741211,
+      "prezzo_precedente": 17.8803,
+      "yf_symbol": "SOFI",
+      "tv_symbol": "NASDAQ:SOFI"
+    },
+    {
+      "ticker": "MA",
+      "titolo": "MASTERCARD RG-A",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 45.0,
+      "prezzo_medio": 491.67956,
+      "prezzo_mercato": 489.7900085449219,
+      "prezzo_precedente": 490.972,
+      "yf_symbol": "MA",
+      "tv_symbol": "NYSE:MA"
+    },
+    {
+      "ticker": "MSFT",
+      "titolo": "MICROSOFT",
+      "mercato": "NASDAQ",
+      "strumento": "",
+      "valuta": "EUR",
+      "quantita": 134.0,
+      "prezzo_medio": 326.02,
+      "prezzo_mercato": 331.04998779296875,
+      "prezzo_precedente": 330.25,
+      "yf_symbol": "1MSFT.MI",
+      "tv_symbol": "MIL:1MSFT"
+    },
+    {
+      "ticker": "PYPL",
+      "titolo": "PAYPAL HOLDINGS",
+      "mercato": "NASDAQ",
+      "strumento": "",
+      "valuta": "USD",
+      "quantita": 157.0,
+      "prezzo_medio": 56.565889,
+      "prezzo_mercato": 42.5099983215332,
+      "prezzo_precedente": 42.51,
+      "yf_symbol": "PYPL",
+      "tv_symbol": "NASDAQ:PYPL"
+    },
+    {
+      "ticker": "ORCL",
+      "titolo": "ORACLE CORPORATION",
+      "mercato": "",
+      "strumento": "",
+      "valuta": "USD",
+      "quantita": 69.0,
+      "prezzo_medio": 192.05,
+      "prezzo_mercato": 184.2899932861328,
+      "prezzo_precedente": 183.74,
+      "yf_symbol": "ORCL",
+      "tv_symbol": "NYSE:ORCL"
+    },
+    {
+      "ticker": "ASTS",
+      "titolo": "ASTS",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 77.0,
+      "prezzo_medio": 78.17,
+      "prezzo_mercato": 80.66000366210938,
+      "prezzo_precedente": 80.4,
+      "yf_symbol": "ASTS",
+      "tv_symbol": "NASDAQ:ASTS"
+    }
+  ]
+}
