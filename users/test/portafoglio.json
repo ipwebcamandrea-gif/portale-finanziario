@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-22T17:03:25+00:00",
+  "updated_at": "2026-06-22T17:03:39+00:00",
   "positions": [
     {
       "ticker": "MA",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 100,
       "prezzo_medio": 10.0,
-      "prezzo_mercato": 485.79998779296875,
+      "prezzo_mercato": 485.82000732421875,
       "prezzo_precedente": 490.972,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
