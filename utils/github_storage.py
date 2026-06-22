@@ -1,6 +1,7 @@
 import base64
 import json
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
@@ -28,17 +29,23 @@ def github_storage_enabled():
         return False
 
 
-def get_github_config():
-    """Legge la configurazione GitHub dai Secrets Streamlit."""
+def get_github_config(watchlists_path=None):
+    """Legge la configurazione GitHub dai Secrets Streamlit.
+
+    watchlists_path opzionale permette alla multiutenza di usare un file diverso
+    per ogni utente, ad esempio users/andrea/watchlists.json sul branch
+    data-watchlists.
+    """
     github = st.secrets.get("github", {})
 
     token = github.get("token", "")
     owner = github.get("owner", "")
     repo = github.get("repo", "")
     branch = github.get("branch", "data-watchlists")
-    watchlists_path = github.get("watchlists_path", "watchlists.json")
+    configured_watchlists_path = github.get("watchlists_path", "watchlists.json")
+    resolved_watchlists_path = watchlists_path or configured_watchlists_path
 
-    if not token or not owner or not repo or not branch or not watchlists_path:
+    if not token or not owner or not repo or not branch or not resolved_watchlists_path:
         raise ValueError("Configurazione GitHub incompleta nei Secrets Streamlit.")
 
     return {
@@ -46,7 +53,7 @@ def get_github_config():
         "owner": owner,
         "repo": repo,
         "branch": branch,
-        "watchlists_path": watchlists_path,
+        "watchlists_path": str(resolved_watchlists_path).strip().lstrip("/"),
     }
 
 
@@ -54,7 +61,8 @@ def github_api_url(config):
     owner = config["owner"]
     repo = config["repo"]
     path = config["watchlists_path"].lstrip("/")
-    return f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+    quoted_path = urllib.parse.quote(path, safe="/")
+    return f"https://api.github.com/repos/{owner}/{repo}/contents/{quoted_path}"
 
 
 def github_headers(config):
@@ -102,7 +110,7 @@ def github_request(method, url, config, payload=None):
 # READ / WRITE WATCHLISTS
 # =========================
 
-def read_watchlists_from_github():
+def read_watchlists_from_github(watchlists_path=None):
     """
     Legge watchlists.json dal branch dati GitHub.
 
@@ -110,7 +118,7 @@ def read_watchlists_from_github():
     - data: dict JSON
     - sha: SHA del file GitHub, necessario per aggiornamenti successivi
     """
-    config = get_github_config()
+    config = get_github_config(watchlists_path=watchlists_path)
     url = github_api_url(config) + "?ref=" + config["branch"]
 
     response = github_request("GET", url, config)
@@ -136,28 +144,39 @@ def _write_watchlists_to_github_once(config, data, previous_sha, commit_message)
     payload = {
         "message": commit_message,
         "content": encoded_content,
-        "sha": previous_sha,
         "branch": config["branch"],
     }
+
+    # GitHub richiede sha per aggiornare un file esistente, ma non per crearlo.
+    if previous_sha:
+        payload["sha"] = previous_sha
 
     return github_request("PUT", github_api_url(config), config, payload)
 
 
-def write_watchlists_to_github(data, previous_sha=None, commit_message=None, retry_on_sha_conflict=True):
+def write_watchlists_to_github(
+    data,
+    previous_sha=None,
+    commit_message=None,
+    retry_on_sha_conflict=True,
+    watchlists_path=None,
+):
     """
     Scrive watchlists.json sul branch dati GitHub creando un commit.
 
     Se previous_sha non viene passato, viene letto prima lo SHA attuale del file.
-
-    Gestione errore 409:
-    - GitHub restituisce 409 quando lo SHA usato non corrisponde più alla versione attuale del file.
-    - In quel caso questa funzione rilegge lo SHA aggiornato e riprova una sola volta.
-    - Questo rende robusti i salvataggi ravvicinati da Streamlit.
+    Se il file non esiste ancora, viene creato senza SHA. Questo serve alla
+    multiutenza per creare users/<utente>/watchlists.json al primo accesso.
     """
-    config = get_github_config()
+    config = get_github_config(watchlists_path=watchlists_path)
 
     if previous_sha is None:
-        _, previous_sha = read_watchlists_from_github()
+        try:
+            _, previous_sha = read_watchlists_from_github(watchlists_path=config["watchlists_path"])
+        except GitHubStorageError as error:
+            if error.status_code != 404:
+                raise
+            previous_sha = None
 
     if commit_message is None:
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -173,17 +192,17 @@ def write_watchlists_to_github(data, previous_sha=None, commit_message=None, ret
             raise
 
         # Lo SHA locale è vecchio: rileggo lo SHA corrente da GitHub e riprovo una volta.
-        _, fresh_sha = read_watchlists_from_github()
+        _, fresh_sha = read_watchlists_from_github(watchlists_path=config["watchlists_path"])
         retry_message = commit_message + " [retry sha aggiornata]"
         return _write_watchlists_to_github_once(config, data, fresh_sha, retry_message)
 
 
-def test_github_storage_connection():
+def test_github_storage_connection(watchlists_path=None):
     """
     Test leggero: prova a leggere watchlists.json da GitHub.
     Utile per verificare token, repo, branch e path.
     """
-    data, sha = read_watchlists_from_github()
+    data, sha = read_watchlists_from_github(watchlists_path=watchlists_path)
     return {
         "ok": True,
         "sha": sha,
