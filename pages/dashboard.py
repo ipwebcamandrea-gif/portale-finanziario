@@ -4,6 +4,7 @@ from pathlib import Path
 
 from utils.auth import require_login
 from utils.user_context import get_current_user_display_name
+from utils.user_migration import ensure_current_user_workspace
 
 
 # =========================
@@ -57,6 +58,7 @@ def clear_target_navigation_state() -> None:
 # =========================
 
 current_user_display_name = get_current_user_display_name("Utente")
+ensure_current_user_workspace()
 
 
 # =========================
