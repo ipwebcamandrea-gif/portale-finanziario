@@ -1,7 +1,9 @@
 import streamlit as st
+from html import escape
 from pathlib import Path
 
 from utils.auth import require_login
+from utils.user_context import get_current_user_display_name
 
 
 # =========================
@@ -51,8 +53,17 @@ def clear_target_navigation_state() -> None:
     st.session_state["target_source"] = "cockpit"
 
 # =========================
+# UTENTE CORRENTE
+# =========================
+
+current_user_display_name = get_current_user_display_name("Utente")
+
+
+# =========================
 # HEADER
 # =========================
+
+st.caption(f"Utente attivo: {current_user_display_name}")
 st.markdown(
     """
     <div class="cockpit-header">
