@@ -753,14 +753,18 @@ def render_edit_form(df) -> None:
             cancelled = st.form_submit_button("Annulla")
 
         if submitted:
-            update_position(
-                DATA_PATH,
-                edit_index,
-                {
-                    "quantita": normalize_quantity(quantita),
-                    "prezzo_medio": normalize_price(prezzo_medio),
-                },
-            )
+            try:
+                update_position(
+                    DATA_PATH,
+                    edit_index,
+                    {
+                        "quantita": normalize_quantity(quantita),
+                        "prezzo_medio": normalize_price(prezzo_medio),
+                    },
+                )
+            except Exception as exc:
+                st.error("Salvataggio Portafoglio non completato su GitHub. Modifica annullata: " + str(exc))
+                return
 
             reset_edit_state()
             st.success("Posizione aggiornata.")
