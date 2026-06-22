@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
+import pandas as pd
 from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
@@ -60,6 +61,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
+PORTFOLIO_AUTO_REFRESH_SYNC_VERSION = "2026-06-22-render-sync-v2"
 MANUAL_REFRESH_MODE = True
 
 
@@ -88,6 +90,7 @@ def init_state() -> None:
         "portfolio_quotes_refreshed_on_load": False,
         "portfolio_auto_refresh_render_synced": False,
         "portfolio_auto_refresh_skipped_reason": "",
+        "portfolio_render_positions_after_refresh": None,
         "portfolio_last_auto_refresh_result": None,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
@@ -97,6 +100,17 @@ def init_state() -> None:
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+
+    # Se cambia la logica di auto-refresh, resetta i flag tecnici della sessione
+    # corrente. Evita che flag vecchi rimasti in session_state impediscano il
+    # nuovo refresh automatico dopo una patch/deploy.
+    if st.session_state.get("portfolio_auto_refresh_sync_version") != PORTFOLIO_AUTO_REFRESH_SYNC_VERSION:
+        st.session_state["portfolio_auto_refresh_sync_version"] = PORTFOLIO_AUTO_REFRESH_SYNC_VERSION
+        st.session_state["portfolio_quotes_refreshed_on_load"] = False
+        st.session_state["portfolio_auto_refresh_render_synced"] = False
+        st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+        st.session_state["portfolio_render_positions_after_refresh"] = None
+        st.session_state["portfolio_last_auto_refresh_result"] = None
 
 
 def reset_edit_state() -> None:
@@ -202,11 +216,11 @@ def clear_financial_data_cache() -> None:
 
 
 def auto_refresh_quotes_on_page_open() -> None:
-    """Refresh portfolio quotes once on page opening and rerun before rendering rows.
+    """Refresh quotes once and render the same data that has just been saved.
 
-    First pass updates/saves quotes and immediately triggers a controlled rerun.
-    Second pass reads the JSON already updated by the first pass, so timestamp and
-    rendered data stay aligned.
+    First pass updates/saves quotes, stores a render snapshot and triggers one
+    controlled rerun. Second pass renders the stored snapshot, so timestamp and
+    visible values are aligned even if GitHub/local reads are delayed by one run.
     """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
         return
@@ -228,13 +242,13 @@ def auto_refresh_quotes_on_page_open() -> None:
         result = refresh_portfolio_quotes(DATA_PATH)
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
+    st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     st.session_state["portfolio_auto_refresh_render_synced"] = False
     st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
     set_last_refresh_timestamp()
 
-    # Rerun controllato: evita timestamp nuovo + tabella ancora renderizzata
-    # con dati precedenti. Al giro successivo la pagina legge il JSON aggiornato.
+    # Rerun controllato: il giro successivo renderizza lo snapshot appena salvato.
     st.rerun()
 
 
@@ -335,6 +349,7 @@ def render_top_actions() -> bool:
                 result = refresh_portfolio_quotes(DATA_PATH)
 
             st.session_state["portfolio_last_auto_refresh_result"] = result
+            st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
             st.session_state["portfolio_quotes_refreshed_on_load"] = True
             st.session_state["portfolio_auto_refresh_render_synced"] = True
             st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
@@ -369,6 +384,7 @@ def refresh_portfolio_quotes_action() -> None:
         result = refresh_portfolio_quotes(DATA_PATH)
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
+    st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     st.session_state["portfolio_auto_refresh_render_synced"] = True
     st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
@@ -920,6 +936,21 @@ def sort_portfolio_for_display(df):
     )
 
 
+
+def load_portfolio_for_current_render():
+    """Return the dataframe that must be rendered in this Streamlit run.
+
+    After automatic/manual quote refresh, prefer the in-memory snapshot returned by
+    refresh_portfolio_quotes(). This guarantees that visible rows match the
+    timestamp shown above the table. The snapshot is consumed once; future reruns
+    go back to the normal GitHub/local loader.
+    """
+    positions = st.session_state.get("portfolio_render_positions_after_refresh")
+    if positions:
+        st.session_state["portfolio_render_positions_after_refresh"] = None
+        return pd.DataFrame(positions)
+    return load_portfolio(DATA_PATH)
+
 def main() -> None:
     load_css()
     init_state()
@@ -944,7 +975,7 @@ def main() -> None:
 
     render_add_form()
 
-    df = load_portfolio(DATA_PATH)
+    df = load_portfolio_for_current_render()
     df = enrich_portfolio_df(df)
 
     render_persistence_note()
