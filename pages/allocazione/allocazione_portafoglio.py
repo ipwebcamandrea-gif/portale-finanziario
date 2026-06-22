@@ -9,6 +9,7 @@ from components.standard_header import render_standard_page_header
 
 
 from utils.auth import require_login
+from utils.user_paths import get_user_portfolio_path
 from utils.portfolio_calculations import enrich_portfolio_df
 from utils.portfolio_prices import refresh_portfolio_quotes
 from utils.portfolio_storage import load_portfolio
@@ -27,7 +28,7 @@ from utils.allocazione.allocation_render import (
 require_login()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
+DATA_PATH = get_user_portfolio_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "allocazione" / "allocazione_portafoglio.css"
 
