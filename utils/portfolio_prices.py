@@ -181,4 +181,7 @@ def refresh_portfolio_quotes(data_path: Path) -> dict:
         "updated": updated,
         "failed": failed,
         "total": int(len(df)),
+        # Snapshot immediato dei dati appena salvati: la pagina può usarlo per
+        # renderizzare lo stesso dato del timestamp senza rileggere subito GitHub.
+        "positions": df.to_dict(orient="records"),
     }
