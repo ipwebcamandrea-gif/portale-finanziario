@@ -139,7 +139,17 @@ def _write_github(payload: dict[str, Any], message: str, path_override: str | No
     body = {"message": message, "content": encoded, "branch": cfg["branch"]}
     if sha:
         body["sha"] = sha
-    _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
+
+    try:
+        _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
+    except urllib.error.HTTPError as error:
+        # GitHub può restituire 409 se lo SHA è diventato vecchio tra GET e PUT.
+        # Rileggo lo SHA corrente e riprovo una sola volta.
+        if error.code != 409:
+            raise
+        _, fresh_sha = _read_github(path_override=cfg["path"])
+        body["sha"] = fresh_sha
+        _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
 
 
 def set_target_storage_state(mode: str, error: str = "") -> None:
@@ -209,6 +219,11 @@ def save_targets(json_path: Path, payload: dict[str, Any]) -> None:
             set_target_storage_state("github")
         except Exception as exc:
             set_target_storage_state("locale_fallback", str(exc))
+            raise RuntimeError(
+                "Salvataggio GitHub Target Analisti non riuscito. "
+                "La modifica NON è stata confermata come persistente su data-watchlists. "
+                + str(exc)
+            ) from exc
     else:
         set_target_storage_state("locale")
 
