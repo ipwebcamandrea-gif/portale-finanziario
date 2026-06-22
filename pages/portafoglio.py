@@ -9,6 +9,7 @@ from utils.app_branding import get_app_icon
 from components.standard_header import render_standard_page_header
 from components.ticker_lookup_selector import render_ticker_add_intro, render_ticker_lookup_selector
 from utils.auth import require_login
+from utils.user_paths import get_user_portfolio_path
 from utils.portfolio_calculations import enrich_portfolio_df, portfolio_totals
 from utils.portfolio_formatting import fmt_eur, fmt_num, fmt_pct, fmt_qty, value_class
 from utils.portfolio_fx import convert_to_eur
@@ -53,7 +54,7 @@ except Exception:
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = BASE_DIR / "portfolio" / "portafoglio.json"
+DATA_PATH = get_user_portfolio_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
@@ -269,17 +270,27 @@ def render_persistence_note() -> None:
     storage_mode = st.session_state.get("portfolio_storage_mode", "locale")
     last_error = st.session_state.get("portfolio_last_github_error", "")
 
+    storage_path = st.session_state.get("portfolio_storage_path", "")
+
     if storage_mode == "github":
         title = "Modalità GitHub API"
-        text = "Le modifiche del portafoglio vengono salvate in portfolio/portafoglio.json sulla branch data-watchlists."
+        text = "Le modifiche del portafoglio vengono salvate nel file dell'utente corrente"
+        if storage_path:
+            text += ": " + storage_path
+        else:
+            text += " sulla branch data-watchlists."
     elif storage_mode == "locale_fallback":
         title = "Modalità locale fallback"
-        text = "GitHub API non disponibile: modifiche salvate localmente e non persistenti dopo reboot."
+        text = "GitHub API non disponibile: modifiche salvate localmente nel file utente."
+        if storage_path:
+            text += " Path: " + storage_path
         if last_error:
             text += " Ultimo errore: " + str(last_error)
     else:
         title = "Modalità JSON locale"
-        text = "GitHub API non configurata: modifiche salvate localmente e non persistenti dopo reboot."
+        text = "GitHub API non configurata: modifiche salvate localmente nel file utente."
+        if storage_path:
+            text += " Path: " + storage_path
 
     note_html = (
         '<div class="portfolio-persistence-note">'
