@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-22T16:16:45+00:00",
+    "updated_at": "2026-06-22T18:36:53+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -239,6 +239,23 @@
             "analyst_count": null,
             "rating": "",
             "updated_at": "2026-06-19T11:27:09+00:00"
+        },
+        "MIR": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MIR",
+            "ticker": "MIR",
+            "tv_symbol": "NYSE:MIR",
+            "name": "Mirion Technologies, Inc.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 18.655000686645508,
+            "target_low": 26.0,
+            "target_mean": 27.9,
+            "target_high": 29.0,
+            "analyst_count": 10,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-22T18:36:53+00:00"
         }
     }
 }
