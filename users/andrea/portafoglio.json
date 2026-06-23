@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-23T07:33:04+00:00",
+  "updated_at": "2026-06-23T07:33:24+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -126,7 +126,7 @@
       "strumento": "Azione",
       "valuta": "USD",
       "quantita": 390.0,
-      "prezzo_medio": 18.66,
+      "prezzo_medio": 18.73,
       "prezzo_mercato": 18.540000915527344,
       "prezzo_precedente": 18.51,
       "yf_symbol": "MIR",
