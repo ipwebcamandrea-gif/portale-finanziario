@@ -5290,6 +5290,7 @@ from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import streamlit as st
+import pandas as pd
 from utils.app_branding import get_app_icon
 
 from components.standard_header import render_standard_page_header
@@ -5346,6 +5347,7 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
+PORTFOLIO_AUTO_REFRESH_SYNC_VERSION = "2026-06-22-render-sync-v2"
 MANUAL_REFRESH_MODE = True
 
 
@@ -5372,6 +5374,9 @@ def init_state() -> None:
         "portfolio_delete_index": None,
         "portfolio_simulation_index": None,
         "portfolio_quotes_refreshed_on_load": False,
+        "portfolio_auto_refresh_render_synced": False,
+        "portfolio_auto_refresh_skipped_reason": "",
+        "portfolio_render_positions_after_refresh": None,
         "portfolio_last_auto_refresh_result": None,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
@@ -5381,6 +5386,17 @@ def init_state() -> None:
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
+
+    # Se cambia la logica di auto-refresh, resetta i flag tecnici della sessione
+    # corrente. Evita che flag vecchi rimasti in session_state impediscano il
+    # nuovo refresh automatico dopo una patch/deploy.
+    if st.session_state.get("portfolio_auto_refresh_sync_version") != PORTFOLIO_AUTO_REFRESH_SYNC_VERSION:
+        st.session_state["portfolio_auto_refresh_sync_version"] = PORTFOLIO_AUTO_REFRESH_SYNC_VERSION
+        st.session_state["portfolio_quotes_refreshed_on_load"] = False
+        st.session_state["portfolio_auto_refresh_render_synced"] = False
+        st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+        st.session_state["portfolio_render_positions_after_refresh"] = None
+        st.session_state["portfolio_last_auto_refresh_result"] = None
 
 
 def reset_edit_state() -> None:
@@ -5486,14 +5502,24 @@ def clear_financial_data_cache() -> None:
 
 
 def auto_refresh_quotes_on_page_open() -> None:
-    """Refresh portfolio quotes every time the Portafoglio page is opened/rerun.
+    """Refresh quotes once and render the same data that has just been saved.
 
-    The page must never render stale prices from portfolio/portafoglio.json before
-    attempting a yfinance refresh. If yfinance fails for one or more symbols,
-    refresh_portfolio_quotes keeps the existing JSON values and exposes failures
-    in portfolio_last_auto_refresh_result.
+    First pass updates/saves quotes, stores a render snapshot and triggers one
+    controlled rerun. Second pass renders the stored snapshot, so timestamp and
+    visible values are aligned even if GitHub/local reads are delayed by one run.
     """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
+        return
+
+    if st.session_state.get("portfolio_auto_refresh_render_synced", False):
+        return
+
+    if st.session_state.get("portfolio_quotes_refreshed_on_load", False):
+        st.session_state["portfolio_auto_refresh_render_synced"] = True
+        return
+
+    if not is_portfolio_auto_refresh_safe():
+        st.session_state["portfolio_auto_refresh_skipped_reason"] = "pannello modifica/simulazione/eliminazione aperto"
         return
 
     clear_financial_data_cache()
@@ -5502,8 +5528,14 @@ def auto_refresh_quotes_on_page_open() -> None:
         result = refresh_portfolio_quotes(DATA_PATH)
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
+    st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
+    st.session_state["portfolio_auto_refresh_render_synced"] = False
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
     set_last_refresh_timestamp()
+
+    # Rerun controllato: il giro successivo renderizza lo snapshot appena salvato.
+    st.rerun()
 
 
 def is_portfolio_auto_refresh_safe() -> bool:
@@ -5536,18 +5568,21 @@ def render_auto_refresh_status() -> None:
     result = st.session_state.get("portfolio_last_auto_refresh_result")
 
     if not result:
+        skipped_reason = st.session_state.get("portfolio_auto_refresh_skipped_reason", "")
+        if skipped_reason:
+            st.caption("Aggiornamento automatico quotazioni non eseguito: " + skipped_reason + ".")
         return
 
     updated = result.get("updated", 0)
     total = result.get("total", 0)
 
     refresh_time = st.session_state.get("portfolio_last_refresh_timestamp", "")
-    refresh_suffix = f" · Aggiornamento dati: {refresh_time}" if refresh_time else ""
+    refresh_suffix = f" · dati mostrati aggiornati alle {refresh_time}" if refresh_time else ""
 
     if updated > 0:
-        st.caption(f"Quotazioni aggiornate automaticamente/all'ultimo refresh: {updated} su {total}{refresh_suffix}.")
+        st.caption(f"Quotazioni mostrate aggiornate: {updated} su {total}{refresh_suffix}.")
     else:
-        st.caption(f"Aggiornamento eseguito: nessuna quotazione aggiornata, valori manuali mantenuti{refresh_suffix}.")
+        st.caption(f"Aggiornamento eseguito: nessuna quotazione aggiornata, valori già presenti mantenuti{refresh_suffix}.")
 
     render_refresh_details(result)
 
@@ -5600,7 +5635,10 @@ def render_top_actions() -> bool:
                 result = refresh_portfolio_quotes(DATA_PATH)
 
             st.session_state["portfolio_last_auto_refresh_result"] = result
+            st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
             st.session_state["portfolio_quotes_refreshed_on_load"] = True
+            st.session_state["portfolio_auto_refresh_render_synced"] = True
+            st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
             set_last_refresh_timestamp()
 
             if result["updated"] > 0:
@@ -5632,7 +5670,10 @@ def refresh_portfolio_quotes_action() -> None:
         result = refresh_portfolio_quotes(DATA_PATH)
 
     st.session_state["portfolio_last_auto_refresh_result"] = result
+    st.session_state["portfolio_render_positions_after_refresh"] = result.get("positions") or None
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
+    st.session_state["portfolio_auto_refresh_render_synced"] = True
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
     set_last_refresh_timestamp()
 
     if result["updated"] > 0:
@@ -6181,6 +6222,21 @@ def sort_portfolio_for_display(df):
     )
 
 
+
+def load_portfolio_for_current_render():
+    """Return the dataframe that must be rendered in this Streamlit run.
+
+    After automatic/manual quote refresh, prefer the in-memory snapshot returned by
+    refresh_portfolio_quotes(). This guarantees that visible rows match the
+    timestamp shown above the table. The snapshot is consumed once; future reruns
+    go back to the normal GitHub/local loader.
+    """
+    positions = st.session_state.get("portfolio_render_positions_after_refresh")
+    if positions:
+        st.session_state["portfolio_render_positions_after_refresh"] = None
+        return pd.DataFrame(positions)
+    return load_portfolio(DATA_PATH)
+
 def main() -> None:
     load_css()
     init_state()
@@ -6200,12 +6256,12 @@ def main() -> None:
         refresh_callback=refresh_portfolio_quotes_action,
     )
 
-    render_add_form()
-
     auto_refresh_quotes_on_page_open()
     render_auto_refresh_status()
 
-    df = load_portfolio(DATA_PATH)
+    render_add_form()
+
+    df = load_portfolio_for_current_render()
     df = enrich_portfolio_df(df)
 
     render_persistence_note()
@@ -6435,7 +6491,11 @@ def fetch_and_save(selection: dict) -> dict | None:
         tv_symbol=selection.get("tv_symbol", ""),
     )
     if result.get("ok"):
-        saved = upsert_target(TARGET_PATH, yf_symbol, result)
+        try:
+            saved = upsert_target(TARGET_PATH, yf_symbol, result)
+        except Exception as exc:
+            st.error("Salvataggio Target Analisti non completato su GitHub. Modifica annullata: " + str(exc))
+            return None
         st.success("Target aggiornati da yfinance e salvati.")
         return saved
     st.warning(result.get("error", "Target automatici non disponibili."))
@@ -6608,7 +6668,11 @@ def render_manual_editor(selection: dict, current_data: dict | None) -> None:
                 "rating": rating,
                 "updated_at": now_iso(),
             }
-            upsert_target(TARGET_PATH, selection.get("yf_symbol", ""), data)
+            try:
+                upsert_target(TARGET_PATH, selection.get("yf_symbol", ""), data)
+            except Exception as exc:
+                st.error("Salvataggio Target Analisti non completato su GitHub. Modifica annullata: " + str(exc))
+                return
             st.success("Target manuali salvati.")
             st.rerun()
 
@@ -9359,6 +9423,9 @@ def refresh_portfolio_quotes(data_path: Path) -> dict:
         "updated": updated,
         "failed": failed,
         "total": int(len(df)),
+        # Snapshot immediato dei dati appena salvati: la pagina può usarlo per
+        # renderizzare lo stesso dato del timestamp senza rileggere subito GitHub.
+        "positions": df.to_dict(orient="records"),
     }
 
 
@@ -10687,7 +10754,17 @@ def _write_github(payload: dict[str, Any], message: str, path_override: str | No
     body = {"message": message, "content": encoded, "branch": cfg["branch"]}
     if sha:
         body["sha"] = sha
-    _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
+
+    try:
+        _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
+    except urllib.error.HTTPError as error:
+        # GitHub può restituire 409 se lo SHA è diventato vecchio tra GET e PUT.
+        # Rileggo lo SHA corrente e riprovo una sola volta.
+        if error.code != 409:
+            raise
+        _, fresh_sha = _read_github(path_override=cfg["path"])
+        body["sha"] = fresh_sha
+        _github_request("PUT", _contents_url(cfg["repo"], cfg["path"]), cfg["token"], body)
 
 
 def set_target_storage_state(mode: str, error: str = "") -> None:
@@ -10757,6 +10834,11 @@ def save_targets(json_path: Path, payload: dict[str, Any]) -> None:
             set_target_storage_state("github")
         except Exception as exc:
             set_target_storage_state("locale_fallback", str(exc))
+            raise RuntimeError(
+                "Salvataggio GitHub Target Analisti non riuscito. "
+                "La modifica NON è stata confermata come persistente su data-watchlists. "
+                + str(exc)
+            ) from exc
     else:
         set_target_storage_state("locale")
 
