@@ -1,7 +1,7 @@
 import streamlit as st
 from pathlib import Path
 
-from utils.app_branding import get_app_icon
+from utils.app_branding import get_app_icon, render_app_icon_meta
 from utils.auth import (
     is_authenticated,
     login_user,
@@ -19,6 +19,7 @@ st.set_page_config(
     page_icon=get_app_icon(),
     layout="centered"
 )
+render_app_icon_meta()
 
 
 # =========================
