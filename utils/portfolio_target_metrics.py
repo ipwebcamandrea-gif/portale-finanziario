@@ -6,7 +6,7 @@ from typing import Any
 
 import pandas as pd
 
-from utils.portfolio_formatting import fmt_eur, fmt_num, value_class
+from utils.portfolio_formatting import fmt_num, value_class
 from utils.portfolio_fx import convert_to_eur
 from utils.target_storage import load_targets
 from utils.user_paths import get_user_targets_path
@@ -37,6 +37,16 @@ def _esc(value: Any) -> str:
     return html.escape(str(value or ""), quote=True)
 
 
+def _currency_symbol(currency: str) -> str:
+    clean_currency = _key(currency)
+    return {
+        "EUR": "€",
+        "USD": "$",
+        "GBP": "£",
+        "CHF": "CHF",
+    }.get(clean_currency, clean_currency)
+
+
 def _signed_num(value: float, decimals: int = 2) -> str:
     prefix = "+" if value > 0 else ""
     return prefix + fmt_num(value, decimals)
@@ -46,10 +56,22 @@ def _signed_pct(value: float) -> str:
     return _signed_num(value, 2) + "%"
 
 
-def _signed_money(value: float, currency: str) -> str:
-    clean_currency = _key(currency)
-    suffix = f" {clean_currency}" if clean_currency else ""
-    return _signed_num(value, 2) + suffix
+def _compact_signed_money(value: float, currency: str) -> str:
+    """Compact signed money format for tight portfolio target cells.
+
+    Examples: +856$ · +2,6k$ · -56,9k€
+    """
+    numeric = float(value)
+    sign = "+" if numeric > 0 else ""
+    symbol = _currency_symbol(currency)
+    abs_value = abs(numeric)
+
+    if abs_value >= 1000:
+        text = fmt_num(numeric / 1000.0, 1) + "k"
+    else:
+        text = fmt_num(numeric, 0)
+
+    return sign + text + symbol
 
 
 def load_user_targets_map() -> dict[str, dict]:
@@ -73,11 +95,7 @@ def load_user_targets_map() -> dict[str, dict]:
 
 
 def _find_target_item(row: pd.Series, targets: dict[str, dict]) -> dict | None:
-    candidates = [
-        row.get("yf_symbol", ""),
-        row.get("ticker", ""),
-    ]
-    for candidate in candidates:
+    for candidate in (row.get("yf_symbol", ""), row.get("ticker", "")):
         clean = _key(candidate)
         if clean and clean in targets:
             return targets[clean]
@@ -109,7 +127,6 @@ def _scenario_rows(row: pd.Series, target_item: dict | None) -> list[dict]:
         rows.append(
             {
                 "label": label,
-                "target": target_value,
                 "gain_pct": gain_pct,
                 "gain_currency": gain_currency,
                 "gain_eur": gain_eur,
@@ -127,14 +144,14 @@ def render_target_desktop_html(row: pd.Series, target_item: dict | None) -> str:
 
     lines = []
     for item in scenarios:
-        eur_text = _signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "EUR n/d"
+        eur_text = _compact_signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "€ n/d"
         lines.append(
             '<div class="portfolio-target-line ' + _esc(item["css_class"]) + '">'
             '<span class="portfolio-target-label">' + _esc(item["label"]) + '</span>'
             '<span class="portfolio-target-pct">' + _signed_pct(item["gain_pct"]) + '</span>'
             '<span class="portfolio-target-money">'
-            + _signed_money(item["gain_currency"], item["currency"])
-            + ' / '
+            + _compact_signed_money(item["gain_currency"], item["currency"])
+            + ' · '
             + eur_text
             + '</span>'
             '</div>'
@@ -150,14 +167,14 @@ def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
 
     lines = []
     for item in scenarios:
-        eur_text = _signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "EUR n/d"
+        eur_text = _compact_signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "€ n/d"
         lines.append(
             '<div class="portfolio-mobile-target-line ' + _esc(item["css_class"]) + '">'
             '<span class="portfolio-mobile-target-label">' + _esc(item["label"]) + '</span>'
             '<span class="portfolio-mobile-target-values">'
             + _signed_pct(item["gain_pct"])
             + ' · '
-            + _signed_money(item["gain_currency"], item["currency"])
+            + _compact_signed_money(item["gain_currency"], item["currency"])
             + ' · '
             + eur_text
             + '</span>'
@@ -173,11 +190,11 @@ def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
 
 
 def enrich_portfolio_targets(df: pd.DataFrame) -> pd.DataFrame:
-    """Add HTML target scenario columns to a portfolio dataframe.
+    """Add target scenario HTML columns to a portfolio dataframe.
 
     Calculations are based on the user's average load price (`prezzo_medio`), not
-    on the current market price. The source is the current user's
-    `target_analisti.json`.
+    on the current market price. The source is the current user's saved
+    Target Analisti JSON.
     """
     if df is None or df.empty:
         return df
