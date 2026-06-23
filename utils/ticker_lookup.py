@@ -77,18 +77,38 @@ def clean_ticker(value: str) -> str:
     return normalize_query(value).replace(" ", "")
 
 
+def _normalize_market(value: str) -> str:
+    market = str(value or "").strip().upper()
+    if market == "BIT":
+        market = "MIL"
+    return market if market in LOOKUP_MARKETS else ""
+
+
 def _strip_market_prefix(value: str) -> tuple[str, str]:
+    """Extract an explicit market from the query.
+
+    Supported forms:
+    - NYSE:MIR / NASDAQ:TSLA / MIL:ENEL
+    - MIR:NYSE / TSLA:NASDAQ / ENEL:MIL
+    - BIT:ENEL / ENEL:BIT, normalized to MIL
+    """
     text = normalize_query(value)
     if ":" not in text:
         return "", text
-    market, symbol = text.split(":", 1)
-    market = market.strip().upper()
-    symbol = symbol.strip().upper()
-    if market == "BIT":
-        market = "MIL"
-    if market not in LOOKUP_MARKETS:
-        market = ""
-    return market, symbol
+
+    left, right = text.split(":", 1)
+    left = left.strip().upper()
+    right = right.strip().upper()
+
+    left_market = _normalize_market(left)
+    if left_market:
+        return left_market, right
+
+    right_market = _normalize_market(right)
+    if right_market:
+        return right_market, left
+
+    return "", text
 
 
 def _base_from_milan_symbol(symbol: str) -> str:
@@ -217,13 +237,45 @@ def search_ticker_candidates(query: str, *, include_milan_equivalent: bool = Tru
         return []
 
     identity = fetch_yfinance_identity(symbol)
-    inferred_market = identity.get("market") or explicit_market or "NASDAQ"
-    if inferred_market not in US_MARKETS:
-        inferred_market = "NASDAQ"
+    identity_market = identity.get("market") or ""
     name = identity.get("name") or symbol
-    _add_unique(candidates, _candidate(ticker=symbol, name=name, market=inferred_market, yf_symbol=symbol, tv_symbol=_tradingview_symbol(inferred_market, symbol), source="ticker_fallback", confidence="medium" if identity else "low"))
 
-    if include_milan_equivalent:
+    if identity_market in US_MARKETS:
+        # yfinance has identified the exchange: trust it.
+        _add_unique(
+            candidates,
+            _candidate(
+                ticker=symbol,
+                name=name,
+                market=identity_market,
+                yf_symbol=symbol,
+                tv_symbol=_tradingview_symbol(identity_market, symbol),
+                source="yfinance_exchange",
+                confidence="high",
+            ),
+        )
+    elif explicit_market in US_MARKETS:
+        # User explicitly selected the market. This is allowed even if yfinance
+        # cannot identify the symbol before the add operation.
+        _add_unique(
+            candidates,
+            _candidate(
+                ticker=symbol,
+                name=name,
+                market=explicit_market,
+                yf_symbol=symbol,
+                tv_symbol=_tradingview_symbol(explicit_market, symbol),
+                source="explicit_us_market",
+                confidence="medium" if identity else "low",
+            ),
+        )
+    else:
+        # Not sure: do not invent NASDAQ and do not create noisy alternatives.
+        # The UI will show "Titolo non trovato" and ask for an explicit market
+        # such as MIR:NYSE, NYSE:MIR, TSLA:NASDAQ or a .MI/MIL format.
+        return []
+
+    if include_milan_equivalent and candidates:
         mil_yf = _milan_symbol_for_us_ticker(symbol)
         mil_ticker = _base_from_milan_symbol(mil_yf)
         mil_identity = fetch_yfinance_identity(mil_yf)
