@@ -593,18 +593,23 @@ div[class*="st-key-portfolio_sim_step_"] button:hover {
 }
 .portfolio-target-line {
     display: grid;
-    grid-template-columns: 1.45rem 3.15rem minmax(0, 1fr);
+    grid-template-columns: 1.45rem 3.05rem 3.15rem minmax(0, 1fr);
     align-items: center;
-    column-gap: 0.20rem;
-    font-size: 0.72rem;
+    column-gap: 0.18rem;
+    font-size: 0.68rem;
     font-weight: 900;
     white-space: nowrap;
 }
 .portfolio-target-label {
     color: #9fb3d1;
-    font-size: 0.62rem;
+    font-size: 0.60rem;
     font-weight: 950;
     text-transform: uppercase;
+}
+.portfolio-target-quote {
+    color: #e6edf3;
+    font-size: 0.66rem;
+    font-weight: 950;
 }
 .portfolio-target-pct,
 .portfolio-target-money {
