@@ -400,6 +400,31 @@ def refresh_portfolio_quotes_action() -> None:
     st.rerun()
 
 
+
+def render_fx_summary(df) -> None:
+    """Show one FX summary for the whole portfolio instead of repeating FX in every row."""
+    if df is None or df.empty or "valuta" not in df.columns or "fx_eur" not in df.columns:
+        return
+
+    parts = []
+    seen = set()
+    for _, row in df.iterrows():
+        currency = str(row.get("valuta") or "").strip().upper()
+        if not currency or currency == "EUR" or currency in seen:
+            continue
+        try:
+            fx_value = float(row.get("fx_eur") or 0.0)
+        except Exception:
+            fx_value = 0.0
+        if fx_value <= 0:
+            parts.append(f"{currency}→EUR n/d")
+        else:
+            parts.append(f"{currency}→EUR {fmt_num(fx_value, 4)}")
+        seen.add(currency)
+
+    if parts:
+        st.caption("Cambi usati: " + " · ".join(parts))
+
 def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
         render_ticker_add_intro(
@@ -981,6 +1006,7 @@ def main() -> None:
     df = enrich_portfolio_targets(df)
 
     render_persistence_note()
+    render_fx_summary(df)
 
     totals = portfolio_totals(df)
     if mobile_view:
