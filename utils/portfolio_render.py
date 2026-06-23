@@ -9,7 +9,7 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
 # Var quotidiana, Valore mercato, Guadagno, Target, Azioni.
 # Target mostra Min/Med/Max calcolati dal prezzo medio di carico.
-COLUMN_WEIGHTS = [2.10, 0.55, 0.75, 1.08, 1.00, 1.12, 1.12, 1.12, 2.55, 2.05]
+COLUMN_WEIGHTS = [2.08, 0.55, 0.72, 1.08, 1.00, 1.10, 1.10, 1.10, 2.85, 1.95]
 
 
 def _esc(value) -> str:
