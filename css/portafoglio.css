@@ -615,6 +615,32 @@ div[class*="st-key-portfolio_sim_step_"] button:hover {
 .portfolio-target-money {
     white-space: nowrap;
 }
+/* Keep desktop action buttons inside the Azioni column after adding Target. */
+.portfolio-action-row div[data-testid="stHorizontalBlock"] {
+    gap: 0.22rem !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+.portfolio-action-row div[data-testid="column"] {
+    min-width: 1.86rem !important;
+    width: 1.86rem !important;
+    max-width: 1.86rem !important;
+    flex: 0 0 1.86rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.portfolio-action-row button,
+.portfolio-action-row a {
+    width: 1.86rem !important;
+    min-width: 1.86rem !important;
+    max-width: 1.86rem !important;
+    height: 2.05rem !important;
+    min-height: 2.05rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0.92rem !important;
+}
 @media screen and (max-width: 768px) {
     .portfolio-target-cell {
         min-height: 3.05rem;
