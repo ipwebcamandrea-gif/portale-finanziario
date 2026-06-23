@@ -436,4 +436,42 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         margin-bottom: 0.70rem !important;
     }
 }
-
+/* ========================= PORTFOLIO MOBILE TARGET SCENARIOS ========================= */
+.portfolio-mobile-target-box {
+    margin: 0.10rem 0 0.78rem 0;
+    padding: 0.68rem 0.72rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 176, 255, 0.26);
+    background: rgba(13, 17, 23, 0.34);
+}
+.portfolio-mobile-target-title {
+    color: #9fb3d1;
+    font-size: 0.64rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+    margin-bottom: 0.34rem;
+}
+.portfolio-mobile-target-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.76rem;
+    font-weight: 900;
+    line-height: 1.22;
+    margin-bottom: 0.18rem;
+}
+.portfolio-mobile-target-line:last-child {
+    margin-bottom: 0;
+}
+.portfolio-mobile-target-label {
+    color: #cfe7ff;
+    font-size: 0.70rem;
+    font-weight: 950;
+    min-width: 2.1rem;
+}
+.portfolio-mobile-target-values {
+    text-align: right;
+    overflow-wrap: anywhere;
+}
