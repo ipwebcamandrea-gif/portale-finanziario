@@ -456,8 +456,8 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
     display: grid;
     grid-template-columns: 2.0rem minmax(0, 1fr);
     align-items: center;
-    column-gap: 0.36rem;
-    font-size: 0.70rem;
+    column-gap: 0.34rem;
+    font-size: 0.68rem;
     font-weight: 900;
     line-height: 1.18;
     margin-bottom: 0.18rem;
@@ -479,7 +479,7 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
 }
 @media screen and (max-width: 390px) {
     .portfolio-mobile-target-line {
-        font-size: 0.66rem;
-        column-gap: 0.28rem;
+        font-size: 0.64rem;
+        column-gap: 0.24rem;
     }
 }
