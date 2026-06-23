@@ -5,6 +5,7 @@ from pathlib import Path
 from utils.auth import require_login
 from utils.user_context import get_current_user_display_name
 from utils.user_migration import ensure_current_user_workspace
+from utils.app_branding import render_app_icon_meta
 
 
 # =========================
@@ -31,6 +32,7 @@ def local_css(file_path):
 
 local_css(GLOBAL_CSS)
 local_css(DASHBOARD_CSS)
+render_app_icon_meta()
 
 
 # =========================
