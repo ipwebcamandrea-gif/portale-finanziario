@@ -130,6 +130,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
             + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
             + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
             + '</div>'
+            + str(row.get("portfolio_target_mobile_html", "") or "")
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
