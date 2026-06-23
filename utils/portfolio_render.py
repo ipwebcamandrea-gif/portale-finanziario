@@ -7,9 +7,9 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 
 
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
-# Var quotidiana, Valore mercato, Guadagno, Azioni.
-# Azioni più larga per 4 pulsanti: 📊 🧮 ✏️ 🗑️
-COLUMN_WEIGHTS = [2.35, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 2.25]
+# Var quotidiana, Valore mercato, Guadagno, Target, Azioni.
+# Target mostra Min/Med/Max calcolati dal prezzo medio di carico.
+COLUMN_WEIGHTS = [2.05, 0.65, 0.75, 1.05, 1.00, 1.12, 1.15, 1.12, 2.65, 2.25]
 
 
 def _esc(value) -> str:
@@ -83,6 +83,7 @@ def render_portfolio_table_header() -> None:
         "Var oggi<br>% / valuta",
         "Val di mercato €",
         "Guadagno<br>valuta",
+        "Target",
         "Azioni",
     ]
 
@@ -184,7 +185,13 @@ def render_position_values(row):
             unsafe_allow_html=True,
         )
 
-    return cols[8]
+    with cols[8]:
+        st.markdown(
+            str(row.get("portfolio_target_desktop_html", "")) or '<div class="portfolio-target-cell portfolio-row-cell portfolio-target-empty">—</div>',
+            unsafe_allow_html=True,
+        )
+
+    return cols[9]
 
 
 def render_row_separator() -> None:
