@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-23T09:43:54+00:00",
+  "updated_at": "2026-06-23T10:47:33+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -37,7 +37,7 @@
       "quantita": 700.0,
       "prezzo_medio": 8.34849,
       "prezzo_mercato": 8.619999885559082,
-      "prezzo_precedente": 8.47,
+      "prezzo_precedente": 8.6085,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
     },
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 134.0,
       "prezzo_medio": 326.02,
-      "prezzo_mercato": 325.1000061035156,
+      "prezzo_mercato": 326.45001220703125,
       "prezzo_precedente": 324.6000061035156,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
