@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-22T12:52:31+00:00",
+    "updated_at": "2026-06-23T08:46:13+00:00",
     "targets": {
         "MA": {
             "ok": true,
@@ -18,6 +18,23 @@
             "analyst_count": 36,
             "rating": "strong_buy",
             "updated_at": "2026-06-22T12:52:31+00:00"
+        },
+        "MSFT": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MSFT",
+            "ticker": "MSFT",
+            "tv_symbol": "NASDAQ:MSFT",
+            "name": "Microsoft Corporation",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 367.3399963378906,
+            "target_low": 400.0,
+            "target_mean": 561.38763,
+            "target_high": 870.0,
+            "analyst_count": 55,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-23T08:46:13+00:00"
         }
     }
 }
