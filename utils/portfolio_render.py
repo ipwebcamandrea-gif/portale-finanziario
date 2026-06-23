@@ -9,7 +9,7 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
 # Var quotidiana, Valore mercato, Guadagno, Target, Azioni.
 # Target mostra Min/Med/Max calcolati dal prezzo medio di carico.
-COLUMN_WEIGHTS = [1.90, 0.55, 0.68, 1.00, 0.95, 1.00, 1.05, 1.05, 3.35, 2.00]
+COLUMN_WEIGHTS = [2.10, 0.55, 0.75, 1.08, 1.00, 1.12, 1.12, 1.12, 2.55, 2.05]
 
 
 def _esc(value) -> str:
@@ -17,11 +17,23 @@ def _esc(value) -> str:
     return html.escape(str(value or ""), quote=True)
 
 
-def _money_with_currency(value: float, currency: str) -> str:
-    """Format a money amount and append the row currency."""
+def _currency_symbol(currency: str) -> str:
     clean_currency = str(currency or "").strip().upper()
-    suffix = f" {clean_currency}" if clean_currency else ""
-    return f"{fmt_eur(value)}{suffix}"
+    return {
+        "EUR": "€",
+        "USD": "$",
+        "GBP": "£",
+        "CHF": "CHF",
+    }.get(clean_currency, clean_currency)
+
+
+def _money_with_currency(value: float, currency: str) -> str:
+    """Format a money amount with compact currency symbol.
+
+    Only the dedicated Valuta column keeps the textual code (EUR/USD). All money
+    cells use symbols to save horizontal space.
+    """
+    return f"{fmt_eur(value)}{_currency_symbol(currency)}"
 
 
 
@@ -171,7 +183,7 @@ def render_position_values(row):
 
     with cols[6]:
         st.markdown(
-            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])} EUR</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}€</div>',
             unsafe_allow_html=True,
         )
 
