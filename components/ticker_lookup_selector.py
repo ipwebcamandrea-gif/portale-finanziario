@@ -51,7 +51,7 @@ def render_ticker_lookup_selector(
     selected_candidate = None
 
     if query and not candidates:
-        st.warning("Nessun risultato trovato. Prova con il ticker esatto, es. AMZN o 1AMZN.MI.")
+        st.warning("Titolo non trovato o mercato non certo. Prova con mercato esplicito, es. MIR:NYSE, NYSE:MIR, TSLA:NASDAQ oppure 1MSFT.MI / MSFT.MI.")
     elif candidates:
         selected_index = st.selectbox(
             "Titolo / mercato",
