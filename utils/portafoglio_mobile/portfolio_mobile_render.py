@@ -20,20 +20,8 @@ def _money(value: float, currency: str = "EUR") -> str:
 
 
 def _fx_label(row, currency: str) -> str:
-    """Return a read-only FX label for non-EUR rows."""
-    clean_currency = str(currency or "").strip().upper()
-    if clean_currency == "EUR":
-        return ""
-
-    try:
-        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
-    except (TypeError, ValueError):
-        return " · FX n/d ⚠️"
-
-    label = f" · FX {fmt_num(fx_value, 4)}"
-    if fx_value == 1.0:
-        label += " ⚠️"
-    return label
+    """FX is shown once in the portfolio page, not repeated in every mobile card."""
+    return ""
 
 
 def _target_url_from_tradingview_url(tv_url: str) -> str:
