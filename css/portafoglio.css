@@ -574,3 +574,46 @@ div[class*="st-key-portfolio_sim_step_"] button:hover {
         height: 0.55rem;
     }
 }
+/* ========================= PORTFOLIO TARGET SCENARIOS ========================= */
+.portfolio-target-cell {
+    min-height: 3.35rem;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.10rem;
+    padding: 0.18rem 0.20rem;
+    color: #e5e7eb;
+    line-height: 1.12;
+}
+.portfolio-target-empty {
+    align-items: center;
+    color: #9ca3af;
+    font-weight: 850;
+}
+.portfolio-target-line {
+    display: grid;
+    grid-template-columns: 1.6rem 3.1rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.24rem;
+    font-size: 0.68rem;
+    font-weight: 850;
+    white-space: nowrap;
+}
+.portfolio-target-label {
+    color: #9fb3d1;
+    font-size: 0.62rem;
+    font-weight: 950;
+    text-transform: uppercase;
+}
+.portfolio-target-pct,
+.portfolio-target-money {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media screen and (max-width: 768px) {
+    .portfolio-target-cell {
+        min-height: 3.05rem;
+        font-size: 0.64rem;
+    }
+}
