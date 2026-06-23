@@ -9,7 +9,7 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
 # Var quotidiana, Valore mercato, Guadagno, Target, Azioni.
 # Target mostra Min/Med/Max calcolati dal prezzo medio di carico.
-COLUMN_WEIGHTS = [2.08, 0.55, 0.72, 1.08, 1.00, 1.10, 1.10, 1.10, 2.85, 1.95]
+COLUMN_WEIGHTS = [2.35, 0.55, 0.72, 1.08, 1.00, 1.10, 1.10, 1.10, 2.65, 2.25]
 
 
 def _esc(value) -> str:
@@ -19,19 +19,13 @@ def _esc(value) -> str:
 
 def _currency_symbol(currency: str) -> str:
     clean_currency = str(currency or "").strip().upper()
-    return {
-        "EUR": "€",
-        "USD": "$",
-        "GBP": "£",
-        "CHF": "CHF",
-    }.get(clean_currency, clean_currency)
+    return {"EUR": "€", "USD": "$", "GBP": "£", "CHF": "CHF"}.get(clean_currency, clean_currency)
 
 
 def _money_with_currency(value: float, currency: str) -> str:
     """Format a money amount with compact currency symbol.
 
-    Only the dedicated Valuta column keeps the textual code (EUR/USD). All money
-    cells use symbols to save horizontal space.
+    Only the dedicated Valuta column keeps the textual code (EUR/USD).
     """
     return f"{fmt_eur(value)}{_currency_symbol(currency)}"
 
@@ -39,24 +33,8 @@ def _money_with_currency(value: float, currency: str) -> str:
 
 
 def _fx_label(row, currency: str) -> str:
-    """Return a read-only FX label for non-EUR rows.
-
-    FX 1.0000 on a non-EUR position is highlighted because it usually means
-    the row is using the technical fallback instead of a real conversion rate.
-    """
-    clean_currency = str(currency or "").strip().upper()
-    if clean_currency == "EUR":
-        return ""
-
-    try:
-        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
-    except (TypeError, ValueError):
-        return " · FX n/d ⚠️"
-
-    label = f" · FX {fmt_num(fx_value, 4)}"
-    if fx_value == 1.0:
-        label += " ⚠️"
-    return label
+    """FX is shown once above the table, not repeated on every portfolio row."""
+    return ""
 
 
 def render_portfolio_summary(totals: dict) -> None:
