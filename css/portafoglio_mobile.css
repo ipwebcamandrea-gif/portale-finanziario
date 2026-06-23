@@ -438,40 +438,48 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
 }
 /* ========================= PORTFOLIO MOBILE TARGET SCENARIOS ========================= */
 .portfolio-mobile-target-box {
-    margin: 0.10rem 0 0.78rem 0;
-    padding: 0.68rem 0.72rem;
+    margin: 0.08rem 0 0.70rem 0;
+    padding: 0.62rem 0.66rem;
     border-radius: 12px;
     border: 1px solid rgba(0, 176, 255, 0.26);
     background: rgba(13, 17, 23, 0.34);
 }
 .portfolio-mobile-target-title {
     color: #9fb3d1;
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 950;
     text-transform: uppercase;
     letter-spacing: 0.045em;
-    margin-bottom: 0.34rem;
+    margin-bottom: 0.30rem;
 }
 .portfolio-mobile-target-line {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 2.0rem minmax(0, 1fr);
     align-items: center;
-    gap: 0.55rem;
-    font-size: 0.76rem;
+    column-gap: 0.36rem;
+    font-size: 0.70rem;
     font-weight: 900;
-    line-height: 1.22;
+    line-height: 1.18;
     margin-bottom: 0.18rem;
+    white-space: nowrap;
 }
 .portfolio-mobile-target-line:last-child {
     margin-bottom: 0;
 }
 .portfolio-mobile-target-label {
     color: #cfe7ff;
-    font-size: 0.70rem;
+    font-size: 0.66rem;
     font-weight: 950;
-    min-width: 2.1rem;
 }
 .portfolio-mobile-target-values {
     text-align: right;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+@media screen and (max-width: 390px) {
+    .portfolio-mobile-target-line {
+        font-size: 0.66rem;
+        column-gap: 0.28rem;
+    }
 }
