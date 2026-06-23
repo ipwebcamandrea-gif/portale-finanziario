@@ -30,6 +30,7 @@ from utils.portfolio_render import (
     render_position_values,
     render_row_separator,
 )
+from utils.portfolio_target_metrics import enrich_portfolio_targets
 from utils.portfolio_simulator import (
     calculate_budget_capacity,
     calculate_buy_simulation,
@@ -977,6 +978,7 @@ def main() -> None:
 
     df = load_portfolio_for_current_render()
     df = enrich_portfolio_df(df)
+    df = enrich_portfolio_targets(df)
 
     render_persistence_note()
 
