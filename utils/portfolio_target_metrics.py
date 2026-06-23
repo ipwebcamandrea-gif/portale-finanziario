@@ -74,6 +74,11 @@ def _compact_signed_money(value: float, currency: str) -> str:
     return sign + text + symbol
 
 
+def _target_quote(value: float, currency: str) -> str:
+    """Compact target quote shown before the gain percentage."""
+    return fmt_num(value, 2) + _currency_symbol(currency)
+
+
 def load_user_targets_map() -> dict[str, dict]:
     """Load current user's saved analyst targets keyed by yfinance symbol."""
     try:
@@ -127,6 +132,7 @@ def _scenario_rows(row: pd.Series, target_item: dict | None) -> list[dict]:
         rows.append(
             {
                 "label": label,
+                "target": target_value,
                 "gain_pct": gain_pct,
                 "gain_currency": gain_currency,
                 "gain_eur": gain_eur,
@@ -148,6 +154,7 @@ def render_target_desktop_html(row: pd.Series, target_item: dict | None) -> str:
         lines.append(
             '<div class="portfolio-target-line ' + _esc(item["css_class"]) + '">'
             '<span class="portfolio-target-label">' + _esc(item["label"]) + '</span>'
+            '<span class="portfolio-target-quote">' + _target_quote(item["target"], item["currency"]) + '</span>'
             '<span class="portfolio-target-pct">' + _signed_pct(item["gain_pct"]) + '</span>'
             '<span class="portfolio-target-money">'
             + _compact_signed_money(item["gain_currency"], item["currency"])
@@ -172,6 +179,8 @@ def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
             '<div class="portfolio-mobile-target-line ' + _esc(item["css_class"]) + '">'
             '<span class="portfolio-mobile-target-label">' + _esc(item["label"]) + '</span>'
             '<span class="portfolio-mobile-target-values">'
+            + _target_quote(item["target"], item["currency"])
+            + ' · '
             + _signed_pct(item["gain_pct"])
             + ' · '
             + _compact_signed_money(item["gain_currency"], item["currency"])
