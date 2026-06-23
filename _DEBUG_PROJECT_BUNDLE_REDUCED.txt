@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 59
+# Files included: 60
 
 
 
@@ -3003,6 +3003,79 @@ div[class*="st-key-portfolio_sim_step_"] button:hover {
         height: 0.55rem;
     }
 }
+/* ========================= PORTFOLIO TARGET SCENARIOS ========================= */
+.portfolio-target-cell {
+    min-height: 3.35rem;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.10rem;
+    padding: 0.14rem 0.12rem;
+    color: #e5e7eb;
+    line-height: 1.10;
+}
+.portfolio-target-empty {
+    align-items: center;
+    color: #9ca3af;
+    font-weight: 850;
+}
+.portfolio-target-line {
+    display: grid;
+    grid-template-columns: 1.45rem 3.05rem 3.15rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.18rem;
+    font-size: 0.68rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+.portfolio-target-label {
+    color: #9fb3d1;
+    font-size: 0.60rem;
+    font-weight: 950;
+    text-transform: uppercase;
+}
+.portfolio-target-quote {
+    color: #e6edf3;
+    font-size: 0.66rem;
+    font-weight: 950;
+}
+.portfolio-target-pct,
+.portfolio-target-money {
+    white-space: nowrap;
+}
+/* Keep desktop action buttons inside the Azioni column after adding Target. */
+.portfolio-action-row div[data-testid="stHorizontalBlock"] {
+    gap: 0.22rem !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+.portfolio-action-row div[data-testid="column"] {
+    min-width: 1.86rem !important;
+    width: 1.86rem !important;
+    max-width: 1.86rem !important;
+    flex: 0 0 1.86rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.portfolio-action-row button,
+.portfolio-action-row a {
+    width: 1.86rem !important;
+    min-width: 1.86rem !important;
+    max-width: 1.86rem !important;
+    height: 2.05rem !important;
+    min-height: 2.05rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0.92rem !important;
+}
+@media screen and (max-width: 768px) {
+    .portfolio-target-cell {
+        min-height: 3.05rem;
+        font-size: 0.62rem;
+    }
+}
 
 
 
@@ -3448,7 +3521,53 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         margin-bottom: 0.70rem !important;
     }
 }
-
+/* ========================= PORTFOLIO MOBILE TARGET SCENARIOS ========================= */
+.portfolio-mobile-target-box {
+    margin: 0.08rem 0 0.70rem 0;
+    padding: 0.62rem 0.66rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 176, 255, 0.26);
+    background: rgba(13, 17, 23, 0.34);
+}
+.portfolio-mobile-target-title {
+    color: #9fb3d1;
+    font-size: 0.62rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+    margin-bottom: 0.30rem;
+}
+.portfolio-mobile-target-line {
+    display: grid;
+    grid-template-columns: 2.0rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.34rem;
+    font-size: 0.68rem;
+    font-weight: 900;
+    line-height: 1.18;
+    margin-bottom: 0.18rem;
+    white-space: nowrap;
+}
+.portfolio-mobile-target-line:last-child {
+    margin-bottom: 0;
+}
+.portfolio-mobile-target-label {
+    color: #cfe7ff;
+    font-size: 0.66rem;
+    font-weight: 950;
+}
+.portfolio-mobile-target-values {
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+@media screen and (max-width: 390px) {
+    .portfolio-mobile-target-line {
+        font-size: 0.64rem;
+        column-gap: 0.24rem;
+    }
+}
 
 
 
@@ -5316,6 +5435,7 @@ from utils.portfolio_render import (
     render_position_values,
     render_row_separator,
 )
+from utils.portfolio_target_metrics import enrich_portfolio_targets
 from utils.portfolio_simulator import (
     calculate_budget_capacity,
     calculate_buy_simulation,
@@ -5684,6 +5804,31 @@ def refresh_portfolio_quotes_action() -> None:
     render_refresh_details(result)
     st.rerun()
 
+
+
+def render_fx_summary(df) -> None:
+    """Show one FX summary for the whole portfolio instead of repeating FX in every row."""
+    if df is None or df.empty or "valuta" not in df.columns or "fx_eur" not in df.columns:
+        return
+
+    parts = []
+    seen = set()
+    for _, row in df.iterrows():
+        currency = str(row.get("valuta") or "").strip().upper()
+        if not currency or currency == "EUR" or currency in seen:
+            continue
+        try:
+            fx_value = float(row.get("fx_eur") or 0.0)
+        except Exception:
+            fx_value = 0.0
+        if fx_value <= 0:
+            parts.append(f"{currency}→EUR n/d")
+        else:
+            parts.append(f"{currency}→EUR {fmt_num(fx_value, 4)}")
+        seen.add(currency)
+
+    if parts:
+        st.caption("Cambi usati: " + " · ".join(parts))
 
 def render_add_form() -> None:
     with st.expander("➕ Aggiungi posizione", expanded=False):
@@ -6263,8 +6408,10 @@ def main() -> None:
 
     df = load_portfolio_for_current_render()
     df = enrich_portfolio_df(df)
+    df = enrich_portfolio_targets(df)
 
     render_persistence_note()
+    render_fx_summary(df)
 
     totals = portfolio_totals(df)
     if mobile_view:
@@ -8428,20 +8575,8 @@ def _money(value: float, currency: str = "EUR") -> str:
 
 
 def _fx_label(row, currency: str) -> str:
-    """Return a read-only FX label for non-EUR rows."""
-    clean_currency = str(currency or "").strip().upper()
-    if clean_currency == "EUR":
-        return ""
-
-    try:
-        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
-    except (TypeError, ValueError):
-        return " · FX n/d ⚠️"
-
-    label = f" · FX {fmt_num(fx_value, 4)}"
-    if fx_value == 1.0:
-        label += " ⚠️"
-    return label
+    """FX is shown once in the portfolio page, not repeated in every mobile card."""
+    return ""
 
 
 def _target_url_from_tradingview_url(tv_url: str) -> str:
@@ -8538,6 +8673,7 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
             + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
             + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
             + '</div>'
+            + str(row.get("portfolio_target_mobile_html", "") or "")
         )
         st.markdown(html_card_open, unsafe_allow_html=True)
 
@@ -9443,9 +9579,9 @@ from utils.portfolio_tradingview import build_tradingview_symbol
 
 
 # Colonne: Titolo, Valuta, Quantità, Prezzo medio, Prezzo mercato,
-# Var quotidiana, Valore mercato, Guadagno, Azioni.
-# Azioni più larga per 4 pulsanti: 📊 🧮 ✏️ 🗑️
-COLUMN_WEIGHTS = [2.35, 0.8, 0.9, 1.25, 1.15, 1.35, 1.35, 1.35, 2.25]
+# Var quotidiana, Valore mercato, Guadagno, Target, Azioni.
+# Target mostra Min/Med/Max calcolati dal prezzo medio di carico.
+COLUMN_WEIGHTS = [2.35, 0.55, 0.72, 1.08, 1.00, 1.10, 1.10, 1.10, 2.65, 2.25]
 
 
 def _esc(value) -> str:
@@ -9453,34 +9589,24 @@ def _esc(value) -> str:
     return html.escape(str(value or ""), quote=True)
 
 
-def _money_with_currency(value: float, currency: str) -> str:
-    """Format a money amount and append the row currency."""
+def _currency_symbol(currency: str) -> str:
     clean_currency = str(currency or "").strip().upper()
-    suffix = f" {clean_currency}" if clean_currency else ""
-    return f"{fmt_eur(value)}{suffix}"
+    return {"EUR": "€", "USD": "$", "GBP": "£", "CHF": "CHF"}.get(clean_currency, clean_currency)
+
+
+def _money_with_currency(value: float, currency: str) -> str:
+    """Format a money amount with compact currency symbol.
+
+    Only the dedicated Valuta column keeps the textual code (EUR/USD).
+    """
+    return f"{fmt_eur(value)}{_currency_symbol(currency)}"
 
 
 
 
 def _fx_label(row, currency: str) -> str:
-    """Return a read-only FX label for non-EUR rows.
-
-    FX 1.0000 on a non-EUR position is highlighted because it usually means
-    the row is using the technical fallback instead of a real conversion rate.
-    """
-    clean_currency = str(currency or "").strip().upper()
-    if clean_currency == "EUR":
-        return ""
-
-    try:
-        fx_value = float(row.get("fx_eur", 1.0) or 1.0)
-    except (TypeError, ValueError):
-        return " · FX n/d ⚠️"
-
-    label = f" · FX {fmt_num(fx_value, 4)}"
-    if fx_value == 1.0:
-        label += " ⚠️"
-    return label
+    """FX is shown once above the table, not repeated on every portfolio row."""
+    return ""
 
 
 def render_portfolio_summary(totals: dict) -> None:
@@ -9519,6 +9645,7 @@ def render_portfolio_table_header() -> None:
         "Var oggi<br>% / valuta",
         "Val di mercato €",
         "Guadagno<br>valuta",
+        "Target",
         "Azioni",
     ]
 
@@ -9606,7 +9733,7 @@ def render_position_values(row):
 
     with cols[6]:
         st.markdown(
-            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])} EUR</div>',
+            f'<div class="portfolio-cell portfolio-row-cell right">{fmt_eur(row["valore_mercato_eur"])}€</div>',
             unsafe_allow_html=True,
         )
 
@@ -9620,7 +9747,13 @@ def render_position_values(row):
             unsafe_allow_html=True,
         )
 
-    return cols[8]
+    with cols[8]:
+        st.markdown(
+            str(row.get("portfolio_target_desktop_html", "")) or '<div class="portfolio-target-cell portfolio-row-cell portfolio-target-empty">—</div>',
+            unsafe_allow_html=True,
+        )
+
+    return cols[9]
 
 
 def render_row_separator() -> None:
@@ -10181,6 +10314,195 @@ def delete_position(json_path: Path, row_index: int) -> None:
 
     df = df.drop(index=row_index).reset_index(drop=True)
     save_portfolio(df, json_path, "Delete portfolio position")
+
+
+
+====================================================================================================
+===== FILE: utils/portfolio_target_metrics.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import html
+import math
+from typing import Any
+
+import pandas as pd
+
+from utils.portfolio_formatting import fmt_num, value_class
+from utils.portfolio_fx import convert_to_eur
+from utils.target_storage import load_targets
+from utils.user_paths import get_user_targets_path
+
+TARGET_SCENARIOS = (
+    ("target_low", "Min"),
+    ("target_mean", "Med"),
+    ("target_high", "Max"),
+)
+
+
+def _key(value: Any) -> str:
+    return str(value or "").strip().upper()
+
+
+def _safe_float(value: Any) -> float | None:
+    try:
+        numeric = float(value)
+    except Exception:
+        return None
+    if not math.isfinite(numeric):
+        return None
+    return numeric
+
+
+def _esc(value: Any) -> str:
+    return html.escape(str(value or ""), quote=True)
+
+
+def _currency_symbol(currency: str) -> str:
+    clean_currency = _key(currency)
+    return {"EUR": "€", "USD": "$", "GBP": "£", "CHF": "CHF"}.get(clean_currency, clean_currency)
+
+
+def _signed_num(value: float, decimals: int = 2) -> str:
+    return ("+" if value > 0 else "") + fmt_num(value, decimals)
+
+
+def _signed_pct(value: float) -> str:
+    return _signed_num(value, 2) + "%"
+
+
+def _compact_signed_money(value: float, currency: str) -> str:
+    numeric = float(value)
+    sign = "+" if numeric > 0 else ""
+    symbol = _currency_symbol(currency)
+    abs_value = abs(numeric)
+    if abs_value >= 1000:
+        text = fmt_num(numeric / 1000.0, 1) + "k"
+    else:
+        text = fmt_num(numeric, 0)
+    return sign + text + symbol
+
+
+def _target_quote(value: float, currency: str) -> str:
+    return fmt_num(value, 2) + _currency_symbol(currency)
+
+
+def load_user_targets_map() -> dict[str, dict]:
+    try:
+        payload = load_targets(get_user_targets_path())
+    except Exception:
+        return {}
+    raw_targets = payload.get("targets", {}) if isinstance(payload, dict) else {}
+    if not isinstance(raw_targets, dict):
+        return {}
+    result: dict[str, dict] = {}
+    for raw_key, item in raw_targets.items():
+        if isinstance(item, dict):
+            clean_key = _key(item.get("yf_symbol") or raw_key)
+            if clean_key:
+                result[clean_key] = item
+    return result
+
+
+def _find_target_item(row: pd.Series, targets: dict[str, dict]) -> dict | None:
+    for candidate in (row.get("yf_symbol", ""), row.get("ticker", "")):
+        clean = _key(candidate)
+        if clean and clean in targets:
+            return targets[clean]
+    return None
+
+
+def _scenario_rows(row: pd.Series, target_item: dict | None) -> list[dict]:
+    if not target_item:
+        return []
+    avg_price = _safe_float(row.get("prezzo_medio"))
+    quantity = _safe_float(row.get("quantita"))
+    currency = _key(row.get("valuta"))
+    if avg_price is None or avg_price <= 0 or quantity is None or quantity <= 0:
+        return []
+
+    rows: list[dict] = []
+    for field, label in TARGET_SCENARIOS:
+        target_value = _safe_float(target_item.get(field))
+        if target_value is None or target_value <= 0:
+            continue
+        gain_currency = (target_value - avg_price) * quantity
+        gain_pct = ((target_value - avg_price) / avg_price) * 100.0
+        fx = convert_to_eur(gain_currency, currency)
+        gain_eur = _safe_float(fx.get("value")) if fx.get("ok") else None
+        rows.append({
+            "label": label,
+            "target": target_value,
+            "gain_pct": gain_pct,
+            "gain_currency": gain_currency,
+            "gain_eur": gain_eur,
+            "currency": currency,
+            "css_class": value_class(gain_currency),
+        })
+    return rows
+
+
+def render_target_desktop_html(row: pd.Series, target_item: dict | None) -> str:
+    scenarios = _scenario_rows(row, target_item)
+    if not scenarios:
+        return '<div class="portfolio-target-cell portfolio-row-cell portfolio-target-empty">—</div>'
+    lines = []
+    for item in scenarios:
+        eur_text = _compact_signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "€ n/d"
+        lines.append(
+            '<div class="portfolio-target-line ' + _esc(item["css_class"]) + '">'
+            '<span class="portfolio-target-label">' + _esc(item["label"]) + '</span>'
+            '<span class="portfolio-target-quote">' + _target_quote(item["target"], item["currency"]) + '</span>'
+            '<span class="portfolio-target-pct">' + _signed_pct(item["gain_pct"]) + '</span>'
+            '<span class="portfolio-target-money">'
+            + _compact_signed_money(item["gain_currency"], item["currency"])
+            + ' · '
+            + eur_text
+            + '</span>'
+            '</div>'
+        )
+    return '<div class="portfolio-target-cell portfolio-row-cell">' + "".join(lines) + '</div>'
+
+
+def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
+    scenarios = _scenario_rows(row, target_item)
+    if not scenarios:
+        return ""
+    lines = []
+    for item in scenarios:
+        eur_text = _compact_signed_money(item["gain_eur"], "EUR") if item.get("gain_eur") is not None else "€ n/d"
+        lines.append(
+            '<div class="portfolio-mobile-target-line ' + _esc(item["css_class"]) + '">'
+            '<span class="portfolio-mobile-target-label">' + _esc(item["label"]) + '</span>'
+            '<span class="portfolio-mobile-target-values">'
+            + _target_quote(item["target"], item["currency"])
+            + ' · '
+            + _signed_pct(item["gain_pct"])
+            + ' · '
+            + _compact_signed_money(item["gain_currency"], item["currency"])
+            + ' · '
+            + eur_text
+            + '</span>'
+            '</div>'
+        )
+    return '<div class="portfolio-mobile-target-box"><div class="portfolio-mobile-target-title">Target da carico</div>' + "".join(lines) + '</div>'
+
+
+def enrich_portfolio_targets(df: pd.DataFrame) -> pd.DataFrame:
+    if df is None or df.empty:
+        return df
+    result = df.copy()
+    targets = load_user_targets_map()
+    desktop_html = []
+    mobile_html = []
+    for _, row in result.iterrows():
+        target_item = _find_target_item(row, targets)
+        desktop_html.append(render_target_desktop_html(row, target_item))
+        mobile_html.append(render_target_mobile_html(row, target_item))
+    result["portfolio_target_desktop_html"] = desktop_html
+    result["portfolio_target_mobile_html"] = mobile_html
+    return result
 
 
 
