@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-24T15:59:17+00:00",
+  "updated_at": "2026-06-24T16:02:32+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -9,7 +9,7 @@
       "strumento": "Azione",
       "valuta": "USD",
       "quantita": 1600.0,
-      "prezzo_medio": 6.65,
+      "prezzo_medio": 6.66,
       "prezzo_mercato": 6.054999828338623,
       "prezzo_precedente": 6.09,
       "yf_symbol": "WVE",
