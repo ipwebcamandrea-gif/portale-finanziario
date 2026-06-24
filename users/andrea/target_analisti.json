@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-23T12:37:34+00:00",
+    "updated_at": "2026-06-24T10:26:12+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -256,6 +256,23 @@
             "analyst_count": 10,
             "rating": "strong_buy",
             "updated_at": "2026-06-22T18:36:53+00:00"
+        },
+        "ZETA": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "ZETA",
+            "ticker": "ZETA",
+            "tv_symbol": "NYSE:ZETA",
+            "name": "Zeta Global Holdings Corp.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 19.510000228881836,
+            "target_low": 22.0,
+            "target_mean": 28.30769,
+            "target_high": 44.0,
+            "analyst_count": 13,
+            "rating": "strong_buy",
+            "updated_at": "2026-06-24T10:26:11+00:00"
         }
     }
 }
