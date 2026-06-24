@@ -116,6 +116,9 @@ def init_state() -> None:
 
 def reset_edit_state() -> None:
     st.session_state["portfolio_edit_index"] = None
+    for key in list(st.session_state.keys()):
+        if str(key).startswith("portfolio_edit_qty_") or str(key).startswith("portfolio_edit_avg_") or str(key).startswith("portfolio_edit_source_"):
+            st.session_state.pop(key, None)
 
 
 def reset_delete_state() -> None:
@@ -214,6 +217,23 @@ def open_portfolio_target_page(row) -> None:
 def clear_financial_data_cache() -> None:
     """Force fresh financial data on the next yfinance calls."""
     st.cache_data.clear()
+
+
+def sync_portfolio_after_write(updated_df=None) -> None:
+    """Render the just-saved portfolio immediately after add/edit operations.
+
+    GitHub/local persistence can be correct while the next Streamlit rerun still
+    reads an older remote snapshot. Store the saved dataframe in session_state so
+    the next render shows exactly what has just been persisted.
+    """
+    clear_financial_data_cache()
+    if updated_df is not None and hasattr(updated_df, "to_dict"):
+        st.session_state["portfolio_render_positions_after_refresh"] = updated_df.to_dict("records")
+    else:
+        st.session_state["portfolio_render_positions_after_refresh"] = None
+    st.session_state["portfolio_quotes_refreshed_on_load"] = True
+    st.session_state["portfolio_auto_refresh_render_synced"] = True
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
 
 
 def auto_refresh_quotes_on_page_open() -> None:
@@ -770,76 +790,88 @@ def render_edit_form(df) -> None:
         reset_edit_state()
         return
 
+    qty_key = f"portfolio_edit_qty_{edit_index}"
+    avg_key = f"portfolio_edit_avg_{edit_index}"
+    source_key = f"portfolio_edit_source_{edit_index}"
+    source_signature = (
+        f"{edit_index}|{row.get('quantita', '')}|{row.get('prezzo_medio', '')}"
+    )
+
+    if st.session_state.get(source_key) != source_signature:
+        st.session_state[qty_key] = normalize_quantity(row.get("quantita", 0.0))
+        st.session_state[avg_key] = normalize_price(row.get("prezzo_medio", 0.0))
+        st.session_state[source_key] = source_signature
+
     st.markdown('<div class="portfolio-form-box">', unsafe_allow_html=True)
     st.subheader(f"✏️ Modifica posizione: {row['titolo']}")
+    st.caption("Premere Enter aggiorna solo il campo. Il salvataggio reale avviene solo con il bottone Salva modifiche.")
 
-    with st.form(f"portfolio_edit_form_{edit_index}"):
-        # Riga 1: dati anagrafici solo in lettura.
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.text_input("Ticker", value=str(row.get("ticker", "")), disabled=True)
-        with col2:
-            st.text_input("Titolo", value=str(row.get("titolo", "")), disabled=True)
-        with col3:
-            st.text_input("Mercato TradingView", value=portfolio_display_market(row), disabled=True)
+    # Riga 1: dati anagrafici solo in lettura.
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.text_input("Ticker", value=str(row.get("ticker", "")), disabled=True, key=f"portfolio_edit_ro_ticker_{edit_index}")
+    with col2:
+        st.text_input("Titolo", value=str(row.get("titolo", "")), disabled=True, key=f"portfolio_edit_ro_title_{edit_index}")
+    with col3:
+        st.text_input("Mercato TradingView", value=portfolio_display_market(row), disabled=True, key=f"portfolio_edit_ro_market_{edit_index}")
 
-        # Riga 2: unici campi modificabili.
-        col4, col5 = st.columns(2)
-        with col4:
-            quantita = st.number_input(
-                "Quantità",
-                min_value=0,
-                value=normalize_quantity(row.get("quantita", 0.0)),
-                step=QTY_INPUT_STEP,
-                format=QTY_INPUT_FORMAT,
+    # Riga 2: unici campi modificabili. Non sono dentro una st.form: Enter non può
+    # più premere implicitamente il submit e produrre un falso salvataggio.
+    col4, col5 = st.columns(2)
+    with col4:
+        st.number_input(
+            "Quantità",
+            min_value=0,
+            step=QTY_INPUT_STEP,
+            format=QTY_INPUT_FORMAT,
+            key=qty_key,
+        )
+    with col5:
+        st.number_input(
+            "P.zo medio carico",
+            min_value=0.0,
+            step=PRICE_INPUT_STEP,
+            format=PRICE_INPUT_FORMAT,
+            key=avg_key,
+        )
+
+    # Riga 3: dati tecnici solo in lettura.
+    col6, col7, col8 = st.columns(3)
+    with col6:
+        st.text_input("Valuta", value=str(row.get("valuta", "")), disabled=True, key=f"portfolio_edit_ro_currency_{edit_index}")
+    with col7:
+        st.text_input("Simbolo yfinance", value=str(row.get("yf_symbol", "")), disabled=True, key=f"portfolio_edit_ro_yf_{edit_index}")
+    with col8:
+        st.text_input("Simbolo TradingView", value=str(row.get("tv_symbol", "")), disabled=True, key=f"portfolio_edit_ro_tv_{edit_index}")
+
+    col_save, col_cancel, _ = st.columns([1.15, 1.0, 4.85])
+    with col_save:
+        save_clicked = st.button("Salva modifiche", key=f"portfolio_edit_save_{edit_index}", use_container_width=True)
+    with col_cancel:
+        cancel_clicked = st.button("Annulla", key=f"portfolio_edit_cancel_{edit_index}", use_container_width=True)
+
+    if save_clicked:
+        try:
+            updated_df = update_position(
+                DATA_PATH,
+                edit_index,
+                {
+                    "quantita": normalize_quantity(st.session_state.get(qty_key, 0.0)),
+                    "prezzo_medio": normalize_price(st.session_state.get(avg_key, 0.0)),
+                },
             )
-        with col5:
-            prezzo_medio = st.number_input(
-                "P.zo medio carico",
-                min_value=0.0,
-                value=normalize_price(row.get("prezzo_medio", 0.0)),
-                step=PRICE_INPUT_STEP,
-                format=PRICE_INPUT_FORMAT,
-            )
+            sync_portfolio_after_write(updated_df)
+        except Exception as exc:
+            st.error("Salvataggio Portafoglio non completato su GitHub. Modifica annullata: " + str(exc))
+            return
 
-        # Riga 3: dati tecnici solo in lettura.
-        col6, col7, col8 = st.columns(3)
-        with col6:
-            st.text_input("Valuta", value=str(row.get("valuta", "")), disabled=True)
-        with col7:
-            st.text_input("Simbolo yfinance", value=str(row.get("yf_symbol", "")), disabled=True)
-        with col8:
-            st.text_input("Simbolo TradingView", value=str(row.get("tv_symbol", "")), disabled=True)
+        reset_edit_state()
+        st.success("Posizione aggiornata.")
+        st.rerun()
 
-        col_save, col_cancel = st.columns([1, 5])
-
-        with col_save:
-            submitted = st.form_submit_button("Salva")
-
-        with col_cancel:
-            cancelled = st.form_submit_button("Annulla")
-
-        if submitted:
-            try:
-                update_position(
-                    DATA_PATH,
-                    edit_index,
-                    {
-                        "quantita": normalize_quantity(quantita),
-                        "prezzo_medio": normalize_price(prezzo_medio),
-                    },
-                )
-            except Exception as exc:
-                st.error("Salvataggio Portafoglio non completato su GitHub. Modifica annullata: " + str(exc))
-                return
-
-            reset_edit_state()
-            st.success("Posizione aggiornata.")
-            st.rerun()
-
-        if cancelled:
-            reset_edit_state()
-            st.rerun()
+    if cancel_clicked:
+        reset_edit_state()
+        st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
