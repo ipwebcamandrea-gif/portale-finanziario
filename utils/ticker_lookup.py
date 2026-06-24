@@ -156,19 +156,49 @@ def _candidate(*, ticker: str, name: str, market: str, yf_symbol: str, tv_symbol
     }
 
 
-@lru_cache(maxsize=512)
-def fetch_yfinance_identity(yf_symbol: str) -> dict:
+def _fetch_yfinance_identity_uncached(yf_symbol: str) -> dict:
     symbol = clean_ticker(yf_symbol)
     if not symbol:
         return {}
     try:
         import yfinance as yf
-        info = yf.Ticker(symbol).get_info() or {}
-        name = info.get("shortName") or info.get("longName") or info.get("displayName") or info.get("symbol") or ""
-        exchange = str(info.get("exchange") or "").strip().upper()
-        return {"name": str(name or "").strip(), "exchange": exchange, "market": YFINANCE_EXCHANGE_TO_MARKET.get(exchange, "")}
+        ticker = yf.Ticker(symbol)
+        info = {}
+        for getter in (
+            lambda: ticker.get_info() or {},
+            lambda: getattr(ticker, "info", {}) or {},
+            lambda: ticker.get_history_metadata() or {},
+        ):
+            try:
+                candidate = getter()
+                if isinstance(candidate, dict) and candidate:
+                    info.update(candidate)
+            except Exception:
+                continue
+
+        name = (
+            info.get("shortName")
+            or info.get("longName")
+            or info.get("displayName")
+            or info.get("name")
+            or info.get("symbol")
+            or ""
+        )
+        exchange = str(
+            info.get("exchange")
+            or info.get("fullExchangeName")
+            or info.get("exchangeName")
+            or ""
+        ).strip().upper()
+        market = YFINANCE_EXCHANGE_TO_MARKET.get(exchange, "")
+        return {"name": str(name or "").strip(), "exchange": exchange, "market": market}
     except Exception:
         return {}
+
+
+@lru_cache(maxsize=512)
+def fetch_yfinance_identity(yf_symbol: str) -> dict:
+    return _fetch_yfinance_identity_uncached(yf_symbol)
 
 
 def _known_security_for_query(query: str) -> tuple[str, dict | None]:
@@ -255,8 +285,14 @@ def search_ticker_candidates(query: str, *, include_milan_equivalent: bool = Tru
             ),
         )
     elif explicit_market in US_MARKETS:
-        # User explicitly selected the market. This is allowed even if yfinance
-        # cannot identify the symbol before the add operation.
+        # User explicitly selected the market. Try again without cache so a
+        # previous uncertain lookup cannot leave the candidate without a company
+        # description (e.g. MIR:NYSE -> Mirion Technologies, Inc. Class A).
+        if not name or name == symbol:
+            refreshed_identity = _fetch_yfinance_identity_uncached(symbol)
+            if refreshed_identity.get("name"):
+                name = refreshed_identity.get("name") or symbol
+                identity = refreshed_identity
         _add_unique(
             candidates,
             _candidate(
