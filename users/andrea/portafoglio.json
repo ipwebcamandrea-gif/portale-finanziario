@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-24T15:52:40+00:00",
+  "updated_at": "2026-06-24T15:59:17+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 1600.0,
       "prezzo_medio": 6.65,
-      "prezzo_mercato": 6.065000057220459,
+      "prezzo_mercato": 6.054999828338623,
       "prezzo_precedente": 6.09,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 266.8500061035156,
+      "prezzo_mercato": 266.1099853515625,
       "prezzo_precedente": 257.9,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
-      "prezzo_mercato": 18.020099639892578,
+      "prezzo_mercato": 17.940000534057617,
       "prezzo_precedente": 17.344,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 495.3299865722656,
+      "prezzo_mercato": 494.8450012207031,
       "prezzo_precedente": 488.1277,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 157.0,
       "prezzo_medio": 56.565889,
-      "prezzo_mercato": 42.935001373291016,
+      "prezzo_mercato": 42.78499984741211,
       "prezzo_precedente": 41.68,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 91.0,
       "prezzo_medio": 186.59,
-      "prezzo_mercato": 159.07000732421875,
+      "prezzo_mercato": 158.89999389648438,
       "prezzo_precedente": 165.58,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 117.0,
       "prezzo_medio": 75.35,
-      "prezzo_mercato": 69.97000122070312,
+      "prezzo_mercato": 69.69999694824219,
       "prezzo_precedente": 73.73,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 390.0,
       "prezzo_medio": 18.73,
-      "prezzo_mercato": 18.59000015258789,
+      "prezzo_mercato": 18.5,
       "prezzo_precedente": 18.9999,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
