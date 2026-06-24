@@ -420,26 +420,28 @@ def save_portfolio(
         set_portfolio_storage_state("locale", "Configurazione GitHub incompleta")
 
 
-def add_position(json_path: Path, position: dict) -> None:
-    """Append a new portfolio position."""
+def add_position(json_path: Path, position: dict) -> pd.DataFrame:
+    """Append a new portfolio position and return the persisted dataframe."""
     df = load_portfolio(json_path)
     new_row = {col: position.get(col, "") for col in PORTFOLIO_COLUMNS}
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
     save_portfolio(df, json_path, "Add portfolio position")
+    return df
 
 
-def update_position(json_path: Path, row_index: int, position: dict) -> None:
-    """Update a portfolio position by original JSON row index."""
+def update_position(json_path: Path, row_index: int, position: dict) -> pd.DataFrame:
+    """Update a portfolio position by original JSON row index and return saved dataframe."""
     df = load_portfolio(json_path)
 
     if row_index < 0 or row_index >= len(df):
-        return
+        return df
 
     for col in PORTFOLIO_COLUMNS:
         if col in position:
             df.at[row_index, col] = position[col]
 
     save_portfolio(df, json_path, "Update portfolio position")
+    return df
 
 
 def delete_position(json_path: Path, row_index: int) -> None:
