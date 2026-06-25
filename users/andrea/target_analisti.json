@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-25T12:39:20+00:00",
+    "updated_at": "2026-06-25T17:17:32+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -289,6 +289,23 @@
             "analyst_count": 26,
             "rating": "buy",
             "updated_at": "2026-06-25T12:39:20+00:00"
+        },
+        "PLTR": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "PLTR",
+            "ticker": "PLTR",
+            "tv_symbol": "NASDAQ:PLTR",
+            "name": "Palantir Technologies Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 107.31999969482422,
+            "target_low": 70.0,
+            "target_mean": 182.75407,
+            "target_high": 255.0,
+            "analyst_count": 27,
+            "rating": "buy",
+            "updated_at": "2026-06-25T17:17:31+00:00"
         }
     }
 }
