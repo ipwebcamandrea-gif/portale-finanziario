@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "LARGE CAP",
+    "active_watchlist": "ETF",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -29,10 +29,6 @@
         "MEGA  CAP  SU ITA": [
             "1MSFT.MI",
             "1AMZN.MI"
-        ],
-        "LARGE CAP": [
-            "INTU",
-            "NOW"
         ],
         "ETF": [
             "SWDA.MI",
