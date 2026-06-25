@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "PORTAFOGLIO",
+    "active_watchlist": "CROLLO",
     "watchlists": {
         "MEGA CAP USA": [
             "MSFT",
@@ -63,15 +63,6 @@
             "^GSPC",
             "^VIX",
             "^VVIX"
-        ],
-        "PORTAFOGLIO": [
-            "1MSFT.MI",
-            "MA",
-            "PYPL",
-            "WVE",
-            "PERI",
-            "SOFI",
-            "INTU"
         ]
     }
 }
