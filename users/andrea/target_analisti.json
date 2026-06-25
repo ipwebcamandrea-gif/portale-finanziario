@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-24T15:46:48+00:00",
+    "updated_at": "2026-06-25T12:39:20+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -272,6 +272,23 @@
             "analyst_count": 13,
             "rating": "strong_buy",
             "updated_at": "2026-06-24T10:26:11+00:00"
+        },
+        "UNH": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "UNH",
+            "ticker": "UNH",
+            "tv_symbol": "NYSE:UNH",
+            "name": "UnitedHealth Group Incorporated",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 405.79998779296875,
+            "target_low": 287.0,
+            "target_mean": 409.76923,
+            "target_high": 492.0,
+            "analyst_count": 26,
+            "rating": "buy",
+            "updated_at": "2026-06-25T12:39:20+00:00"
         }
     }
 }
