@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-24T12:49:24+00:00",
+  "updated_at": "2026-06-25T06:21:25+00:00",
   "positions": [
     {
       "ticker": "MSFT",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 33,
       "prezzo_medio": 389.19,
-      "prezzo_mercato": 373.94000244140625,
+      "prezzo_mercato": 365.4599914550781,
       "prezzo_precedente": 374.0,
       "yf_symbol": "MSFT",
       "tv_symbol": "NASDAQ:MSFT"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 25,
       "prezzo_medio": 494.76,
-      "prezzo_mercato": 488.07000732421875,
+      "prezzo_mercato": 494.4100036621094,
       "prezzo_precedente": 488.1277,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
