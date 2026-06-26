@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-26T19:38:18+00:00",
+  "updated_at": "2026-06-26T19:39:22+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -144,6 +144,19 @@
       "prezzo_precedente": 107.9,
       "yf_symbol": "PLTR",
       "tv_symbol": "NASDAQ:PLTR"
+    },
+    {
+      "ticker": "CRM",
+      "titolo": "Salesforce, Inc.",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 72.0,
+      "prezzo_medio": 157.22,
+      "prezzo_mercato": 157.0850067138672,
+      "prezzo_precedente": 151.0,
+      "yf_symbol": "CRM",
+      "tv_symbol": "NYSE:CRM"
     }
   ]
 }
