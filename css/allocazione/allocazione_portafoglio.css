@@ -1,4 +1,3 @@
-
 [data-testid="stSidebar"] {
     display: none;
 }
@@ -210,3 +209,209 @@
    Page title and header controls are rendered by components/standard_header.py.
    Existing allocation card/list styles remain below.
 */
+
+/* ========================= ALLOCAZIONE DESKTOP TARGET TOWERS ========================= */
+.allocation-heat-card-targets {
+    min-height: 390px;
+    padding: 0.92rem 0.95rem 0.86rem 0.95rem;
+}
+
+.allocation-heat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.32rem;
+}
+
+.allocation-heat-values {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.allocation-heat-value-eur {
+    color: #8bd3ff;
+    font-size: 0.78rem;
+    font-weight: 900;
+    margin-top: 0.10rem;
+    white-space: nowrap;
+}
+
+.allocation-heat-risk-label {
+    margin-bottom: 0.58rem;
+}
+
+.allocation-target-block {
+    margin-top: 0.62rem;
+    padding-top: 0.62rem;
+    border-top: 1px solid rgba(139, 211, 255, 0.18);
+}
+
+.allocation-target-block-title {
+    color: #f9fafb;
+    font-size: 0.73rem;
+    font-weight: 950;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.48rem;
+}
+
+.allocation-target-empty {
+    color: #9fb3d1;
+    font-size: 0.75rem;
+    font-weight: 780;
+    padding: 0.55rem 0.60rem;
+    border-radius: 12px;
+    border: 1px dashed rgba(139, 211, 255, 0.24);
+    background: rgba(13, 17, 23, 0.28);
+}
+
+.allocation-target-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.34rem;
+    margin-bottom: 0.62rem;
+}
+
+.allocation-target-chip {
+    min-width: 0;
+    padding: 0.44rem 0.42rem;
+    border-radius: 12px;
+    border: 1px solid rgba(48, 54, 61, 0.72);
+    background: rgba(13, 17, 23, 0.38);
+}
+
+.allocation-target-chip-label {
+    color: #9fb3d1;
+    font-size: 0.55rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.18rem;
+}
+
+.allocation-target-chip-price {
+    color: #f9fafb;
+    font-size: 0.72rem;
+    font-weight: 950;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.allocation-target-chip-pct,
+.allocation-target-chip-money {
+    font-size: 0.62rem;
+    font-weight: 950;
+    line-height: 1.12;
+    margin-top: 0.12rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.allocation-target-positive { color: #22c55e !important; }
+.allocation-target-negative { color: #ef4444 !important; }
+.allocation-target-neutral { color: #9ca3af !important; }
+
+.allocation-target-towers-title {
+    color: #cfe7ff;
+    font-size: 0.66rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin: 0.34rem 0 0.34rem 0;
+}
+
+.allocation-target-towers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.42rem;
+    align-items: end;
+    min-height: 158px;
+    padding: 0.35rem 0.15rem 0.05rem 0.15rem;
+    border-radius: 12px;
+    background: rgba(13, 17, 23, 0.26);
+    border: 1px solid rgba(48, 54, 61, 0.48);
+}
+
+.allocation-target-tower-item {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.allocation-target-tower-value {
+    color: #e6edf3;
+    font-size: 0.58rem;
+    font-weight: 850;
+    min-height: 1.18rem;
+    white-space: nowrap;
+}
+
+.allocation-target-tower-track {
+    width: 100%;
+    height: 84px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-bottom: 1px solid rgba(139, 211, 255, 0.18);
+    margin: 0.16rem 0 0.18rem 0;
+}
+
+.allocation-target-tower-bar {
+    width: 58%;
+    max-width: 34px;
+    min-height: 8px;
+    border-radius: 8px 8px 2px 2px;
+    background: linear-gradient(180deg, #7cc7ff 0%, #4aa3ff 100%);
+    box-shadow: 0 0 10px rgba(124, 199, 255, 0.18);
+}
+
+.allocation-target-current-bar {
+    background: linear-gradient(180deg, #8bd3ff 0%, #38bdf8 100%);
+}
+
+.allocation-target-scenario-bar {
+    background: linear-gradient(180deg, #93c5fd 0%, #60a5fa 100%);
+}
+
+.allocation-target-negative-bar {
+    background: linear-gradient(180deg, #fca5a5 0%, #ef4444 100%);
+}
+
+.allocation-target-tower-label {
+    color: #f9fafb;
+    font-size: 0.60rem;
+    font-weight: 950;
+    line-height: 1.05;
+}
+
+.allocation-target-tower-money {
+    color: #9fb3d1;
+    font-size: 0.56rem;
+    font-weight: 850;
+    min-height: 0.80rem;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.allocation-target-note {
+    margin-top: 0.45rem;
+    color: #8a99ad;
+    font-size: 0.58rem;
+    font-weight: 720;
+    line-height: 1.25;
+}
+
+@media screen and (max-width: 1200px) {
+    .allocation-target-chip-grid,
+    .allocation-target-towers {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .allocation-heat-card-targets {
+        min-height: 430px;
+    }
+}
