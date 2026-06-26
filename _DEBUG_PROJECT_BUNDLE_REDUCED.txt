@@ -5464,7 +5464,6 @@ except Exception:
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_PATH = get_user_portfolio_path()
 GLOBAL_CSS_PATH = BASE_DIR / "css" / "global.css"
 CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
@@ -5480,7 +5479,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# Protezione prima di risolvere qualunque path utente. Se la sessione Streamlit
+# viene persa/sospesa dal browser mobile, require_login deve fermare la pagina e
+# riportare al login invece di far esplodere get_user_portfolio_path().
 require_login()
+DATA_PATH = get_user_portfolio_path()
 
 def load_css() -> None:
     for css_path in (GLOBAL_CSS_PATH, CSS_PATH, MOBILE_CSS_PATH):
@@ -10376,26 +10380,28 @@ def save_portfolio(
         set_portfolio_storage_state("locale", "Configurazione GitHub incompleta")
 
 
-def add_position(json_path: Path, position: dict) -> None:
-    """Append a new portfolio position."""
+def add_position(json_path: Path, position: dict) -> pd.DataFrame:
+    """Append a new portfolio position and return the persisted dataframe."""
     df = load_portfolio(json_path)
     new_row = {col: position.get(col, "") for col in PORTFOLIO_COLUMNS}
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
     save_portfolio(df, json_path, "Add portfolio position")
+    return df
 
 
-def update_position(json_path: Path, row_index: int, position: dict) -> None:
-    """Update a portfolio position by original JSON row index."""
+def update_position(json_path: Path, row_index: int, position: dict) -> pd.DataFrame:
+    """Update a portfolio position by original JSON row index and return saved dataframe."""
     df = load_portfolio(json_path)
 
     if row_index < 0 or row_index >= len(df):
-        return
+        return df
 
     for col in PORTFOLIO_COLUMNS:
         if col in position:
             df.at[row_index, col] = position[col]
 
     save_portfolio(df, json_path, "Update portfolio position")
+    return df
 
 
 def delete_position(json_path: Path, row_index: int) -> None:
@@ -11552,19 +11558,49 @@ def _candidate(*, ticker: str, name: str, market: str, yf_symbol: str, tv_symbol
     }
 
 
-@lru_cache(maxsize=512)
-def fetch_yfinance_identity(yf_symbol: str) -> dict:
+def _fetch_yfinance_identity_uncached(yf_symbol: str) -> dict:
     symbol = clean_ticker(yf_symbol)
     if not symbol:
         return {}
     try:
         import yfinance as yf
-        info = yf.Ticker(symbol).get_info() or {}
-        name = info.get("shortName") or info.get("longName") or info.get("displayName") or info.get("symbol") or ""
-        exchange = str(info.get("exchange") or "").strip().upper()
-        return {"name": str(name or "").strip(), "exchange": exchange, "market": YFINANCE_EXCHANGE_TO_MARKET.get(exchange, "")}
+        ticker = yf.Ticker(symbol)
+        info = {}
+        for getter in (
+            lambda: ticker.get_info() or {},
+            lambda: getattr(ticker, "info", {}) or {},
+            lambda: ticker.get_history_metadata() or {},
+        ):
+            try:
+                candidate = getter()
+                if isinstance(candidate, dict) and candidate:
+                    info.update(candidate)
+            except Exception:
+                continue
+
+        name = (
+            info.get("shortName")
+            or info.get("longName")
+            or info.get("displayName")
+            or info.get("name")
+            or info.get("symbol")
+            or ""
+        )
+        exchange = str(
+            info.get("exchange")
+            or info.get("fullExchangeName")
+            or info.get("exchangeName")
+            or ""
+        ).strip().upper()
+        market = YFINANCE_EXCHANGE_TO_MARKET.get(exchange, "")
+        return {"name": str(name or "").strip(), "exchange": exchange, "market": market}
     except Exception:
         return {}
+
+
+@lru_cache(maxsize=512)
+def fetch_yfinance_identity(yf_symbol: str) -> dict:
+    return _fetch_yfinance_identity_uncached(yf_symbol)
 
 
 def _known_security_for_query(query: str) -> tuple[str, dict | None]:
@@ -11651,8 +11687,14 @@ def search_ticker_candidates(query: str, *, include_milan_equivalent: bool = Tru
             ),
         )
     elif explicit_market in US_MARKETS:
-        # User explicitly selected the market. This is allowed even if yfinance
-        # cannot identify the symbol before the add operation.
+        # User explicitly selected the market. Try again without cache so a
+        # previous uncertain lookup cannot leave the candidate without a company
+        # description (e.g. MIR:NYSE -> Mirion Technologies, Inc. Class A).
+        if not name or name == symbol:
+            refreshed_identity = _fetch_yfinance_identity_uncached(symbol)
+            if refreshed_identity.get("name"):
+                name = refreshed_identity.get("name") or symbol
+                identity = refreshed_identity
         _add_unique(
             candidates,
             _candidate(
