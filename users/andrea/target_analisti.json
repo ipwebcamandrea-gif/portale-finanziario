@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-25T17:17:32+00:00",
+    "updated_at": "2026-06-26T19:40:04+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -306,6 +306,23 @@
             "analyst_count": 27,
             "rating": "buy",
             "updated_at": "2026-06-25T17:17:31+00:00"
+        },
+        "CRM": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "CRM",
+            "ticker": "CRM",
+            "tv_symbol": "NYSE:CRM",
+            "name": "Salesforce, Inc.",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 157.08999633789062,
+            "target_low": 160.0,
+            "target_mean": 251.52731,
+            "target_high": 475.0,
+            "analyst_count": 52,
+            "rating": "buy",
+            "updated_at": "2026-06-26T19:40:04+00:00"
         }
     }
 }
