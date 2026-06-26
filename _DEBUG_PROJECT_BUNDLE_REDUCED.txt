@@ -1784,13 +1784,113 @@ def render_watchlist_tabs():
     line-height: 1.25;
 }
 
+/* ========================= ALLOCAZIONE TARGET TOWERS - MOBILE ONE ROW SAFE FIX =========================
+   Patch cumulativa sicura: mantiene il CSS completo esistente e forza solo chip/torri su 4 colonne anche su smartphone.
+*/
 @media screen and (max-width: 1200px) {
     .allocation-target-chip-grid,
     .allocation-target-towers {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     }
+
     .allocation-heat-card-targets {
-        min-height: 430px;
+        min-height: 390px !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .allocation-heat-card-targets {
+        padding: 0.88rem 0.78rem 0.78rem 0.78rem !important;
+        min-height: auto !important;
+    }
+
+    .allocation-target-chip-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 0.28rem !important;
+        margin-bottom: 0.58rem !important;
+    }
+
+    .allocation-target-chip {
+        padding: 0.42rem 0.30rem !important;
+        border-radius: 11px !important;
+    }
+
+    .allocation-target-chip-label {
+        font-size: 0.52rem !important;
+    }
+
+    .allocation-target-chip-price {
+        font-size: 0.68rem !important;
+    }
+
+    .allocation-target-chip-pct,
+    .allocation-target-chip-money {
+        font-size: 0.58rem !important;
+        line-height: 1.08 !important;
+    }
+
+    .allocation-target-towers {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 0.26rem !important;
+        min-height: 152px !important;
+        padding-left: 0.10rem !important;
+        padding-right: 0.10rem !important;
+    }
+
+    .allocation-target-tower-track {
+        height: 82px !important;
+    }
+
+    .allocation-target-tower-bar {
+        width: 54% !important;
+        max-width: 32px !important;
+    }
+
+    .allocation-target-tower-value {
+        font-size: 0.55rem !important;
+    }
+
+    .allocation-target-tower-label {
+        font-size: 0.58rem !important;
+    }
+
+    .allocation-target-tower-money {
+        font-size: 0.52rem !important;
+    }
+
+    .allocation-target-note {
+        font-size: 0.55rem !important;
+    }
+}
+
+@media screen and (max-width: 390px) {
+    .allocation-target-chip-grid {
+        gap: 0.22rem !important;
+    }
+
+    .allocation-target-chip {
+        padding: 0.38rem 0.22rem !important;
+    }
+
+    .allocation-target-chip-price {
+        font-size: 0.63rem !important;
+    }
+
+    .allocation-target-chip-pct,
+    .allocation-target-chip-money {
+        font-size: 0.53rem !important;
+    }
+
+    .allocation-target-towers {
+        gap: 0.18rem !important;
+    }
+
+    .allocation-target-tower-value {
+        font-size: 0.50rem !important;
+    }
+
+    .allocation-target-tower-money {
+        font-size: 0.48rem !important;
     }
 }
 
