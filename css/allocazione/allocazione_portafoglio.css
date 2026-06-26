@@ -1,111 +1,417 @@
+[data-testid="stSidebar"] {
+    display: none;
+}
 
+[data-testid="stAppViewContainer"] > .main {
+    margin-left: 0;
+}
 
-/* ========================= ALLOCAZIONE TARGET TOWERS - MOBILE ONE ROW FIX =========================
-   Mantiene Att./Min/Med/Max e le torri sempre su una sola riga anche su smartphone.
-   Override della precedente regola <=1200px che portava chip/torri su 2 colonne.
-*/
-@media screen and (max-width: 1200px) {
-    .allocation-target-chip-grid,
-    .allocation-target-towers {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
+.allocation-page-title {
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: #f9fafb;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+}
 
-    .allocation-heat-card-targets {
-        min-height: 390px !important;
-    }
+.allocation-page-subtitle {
+    color: #9fb3d1;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+.allocation-summary-card,
+.allocation-insights-box,
+.allocation-heat-card,
+.allocation-weight-row {
+    border-radius: 14px;
+    border: 1px solid rgba(48, 54, 61, 0.78);
+    background:
+        radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+.allocation-summary-card {
+    min-height: 112px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.allocation-summary-label {
+    color: #9fb3d1;
+    font-size: 0.72rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 0.35rem;
+}
+
+.allocation-summary-value {
+    color: #f9fafb;
+    font-size: 1.25rem;
+    font-weight: 950;
+    line-height: 1.16;
+}
+
+.allocation-summary-subtitle {
+    color: #8bd3ff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    margin-top: 0.28rem;
+}
+
+.allocation-panel-title,
+.allocation-section-title {
+    color: #f9fafb;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin: 0.6rem 0 0.75rem 0;
+}
+
+.allocation-weight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 0.48rem;
+}
+
+.allocation-weight-title {
+    color: #e6edf3;
+    font-size: 0.92rem;
+    font-weight: 900;
+    line-height: 1.15;
+}
+
+.allocation-weight-subtitle {
+    color: #9ca3af;
+    font-size: 0.74rem;
+    font-weight: 700;
+    margin-top: 0.12rem;
+}
+
+.allocation-weight-values {
+    text-align: right;
+    color: #f9fafb;
+    font-size: 0.86rem;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.allocation-heat-card {
+    min-height: 112px;
+    padding: 0.85rem 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.allocation-heat-title {
+    color: #f9fafb;
+    font-size: 0.92rem;
+    font-weight: 950;
+    margin-bottom: 0.2rem;
+}
+
+.allocation-heat-weight {
+    color: #e6edf3;
+    font-size: 1.18rem;
+    font-weight: 950;
+    margin-bottom: 0.18rem;
+}
+
+.allocation-heat-label {
+    color: #9fb3d1;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.allocation-concentration-very-high {
+    border-color: rgba(239, 68, 68, 0.42);
+    background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.86) 100%);
+}
+
+.allocation-concentration-high {
+    border-color: rgba(245, 158, 11, 0.42);
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.86) 100%);
+}
+
+.allocation-concentration-medium {
+    border-color: rgba(168, 85, 247, 0.36);
+}
+
+.allocation-concentration-low {
+    border-color: rgba(0, 176, 255, 0.24);
+}
+
+.allocation-insights-box {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+}
+
+.allocation-insights-title {
+    color: #f9fafb;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin-bottom: 0.45rem;
+}
+
+.allocation-insights-box ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.allocation-insights-box li {
+    color: #cfe7ff;
+    font-size: 0.9rem;
+    font-weight: 720;
+    margin-bottom: 0.32rem;
 }
 
 @media screen and (max-width: 768px) {
-    .allocation-heat-card-targets {
-        padding: 0.88rem 0.78rem 0.78rem 0.78rem !important;
-        min-height: auto !important;
+    .allocation-page-title {
+        font-size: 1.3rem;
     }
 
-    .allocation-target-chip-grid {
-        gap: 0.28rem !important;
-        margin-bottom: 0.58rem !important;
+    .allocation-page-subtitle {
+        font-size: 0.78rem;
     }
 
-    .allocation-target-chip {
-        padding: 0.42rem 0.30rem !important;
-        border-radius: 11px !important;
+    .allocation-summary-card {
+        min-height: 92px;
     }
 
-    .allocation-target-chip-label {
-        font-size: 0.52rem !important;
+    .allocation-summary-value {
+        font-size: 1rem;
     }
 
-    .allocation-target-chip-price {
-        font-size: 0.68rem !important;
+    .allocation-weight-row {
+        align-items: flex-start;
     }
 
-    .allocation-target-chip-pct,
-    .allocation-target-chip-money {
-        font-size: 0.58rem !important;
-        line-height: 1.08 !important;
+    .allocation-weight-title {
+        font-size: 0.82rem;
     }
 
-    .allocation-target-towers {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        gap: 0.26rem !important;
-        min-height: 152px !important;
-        padding-left: 0.10rem !important;
-        padding-right: 0.10rem !important;
-    }
-
-    .allocation-target-tower-track {
-        height: 82px !important;
-    }
-
-    .allocation-target-tower-bar {
-        width: 54% !important;
-        max-width: 32px !important;
-    }
-
-    .allocation-target-tower-value {
-        font-size: 0.55rem !important;
-    }
-
-    .allocation-target-tower-label {
-        font-size: 0.58rem !important;
-    }
-
-    .allocation-target-tower-money {
-        font-size: 0.52rem !important;
-    }
-
-    .allocation-target-note {
-        font-size: 0.55rem !important;
+    .allocation-weight-values {
+        font-size: 0.78rem;
     }
 }
 
-@media screen and (max-width: 390px) {
-    .allocation-target-chip-grid {
-        gap: 0.22rem !important;
-    }
+/* =========================
+   STANDARD HEADER NOTE
+   =========================
+   Page title and header controls are rendered by components/standard_header.py.
+   Existing allocation card/list styles remain below.
+*/
 
-    .allocation-target-chip {
-        padding: 0.38rem 0.22rem !important;
-    }
+/* ========================= ALLOCAZIONE DESKTOP TARGET TOWERS ========================= */
+.allocation-heat-card-targets {
+    min-height: 390px;
+    padding: 0.92rem 0.95rem 0.86rem 0.95rem;
+}
 
-    .allocation-target-chip-price {
-        font-size: 0.63rem !important;
-    }
+.allocation-heat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.32rem;
+}
 
-    .allocation-target-chip-pct,
-    .allocation-target-chip-money {
-        font-size: 0.53rem !important;
-    }
+.allocation-heat-values {
+    text-align: right;
+    flex-shrink: 0;
+}
 
+.allocation-heat-value-eur {
+    color: #8bd3ff;
+    font-size: 0.78rem;
+    font-weight: 900;
+    margin-top: 0.10rem;
+    white-space: nowrap;
+}
+
+.allocation-heat-risk-label {
+    margin-bottom: 0.58rem;
+}
+
+.allocation-target-block {
+    margin-top: 0.62rem;
+    padding-top: 0.62rem;
+    border-top: 1px solid rgba(139, 211, 255, 0.18);
+}
+
+.allocation-target-block-title {
+    color: #f9fafb;
+    font-size: 0.73rem;
+    font-weight: 950;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.48rem;
+}
+
+.allocation-target-empty {
+    color: #9fb3d1;
+    font-size: 0.75rem;
+    font-weight: 780;
+    padding: 0.55rem 0.60rem;
+    border-radius: 12px;
+    border: 1px dashed rgba(139, 211, 255, 0.24);
+    background: rgba(13, 17, 23, 0.28);
+}
+
+.allocation-target-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.34rem;
+    margin-bottom: 0.62rem;
+}
+
+.allocation-target-chip {
+    min-width: 0;
+    padding: 0.44rem 0.42rem;
+    border-radius: 12px;
+    border: 1px solid rgba(48, 54, 61, 0.72);
+    background: rgba(13, 17, 23, 0.38);
+}
+
+.allocation-target-chip-label {
+    color: #9fb3d1;
+    font-size: 0.55rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.18rem;
+}
+
+.allocation-target-chip-price {
+    color: #f9fafb;
+    font-size: 0.72rem;
+    font-weight: 950;
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.allocation-target-chip-pct,
+.allocation-target-chip-money {
+    font-size: 0.62rem;
+    font-weight: 950;
+    line-height: 1.12;
+    margin-top: 0.12rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.allocation-target-positive { color: #22c55e !important; }
+.allocation-target-negative { color: #ef4444 !important; }
+.allocation-target-neutral { color: #9ca3af !important; }
+
+.allocation-target-towers-title {
+    color: #cfe7ff;
+    font-size: 0.66rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin: 0.34rem 0 0.34rem 0;
+}
+
+.allocation-target-towers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.42rem;
+    align-items: end;
+    min-height: 158px;
+    padding: 0.35rem 0.15rem 0.05rem 0.15rem;
+    border-radius: 12px;
+    background: rgba(13, 17, 23, 0.26);
+    border: 1px solid rgba(48, 54, 61, 0.48);
+}
+
+.allocation-target-tower-item {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.allocation-target-tower-value {
+    color: #e6edf3;
+    font-size: 0.58rem;
+    font-weight: 850;
+    min-height: 1.18rem;
+    white-space: nowrap;
+}
+
+.allocation-target-tower-track {
+    width: 100%;
+    height: 84px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-bottom: 1px solid rgba(139, 211, 255, 0.18);
+    margin: 0.16rem 0 0.18rem 0;
+}
+
+.allocation-target-tower-bar {
+    width: 58%;
+    max-width: 34px;
+    min-height: 8px;
+    border-radius: 8px 8px 2px 2px;
+    background: linear-gradient(180deg, #7cc7ff 0%, #4aa3ff 100%);
+    box-shadow: 0 0 10px rgba(124, 199, 255, 0.18);
+}
+
+.allocation-target-current-bar {
+    background: linear-gradient(180deg, #8bd3ff 0%, #38bdf8 100%);
+}
+
+.allocation-target-scenario-bar {
+    background: linear-gradient(180deg, #93c5fd 0%, #60a5fa 100%);
+}
+
+.allocation-target-negative-bar {
+    background: linear-gradient(180deg, #fca5a5 0%, #ef4444 100%);
+}
+
+.allocation-target-tower-label {
+    color: #f9fafb;
+    font-size: 0.60rem;
+    font-weight: 950;
+    line-height: 1.05;
+}
+
+.allocation-target-tower-money {
+    color: #9fb3d1;
+    font-size: 0.56rem;
+    font-weight: 850;
+    min-height: 0.80rem;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.allocation-target-note {
+    margin-top: 0.45rem;
+    color: #8a99ad;
+    font-size: 0.58rem;
+    font-weight: 720;
+    line-height: 1.25;
+}
+
+@media screen and (max-width: 1200px) {
+    .allocation-target-chip-grid,
     .allocation-target-towers {
-        gap: 0.18rem !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    .allocation-target-tower-value {
-        font-size: 0.50rem !important;
-    }
-
-    .allocation-target-tower-money {
-        font-size: 0.48rem !important;
+    .allocation-heat-card-targets {
+        min-height: 430px;
     }
 }
