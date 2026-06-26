@@ -1,10 +1,22 @@
 from __future__ import annotations
 
+import math
+from html import escape
+
 import streamlit as st
 
-from utils.allocazione.allocation_charts import create_group_bar, create_position_bar, create_position_donut
+from utils.allocazione.allocation_charts import create_position_bar, create_position_donut
 from utils.allocazione.portfolio_allocation import concentration_class, concentration_label
-from utils.portfolio_formatting import fmt_eur, fmt_pct
+from utils.portfolio_formatting import fmt_eur, fmt_pct, value_class
+from utils.portfolio_target_metrics import load_user_targets_map
+
+
+TARGET_FIELDS = (
+    ("current", "Att.", "Prezzo attuale"),
+    ("target_low", "Min", "Target minimo"),
+    ("target_mean", "Med", "Target medio"),
+    ("target_high", "Max", "Target massimo"),
+)
 
 
 def render_page_header() -> None:
@@ -18,9 +30,9 @@ def render_page_header() -> None:
 def _summary_card(label: str, value: str, subtitle: str = "") -> None:
     html = (
         '<div class="allocation-summary-card">'
-        f'<div class="allocation-summary-label">{label}</div>'
-        f'<div class="allocation-summary-value">{value}</div>'
-        f'<div class="allocation-summary-subtitle">{subtitle}</div>'
+        f'<div class="allocation-summary-label">{escape(str(label))}</div>'
+        f'<div class="allocation-summary-value">{escape(str(value))}</div>'
+        f'<div class="allocation-summary-subtitle">{escape(str(subtitle))}</div>'
         '</div>'
     )
     st.markdown(html, unsafe_allow_html=True)
@@ -36,6 +48,188 @@ def _allocation_display_symbol(row) -> str:
     if market and ticker:
         return f"{market}:{ticker}"
     return ticker or market or "-"
+
+
+def _key(value) -> str:
+    return str(value or "").strip().upper()
+
+
+def _safe_float(value, default: float | None = None) -> float | None:
+    try:
+        numeric = float(value)
+        if math.isfinite(numeric):
+            return numeric
+    except Exception:
+        pass
+    return default
+
+
+def _currency_suffix(currency: str) -> str:
+    currency = _key(currency)
+    if currency == "EUR":
+        return "€"
+    if currency == "USD":
+        return "$"
+    return currency or ""
+
+
+def _format_price(value: float | None, currency: str) -> str:
+    if value is None:
+        return "—"
+    suffix = _currency_suffix(currency)
+    if suffix in {"€", "$"}:
+        return f"{value:,.2f}{suffix}".replace(",", "X").replace(".", ",").replace("X", ".")
+    return f"{value:,.2f} {suffix}".replace(",", "X").replace(".", ",").replace("X", ".").strip()
+
+
+def _format_signed_pct(value: float | None) -> str:
+    if value is None:
+        return "—"
+    sign = "+" if value >= 0 else ""
+    return (sign + f"{value:.2f}%").replace(".", ",")
+
+
+def _format_signed_eur(value: float | None) -> str:
+    if value is None:
+        return "€ n/d"
+    sign = "+" if value >= 0 else ""
+    return sign + fmt_eur(value) + " €"
+
+
+def _target_item_for_row(row, targets: dict[str, dict]) -> dict | None:
+    candidates = (
+        row.get("yf_symbol", ""),
+        row.get("ticker", ""),
+        row.get("display_symbol", ""),
+    )
+    for candidate in candidates:
+        clean = _key(candidate)
+        if clean and clean in targets:
+            return targets[clean]
+    return None
+
+
+def _fx_to_eur(row, currency: str) -> float | None:
+    currency = _key(currency)
+    if currency == "EUR":
+        return 1.0
+    fx = _safe_float(row.get("fx_eur"))
+    return fx if fx and fx > 0 else None
+
+
+def _build_target_scenarios(row, target_item: dict | None) -> list[dict]:
+    currency = _key(row.get("valuta"))
+    current = _safe_float(row.get("prezzo_mercato"))
+    quantity = _safe_float(row.get("quantita"), 0.0) or 0.0
+    fx = _fx_to_eur(row, currency)
+
+    if current is None or current <= 0:
+        current = _safe_float((target_item or {}).get("current_price"))
+
+    scenarios: list[dict] = []
+    for field, short_label, label in TARGET_FIELDS:
+        if field == "current":
+            value = current
+        else:
+            value = _safe_float((target_item or {}).get(field))
+
+        if value is None or value <= 0:
+            continue
+
+        pct = ((value - current) / current * 100.0) if current and current > 0 and field != "current" else None
+        gain_eur = ((value - current) * quantity * fx) if current and quantity > 0 and fx and field != "current" else None
+
+        scenarios.append(
+            {
+                "field": field,
+                "short_label": short_label,
+                "label": label,
+                "value": value,
+                "pct": pct,
+                "gain_eur": gain_eur,
+                "currency": currency,
+                "css_class": value_class(gain_eur or 0.0) if gain_eur is not None else "portfolio-neutral",
+            }
+        )
+
+    return scenarios
+
+
+def _render_target_chips(scenarios: list[dict]) -> str:
+    if len(scenarios) <= 1:
+        return (
+            '<div class="allocation-target-empty">'
+            'Target non disponibili per questa posizione'
+            '</div>'
+        )
+
+    chips = []
+    for item in scenarios:
+        is_current = item["field"] == "current"
+        pct_html = "prezzo" if is_current else _format_signed_pct(item.get("pct"))
+        eur_html = "attuale" if is_current else _format_signed_eur(item.get("gain_eur"))
+        css_class = "allocation-target-neutral" if is_current else (
+            "allocation-target-positive" if (item.get("gain_eur") or 0) >= 0 else "allocation-target-negative"
+        )
+        chips.append(
+            '<div class="allocation-target-chip">'
+            f'<div class="allocation-target-chip-label">{escape(item["short_label"].upper())}</div>'
+            f'<div class="allocation-target-chip-price">{escape(_format_price(item["value"], item["currency"]))}</div>'
+            f'<div class="allocation-target-chip-pct {css_class}">{escape(pct_html)}</div>'
+            f'<div class="allocation-target-chip-money {css_class}">{escape(eur_html)}</div>'
+            '</div>'
+        )
+    return '<div class="allocation-target-chip-grid">' + "".join(chips) + '</div>'
+
+
+def _render_target_towers(scenarios: list[dict]) -> str:
+    if len(scenarios) <= 1:
+        return ""
+
+    max_value = max((_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios)
+    if max_value <= 0:
+        return ""
+
+    bars = []
+    for item in scenarios:
+        value = _safe_float(item.get("value"), 0.0) or 0.0
+        height_pct = max(12.0, min(100.0, value / max_value * 100.0))
+        is_current = item["field"] == "current"
+        bar_class = "allocation-target-current-bar" if is_current else "allocation-target-scenario-bar"
+        if not is_current and item.get("gain_eur") is not None and item["gain_eur"] < 0:
+            bar_class += " allocation-target-negative-bar"
+        gain_text = "" if is_current else _format_signed_eur(item.get("gain_eur"))
+        bars.append(
+            '<div class="allocation-target-tower-item">'
+            f'<div class="allocation-target-tower-value">{escape(_format_price(value, item["currency"]))}</div>'
+            '<div class="allocation-target-tower-track">'
+            f'<div class="allocation-target-tower-bar {bar_class}" style="height:{height_pct:.1f}%"></div>'
+            '</div>'
+            f'<div class="allocation-target-tower-label">{escape(item["short_label"])}</div>'
+            f'<div class="allocation-target-tower-money">{escape(gain_text)}</div>'
+            '</div>'
+        )
+
+    return (
+        '<div class="allocation-target-towers-title">Mini grafico target</div>'
+        '<div class="allocation-target-towers">'
+        + "".join(bars)
+        + '</div>'
+    )
+
+
+def _render_target_block(row, target_item: dict | None) -> str:
+    scenarios = _build_target_scenarios(row, target_item)
+    chips_html = _render_target_chips(scenarios)
+    towers_html = _render_target_towers(scenarios)
+    return (
+        '<div class="allocation-target-block">'
+        '<div class="allocation-target-block-title">Target analisti · impatto posizione</div>'
+        + chips_html
+        + towers_html
+        + '<div class="allocation-target-note">€ stimati = (target - prezzo attuale) × quantità × cambio EUR</div>'
+        '</div>'
+    )
 
 
 def render_summary_cards(metrics: dict) -> None:
@@ -59,12 +253,12 @@ def render_position_weight_list(position_allocation) -> None:
         html = (
             '<div class="allocation-weight-row">'
             '<div>'
-            f'<div class="allocation-weight-title">{row["titolo"]}</div>'
-            f'<div class="allocation-weight-subtitle">{display_symbol} · {row["valuta"]}</div>'
+            f'<div class="allocation-weight-title">{escape(str(row["titolo"]))}</div>'
+            f'<div class="allocation-weight-subtitle">{escape(display_symbol)} · {escape(str(row["valuta"]))}</div>'
             '</div>'
             '<div class="allocation-weight-values">'
-            f'<div>{fmt_pct(row["weight_pct"])}</div>'
-            f'<div>{fmt_eur(row["value_eur"])} EUR</div>'
+            f'<div>{escape(fmt_pct(row["weight_pct"]))}</div>'
+            f'<div>{escape(fmt_eur(row["value_eur"]))} EUR</div>'
             '</div>'
             '</div>'
         )
@@ -74,6 +268,7 @@ def render_position_weight_list(position_allocation) -> None:
 def render_concentration_heatmap(position_allocation) -> None:
     st.markdown('<div class="allocation-section-title">Mappa concentrazione</div>', unsafe_allow_html=True)
 
+    targets = load_user_targets_map()
     cols_per_row = 3
     for start in range(0, len(position_allocation), cols_per_row):
         cols = st.columns(cols_per_row)
@@ -81,20 +276,30 @@ def render_concentration_heatmap(position_allocation) -> None:
             css_class = concentration_class(row["weight_pct"])
             label = concentration_label(row["weight_pct"])
             display_symbol = _allocation_display_symbol(row)
+            target_item = _target_item_for_row(row, targets)
+            target_html = _render_target_block(row, target_item)
             html = (
-                f'<div class="allocation-heat-card {css_class}">'
-                f'<div class="allocation-heat-title">{row["titolo"]}</div>'
-                f'<div class="allocation-heat-label">{display_symbol} · {row["valuta"]}</div>'
-                f'<div class="allocation-heat-weight">{fmt_pct(row["weight_pct"])}</div>'
-                f'<div class="allocation-heat-label">{label}</div>'
+                f'<div class="allocation-heat-card allocation-heat-card-targets {css_class}">'
+                '<div class="allocation-heat-header">'
+                '<div>'
+                f'<div class="allocation-heat-title">{escape(str(row["titolo"]))}</div>'
+                f'<div class="allocation-heat-label">{escape(display_symbol)} · {escape(str(row["valuta"]))}</div>'
                 '</div>'
+                '<div class="allocation-heat-values">'
+                f'<div class="allocation-heat-weight">{escape(fmt_pct(row["weight_pct"]))}</div>'
+                f'<div class="allocation-heat-value-eur">{escape(fmt_eur(row["value_eur"]))} €</div>'
+                '</div>'
+                '</div>'
+                f'<div class="allocation-heat-label allocation-heat-risk-label">{escape(label)}</div>'
+                + target_html
+                + '</div>'
             )
             with col:
                 st.markdown(html, unsafe_allow_html=True)
 
 
 def render_insights(insights: list[str]) -> None:
-    items = "".join(f"<li>{item}</li>" for item in insights)
+    items = "".join(f"<li>{escape(str(item))}</li>" for item in insights)
     html = (
         '<div class="allocation-insights-box">'
         '<div class="allocation-insights-title">🧠 Insight allocazione</div>'
@@ -117,9 +322,9 @@ def render_desktop_allocation_dashboard(position_allocation, currency_allocation
         render_position_weight_list(position_allocation)
 
     st.plotly_chart(create_position_bar(position_allocation), use_container_width=True)
-    st.plotly_chart(create_group_bar(market_allocation, "mercato", "Allocazione per mercato"), use_container_width=True)
 
     render_concentration_heatmap(position_allocation)
+
 
 def render_mobile_allocation_dashboard(position_allocation, currency_allocation, market_allocation, metrics, insights) -> None:
     """Compact mobile view.
@@ -130,3 +335,4 @@ def render_mobile_allocation_dashboard(position_allocation, currency_allocation,
     render_summary_cards(metrics)
     render_position_weight_list(position_allocation)
     st.plotly_chart(create_position_bar(position_allocation, mobile=True), use_container_width=True, config={"displayModeBar": False})
+    render_concentration_heatmap(position_allocation)
