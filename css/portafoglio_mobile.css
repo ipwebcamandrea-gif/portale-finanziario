@@ -483,3 +483,201 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
         column-gap: 0.24rem;
     }
 }
+
+/* ========================= PORTFOLIO MOBILE TARGET TOWERS CARD =========================
+   Nuova sezione Target Analisti solo nella card Portafoglio mobile.
+   Sostituisce il vecchio elenco "Target da carico" con mini card + grafico a torri.
+*/
+.portfolio-mobile-target-modern-box {
+    margin: 0.08rem 0 0.78rem 0;
+    padding: 0.72rem 0.70rem 0.68rem 0.70rem;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 176, 255, 0.32);
+    background: rgba(13, 17, 23, 0.36);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+.portfolio-mobile-target-modern-title {
+    color: #f9fafb;
+    font-size: 0.76rem;
+    font-weight: 950;
+    line-height: 1.16;
+    margin-bottom: 0.55rem;
+    letter-spacing: -0.01em;
+}
+
+.portfolio-mobile-target-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.34rem;
+    margin-bottom: 0.72rem;
+}
+
+.portfolio-mobile-target-chip {
+    min-width: 0;
+    padding: 0.46rem 0.35rem;
+    border-radius: 12px;
+    border: 1px solid rgba(48, 54, 61, 0.72);
+    background: rgba(13, 17, 23, 0.44);
+}
+
+.portfolio-mobile-target-chip-label {
+    color: #9ec5ff;
+    font-size: 0.55rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    margin-bottom: 0.16rem;
+}
+
+.portfolio-mobile-target-chip-price {
+    color: #f9fafb;
+    font-size: 0.70rem;
+    font-weight: 950;
+    line-height: 1.06;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.portfolio-mobile-target-chip-pct,
+.portfolio-mobile-target-chip-money {
+    font-size: 0.58rem;
+    font-weight: 950;
+    line-height: 1.10;
+    margin-top: 0.12rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.portfolio-mobile-target-modern-positive { color: #22c55e !important; }
+.portfolio-mobile-target-modern-negative { color: #ef4444 !important; }
+.portfolio-mobile-target-modern-neutral { color: #9fb3d1 !important; }
+
+.portfolio-mobile-target-towers-title {
+    color: #cfe7ff;
+    font-size: 0.68rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0.18rem 0 0.42rem 0;
+}
+
+.portfolio-mobile-target-towers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.30rem;
+    align-items: end;
+    min-height: 154px;
+    padding: 0.42rem 0.20rem 0.12rem 0.20rem;
+    border-radius: 14px;
+    border: 1px solid rgba(48, 54, 61, 0.58);
+    background: rgba(13, 17, 23, 0.32);
+}
+
+.portfolio-mobile-target-tower-item {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.portfolio-mobile-target-tower-value {
+    color: #f9fafb;
+    font-size: 0.55rem;
+    font-weight: 950;
+    min-height: 1.08rem;
+    white-space: nowrap;
+}
+
+.portfolio-mobile-target-tower-track {
+    width: 100%;
+    height: 82px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-bottom: 1px solid rgba(139, 211, 255, 0.20);
+    margin: 0.14rem 0 0.18rem 0;
+}
+
+.portfolio-mobile-target-tower-bar {
+    width: 54%;
+    max-width: 34px;
+    min-height: 8px;
+    border-radius: 8px 8px 2px 2px;
+    background: linear-gradient(180deg, #7cc7ff 0%, #4aa3ff 100%);
+    box-shadow: 0 0 10px rgba(124, 199, 255, 0.18);
+}
+
+.portfolio-mobile-target-tower-bar-current {
+    background: linear-gradient(180deg, #78dbff 0%, #43c5f5 100%);
+}
+
+.portfolio-mobile-target-tower-bar-target {
+    background: linear-gradient(180deg, #93c5fd 0%, #60a5fa 100%);
+}
+
+.portfolio-mobile-target-tower-bar-negative {
+    background: linear-gradient(180deg, #fca5a5 0%, #ef4444 100%);
+}
+
+.portfolio-mobile-target-tower-label {
+    color: #f9fafb;
+    font-size: 0.58rem;
+    font-weight: 950;
+    line-height: 1.05;
+}
+
+.portfolio-mobile-target-tower-money {
+    color: #9ec5ff;
+    font-size: 0.50rem;
+    font-weight: 900;
+    min-height: 0.78rem;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.portfolio-mobile-target-modern-note {
+    color: #9fb3d1;
+    font-size: 0.54rem;
+    font-weight: 850;
+    line-height: 1.20;
+    margin-top: 0.46rem;
+}
+
+@media screen and (max-width: 390px) {
+    .portfolio-mobile-target-modern-box {
+        padding-left: 0.56rem;
+        padding-right: 0.56rem;
+    }
+
+    .portfolio-mobile-target-chip-grid {
+        gap: 0.22rem;
+    }
+
+    .portfolio-mobile-target-chip {
+        padding: 0.40rem 0.22rem;
+    }
+
+    .portfolio-mobile-target-chip-price {
+        font-size: 0.63rem;
+    }
+
+    .portfolio-mobile-target-chip-pct,
+    .portfolio-mobile-target-chip-money {
+        font-size: 0.52rem;
+    }
+
+    .portfolio-mobile-target-towers {
+        gap: 0.18rem;
+    }
+
+    .portfolio-mobile-target-tower-value {
+        font-size: 0.49rem;
+    }
+
+    .portfolio-mobile-target-tower-money {
+        font-size: 0.46rem;
+    }
+}
