@@ -653,10 +653,15 @@ def _sma200_attention_note(dist_pct, hist_min_w_pct=None):
     return ""
 
 
+def _render_text_lines_html(value):
+    lines = [str(line).strip() for line in str(value or "").splitlines() if str(line).strip()]
+    return "<br>".join(escape(line) for line in lines)
+
+
 def _cell_html_with_subvalue(label, value, subvalue="", css_class="tv-cell-value"):
     html = cell_html(label, value, css_class)
     if subvalue:
-        html += f'<div class="tv-cell-subvalue">{escape(subvalue)}</div>'
+        html += f'<div class="tv-cell-subvalue">{_render_text_lines_html(subvalue)}</div>'
     return html
 
 
@@ -686,24 +691,25 @@ def _format_hist_sma_price(value, currency=""):
     return formatta_prezzo(value, currency)
 
 
-def _format_hist_sma_item(label, pct_value, date_value, price_value=None, currency=""):
+def _format_hist_sma_item(label, pct_value, date_value, price_label="", price_value=None, currency=""):
     pct = _format_hist_sma_pct(pct_value)
     if not pct:
         return ""
     price_text = _format_hist_sma_price(price_value, currency)
-    price_part = f" @ {price_text}" if price_text else ""
+    price_part = f" · {price_label} {price_text}" if price_text and price_label else ""
     date_text = _format_hist_sma_date(date_value)
     suffix = f" ({date_text})" if date_text else ""
     return f"{label} {pct}{price_part}{suffix}"
 
 
-def _sma200_history_label(metrics):
+def _sma200_history_lines(metrics):
     parts = []
     currency = metrics.get("currency") or ""
     hist_min = _format_hist_sma_item(
         "Hist Min W",
         metrics.get("hist_min_w_pct"),
         metrics.get("hist_min_w_date"),
+        "Low",
         metrics.get("hist_min_w_low"),
         currency,
     )
@@ -711,6 +717,7 @@ def _sma200_history_label(metrics):
         "Hist Max W",
         metrics.get("hist_max_w_pct"),
         metrics.get("hist_max_w_date"),
+        "High",
         metrics.get("hist_max_w_high"),
         currency,
     )
@@ -718,16 +725,21 @@ def _sma200_history_label(metrics):
         parts.append(hist_min)
     if hist_max:
         parts.append(hist_max)
-    return " · ".join(parts)
+    return parts
+
+
+def _sma200_history_label(metrics):
+    return "\n".join(_sma200_history_lines(metrics))
 
 
 def _compact_sma200_history_html(metrics):
-    history_text = _sma200_history_label(metrics)
-    if not history_text:
+    history_lines = _sma200_history_lines(metrics)
+    if not history_lines:
         return ""
+    history_html = "<br>".join(escape(line) for line in history_lines)
     return (
         '<span class="tv-compact-separator">•</span>'
-        f'<span class="tv-sma-estimate">{escape(history_text)}</span>'
+        f'<span class="tv-sma-estimate">{history_html}</span>'
     )
 
 
