@@ -417,26 +417,39 @@ def _format_hist_sma_date(value):
     return text[:10]
 
 
-def _format_hist_sma_item(label, pct_value, date_value):
+def _format_hist_sma_price(value, currency=""):
+    if value is None:
+        return ""
+    return formatta_prezzo(value, currency)
+
+
+def _format_hist_sma_item(label, pct_value, date_value, price_value=None, currency=""):
     pct = _format_hist_sma_pct(pct_value)
     if not pct:
         return ""
+    price_text = _format_hist_sma_price(price_value, currency)
+    price_part = f" @ {price_text}" if price_text else ""
     date_text = _format_hist_sma_date(date_value)
     suffix = f" ({date_text})" if date_text else ""
-    return f"{label} {pct}{suffix}"
+    return f"{label} {pct}{price_part}{suffix}"
 
 
 def _sma200_history_label(metrics):
     parts = []
+    currency = metrics.get("currency") or ""
     hist_min = _format_hist_sma_item(
         "Hist Min W",
         metrics.get("hist_min_w_pct"),
         metrics.get("hist_min_w_date"),
+        metrics.get("hist_min_w_low"),
+        currency,
     )
     hist_max = _format_hist_sma_item(
         "Hist Max W",
         metrics.get("hist_max_w_pct"),
         metrics.get("hist_max_w_date"),
+        metrics.get("hist_max_w_high"),
+        currency,
     )
     if hist_min:
         parts.append(hist_min)
