@@ -172,7 +172,9 @@ def get_stock_metrics(symbol):
 
 
 def is_in_sma200_zone(dist_pct):
-    return dist_pct is not None and -10 <= dist_pct <= 10
+    # Attenzione SMA200W: in zona ±10% oppure sotto la SMA200W oltre la zona.
+    # In pratica: tutte le distanze <= +10% sono evidenziate.
+    return dist_pct is not None and dist_pct <= 10
 
 
 def watchlist_has_sma200_zone(name):
