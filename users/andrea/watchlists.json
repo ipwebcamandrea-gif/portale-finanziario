@@ -55,6 +55,8 @@
             "UCG.MI",
             "ENI.MI"
         ],
-        "TEST": []
+        "TEST": [
+            "PLTR"
+        ]
     }
 }
