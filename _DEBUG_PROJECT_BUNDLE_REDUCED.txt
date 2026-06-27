@@ -8070,7 +8070,7 @@ from utils.portfolio_target_metrics import load_user_targets_map
 
 
 TARGET_FIELDS = (
-    ("current", "Att.", "Prezzo attuale"),
+    ("cost_basis", "Carico", "Prezzo di carico"),
     ("target_low", "Min", "Target minimo"),
     ("target_mean", "Med", "Target medio"),
     ("target_high", "Max", "Target massimo"),
@@ -8177,25 +8177,22 @@ def _fx_to_eur(row, currency: str) -> float | None:
 
 def _build_target_scenarios(row, target_item: dict | None) -> list[dict]:
     currency = _key(row.get("valuta"))
-    current = _safe_float(row.get("prezzo_mercato"))
+    cost_basis = _safe_float(row.get("prezzo_medio"))
     quantity = _safe_float(row.get("quantita"), 0.0) or 0.0
     fx = _fx_to_eur(row, currency)
 
-    if current is None or current <= 0:
-        current = _safe_float((target_item or {}).get("current_price"))
-
     scenarios: list[dict] = []
     for field, short_label, label in TARGET_FIELDS:
-        if field == "current":
-            value = current
+        if field == "cost_basis":
+            value = cost_basis
         else:
             value = _safe_float((target_item or {}).get(field))
 
         if value is None or value <= 0:
             continue
 
-        pct = ((value - current) / current * 100.0) if current and current > 0 and field != "current" else None
-        gain_eur = ((value - current) * quantity * fx) if current and quantity > 0 and fx and field != "current" else None
+        pct = ((value - cost_basis) / cost_basis * 100.0) if cost_basis and cost_basis > 0 and field != "cost_basis" else None
+        gain_eur = ((value - cost_basis) * quantity * fx) if cost_basis and quantity > 0 and fx and field != "cost_basis" else None
 
         scenarios.append(
             {
@@ -8223,9 +8220,9 @@ def _render_target_chips(scenarios: list[dict]) -> str:
 
     chips = []
     for item in scenarios:
-        is_current = item["field"] == "current"
+        is_current = item["field"] == "cost_basis"
         pct_html = "prezzo" if is_current else _format_signed_pct(item.get("pct"))
-        eur_html = "attuale" if is_current else _format_signed_eur(item.get("gain_eur"))
+        eur_html = "carico" if is_current else _format_signed_eur(item.get("gain_eur"))
         css_class = "allocation-target-neutral" if is_current else (
             "allocation-target-positive" if (item.get("gain_eur") or 0) >= 0 else "allocation-target-negative"
         )
@@ -8252,7 +8249,7 @@ def _render_target_towers(scenarios: list[dict]) -> str:
     for item in scenarios:
         value = _safe_float(item.get("value"), 0.0) or 0.0
         height_pct = max(12.0, min(100.0, value / max_value * 100.0))
-        is_current = item["field"] == "current"
+        is_current = item["field"] == "cost_basis"
         bar_class = "allocation-target-current-bar" if is_current else "allocation-target-scenario-bar"
         if not is_current and item.get("gain_eur") is not None and item["gain_eur"] < 0:
             bar_class += " allocation-target-negative-bar"
@@ -8285,7 +8282,7 @@ def _render_target_block(row, target_item: dict | None) -> str:
         '<div class="allocation-target-block-title">Target analisti · impatto posizione</div>'
         + chips_html
         + towers_html
-        + '<div class="allocation-target-note">€ stimati = (target - prezzo attuale) × quantità × cambio EUR</div>'
+        + '<div class="allocation-target-note">€ stimati = (target - prezzo di carico) × quantità × cambio EUR</div>'
         '</div>'
     )
 
@@ -11389,14 +11386,11 @@ def _signed_money_eur(value: float | None) -> str:
     return sign + fmt_num(float(value), 2) + " €"
 
 
-def _mobile_current_price(row: pd.Series, target_item: dict | None) -> float | None:
-    current = _safe_float(row.get("prezzo_mercato"))
-    if current is not None and current > 0:
-        return current
-    if target_item:
-        current = _safe_float(target_item.get("current_price"))
-        if current is not None and current > 0:
-            return current
+def _mobile_cost_basis_price(row: pd.Series, target_item: dict | None = None) -> float | None:
+    """Return the user's average load price used as the target tower baseline."""
+    cost_basis = _safe_float(row.get("prezzo_medio"))
+    if cost_basis is not None and cost_basis > 0:
+        return cost_basis
     return None
 
 
@@ -11404,16 +11398,16 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
     if not target_item:
         return []
 
-    current = _mobile_current_price(row, target_item)
+    cost_basis = _mobile_cost_basis_price(row, target_item)
     quantity = _safe_float(row.get("quantita"))
     currency = _key(row.get("valuta"))
-    if current is None or current <= 0 or quantity is None or quantity <= 0:
+    if cost_basis is None or cost_basis <= 0 or quantity is None or quantity <= 0:
         return []
 
     scenarios: list[dict] = [
         {
-            "label": "ATT.",
-            "target": current,
+            "label": "CARICO",
+            "target": cost_basis,
             "gain_pct": None,
             "gain_currency": None,
             "gain_eur": None,
@@ -11427,8 +11421,8 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
         target_value = _safe_float(target_item.get(field))
         if target_value is None or target_value <= 0:
             continue
-        gain_currency = (target_value - current) * quantity
-        gain_pct = ((target_value - current) / current) * 100.0
+        gain_currency = (target_value - cost_basis) * quantity
+        gain_pct = ((target_value - cost_basis) / cost_basis) * 100.0
         fx = convert_to_eur(gain_currency, currency)
         gain_eur = _safe_float(fx.get("value")) if fx.get("ok") else None
         scenarios.append(
@@ -11449,7 +11443,7 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
 def _mobile_target_chip_html(item: dict) -> str:
     if item.get("is_current"):
         pct_text = "prezzo"
-        money_text = "attuale"
+        money_text = "carico"
         value_css = "portfolio-mobile-target-modern-neutral"
     else:
         pct_text = _signed_pct(item["gain_pct"])
