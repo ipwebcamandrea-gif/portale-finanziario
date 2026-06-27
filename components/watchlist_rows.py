@@ -15,7 +15,6 @@ from utils.market_data import (
     get_stock_metrics,
     is_in_sma200_zone,
 )
-from utils.sma200_estimates import get_sma200_estimate_label
 from utils.watchlist_storage import salva_sessione_su_disco
 from utils.target_symbol_resolver import resolve_target_symbol, tradingview_chart_url
 
@@ -381,7 +380,7 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
-# SMA200W: STIME FISSE E STATO ATTENZIONE
+# SMA200W: STORICO WEEKLY E STATO ATTENZIONE
 # =========================
 
 def _sma200_attention_note(dist_pct):
@@ -399,13 +398,31 @@ def _cell_html_with_subvalue(label, value, subvalue="", css_class="tv-cell-value
     return html
 
 
-def _compact_sma200_estimate_html(symbol):
-    estimate_text = get_sma200_estimate_label(symbol)
-    if not estimate_text:
+def _format_hist_sma_pct(value):
+    if value is None:
+        return ""
+    sign = "+" if value >= 0 else ""
+    return f"{sign}{value:.1f}%"
+
+
+def _sma200_history_label(metrics):
+    hist_min = _format_hist_sma_pct(metrics.get("hist_min_w_pct"))
+    hist_max = _format_hist_sma_pct(metrics.get("hist_max_w_pct"))
+    parts = []
+    if hist_min:
+        parts.append("Hist Min W " + hist_min)
+    if hist_max:
+        parts.append("Hist Max W " + hist_max)
+    return " · ".join(parts)
+
+
+def _compact_sma200_history_html(metrics):
+    history_text = _sma200_history_label(metrics)
+    if not history_text:
         return ""
     return (
         '<span class="tv-compact-separator">•</span>'
-        f'<span class="tv-sma-estimate">{escape(estimate_text)}</span>'
+        f'<span class="tv-sma-estimate">{escape(history_text)}</span>'
     )
 
 
@@ -448,7 +465,7 @@ def render_row_streamlit(symbol, metrics, current):
     dist_class = classe_zona_sma(dist_pct)
     in_zone = is_in_sma200_zone(dist_pct)
     zone_note = _sma200_attention_note(dist_pct) if in_zone else ""
-    sma200_estimate = get_sma200_estimate_label(symbol)
+    sma200_history = _sma200_history_label(metrics)
 
     row_kind = "zone" if in_zone else "normal"
     row_key = "tv_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
@@ -486,7 +503,7 @@ def render_row_streamlit(symbol, metrics, current):
             st.markdown(cell_html("Prezzo", prezzo), unsafe_allow_html=True)
 
         with row_col_3:
-            st.markdown(_cell_html_with_subvalue("SMA 200W", sma200w_testo, sma200_estimate), unsafe_allow_html=True)
+            st.markdown(_cell_html_with_subvalue("SMA 200W", sma200w_testo, sma200_history), unsafe_allow_html=True)
 
         with row_col_4:
             st.markdown(cell_html("Distanza SMA200W", distanza, dist_class), unsafe_allow_html=True)
@@ -564,7 +581,7 @@ def render_row_compact(symbol, metrics, current):
         '<span class="tv-compact-separator">•</span>'
         f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
     )
-    sma200_estimate_html = _compact_sma200_estimate_html(symbol)
+    sma200_history_html = _compact_sma200_history_html(metrics)
 
     price_separator_html = '<span class="tv-compact-separator">•</span>'
 
@@ -586,7 +603,7 @@ def render_row_compact(symbol, metrics, current):
         '<div class="tv-compact-meta-left">'
         f'<span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>'
         f'{dist_html}'
-        f'{sma200_estimate_html}'
+        f'{sma200_history_html}'
         '</div>'
         '</div>'
         '</div>'
