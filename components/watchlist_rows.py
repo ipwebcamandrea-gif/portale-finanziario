@@ -14,6 +14,7 @@ from utils.formatting import (
 from utils.market_data import (
     get_stock_metrics,
     is_in_sma200_zone,
+    sma200_hist_min_gap,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
 from utils.target_symbol_resolver import resolve_target_symbol, tradingview_chart_url
@@ -383,12 +384,10 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 # SMA200W: STORICO WEEKLY E STATO ATTENZIONE
 # =========================
 
-def _sma200_attention_note(dist_pct):
-    if dist_pct is None or dist_pct > 10:
-        return ""
-    if dist_pct < -10:
-        return "Sotto SMA200W"
-    return "Zona SMA200W"
+def _sma200_attention_note(dist_pct, hist_min_w_pct=None):
+    if is_in_sma200_zone(dist_pct, hist_min_w_pct):
+        return "Vicino minimo storico SMA200W"
+    return ""
 
 
 def _cell_html_with_subvalue(label, value, subvalue="", css_class="tv-cell-value"):
@@ -434,15 +433,23 @@ def sort_rows_for_compact(rows):
     def sort_key(item):
         symbol, metrics = item
         dist_pct = metrics.get("dist_pct")
+        hist_min_w_pct = metrics.get("hist_min_w_pct")
 
         if dist_pct is None:
-            return (1, float("inf"), str(symbol))
+            return (4, float("inf"), str(symbol))
 
-        # Vista compatta/mobile: ordine naturale rispetto alla SMA200W.
-        # Prima i titoli piu sotto la SMA200W, poi quelli vicini,
-        # poi quelli piu sopra la SMA200W.
-        # Desktop invariato: mantiene l'ordine manuale della watchlist.
-        return (0, dist_pct, str(symbol))
+        gap = sma200_hist_min_gap(dist_pct, hist_min_w_pct)
+        if gap is not None and dist_pct <= -10:
+            # Vista compatta/mobile: prima i titoli davvero vicini al proprio
+            # minimo storico sotto SMA200W, poi gli altri sotto SMA200W ordinati
+            # dalla distanza piu vicina alla distanza storica.
+            proximity_group = 0 if is_in_sma200_zone(dist_pct, hist_min_w_pct) else 1
+            return (proximity_group, gap, dist_pct, str(symbol))
+
+        if dist_pct < 0:
+            return (2, abs(dist_pct), str(symbol))
+
+        return (3, dist_pct, str(symbol))
 
     return sorted(rows, key=sort_key)
 
@@ -463,8 +470,8 @@ def render_row_streamlit(symbol, metrics, current):
 
     daily_class = classe_percentuale(daily_pct)
     dist_class = classe_zona_sma(dist_pct)
-    in_zone = is_in_sma200_zone(dist_pct)
-    zone_note = _sma200_attention_note(dist_pct) if in_zone else ""
+    in_zone = is_in_sma200_zone(dist_pct, metrics.get("hist_min_w_pct"))
+    zone_note = _sma200_attention_note(dist_pct, metrics.get("hist_min_w_pct")) if in_zone else ""
     sma200_history = _sma200_history_label(metrics)
 
     row_kind = "zone" if in_zone else "normal"
@@ -563,7 +570,7 @@ def render_row_compact(symbol, metrics, current):
     daily_class = classe_percentuale(daily_pct)
     dist_class = classe_zona_sma(dist_pct)
 
-    in_zone = is_in_sma200_zone(dist_pct)
+    in_zone = is_in_sma200_zone(dist_pct, metrics.get("hist_min_w_pct"))
     row_kind = "zone" if in_zone else "normal"
     row_key = "tv_compact_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
 
