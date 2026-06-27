@@ -118,6 +118,8 @@ def get_stock_metrics(symbol):
 
         sma200 = None
         dist_pct = None
+        hist_min_w_pct = None
+        hist_max_w_pct = None
 
         try:
             weekly = yf.download(yf_symbol, period="10y", interval="1wk", auto_adjust=False, progress=False, threads=False)
@@ -132,10 +134,37 @@ def get_stock_metrics(symbol):
                         last_price = valore_float_sicuro(weekly["Close"].iloc[-1])
 
                     if len(weekly) >= 200:
-                        sma200 = valore_float_sicuro(weekly["Close"].rolling(200).mean().iloc[-1])
+                        sma200_series = weekly["Close"].rolling(200).mean()
+                        sma200 = valore_float_sicuro(sma200_series.iloc[-1])
 
                         if sma200 is not None and sma200 != 0 and last_price is not None:
                             dist_pct = ((last_price - sma200) / sma200) * 100
+
+                        # Estremi storici weekly rispetto alla SMA200W.
+                        # Hist Min W: massimo recupero necessario dal Low weekly alla SMA200W,
+                        # mostrato con segno negativo nella UI.
+                        # Hist Max W: massima estensione dall'SMA200W all'High weekly.
+                        if "Low" in weekly.columns and "High" in weekly.columns:
+                            hist_source = weekly.copy()
+                            hist_source["SMA200W"] = sma200_series
+                            hist_source = hist_source.dropna(subset=["Low", "High", "SMA200W"])
+                            hist_source = hist_source[
+                                (hist_source["Low"] > 0) &
+                                (hist_source["High"] > 0) &
+                                (hist_source["SMA200W"] > 0)
+                            ]
+
+                            below_sma = hist_source[hist_source["Low"] < hist_source["SMA200W"]]
+                            if not below_sma.empty:
+                                min_to_sma = ((below_sma["SMA200W"] - below_sma["Low"]) / below_sma["Low"]) * 100
+                                max_recovery = valore_float_sicuro(min_to_sma.max())
+                                if max_recovery is not None:
+                                    hist_min_w_pct = -max_recovery
+
+                            above_sma = hist_source[hist_source["High"] > hist_source["SMA200W"]]
+                            if not above_sma.empty:
+                                sma_to_max = ((above_sma["High"] - above_sma["SMA200W"]) / above_sma["SMA200W"]) * 100
+                                hist_max_w_pct = valore_float_sicuro(sma_to_max.max())
         except Exception:
             pass
 
@@ -151,6 +180,8 @@ def get_stock_metrics(symbol):
             "daily_change_pct": daily_change_pct,
             "sma200w": sma200,
             "dist_pct": dist_pct,
+            "hist_min_w_pct": hist_min_w_pct,
+            "hist_max_w_pct": hist_max_w_pct,
             "currency": currency or "",
             "name": short_name or long_name or "",
             "short_name": short_name or "",
@@ -164,6 +195,8 @@ def get_stock_metrics(symbol):
             "daily_change_pct": None,
             "sma200w": None,
             "dist_pct": None,
+            "hist_min_w_pct": None,
+            "hist_max_w_pct": None,
             "currency": "",
             "name": "",
             "short_name": "",
