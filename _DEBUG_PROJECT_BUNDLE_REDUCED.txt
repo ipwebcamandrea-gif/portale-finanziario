@@ -9360,7 +9360,7 @@ def get_stock_metrics(symbol):
         hist_max_w_pct = None
 
         try:
-            weekly = yf.download(yf_symbol, period="10y", interval="1wk", auto_adjust=False, progress=False, threads=False)
+            weekly = yf.download(yf_symbol, period="20y", interval="1wk", auto_adjust=False, progress=False, threads=False)
 
             if weekly is not None and not weekly.empty:
                 weekly = normalizza_dataframe_yfinance(weekly)
