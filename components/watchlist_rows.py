@@ -421,7 +421,11 @@ def sort_rows_for_compact(rows):
         if dist_pct is None:
             return (1, float("inf"), str(symbol))
 
-        return (0, abs(dist_pct), str(symbol))
+        # Vista compatta/mobile: ordine naturale rispetto alla SMA200W.
+        # Prima i titoli piu sotto la SMA200W, poi quelli vicini,
+        # poi quelli piu sopra la SMA200W.
+        # Desktop invariato: mantiene l'ordine manuale della watchlist.
+        return (0, dist_pct, str(symbol))
 
     return sorted(rows, key=sort_key)
 
