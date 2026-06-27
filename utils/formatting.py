@@ -35,7 +35,9 @@ def classe_percentuale(value):
 
 
 def classe_zona_sma(value):
-    if value is not None and -10 <= value <= 10:
+    # Evidenzia in arancione sia la zona operativa ±10% sia tutto ciò che è sotto SMA200W.
+    # Quindi resta normale solo sopra +10%.
+    if value is not None and value <= 10:
         return "tv-zone-text-inline"
 
     return classe_percentuale(value)
