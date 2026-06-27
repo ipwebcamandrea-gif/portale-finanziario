@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "ETF",
+    "active_watchlist": "TLI TOP 10",
     "watchlists": {
         "MEGA CAP USA": [
             "SWDA.MI",
@@ -35,11 +35,6 @@
             "AXP",
             "AMZN",
             "CRM"
-        ],
-        "ETF": [
-            "SWDA.MI",
-            "ACWI",
-            "SPY"
         ],
         "TLI TOP 10": [
             "ZETA",
