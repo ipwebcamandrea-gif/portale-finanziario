@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "MEGA  CAP  SU ITA",
+    "active_watchlist": "ETF",
     "watchlists": {
         "MEGA CAP USA": [
             "SWDA.MI",
@@ -35,10 +35,6 @@
             "AXP",
             "AMZN",
             "CRM"
-        ],
-        "MEGA  CAP  SU ITA": [
-            "1MSFT.MI",
-            "1AMZN.MI"
         ],
         "ETF": [
             "SWDA.MI",
