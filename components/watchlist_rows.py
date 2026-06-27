@@ -428,7 +428,27 @@ def _format_hist_sma_price(value, currency=""):
     return formatta_prezzo(value, currency)
 
 
-def _format_hist_sma_item(label, pct_value, date_value, price_label="", price_value=None, currency=""):
+def _hist_equivalent_current_price(sma200w, pct_value):
+    """Return the price that would reproduce the historical % gap on today's SMA200W."""
+    try:
+        sma_value = float(sma200w)
+        pct = float(pct_value)
+    except Exception:
+        return None
+    if sma_value <= 0:
+        return None
+    return sma_value * (1 + pct / 100)
+
+
+def _format_hist_sma_item(
+    label,
+    pct_value,
+    date_value,
+    price_label="",
+    price_value=None,
+    currency="",
+    equivalent_value=None,
+):
     pct = _format_hist_sma_pct(pct_value)
     if not pct:
         return ""
@@ -436,27 +456,36 @@ def _format_hist_sma_item(label, pct_value, date_value, price_label="", price_va
     price_part = f" · {price_label} {price_text}" if price_text and price_label else ""
     date_text = _format_hist_sma_date(date_value)
     suffix = f" ({date_text})" if date_text else ""
-    return f"{label} {pct}{price_part}{suffix}"
+    equivalent_text = _format_hist_sma_price(equivalent_value, currency)
+    equivalent_part = f" · Eq oggi {equivalent_text}" if equivalent_text else ""
+    return f"{label} {pct}{price_part}{suffix}{equivalent_part}"
 
 
 def _sma200_history_lines(metrics):
     parts = []
     currency = metrics.get("currency") or ""
+    sma200w = metrics.get("sma200w")
+    hist_min_pct = metrics.get("hist_min_w_pct")
+    hist_max_pct = metrics.get("hist_max_w_pct")
+    hist_min_equivalent = _hist_equivalent_current_price(sma200w, hist_min_pct)
+    hist_max_equivalent = _hist_equivalent_current_price(sma200w, hist_max_pct)
     hist_min = _format_hist_sma_item(
         "Hist Min W",
-        metrics.get("hist_min_w_pct"),
+        hist_min_pct,
         metrics.get("hist_min_w_date"),
         "Low",
         metrics.get("hist_min_w_low"),
         currency,
+        hist_min_equivalent,
     )
     hist_max = _format_hist_sma_item(
         "Hist Max W",
-        metrics.get("hist_max_w_pct"),
+        hist_max_pct,
         metrics.get("hist_max_w_date"),
         "High",
         metrics.get("hist_max_w_high"),
         currency,
+        hist_max_equivalent,
     )
     if hist_min:
         parts.append(hist_min)
