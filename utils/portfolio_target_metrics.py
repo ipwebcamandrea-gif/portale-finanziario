@@ -149,14 +149,11 @@ def _signed_money_eur(value: float | None) -> str:
     return sign + fmt_num(float(value), 2) + " €"
 
 
-def _mobile_current_price(row: pd.Series, target_item: dict | None) -> float | None:
-    current = _safe_float(row.get("prezzo_mercato"))
-    if current is not None and current > 0:
-        return current
-    if target_item:
-        current = _safe_float(target_item.get("current_price"))
-        if current is not None and current > 0:
-            return current
+def _mobile_cost_basis_price(row: pd.Series, target_item: dict | None = None) -> float | None:
+    """Return the user's average load price used as the target tower baseline."""
+    cost_basis = _safe_float(row.get("prezzo_medio"))
+    if cost_basis is not None and cost_basis > 0:
+        return cost_basis
     return None
 
 
@@ -164,16 +161,16 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
     if not target_item:
         return []
 
-    current = _mobile_current_price(row, target_item)
+    cost_basis = _mobile_cost_basis_price(row, target_item)
     quantity = _safe_float(row.get("quantita"))
     currency = _key(row.get("valuta"))
-    if current is None or current <= 0 or quantity is None or quantity <= 0:
+    if cost_basis is None or cost_basis <= 0 or quantity is None or quantity <= 0:
         return []
 
     scenarios: list[dict] = [
         {
-            "label": "ATT.",
-            "target": current,
+            "label": "CARICO",
+            "target": cost_basis,
             "gain_pct": None,
             "gain_currency": None,
             "gain_eur": None,
@@ -187,8 +184,8 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
         target_value = _safe_float(target_item.get(field))
         if target_value is None or target_value <= 0:
             continue
-        gain_currency = (target_value - current) * quantity
-        gain_pct = ((target_value - current) / current) * 100.0
+        gain_currency = (target_value - cost_basis) * quantity
+        gain_pct = ((target_value - cost_basis) / cost_basis) * 100.0
         fx = convert_to_eur(gain_currency, currency)
         gain_eur = _safe_float(fx.get("value")) if fx.get("ok") else None
         scenarios.append(
@@ -209,7 +206,7 @@ def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[d
 def _mobile_target_chip_html(item: dict) -> str:
     if item.get("is_current"):
         pct_text = "prezzo"
-        money_text = "attuale"
+        money_text = "carico"
         value_css = "portfolio-mobile-target-modern-neutral"
     else:
         pct_text = _signed_pct(item["gain_pct"])
