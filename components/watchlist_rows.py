@@ -15,6 +15,7 @@ from utils.market_data import (
     get_stock_metrics,
     is_in_sma200_zone,
 )
+from utils.sma200_estimates import get_sma200_estimate_label
 from utils.watchlist_storage import salva_sessione_su_disco
 from utils.target_symbol_resolver import resolve_target_symbol, tradingview_chart_url
 
@@ -181,6 +182,8 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     min-width: 0;
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
+    row-gap: 0.06rem;
     overflow: hidden;
 }
 
@@ -193,6 +196,22 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
 
 .tv-compact-meta {
     color: #9fb3d1;
+}
+
+.tv-sma-estimate {
+    color: #cfe7ff;
+    font-size: 0.68rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.tv-cell-subvalue {
+    color: #cfe7ff;
+    font-size: 0.66rem;
+    font-weight: 850;
+    line-height: 1.12;
+    margin-top: 0.14rem;
+    white-space: normal;
 }
 
 .tv-compact-row-line-2 {
@@ -208,7 +227,7 @@ div[class*="st-key-tv_compact_zone_row_"]:hover {
     .tv-compact-separator { margin: 0 0.24rem; font-size: 0.64rem; }
     .tv-compact-price-block { gap: 0.34rem; }
     .tv-compact-price { font-size: 0.74rem; }
-    .tv-compact-meta, .tv-compact-dist, .tv-compact-row-line-2 { font-size: 0.64rem; }
+    .tv-compact-meta, .tv-compact-dist, .tv-sma-estimate, .tv-compact-row-line-2 { font-size: 0.64rem; }
 }
 </style>
         """,
@@ -362,6 +381,35 @@ def sposta_simbolo(nome_lista, simbolo, direzione):
 
 
 # =========================
+# SMA200W: STIME FISSE E STATO ATTENZIONE
+# =========================
+
+def _sma200_attention_note(dist_pct):
+    if dist_pct is None or dist_pct > 10:
+        return ""
+    if dist_pct < -10:
+        return "Sotto SMA200W"
+    return "Zona SMA200W"
+
+
+def _cell_html_with_subvalue(label, value, subvalue="", css_class="tv-cell-value"):
+    html = cell_html(label, value, css_class)
+    if subvalue:
+        html += f'<div class="tv-cell-subvalue">{escape(subvalue)}</div>'
+    return html
+
+
+def _compact_sma200_estimate_html(symbol):
+    estimate_text = get_sma200_estimate_label(symbol)
+    if not estimate_text:
+        return ""
+    return (
+        '<span class="tv-compact-separator">•</span>'
+        f'<span class="tv-sma-estimate">{escape(estimate_text)}</span>'
+    )
+
+
+# =========================
 # ORDINAMENTO VISTA COMPATTA
 # =========================
 
@@ -395,7 +443,8 @@ def render_row_streamlit(symbol, metrics, current):
     daily_class = classe_percentuale(daily_pct)
     dist_class = classe_zona_sma(dist_pct)
     in_zone = is_in_sma200_zone(dist_pct)
-    zone_note = "Zona SMA200W" if in_zone else ""
+    zone_note = _sma200_attention_note(dist_pct) if in_zone else ""
+    sma200_estimate = get_sma200_estimate_label(symbol)
 
     row_kind = "zone" if in_zone else "normal"
     row_key = "tv_" + row_kind + "_row_" + slug_safe(current) + "_" + slug_safe(symbol)
@@ -433,7 +482,7 @@ def render_row_streamlit(symbol, metrics, current):
             st.markdown(cell_html("Prezzo", prezzo), unsafe_allow_html=True)
 
         with row_col_3:
-            st.markdown(cell_html("SMA 200W", sma200w_testo), unsafe_allow_html=True)
+            st.markdown(_cell_html_with_subvalue("SMA 200W", sma200w_testo, sma200_estimate), unsafe_allow_html=True)
 
         with row_col_4:
             st.markdown(cell_html("Distanza SMA200W", distanza, dist_class), unsafe_allow_html=True)
@@ -511,6 +560,7 @@ def render_row_compact(symbol, metrics, current):
         '<span class="tv-compact-separator">•</span>'
         f'<span class="tv-compact-dist {dist_class}">Dist {escape(distanza)}</span>'
     )
+    sma200_estimate_html = _compact_sma200_estimate_html(symbol)
 
     price_separator_html = '<span class="tv-compact-separator">•</span>'
 
@@ -532,6 +582,7 @@ def render_row_compact(symbol, metrics, current):
         '<div class="tv-compact-meta-left">'
         f'<span class="tv-compact-meta">SMA200W {escape(sma200w_testo)}</span>'
         f'{dist_html}'
+        f'{sma200_estimate_html}'
         '</div>'
         '</div>'
         '</div>'
