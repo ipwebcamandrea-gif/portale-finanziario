@@ -404,14 +404,44 @@ def _format_hist_sma_pct(value):
     return f"{sign}{value:.1f}%"
 
 
+def _format_hist_sma_date(value):
+    if not value:
+        return ""
+    text = str(value).strip()
+    # Stored as YYYY-MM-DD by utils/market_data.py; show month/year to keep Watchlist compact.
+    if len(text) >= 7:
+        year = text[0:4]
+        month = text[5:7]
+        if year.isdigit() and month.isdigit():
+            return f"{month}/{year[2:4]}"
+    return text[:10]
+
+
+def _format_hist_sma_item(label, pct_value, date_value):
+    pct = _format_hist_sma_pct(pct_value)
+    if not pct:
+        return ""
+    date_text = _format_hist_sma_date(date_value)
+    suffix = f" ({date_text})" if date_text else ""
+    return f"{label} {pct}{suffix}"
+
+
 def _sma200_history_label(metrics):
-    hist_min = _format_hist_sma_pct(metrics.get("hist_min_w_pct"))
-    hist_max = _format_hist_sma_pct(metrics.get("hist_max_w_pct"))
     parts = []
+    hist_min = _format_hist_sma_item(
+        "Hist Min W",
+        metrics.get("hist_min_w_pct"),
+        metrics.get("hist_min_w_date"),
+    )
+    hist_max = _format_hist_sma_item(
+        "Hist Max W",
+        metrics.get("hist_max_w_pct"),
+        metrics.get("hist_max_w_date"),
+    )
     if hist_min:
-        parts.append("Hist Min W " + hist_min)
+        parts.append(hist_min)
     if hist_max:
-        parts.append("Hist Max W " + hist_max)
+        parts.append(hist_max)
     return " · ".join(parts)
 
 
