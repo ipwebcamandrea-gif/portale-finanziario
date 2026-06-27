@@ -119,7 +119,13 @@ def get_stock_metrics(symbol):
         sma200 = None
         dist_pct = None
         hist_min_w_pct = None
+        hist_min_w_date = None
+        hist_min_w_low = None
+        hist_min_w_sma = None
         hist_max_w_pct = None
+        hist_max_w_date = None
+        hist_max_w_high = None
+        hist_max_w_sma = None
 
         try:
             weekly = yf.download(yf_symbol, period="20y", interval="1wk", auto_adjust=False, progress=False, threads=False)
@@ -159,12 +165,24 @@ def get_stock_metrics(symbol):
                                 sma_to_min = ((below_sma["SMA200W"] - below_sma["Low"]) / below_sma["SMA200W"]) * 100
                                 max_drawdown_to_low = valore_float_sicuro(sma_to_min.max())
                                 if max_drawdown_to_low is not None:
+                                    min_idx = sma_to_min.idxmax()
+                                    min_row = below_sma.loc[min_idx]
                                     hist_min_w_pct = -max_drawdown_to_low
+                                    hist_min_w_date = min_idx.strftime("%Y-%m-%d") if hasattr(min_idx, "strftime") else str(min_idx)
+                                    hist_min_w_low = valore_float_sicuro(min_row.get("Low"))
+                                    hist_min_w_sma = valore_float_sicuro(min_row.get("SMA200W"))
 
                             above_sma = hist_source[hist_source["High"] > hist_source["SMA200W"]]
                             if not above_sma.empty:
                                 sma_to_max = ((above_sma["High"] - above_sma["SMA200W"]) / above_sma["SMA200W"]) * 100
-                                hist_max_w_pct = valore_float_sicuro(sma_to_max.max())
+                                hist_max_value = valore_float_sicuro(sma_to_max.max())
+                                if hist_max_value is not None:
+                                    max_idx = sma_to_max.idxmax()
+                                    max_row = above_sma.loc[max_idx]
+                                    hist_max_w_pct = hist_max_value
+                                    hist_max_w_date = max_idx.strftime("%Y-%m-%d") if hasattr(max_idx, "strftime") else str(max_idx)
+                                    hist_max_w_high = valore_float_sicuro(max_row.get("High"))
+                                    hist_max_w_sma = valore_float_sicuro(max_row.get("SMA200W"))
         except Exception:
             pass
 
@@ -181,7 +199,13 @@ def get_stock_metrics(symbol):
             "sma200w": sma200,
             "dist_pct": dist_pct,
             "hist_min_w_pct": hist_min_w_pct,
+            "hist_min_w_date": hist_min_w_date,
+            "hist_min_w_low": hist_min_w_low,
+            "hist_min_w_sma": hist_min_w_sma,
             "hist_max_w_pct": hist_max_w_pct,
+            "hist_max_w_date": hist_max_w_date,
+            "hist_max_w_high": hist_max_w_high,
+            "hist_max_w_sma": hist_max_w_sma,
             "currency": currency or "",
             "name": short_name or long_name or "",
             "short_name": short_name or "",
@@ -196,7 +220,13 @@ def get_stock_metrics(symbol):
             "sma200w": None,
             "dist_pct": None,
             "hist_min_w_pct": None,
+            "hist_min_w_date": None,
+            "hist_min_w_low": None,
+            "hist_min_w_sma": None,
             "hist_max_w_pct": None,
+            "hist_max_w_date": None,
+            "hist_max_w_high": None,
+            "hist_max_w_sma": None,
             "currency": "",
             "name": "",
             "short_name": "",
