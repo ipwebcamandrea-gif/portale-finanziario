@@ -141,9 +141,9 @@ def get_stock_metrics(symbol):
                             dist_pct = ((last_price - sma200) / sma200) * 100
 
                         # Estremi storici weekly rispetto alla SMA200W.
-                        # Hist Min W: massimo recupero necessario dal Low weekly alla SMA200W,
-                        # mostrato con segno negativo nella UI.
-                        # Hist Max W: massima estensione dall'SMA200W all'High weekly.
+                        # Hist Min W replica la logica TradingView: movimento da SMA200W a Low weekly,
+                        # usando la SMA200W come base percentuale e mostrando il risultato negativo.
+                        # Hist Max W misura l'estensione da SMA200W a High weekly, usando la SMA200W come base.
                         if "Low" in weekly.columns and "High" in weekly.columns:
                             hist_source = weekly.copy()
                             hist_source["SMA200W"] = sma200_series
@@ -156,10 +156,10 @@ def get_stock_metrics(symbol):
 
                             below_sma = hist_source[hist_source["Low"] < hist_source["SMA200W"]]
                             if not below_sma.empty:
-                                min_to_sma = ((below_sma["SMA200W"] - below_sma["Low"]) / below_sma["Low"]) * 100
-                                max_recovery = valore_float_sicuro(min_to_sma.max())
-                                if max_recovery is not None:
-                                    hist_min_w_pct = -max_recovery
+                                sma_to_min = ((below_sma["SMA200W"] - below_sma["Low"]) / below_sma["SMA200W"]) * 100
+                                max_drawdown_to_low = valore_float_sicuro(sma_to_min.max())
+                                if max_drawdown_to_low is not None:
+                                    hist_min_w_pct = -max_drawdown_to_low
 
                             above_sma = hist_source[hist_source["High"] > hist_source["SMA200W"]]
                             if not above_sma.empty:
