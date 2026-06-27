@@ -204,10 +204,31 @@ def get_stock_metrics(symbol):
         }
 
 
-def is_in_sma200_zone(dist_pct):
-    # Attenzione SMA200W: in zona ±10% oppure sotto la SMA200W oltre la zona.
-    # In pratica: tutte le distanze <= +10% sono evidenziate.
-    return dist_pct is not None and dist_pct <= 10
+SMA200_HIST_MIN_PROXIMITY_POINTS = 10.0
+SMA200_HIST_MIN_DIST_LIMIT = -10.0
+
+
+def sma200_hist_min_gap(dist_pct, hist_min_w_pct):
+    """Return distance in percentage points between current SMA distance and historical minimum distance."""
+    current = valore_float_sicuro(dist_pct)
+    hist_min = valore_float_sicuro(hist_min_w_pct)
+    if current is None or hist_min is None:
+        return None
+    return abs(current - hist_min)
+
+
+def is_in_sma200_zone(dist_pct, hist_min_w_pct=None):
+    """Return True only when a stock is close to its historical weekly SMA200W minimum.
+
+    The distance value can still be formatted as warning text, but the full orange
+    row is reserved for cases that are actually near the historical drawdown.
+    """
+    current = valore_float_sicuro(dist_pct)
+    if current is None or current > SMA200_HIST_MIN_DIST_LIMIT:
+        return False
+
+    gap = sma200_hist_min_gap(current, hist_min_w_pct)
+    return gap is not None and gap <= SMA200_HIST_MIN_PROXIMITY_POINTS
 
 
 def watchlist_has_sma200_zone(name):
@@ -216,7 +237,7 @@ def watchlist_has_sma200_zone(name):
     for symbol in symbols:
         metrics = get_stock_metrics(symbol)
 
-        if is_in_sma200_zone(metrics["dist_pct"]):
+        if is_in_sma200_zone(metrics.get("dist_pct"), metrics.get("hist_min_w_pct")):
             return True
 
     return False
