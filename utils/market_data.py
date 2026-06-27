@@ -205,7 +205,7 @@ def get_stock_metrics(symbol):
 
 
 SMA200_HIST_MIN_PROXIMITY_POINTS = 10.0
-SMA200_HIST_MIN_DIST_LIMIT = -10.0
+SMA200_HIST_MIN_DIST_LIMIT = 0.0
 
 
 def sma200_hist_min_gap(dist_pct, hist_min_w_pct):
@@ -218,13 +218,13 @@ def sma200_hist_min_gap(dist_pct, hist_min_w_pct):
 
 
 def is_in_sma200_zone(dist_pct, hist_min_w_pct=None):
-    """Return True only when a stock is close to its historical weekly SMA200W minimum.
+    """Return True when a stock is below SMA200W and close to its historical weekly SMA200W minimum.
 
     The distance value can still be formatted as warning text, but the full orange
     row is reserved for cases that are actually near the historical drawdown.
     """
     current = valore_float_sicuro(dist_pct)
-    if current is None or current > SMA200_HIST_MIN_DIST_LIMIT:
+    if current is None or current >= SMA200_HIST_MIN_DIST_LIMIT:
         return False
 
     gap = sma200_hist_min_gap(current, hist_min_w_pct)
