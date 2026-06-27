@@ -439,9 +439,9 @@ def sort_rows_for_compact(rows):
             return (4, float("inf"), str(symbol))
 
         gap = sma200_hist_min_gap(dist_pct, hist_min_w_pct)
-        if gap is not None and dist_pct <= -10:
+        if gap is not None and dist_pct < 0:
             # Vista compatta/mobile: prima i titoli davvero vicini al proprio
-            # minimo storico sotto SMA200W, poi gli altri sotto SMA200W ordinati
+            # minimo storico sotto SMA200W, poi gli altri titoli sotto SMA200W ordinati
             # dalla distanza piu vicina alla distanza storica.
             proximity_group = 0 if is_in_sma200_zone(dist_pct, hist_min_w_pct) else 1
             return (proximity_group, gap, dist_pct, str(symbol))
