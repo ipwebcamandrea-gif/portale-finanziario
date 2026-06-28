@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-26T19:40:04+00:00",
+    "updated_at": "2026-06-28T06:30:56+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -323,6 +323,23 @@
             "analyst_count": 52,
             "rating": "buy",
             "updated_at": "2026-06-26T19:40:04+00:00"
+        },
+        "ABT": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "ABT",
+            "ticker": "ABT",
+            "tv_symbol": "NYSE:ABT",
+            "name": "Abbott Laboratories",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 94.12,
+            "target_low": 92.0,
+            "target_mean": 116.54167,
+            "target_high": 135.0,
+            "analyst_count": 24,
+            "rating": "buy",
+            "updated_at": "2026-06-28T06:30:56+00:00"
         }
     }
 }
