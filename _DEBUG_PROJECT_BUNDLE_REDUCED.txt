@@ -2815,6 +2815,25 @@ div[class*="st-key-allocation_header_back"] button:hover {
   }
 }
 
+/* ========================= GLOBAL MOBILE ANTI PULL-TO-REFRESH =========================
+   Riduce il rischio che il pull-down da smartphone provochi il refresh del browser
+   e quindi la perdita della sessione Streamlit. Vale per tutto il portale.
+*/
+html,
+body,
+[data-testid="stAppViewContainer"] {
+  overscroll-behavior-y: none;
+}
+
+@media screen and (max-width: 768px) {
+  html,
+  body,
+  [data-testid="stAppViewContainer"],
+  [data-testid="stAppViewContainer"] > .main {
+    overscroll-behavior-y: none !important;
+  }
+}
+
 
 
 ====================================================================================================
@@ -5230,7 +5249,10 @@ st.markdown(
 # =========================
 
 if "authenticated" not in st.session_state:
-    logout_user()
+    # Do not call logout_user() here: after browser F5 the restore token in
+    # query params must remain available so is_authenticated() can rebuild
+    # session_state without sending the user back to login.
+    st.session_state["authenticated"] = False
 
 
 # =========================
@@ -9239,6 +9261,10 @@ def render_app_icon_meta() -> None:
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
+import json
 import time
 
 import streamlit as st
@@ -9259,6 +9285,9 @@ _AUTH_LOGIN_TS_KEY = "auth_login_ts"
 _AUTH_LAST_ACTIVITY_TS_KEY = "auth_last_activity_ts"
 _AUTH_EXPIRES_AT_TS_KEY = "auth_expires_at_ts"
 _AUTH_EXPIRED_FLAG_KEY = "auth_session_expired"
+_AUTH_RESTORE_QUERY_PARAM = "fp_auth"
+_AUTH_TOKEN_VERSION = 1
+
 
 
 # Session keys that can leak page selections/data between users if not cleared.
@@ -9287,6 +9316,162 @@ _VOLATILE_SESSION_KEYS = {
 def _now_ts() -> float:
     return time.time()
 
+def _auth_secret_key() -> bytes:
+    """Return a stable HMAC key for refresh recovery tokens.
+
+    Recommended optional secret:
+
+    [auth]
+    token_secret = "LONG_RANDOM_STRING"
+
+    Fallback uses the loaded Streamlit secrets representation so no extra setup is
+    required for the current deployment.
+    """
+    candidates = []
+    try:
+        candidates.append(str(st.secrets.get("auth_token_secret", "") or ""))
+    except Exception:
+        pass
+    try:
+        auth_section = st.secrets.get("auth", {})
+        if hasattr(auth_section, "get"):
+            candidates.append(str(auth_section.get("token_secret", "") or ""))
+    except Exception:
+        pass
+    try:
+        candidates.append(str(st.secrets))
+    except Exception:
+        pass
+
+    secret = next((item for item in candidates if item.strip()), "financeportal-local-dev-key")
+    return hashlib.sha256(secret.encode("utf-8")).digest()
+
+
+def _b64url_encode(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+
+def _b64url_decode(value: str) -> bytes:
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode((value + padding).encode("ascii"))
+
+
+def _sign_payload(payload_part: str) -> str:
+    digest = hmac.new(_auth_secret_key(), payload_part.encode("ascii"), hashlib.sha256).digest()
+    return _b64url_encode(digest)
+
+
+def _create_restore_token(user_id: str, display_name: str = "", now: float | None = None) -> str:
+    now = _now_ts() if now is None else now
+    payload = {
+        "v": _AUTH_TOKEN_VERSION,
+        "u": str(user_id or ""),
+        "d": str(display_name or user_id or ""),
+        "iat": int(now),
+        "exp": int(now + SESSION_TIMEOUT_SECONDS),
+    }
+    payload_part = _b64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signature_part = _sign_payload(payload_part)
+    return payload_part + "." + signature_part
+
+
+def _decode_restore_token(token: str) -> dict | None:
+    token = str(token or "").strip()
+    if not token or "." not in token:
+        return None
+
+    try:
+        payload_part, signature_part = token.split(".", 1)
+    except ValueError:
+        return None
+
+    expected_signature = _sign_payload(payload_part)
+    if not hmac.compare_digest(signature_part, expected_signature):
+        return None
+
+    try:
+        payload = json.loads(_b64url_decode(payload_part).decode("utf-8"))
+    except Exception:
+        return None
+
+    if int(payload.get("v", 0) or 0) != _AUTH_TOKEN_VERSION:
+        return None
+
+    try:
+        expires_at = float(payload.get("exp", 0) or 0)
+    except Exception:
+        return None
+
+    if expires_at <= _now_ts():
+        return None
+
+    user_id = str(payload.get("u", "") or "").strip()
+    if not user_id:
+        return None
+
+    return payload
+
+
+def _get_restore_query_token() -> str:
+    try:
+        value = st.query_params.get(_AUTH_RESTORE_QUERY_PARAM, "")
+        if isinstance(value, list):
+            return str(value[0] if value else "")
+        return str(value or "")
+    except Exception:
+        return ""
+
+
+def _set_restore_query_token(token: str) -> None:
+    try:
+        st.query_params[_AUTH_RESTORE_QUERY_PARAM] = token
+    except Exception:
+        pass
+
+
+def _clear_restore_query_token() -> None:
+    try:
+        if _AUTH_RESTORE_QUERY_PARAM in st.query_params:
+            del st.query_params[_AUTH_RESTORE_QUERY_PARAM]
+    except Exception:
+        pass
+
+
+def _refresh_restore_token(now: float | None = None) -> None:
+    """Write a signed short-lived restore token into the URL query params."""
+    user_id = get_current_user()
+    if not user_id or not bool(st.session_state.get(_AUTHENTICATED_KEY, False)):
+        return
+    display_name = str(st.session_state.get("current_user_display_name", user_id) or user_id)
+    token = _create_restore_token(user_id, display_name, now)
+    _set_restore_query_token(token)
+
+
+def _restore_auth_from_query_token() -> bool:
+    """Restore Streamlit session_state after browser hard refresh/F5.
+
+    The token is signed and short-lived. It does not contain the password.
+    """
+    if bool(st.session_state.get(_AUTHENTICATED_KEY, False)):
+        return True
+
+    payload = _decode_restore_token(_get_restore_query_token())
+    if not payload:
+        return False
+
+    now = _now_ts()
+    user_id = str(payload.get("u", "") or "").strip()
+    display_name = str(payload.get("d", "") or user_id).strip()
+    set_current_user(user_id, display_name)
+    st.session_state[_AUTHENTICATED_KEY] = True
+    st.session_state[_AUTH_LOGIN_TS_KEY] = float(payload.get("iat", now) or now)
+    st.session_state[_AUTH_LAST_ACTIVITY_TS_KEY] = now
+    st.session_state[_AUTH_EXPIRES_AT_TS_KEY] = now + SESSION_TIMEOUT_SECONDS
+    st.session_state.pop(_AUTH_EXPIRED_FLAG_KEY, None)
+    _refresh_restore_token(now)
+    return True
+
+
 
 def _clear_auth_timestamps() -> None:
     for key in (
@@ -9312,10 +9497,11 @@ def _clear_volatile_session_state() -> None:
 
 
 def _touch_session(now: float | None = None) -> None:
-    """Refresh last activity and computed expiry timestamp."""
+    """Refresh last activity, computed expiry timestamp and refresh-recovery token."""
     now = _now_ts() if now is None else now
     st.session_state[_AUTH_LAST_ACTIVITY_TS_KEY] = now
     st.session_state[_AUTH_EXPIRES_AT_TS_KEY] = now + SESSION_TIMEOUT_SECONDS
+    _refresh_restore_token(now)
 
 
 def _is_session_expired(now: float | None = None) -> bool:
@@ -9369,7 +9555,8 @@ def get_session_remaining_seconds() -> int:
 def is_authenticated() -> bool:
     """Return True only if user is logged in, has a current user and timeout is valid."""
     if not bool(st.session_state.get(_AUTHENTICATED_KEY, False)):
-        return False
+        if not _restore_auth_from_query_token():
+            return False
 
     if not get_current_user():
         logout_user()
@@ -9415,6 +9602,7 @@ def login_user(user_id: str, display_name: str = "") -> None:
     st.session_state[_AUTH_LAST_ACTIVITY_TS_KEY] = now
     st.session_state[_AUTH_EXPIRES_AT_TS_KEY] = now + SESSION_TIMEOUT_SECONDS
     st.session_state.pop(_AUTH_EXPIRED_FLAG_KEY, None)
+    _refresh_restore_token(now)
 
 
 def logout_user(session_expired: bool = False) -> None:
@@ -9423,6 +9611,7 @@ def logout_user(session_expired: bool = False) -> None:
     clear_current_user()
     _clear_auth_timestamps()
     _clear_volatile_session_state()
+    _clear_restore_query_token()
 
     if session_expired:
         st.session_state[_AUTH_EXPIRED_FLAG_KEY] = True
