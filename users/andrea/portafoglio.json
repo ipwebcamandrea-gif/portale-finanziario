@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T13:36:26+00:00",
+  "updated_at": "2026-06-29T13:36:56+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -40,19 +40,6 @@
       "prezzo_precedente": 9.29,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
-    },
-    {
-      "ticker": "SOFI",
-      "titolo": "SOFI TECH",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 330.0,
-      "prezzo_medio": 16.96324,
-      "prezzo_mercato": 17.93000030517578,
-      "prezzo_precedente": 17.765,
-      "yf_symbol": "SOFI",
-      "tv_symbol": "NASDAQ:SOFI"
     },
     {
       "ticker": "MA",
