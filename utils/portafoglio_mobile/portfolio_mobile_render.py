@@ -126,7 +126,6 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
     target_url = _target_url_from_tradingview_url(tv_url)
 
     st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
-
     row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
     with row_1_col_1:
         st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
@@ -161,12 +160,10 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
                 st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
     with row_3_col_2:
         st.empty()
-
     st.markdown('</div>', unsafe_allow_html=True)
 
     if inline_renderer is not None:
         inline_renderer(df, idx)
-
     st.markdown('</div>', unsafe_allow_html=True)
 
 
