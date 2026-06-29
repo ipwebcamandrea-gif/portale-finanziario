@@ -89,6 +89,61 @@ def _format_signed_pct(value: float | None) -> str:
     return (sign + f"{value:.2f}%").replace(".", ",")
 
 
+def _current_market_price(row) -> float | None:
+    """Return the current market price used by allocation concentration cards."""
+    for key in ("prezzo_mercato", "last_price", "prezzo_corrente"):
+        value = _safe_float(row.get(key))
+        if value is not None and value > 0:
+            return value
+    return None
+
+
+def _render_current_price_box(row) -> str:
+    """Render a flexible current-price mini card for allocation concentration only."""
+    current_price = _current_market_price(row)
+    if current_price is None:
+        return ""
+
+    currency = _key(row.get("valuta"))
+    daily_pct = _safe_float(row.get("var_quotidiana_pct"))
+    daily_class = "allocation-current-price-positive" if (daily_pct or 0.0) >= 0 else "allocation-current-price-negative"
+    daily_text = _format_signed_pct(daily_pct) if daily_pct is not None else "—"
+
+    return (
+        '<div class="allocation-current-price-box">'
+        '<div class="allocation-current-price-label">Prezzo attuale</div>'
+        '<div class="allocation-current-price-row">'
+        f'<span class="allocation-current-price-value">{escape(_format_price(current_price, currency))}</span>'
+        f'<span class="allocation-current-price-change {daily_class}">{escape(daily_text)}</span>'
+        '</div>'
+        '</div>'
+    )
+
+
+def _target_marker_left_pct(current_price: float | None, scenarios: list[dict]) -> float | None:
+    """Map the current price to the target mini-chart width using scenario values as domain."""
+    if current_price is None or current_price <= 0 or not scenarios:
+        return None
+
+    values = []
+    for item in scenarios:
+        value = _safe_float(item.get("value"))
+        if value is not None and value > 0:
+            values.append(value)
+    values.append(float(current_price))
+
+    if len(values) < 2:
+        return None
+
+    min_value = min(values)
+    max_value = max(values)
+    if max_value <= min_value:
+        return 50.0
+
+    raw_pct = ((float(current_price) - min_value) / (max_value - min_value)) * 100.0
+    return max(6.0, min(94.0, raw_pct))
+
+
 def _format_signed_eur(value: float | None) -> str:
     if value is None:
         return "€ n/d"
@@ -179,13 +234,24 @@ def _render_target_chips(scenarios: list[dict]) -> str:
     return '<div class="allocation-target-chip-grid">' + "".join(chips) + '</div>'
 
 
-def _render_target_towers(scenarios: list[dict]) -> str:
+def _render_target_towers(scenarios: list[dict], current_price: float | None = None, current_currency: str = "") -> str:
     if len(scenarios) <= 1:
         return ""
 
     max_value = max((_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios)
     if max_value <= 0:
         return ""
+
+    marker_left = _target_marker_left_pct(current_price, scenarios)
+    marker_html = ""
+    if marker_left is not None and current_price is not None:
+        marker_html = (
+            f'<div class="allocation-target-current-marker" style="left:{marker_left:.2f}%">'
+            '<div class="allocation-target-current-marker-line"></div>'
+            '<div class="allocation-target-current-marker-dot"></div>'
+            f'<div class="allocation-target-current-marker-label">Attuale {escape(_format_price(current_price, current_currency))}</div>'
+            '</div>'
+        )
 
     bars = []
     for item in scenarios:
@@ -210,6 +276,7 @@ def _render_target_towers(scenarios: list[dict]) -> str:
     return (
         '<div class="allocation-target-towers-title">Mini grafico target</div>'
         '<div class="allocation-target-towers">'
+        + marker_html
         + "".join(bars)
         + '</div>'
     )
@@ -218,7 +285,8 @@ def _render_target_towers(scenarios: list[dict]) -> str:
 def _render_target_block(row, target_item: dict | None) -> str:
     scenarios = _build_target_scenarios(row, target_item)
     chips_html = _render_target_chips(scenarios)
-    towers_html = _render_target_towers(scenarios)
+    current_price = _current_market_price(row)
+    towers_html = _render_target_towers(scenarios, current_price, _key(row.get("valuta")))
     return (
         '<div class="allocation-target-block">'
         '<div class="allocation-target-block-title">Target analisti · impatto posizione</div>'
@@ -274,6 +342,7 @@ def render_concentration_heatmap(position_allocation) -> None:
             label = concentration_label(row["weight_pct"])
             display_symbol = _allocation_display_symbol(row)
             target_item = _target_item_for_row(row, targets)
+            current_price_html = _render_current_price_box(row)
             target_html = _render_target_block(row, target_item)
             html = (
                 f'<div class="allocation-heat-card allocation-heat-card-targets {css_class}">'
@@ -286,7 +355,8 @@ def render_concentration_heatmap(position_allocation) -> None:
                 f'<div class="allocation-heat-weight">{escape(fmt_pct(row["weight_pct"]))}</div>'
                 f'<div class="allocation-heat-value-eur">{escape(fmt_eur(row["value_eur"]))} €</div>'
                 '</div>'
-                '</div>'
+                '</div>'                f'{current_price_html}'
+
                 f'<div class="allocation-heat-label allocation-heat-risk-label">{escape(label)}</div>'
                 + target_html
                 + '</div>'
