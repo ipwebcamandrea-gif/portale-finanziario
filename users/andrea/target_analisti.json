@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-28T06:30:56+00:00",
+    "updated_at": "2026-06-29T13:43:54+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -333,13 +333,13 @@
             "name": "Abbott Laboratories",
             "market": "NYSE",
             "currency": "USD",
-            "current_price": 94.12,
+            "current_price": 94.24009704589844,
             "target_low": 92.0,
             "target_mean": 116.54167,
             "target_high": 135.0,
             "analyst_count": 24,
             "rating": "buy",
-            "updated_at": "2026-06-28T06:30:56+00:00"
+            "updated_at": "2026-06-29T13:43:54+00:00"
         }
     }
 }
