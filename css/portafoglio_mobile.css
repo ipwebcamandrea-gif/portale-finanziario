@@ -759,11 +759,12 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
   .portfolio-mobile-target-current-marker-money { font-size: 0.44rem !important; }
 }
 
-/* ========================= PORTFOLIO MOBILE/CARD GRID NARROW-COLUMN FIX V2 =========================
-   Fixes Streamlit column inline widths that made cards very narrow on desktop and phone.
-   Applies only to horizontal blocks containing .portfolio-mobile-card.
+/* ========================= PORTFOLIO MOBILE CARD GRID KEYED ROW FIX V3 =========================
+   Uses the explicit Streamlit container key portfolio_mobile_card_grid_row_*.
+   This avoids relying on :has(), which can fail or behave differently on phones/webviews.
+   Scope: only Portafoglio "Vista mobile" card rows.
 */
-div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) {
+div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(320px, 1fr)) !important;
   gap: 1rem !important;
@@ -772,8 +773,7 @@ div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) {
   max-width: 100% !important;
 }
 
-/* Streamlit column wrappers can have inline width/flex-basis. Override every direct child. */
-div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) > * {
+div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] > * {
   width: 100% !important;
   min-width: 0 !important;
   max-width: none !important;
@@ -783,27 +783,45 @@ div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) > * {
   box-sizing: border-box !important;
 }
 
-div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) .portfolio-mobile-card {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: none !important;
-}
-
 @media screen and (max-width: 1500px) {
-  div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
     grid-template-columns: repeat(2, minmax(320px, 1fr)) !important;
   }
 }
 
 @media screen and (max-width: 1100px) {
-  div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 
-/* Phones/tablets with touch must never keep two squeezed card columns. */
+/* Extra protection for phones/tablets even when viewport is reported as wide. */
 @media (hover: none), (pointer: coarse) {
-  div[data-testid="stHorizontalBlock"]:has(.portfolio-mobile-card) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
+}
+
+/* Keep the inner action rows as 2-button rows; do not let the outer grid rules squeeze them. */
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 0.45rem !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"] > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.portfolio-mobile-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
