@@ -84,89 +84,125 @@ def _render_mobile_metric(label: str, value: str, css_class: str = "") -> str:
     )
 
 
+def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
+    """Render one mobile/card-mode portfolio card.
+
+    This helper is used only by the mobile/card view renderer. It does not affect
+    the desktop table renderer in utils/portfolio_render.py.
+    """
+    title = _esc(row.get("titolo", ""))
+    ticker = _esc(row.get("ticker", ""))
+    mercato = _esc(row.get("mercato", ""))
+    valuta = str(row.get("valuta", "")).strip().upper()
+
+    tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
+    fallback_symbol = f"{row.get('mercato', '')}:{row.get('ticker', '')}"
+    display_symbol = _esc(tv_symbol_raw if tv_symbol_raw else fallback_symbol)
+
+    gain_class = value_class(row.get("var_da_carico_eur", 0.0))
+    daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
+
+    html_card_open = (
+        '<div class="portfolio-mobile-card">'
+        '<div class="portfolio-mobile-card-header">'
+        '<div>'
+        f'<div class="portfolio-mobile-title">{title}</div>'
+        f'<div class="portfolio-mobile-subtitle">{display_symbol} · {valuta}{_fx_label(row, valuta)}</div>'
+        '</div>'
+        f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
+        '</div>'
+        '<div class="portfolio-mobile-metrics-grid">'
+        + _render_mobile_metric("Valore mercato", f'{fmt_eur(row.get("valore_mercato_eur", 0.0))} EUR')
+        + _render_mobile_metric("Guadagno", f'{fmt_eur(row.get("var_da_carico_eur", 0.0))} EUR · {fmt_pct(row.get("var_da_carico_pct", 0.0))}', gain_class)
+        + _render_mobile_metric("Var oggi", f'{fmt_eur(row.get("var_quotidiana_eur", 0.0))} EUR · {fmt_pct(row.get("var_quotidiana_pct", 0.0))}', daily_class)
+        + _render_mobile_metric("Quantità", fmt_qty(row.get("quantita", 0.0)))
+        + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
+        + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
+        + '</div>'
+        + str(row.get("portfolio_target_mobile_html", "") or "")
+    )
+    st.markdown(html_card_open, unsafe_allow_html=True)
+
+    tv_url = tradingview_url_builder(
+        row.get("mercato", ""),
+        row.get("ticker", ""),
+        row.get("tv_symbol", ""),
+        row.get("valuta", ""),
+    )
+    target_url = _target_url_from_tradingview_url(tv_url)
+
+    st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
+
+    # Action rows remain 2 columns so they stay readable inside narrower desktop cards
+    # and naturally stack/fit on smartphone.
+    row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
+    with row_1_col_1:
+        st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
+    with row_1_col_2:
+        if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
+            st.session_state["portfolio_simulation_index"] = idx
+            st.session_state["portfolio_edit_index"] = None
+            st.session_state["portfolio_delete_index"] = None
+            st.rerun()
+
+    row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
+    with row_2_col_1:
+        if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
+            st.session_state["portfolio_edit_index"] = idx
+            st.session_state["portfolio_delete_index"] = None
+            st.session_state["portfolio_simulation_index"] = None
+            st.rerun()
+    with row_2_col_2:
+        if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
+            st.session_state["portfolio_delete_index"] = idx
+            st.session_state["portfolio_edit_index"] = None
+            st.session_state["portfolio_simulation_index"] = None
+            st.rerun()
+
+    row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
+    with row_3_col_1:
+        with st.container(key=f"portfolio_mobile_target_{idx}"):
+            if target_renderer is not None:
+                if st.button("🎯", key=f"portfolio_mobile_target_btn_{idx}", use_container_width=True, help="Apri Target Analisti interno"):
+                    target_renderer(row)
+            else:
+                st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
+    with row_3_col_2:
+        st.empty()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if inline_renderer is not None:
+        inline_renderer(df, idx)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
 def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
-    """Render positions as native mobile cards instead of a compressed desktop table."""
+    """Render positions as a responsive card grid in the mobile/card view only.
+
+    Desktop table view is intentionally untouched: it is rendered by
+    utils/portfolio_render.py and is not part of this renderer.
+    """
     st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
 
-    for idx, row in df.iterrows():
-        title = _esc(row.get("titolo", ""))
-        ticker = _esc(row.get("ticker", ""))
-        mercato = _esc(row.get("mercato", ""))
-        valuta = str(row.get("valuta", "")).strip().upper()
+    rows = list(df.iterrows())
+    if not rows:
+        return
 
-        tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
-        fallback_symbol = f"{row.get('mercato', '')}:{row.get('ticker', '')}"
-        display_symbol = _esc(tv_symbol_raw if tv_symbol_raw else fallback_symbol)
-
-        gain_class = value_class(row.get("var_da_carico_eur", 0.0))
-        daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
-
-        html_card_open = (
-            '<div class="portfolio-mobile-card">'
-            '<div class="portfolio-mobile-card-header">'
-            '<div>'
-            f'<div class="portfolio-mobile-title">{title}</div>'
-            f'<div class="portfolio-mobile-subtitle">{display_symbol} · {valuta}{_fx_label(row, valuta)}</div>'
-            '</div>'
-            f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
-            '</div>'
-            '<div class="portfolio-mobile-metrics-grid">'
-            + _render_mobile_metric("Valore mercato", f'{fmt_eur(row.get("valore_mercato_eur", 0.0))} EUR')
-            + _render_mobile_metric("Guadagno", f'{fmt_eur(row.get("var_da_carico_eur", 0.0))} EUR · {fmt_pct(row.get("var_da_carico_pct", 0.0))}', gain_class)
-            + _render_mobile_metric("Var oggi", f'{fmt_eur(row.get("var_quotidiana_eur", 0.0))} EUR · {fmt_pct(row.get("var_quotidiana_pct", 0.0))}', daily_class)
-            + _render_mobile_metric("Quantità", fmt_qty(row.get("quantita", 0.0)))
-            + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
-            + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
-            + '</div>'
-            + str(row.get("portfolio_target_mobile_html", "") or "")
-        )
-        st.markdown(html_card_open, unsafe_allow_html=True)
-
-        tv_url = tradingview_url_builder(
-            row.get("mercato", ""),
-            row.get("ticker", ""),
-            row.get("tv_symbol", ""),
-            row.get("valuta", ""),
-        )
-        target_url = _target_url_from_tradingview_url(tv_url)
-
-        # Mobile action rows: no wrapper markdown between rows, so CSS can attach rows tightly.
-        row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
-        with row_1_col_1:
-            st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
-        with row_1_col_2:
-            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
-                st.session_state["portfolio_simulation_index"] = idx
-                st.session_state["portfolio_edit_index"] = None
-                st.session_state["portfolio_delete_index"] = None
-                st.rerun()
-
-        row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
-        with row_2_col_1:
-            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
-                st.session_state["portfolio_edit_index"] = idx
-                st.session_state["portfolio_delete_index"] = None
-                st.session_state["portfolio_simulation_index"] = None
-                st.rerun()
-        with row_2_col_2:
-            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
-                st.session_state["portfolio_delete_index"] = idx
-                st.session_state["portfolio_edit_index"] = None
-                st.session_state["portfolio_simulation_index"] = None
-                st.rerun()
-
-        row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
-        with row_3_col_1:
-            with st.container(key=f"portfolio_mobile_target_{idx}"):
-                if target_renderer is not None:
-                    if st.button("🎯", key=f"portfolio_mobile_target_btn_{idx}", use_container_width=True, help="Apri Target Analisti interno"):
-                        target_renderer(row)
-                else:
-                    st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
-        with row_3_col_2:
-            st.empty()
-
-        if inline_renderer is not None:
-            inline_renderer(df, idx)
-
-        st.markdown('</div></div>', unsafe_allow_html=True)
+    # The mobile/card view uses a 3-card grid on desktop-like widths. Streamlit
+    # stacks columns on narrow smartphones, which gives one card per row.
+    cards_per_row = 3
+    for start in range(0, len(rows), cards_per_row):
+        chunk = rows[start:start + cards_per_row]
+        columns = st.columns(cards_per_row, gap="medium")
+        for column, (idx, row) in zip(columns, chunk):
+            with column:
+                _render_one_mobile_portfolio_card(
+                    row,
+                    idx,
+                    df,
+                    tradingview_url_builder,
+                    inline_renderer=inline_renderer,
+                    target_renderer=target_renderer,
+                )
