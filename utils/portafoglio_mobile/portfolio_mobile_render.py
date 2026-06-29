@@ -85,14 +85,8 @@ def _render_mobile_metric(label: str, value: str, css_class: str = "") -> str:
 
 
 def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
-    """Render one mobile/card-mode portfolio card.
-
-    This helper is used only by the mobile/card view renderer. It does not affect
-    the desktop table renderer in utils/portfolio_render.py.
-    """
+    """Render one portfolio card in the mobile/card view only."""
     title = _esc(row.get("titolo", ""))
-    ticker = _esc(row.get("ticker", ""))
-    mercato = _esc(row.get("mercato", ""))
     valuta = str(row.get("valuta", "")).strip().upper()
 
     tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
@@ -133,8 +127,6 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
 
     st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
 
-    # Action rows remain 2 columns so they stay readable inside narrower desktop cards
-    # and naturally stack/fit on smartphone.
     row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
     with row_1_col_1:
         st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
@@ -181,8 +173,7 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
 def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
     """Render positions as a responsive card grid in the mobile/card view only.
 
-    Desktop table view is intentionally untouched: it is rendered by
-    utils/portfolio_render.py and is not part of this renderer.
+    The desktop table view is intentionally untouched.
     """
     st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
 
@@ -190,8 +181,6 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
     if not rows:
         return
 
-    # The mobile/card view uses a 3-card grid on desktop-like widths. Streamlit
-    # stacks columns on narrow smartphones, which gives one card per row.
     cards_per_row = 3
     for start in range(0, len(rows), cards_per_row):
         chunk = rows[start:start + cards_per_row]
