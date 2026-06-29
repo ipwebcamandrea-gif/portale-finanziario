@@ -516,7 +516,7 @@
     }
 }
 
-/* ========================= ALLOCAZIONE CURRENT PRICE + TARGET MARKER ========================= */
+/* ========================= ALLOCAZIONE CURRENT PRICE + CATEGORICAL TARGET MARKER ========================= */
 .allocation-current-price-box {
   width: min(320px, 100%);
   margin: 0.50rem 0 0.62rem 0;
@@ -554,28 +554,23 @@
 }
 .allocation-current-price-positive { color: #22c55e !important; }
 .allocation-current-price-negative { color: #ef4444 !important; }
-.allocation-target-towers { position: relative; overflow: hidden; }
-.allocation-target-current-marker {
-  position: absolute;
-  top: 1.78rem;
-  bottom: 2.28rem;
-  z-index: 4;
-  pointer-events: none;
-  transform: translateX(-50%);
+.allocation-target-towers-with-current {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
 }
-.allocation-target-current-marker-line {
-  position: absolute;
-  top: 1.05rem;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, rgba(255, 184, 82, 0.92), rgba(255, 140, 0, 0.28));
+.allocation-target-current-marker-item .allocation-target-current-marker-track {
+  position: relative;
+}
+.allocation-target-current-marker-linebar {
+  position: relative;
+  width: 0.16rem;
+  min-height: 10px;
   border-radius: 999px;
+  background: linear-gradient(180deg, #ffbf69 0%, #ff9f1c 72%, rgba(255,159,28,0.28) 100%);
+  box-shadow: 0 0 11px rgba(255, 159, 28, 0.34);
 }
 .allocation-target-current-marker-dot {
   position: absolute;
-  top: 0.38rem;
+  top: 0;
   left: 50%;
   width: 0.62rem;
   height: 0.62rem;
@@ -584,30 +579,25 @@
   background: #ff9f1c;
   box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.15), 0 0 11px rgba(255, 159, 28, 0.55);
 }
+.allocation-target-current-marker-value,
 .allocation-target-current-marker-label {
-  position: absolute;
-  top: -0.58rem;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 7.8rem;
-  padding: 0.18rem 0.38rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 184, 82, 0.62);
-  background: rgba(45, 30, 18, 0.94);
-  color: #ffd8a8;
-  font-size: 0.52rem;
-  font-weight: 950;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #ffd8a8 !important;
 }
 @media screen and (max-width: 768px) {
   .allocation-current-price-box {
     width: 100%;
     padding: 0.50rem 0.58rem;
   }
-  .allocation-target-current-marker-label {
-    max-width: 6.8rem;
-    font-size: 0.49rem;
+  .allocation-target-towers-with-current {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0.18rem !important;
+  }
+}
+@media screen and (max-width: 390px) {
+  .allocation-target-towers-with-current {
+    gap: 0.12rem !important;
+  }
+  .allocation-target-current-marker-value {
+    font-size: 0.46rem !important;
   }
 }
