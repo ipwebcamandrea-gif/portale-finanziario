@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T13:35:37+00:00",
+  "updated_at": "2026-06-29T13:36:13+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -131,19 +131,6 @@
       "prezzo_precedente": 18.09,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
-    },
-    {
-      "ticker": "PLTR",
-      "titolo": "Palantir Technologies Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 55.0,
-      "prezzo_medio": 107.22,
-      "prezzo_mercato": 116.5999984741211,
-      "prezzo_precedente": 112.15,
-      "yf_symbol": "PLTR",
-      "tv_symbol": "NASDAQ:PLTR"
     },
     {
       "ticker": "CRM",
