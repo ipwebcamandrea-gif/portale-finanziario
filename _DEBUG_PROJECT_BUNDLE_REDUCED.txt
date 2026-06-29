@@ -2057,6 +2057,90 @@ def render_watchlist_tabs():
     }
 }
 
+/* ========================= ALLOCAZIONE CURRENT PRICE + CATEGORICAL TARGET MARKER ========================= */
+.allocation-current-price-box {
+  width: min(320px, 100%);
+  margin: 0.50rem 0 0.62rem 0;
+  padding: 0.54rem 0.68rem;
+  border-radius: 13px;
+  border: 1px solid rgba(139, 211, 255, 0.32);
+  background: rgba(13, 17, 23, 0.38);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+.allocation-current-price-label {
+  color: #9fb3d1;
+  font-size: 0.58rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  margin-bottom: 0.20rem;
+}
+.allocation-current-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+.allocation-current-price-value {
+  color: #f9fafb;
+  font-size: 0.86rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+.allocation-current-price-change {
+  font-size: 0.78rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+.allocation-current-price-positive { color: #22c55e !important; }
+.allocation-current-price-negative { color: #ef4444 !important; }
+.allocation-target-towers-with-current {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+.allocation-target-current-marker-linebar {
+  position: relative;
+  width: 0.16rem;
+  min-height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffbf69 0%, #ff9f1c 72%, rgba(255,159,28,0.28) 100%);
+  box-shadow: 0 0 11px rgba(255, 159, 28, 0.34);
+}
+.allocation-target-current-marker-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0.62rem;
+  height: 0.62rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #ff9f1c;
+  box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.15), 0 0 11px rgba(255, 159, 28, 0.55);
+}
+.allocation-target-current-marker-value,
+.allocation-target-current-marker-label {
+  color: #ffd8a8 !important;
+}
+.allocation-target-current-marker-money {
+  font-size: 0.56rem !important;
+  font-weight: 950 !important;
+  min-height: 0.80rem;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+.allocation-target-current-marker-money-positive { color: #22c55e !important; }
+.allocation-target-current-marker-money-negative { color: #ef4444 !important; }
+@media screen and (max-width: 768px) {
+  .allocation-current-price-box { width: 100%; padding: 0.50rem 0.58rem; }
+  .allocation-target-towers-with-current { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 0.18rem !important; }
+  .allocation-target-current-marker-money { font-size: 0.50rem !important; }
+}
+@media screen and (max-width: 390px) {
+  .allocation-target-towers-with-current { gap: 0.12rem !important; }
+  .allocation-target-current-marker-value { font-size: 0.46rem !important; }
+  .allocation-target-current-marker-money { font-size: 0.46rem !important; }
+}
+
 
 
 ====================================================================================================
@@ -4233,6 +4317,46 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
     .portfolio-mobile-target-tower-money {
         font-size: 0.46rem;
     }
+}
+
+/* ========================= PORTFOLIO MOBILE TARGET CURRENT MARKER - CATEGORICAL COLUMN ========================= */
+.portfolio-mobile-target-towers-with-current {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+.portfolio-mobile-target-current-marker-track {
+  position: relative;
+}
+.portfolio-mobile-target-current-marker-linebar {
+  position: relative;
+  width: 0.16rem;
+  min-height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffbf69 0%, #ff9f1c 72%, rgba(255,159,28,0.28) 100%);
+  box-shadow: 0 0 11px rgba(255, 159, 28, 0.34);
+}
+.portfolio-mobile-target-current-marker-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0.64rem;
+  height: 0.64rem;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #ff9f1c;
+  box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.16), 0 0 11px rgba(255, 159, 28, 0.58);
+}
+.portfolio-mobile-target-current-marker-value,
+.portfolio-mobile-target-current-marker-label {
+  color: #ffd8a8 !important;
+}
+@media screen and (max-width: 390px) {
+  .portfolio-mobile-target-towers-with-current {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0.12rem !important;
+  }
+  .portfolio-mobile-target-current-marker-value {
+    font-size: 0.45rem !important;
+  }
 }
 
 
@@ -8238,6 +8362,53 @@ def _format_signed_pct(value: float | None) -> str:
     return (sign + f"{value:.2f}%").replace(".", ",")
 
 
+def _current_market_price(row) -> float | None:
+    """Return the current market price used by allocation concentration cards."""
+    for key in ("prezzo_mercato", "last_price", "prezzo_corrente"):
+        value = _safe_float(row.get(key))
+        if value is not None and value > 0:
+            return value
+    return None
+
+
+def _render_current_price_box(row) -> str:
+    """Render a flexible current-price mini card for allocation concentration only."""
+    current_price = _current_market_price(row)
+    if current_price is None:
+        return ""
+
+    currency = _key(row.get("valuta"))
+    daily_pct = _safe_float(row.get("var_quotidiana_pct"))
+    daily_class = "allocation-current-price-positive" if (daily_pct or 0.0) >= 0 else "allocation-current-price-negative"
+    daily_text = _format_signed_pct(daily_pct) if daily_pct is not None else "—"
+
+    return (
+        '<div class="allocation-current-price-box">'
+        '<div class="allocation-current-price-label">Prezzo attuale</div>'
+        '<div class="allocation-current-price-row">'
+        f'<span class="allocation-current-price-value">{escape(_format_price(current_price, currency))}</span>'
+        f'<span class="allocation-current-price-change {daily_class}">{escape(daily_text)}</span>'
+        '</div>'
+        '</div>'
+    )
+
+
+def _current_price_gain_eur(row, current_price: float | None) -> float | None:
+    """Return current gain/loss in EUR vs average load price for the orange marker."""
+    if current_price is None or current_price <= 0:
+        return None
+
+    cost_basis = _safe_float(row.get("prezzo_medio"))
+    quantity = _safe_float(row.get("quantita"), 0.0) or 0.0
+    currency = _key(row.get("valuta"))
+    fx = _fx_to_eur(row, currency)
+
+    if cost_basis is None or cost_basis <= 0 or quantity <= 0 or not fx:
+        return None
+
+    return (float(current_price) - cost_basis) * quantity * fx
+
+
 def _format_signed_eur(value: float | None) -> str:
     if value is None:
         return "€ n/d"
@@ -8328,18 +8499,26 @@ def _render_target_chips(scenarios: list[dict]) -> str:
     return '<div class="allocation-target-chip-grid">' + "".join(chips) + '</div>'
 
 
-def _render_target_towers(scenarios: list[dict]) -> str:
+def _render_target_towers(scenarios: list[dict], current_price: float | None = None, current_currency: str = "", current_gain_eur: float | None = None) -> str:
     if len(scenarios) <= 1:
         return ""
 
-    max_value = max((_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios)
+    scale_values = [(_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios]
+    if current_price is not None and current_price > 0:
+        scale_values.append(float(current_price))
+
+    max_value = max(scale_values) if scale_values else 0.0
     if max_value <= 0:
         return ""
 
+    def _height(value: float | None) -> float:
+        value = _safe_float(value, 0.0) or 0.0
+        return max(12.0, min(100.0, value / max_value * 100.0))
+
     bars = []
-    for item in scenarios:
+    for index, item in enumerate(scenarios):
         value = _safe_float(item.get("value"), 0.0) or 0.0
-        height_pct = max(12.0, min(100.0, value / max_value * 100.0))
+        height_pct = _height(value)
         is_current = item["field"] == "cost_basis"
         bar_class = "allocation-target-current-bar" if is_current else "allocation-target-scenario-bar"
         if not is_current and item.get("gain_eur") is not None and item["gain_eur"] < 0:
@@ -8356,9 +8535,26 @@ def _render_target_towers(scenarios: list[dict]) -> str:
             '</div>'
         )
 
+        if index == 0 and current_price is not None and current_price > 0:
+            current_height = _height(current_price)
+            current_gain_class = "allocation-target-current-marker-money-positive" if (current_gain_eur or 0.0) >= 0 else "allocation-target-current-marker-money-negative"
+            current_gain_text = _format_signed_eur(current_gain_eur) if current_gain_eur is not None else ""
+            bars.append(
+                '<div class="allocation-target-tower-item allocation-target-current-marker-item">'
+                f'<div class="allocation-target-tower-value allocation-target-current-marker-value">{escape(_format_price(current_price, current_currency))}</div>'
+                '<div class="allocation-target-tower-track allocation-target-current-marker-track">'
+                f'<div class="allocation-target-current-marker-linebar" style="height:{current_height:.1f}%">'
+                '<span class="allocation-target-current-marker-dot"></span>'
+                '</div>'
+                '</div>'
+                '<div class="allocation-target-tower-label allocation-target-current-marker-label">Attuale</div>'
+                f'<div class="allocation-target-tower-money allocation-target-current-marker-money {current_gain_class}">{escape(current_gain_text)}</div>'
+                '</div>'
+            )
+
     return (
         '<div class="allocation-target-towers-title">Mini grafico target</div>'
-        '<div class="allocation-target-towers">'
+        '<div class="allocation-target-towers allocation-target-towers-with-current">'
         + "".join(bars)
         + '</div>'
     )
@@ -8367,7 +8563,9 @@ def _render_target_towers(scenarios: list[dict]) -> str:
 def _render_target_block(row, target_item: dict | None) -> str:
     scenarios = _build_target_scenarios(row, target_item)
     chips_html = _render_target_chips(scenarios)
-    towers_html = _render_target_towers(scenarios)
+    current_price = _current_market_price(row)
+    current_gain_eur = _current_price_gain_eur(row, current_price)
+    towers_html = _render_target_towers(scenarios, current_price, _key(row.get("valuta")), current_gain_eur)
     return (
         '<div class="allocation-target-block">'
         '<div class="allocation-target-block-title">Target analisti · impatto posizione</div>'
@@ -8423,6 +8621,7 @@ def render_concentration_heatmap(position_allocation) -> None:
             label = concentration_label(row["weight_pct"])
             display_symbol = _allocation_display_symbol(row)
             target_item = _target_item_for_row(row, targets)
+            current_price_html = _render_current_price_box(row)
             target_html = _render_target_block(row, target_item)
             html = (
                 f'<div class="allocation-heat-card allocation-heat-card-targets {css_class}">'
@@ -8435,7 +8634,8 @@ def render_concentration_heatmap(position_allocation) -> None:
                 f'<div class="allocation-heat-weight">{escape(fmt_pct(row["weight_pct"]))}</div>'
                 f'<div class="allocation-heat-value-eur">{escape(fmt_eur(row["value_eur"]))} €</div>'
                 '</div>'
-                '</div>'
+                '</div>'                f'{current_price_html}'
+
                 f'<div class="allocation-heat-label allocation-heat-risk-label">{escape(label)}</div>'
                 + target_html
                 + '</div>'
@@ -11536,6 +11736,15 @@ def _mobile_cost_basis_price(row: pd.Series, target_item: dict | None = None) ->
     return None
 
 
+def _mobile_current_market_price(row: pd.Series) -> float | None:
+    """Return current market price for the orange marker, without adding another tower."""
+    for key in ("prezzo_mercato", "last_price", "prezzo_corrente"):
+        value = _safe_float(row.get(key))
+        if value is not None and value > 0:
+            return value
+    return None
+
+
 def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[dict]:
     if not target_item:
         return []
@@ -11626,22 +11835,52 @@ def _mobile_target_tower_html(item: dict, max_value: float) -> str:
     )
 
 
+def _mobile_current_marker_tower_html(current_price: float | None, max_value: float, currency: str) -> str:
+    if current_price is None or current_price <= 0 or max_value <= 0:
+        return ""
+
+    height_pct = _mobile_tower_height_pct(float(current_price), max_value)
+    return (
+        '<div class="portfolio-mobile-target-tower-item portfolio-mobile-target-current-marker-item">'
+        '<div class="portfolio-mobile-target-tower-value portfolio-mobile-target-current-marker-value">' + _target_quote(current_price, currency) + '</div>'
+        '<div class="portfolio-mobile-target-tower-track portfolio-mobile-target-current-marker-track">'
+        '<div class="portfolio-mobile-target-current-marker-linebar" style="height:' + fmt_num(height_pct, 1).replace(",", ".") + '%">'
+        '<span class="portfolio-mobile-target-current-marker-dot"></span>'
+        '</div>'
+        '</div>'
+        '<div class="portfolio-mobile-target-tower-label portfolio-mobile-target-current-marker-label">Attuale</div>'
+        '<div class="portfolio-mobile-target-tower-money"></div>'
+        '</div>'
+    )
+
+
 def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
     scenarios = _mobile_target_scenarios(row, target_item)
     if len(scenarios) <= 1:
         return ""
 
-    max_target = max(float(item["target"]) for item in scenarios)
+    current_price = _mobile_current_market_price(row)
+    currency = _key(row.get("valuta"))
+    scale_values = [float(item["target"]) for item in scenarios]
+    if current_price is not None and current_price > 0:
+        scale_values.append(float(current_price))
+    max_target = max(scale_values)
+
     chips_html = "".join(_mobile_target_chip_html(item) for item in scenarios)
-    towers_html = "".join(_mobile_target_tower_html(item, max_target) for item in scenarios)
+    tower_parts = []
+    for index, item in enumerate(scenarios):
+        tower_parts.append(_mobile_target_tower_html(item, max_target))
+        if index == 0:
+            tower_parts.append(_mobile_current_marker_tower_html(current_price, max_target, currency))
+    towers_html = "".join(tower_parts)
 
     return (
         '<div class="portfolio-mobile-target-modern-box">'
         '<div class="portfolio-mobile-target-modern-title">Target analisti · impatto posizione</div>'
         '<div class="portfolio-mobile-target-chip-grid">' + chips_html + '</div>'
         '<div class="portfolio-mobile-target-towers-title">Mini grafico target</div>'
-        '<div class="portfolio-mobile-target-towers">' + towers_html + '</div>'
-        '<div class="portfolio-mobile-target-modern-note">€ stimati = (target - prezzo attuale) × quantità × cambio EUR</div>'
+        '<div class="portfolio-mobile-target-towers portfolio-mobile-target-towers-with-current">' + towers_html + '</div>'
+        '<div class="portfolio-mobile-target-modern-note">€ stimati = (target - prezzo di carico) × quantità × cambio EUR</div>'
         '</div>'
     )
 
