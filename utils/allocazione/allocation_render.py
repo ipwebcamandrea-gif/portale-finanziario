@@ -99,7 +99,7 @@ def _current_market_price(row) -> float | None:
 
 
 def _render_current_price_box(row) -> str:
-    """Render a flexible current-price mini card for allocation concentration only."""
+    """Render one compact card with current price, daily change and current gain."""
     current_price = _current_market_price(row)
     if current_price is None:
         return ""
@@ -109,12 +109,30 @@ def _render_current_price_box(row) -> str:
     daily_class = "allocation-current-price-positive" if (daily_pct or 0.0) >= 0 else "allocation-current-price-negative"
     daily_text = _format_signed_pct(daily_pct) if daily_pct is not None else "—"
 
+    current_gain_eur = _current_price_gain_eur(row, current_price)
+    current_gain_pct = None
+    cost_basis = _safe_float(row.get("prezzo_medio"))
+    if cost_basis is not None and cost_basis > 0:
+        current_gain_pct = ((float(current_price) - cost_basis) / cost_basis) * 100.0
+
+    gain_class = "allocation-current-price-positive" if (current_gain_eur or 0.0) >= 0 else "allocation-current-price-negative"
+    gain_text = _format_signed_eur(current_gain_eur) if current_gain_eur is not None else "€ n/d"
+    if current_gain_pct is not None:
+        gain_text += " · " + _format_signed_pct(current_gain_pct)
+
     return (
-        '<div class="allocation-current-price-box">'
+        '<div class="allocation-current-price-box allocation-current-price-combined-box">'
+        '<div class="allocation-current-price-row allocation-current-price-main-row">'
+        '<div>'
         '<div class="allocation-current-price-label">Prezzo attuale</div>'
-        '<div class="allocation-current-price-row">'
-        f'<span class="allocation-current-price-value">{escape(_format_price(current_price, currency))}</span>'
+        f'<div class="allocation-current-price-value">{escape(_format_price(current_price, currency))}</div>'
+        '</div>'
         f'<span class="allocation-current-price-change {daily_class}">{escape(daily_text)}</span>'
+        '</div>'
+        '<div class="allocation-current-price-divider"></div>'
+        '<div class="allocation-current-price-row allocation-current-gain-row">'
+        '<span class="allocation-current-price-label">Guadagno attuale</span>'
+        f'<span class="allocation-current-gain-value {gain_class}">{escape(gain_text)}</span>'
         '</div>'
         '</div>'
     )
@@ -226,6 +244,12 @@ def _render_target_chips(scenarios: list[dict]) -> str:
     return '<div class="allocation-target-chip-grid">' + "".join(chips) + '</div>'
 
 
+def _target_level_segment_html(current_height_pct: float | None) -> str:
+    if current_height_pct is None:
+        return ""
+    return f'<span class="allocation-target-current-level-segment" style="bottom:{current_height_pct:.1f}%"></span>'
+
+
 def _render_target_towers(scenarios: list[dict], current_price: float | None = None, current_currency: str = "", current_gain_eur: float | None = None) -> str:
     if len(scenarios) <= 1:
         return ""
@@ -242,6 +266,9 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
         value = _safe_float(value, 0.0) or 0.0
         return max(12.0, min(100.0, value / max_value * 100.0))
 
+    current_height = _height(current_price) if current_price is not None and current_price > 0 else None
+    level_html = _target_level_segment_html(current_height)
+
     bars = []
     for index, item in enumerate(scenarios):
         value = _safe_float(item.get("value"), 0.0) or 0.0
@@ -256,6 +283,7 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
             f'<div class="allocation-target-tower-value">{escape(_format_price(value, item["currency"]))}</div>'
             '<div class="allocation-target-tower-track">'
             f'<div class="allocation-target-tower-bar {bar_class}" style="height:{height_pct:.1f}%"></div>'
+            f'{level_html}'
             '</div>'
             f'<div class="allocation-target-tower-label">{escape(item["short_label"])}</div>'
             f'<div class="allocation-target-tower-money">{escape(gain_text)}</div>'
@@ -263,7 +291,6 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
         )
 
         if index == 0 and current_price is not None and current_price > 0:
-            current_height = _height(current_price)
             current_gain_class = "allocation-target-current-marker-money-positive" if (current_gain_eur or 0.0) >= 0 else "allocation-target-current-marker-money-negative"
             current_gain_text = _format_signed_eur(current_gain_eur) if current_gain_eur is not None else ""
             bars.append(
@@ -273,6 +300,7 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
                 f'<div class="allocation-target-current-marker-linebar" style="height:{current_height:.1f}%">'
                 '<span class="allocation-target-current-marker-dot"></span>'
                 '</div>'
+                f'{level_html}'
                 '</div>'
                 '<div class="allocation-target-tower-label allocation-target-current-marker-label">Attuale</div>'
                 f'<div class="allocation-target-tower-money allocation-target-current-marker-money {current_gain_class}">{escape(current_gain_text)}</div>'
@@ -361,10 +389,7 @@ def render_concentration_heatmap(position_allocation) -> None:
                 f'<div class="allocation-heat-weight">{escape(fmt_pct(row["weight_pct"]))}</div>'
                 f'<div class="allocation-heat-value-eur">{escape(fmt_eur(row["value_eur"]))} €</div>'
                 '</div>'
-                '</div>'                f'{current_price_html}'
-
-                f'<div class="allocation-heat-label allocation-heat-risk-label">{escape(label)}</div>'
-                + target_html
+                '</div>'                f'{current_price_html}'                + target_html
                 + '</div>'
             )
             with col:
