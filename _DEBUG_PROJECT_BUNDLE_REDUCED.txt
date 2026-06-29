@@ -4463,6 +4463,128 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
   .portfolio-mobile-target-current-marker-money { font-size: 0.44rem !important; }
 }
 
+/* ========================= PORTFOLIO MOBILE CARD GRID + ACTIONS FIX V4 =========================
+   Scope: only Portafoglio "Vista mobile" card renderer.
+   Fixes:
+   - smartphone: one card per row;
+   - desktop: card grid remains 3/2/1 responsive;
+   - action buttons stay grouped under their own card as compact 2-column rows.
+*/
+
+/* OUTER CARD ROWS --------------------------------------------------------- */
+div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(320px, 1fr)) !important;
+  gap: 1rem !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media screen and (max-width: 1500px) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
+    grid-template-columns: repeat(2, minmax(320px, 1fr)) !important;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* CARD FIT ---------------------------------------------------------------- */
+.portfolio-mobile-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 0.62rem !important;
+}
+
+.portfolio-mobile-title,
+.portfolio-mobile-subtitle,
+.portfolio-mobile-tv-symbol,
+.portfolio-mobile-metric-value {
+  overflow-wrap: anywhere !important;
+}
+
+/* ACTIONS: override outer row rules for keyed action wrappers ------------- */
+div[class*="st-key-portfolio_mobile_actions_grid_"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0.20rem 0 0.85rem 0 !important;
+}
+
+div[class*="st-key-portfolio_mobile_actions_grid_"] div[data-testid="stHorizontalBlock"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 0.48rem !important;
+  row-gap: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0.24rem 0 !important;
+  padding: 0 !important;
+}
+
+div[class*="st-key-portfolio_mobile_actions_grid_"] div[data-testid="stHorizontalBlock"] > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+}
+
+div[class*="st-key-portfolio_mobile_actions_grid_"] a,
+div[class*="st-key-portfolio_mobile_actions_grid_"] button {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0.92rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media screen and (max-width: 768px) {
+  div[class*="st-key-portfolio_mobile_actions_grid_"] {
+    max-width: 312px !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  div[class*="st-key-portfolio_mobile_actions_grid_"] a,
+  div[class*="st-key-portfolio_mobile_actions_grid_"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    font-size: 0.98rem !important;
+  }
+}
+
 
 
 ====================================================================================================
@@ -10022,53 +10144,51 @@ def _render_mobile_metric(label: str, value: str, css_class: str = "") -> str:
     )
 
 
-def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
-    """Render positions as native mobile cards instead of a compressed desktop table."""
-    st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
+def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
+    """Render one portfolio card in the mobile/card view only."""
+    title = _esc(row.get("titolo", ""))
+    valuta = str(row.get("valuta", "")).strip().upper()
 
-    for idx, row in df.iterrows():
-        title = _esc(row.get("titolo", ""))
-        ticker = _esc(row.get("ticker", ""))
-        mercato = _esc(row.get("mercato", ""))
-        valuta = str(row.get("valuta", "")).strip().upper()
+    tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
+    fallback_symbol = f"{row.get('mercato', '')}:{row.get('ticker', '')}"
+    display_symbol = _esc(tv_symbol_raw if tv_symbol_raw else fallback_symbol)
 
-        tv_symbol_raw = str(row.get("tv_symbol", "") or "").strip()
-        fallback_symbol = f"{row.get('mercato', '')}:{row.get('ticker', '')}"
-        display_symbol = _esc(tv_symbol_raw if tv_symbol_raw else fallback_symbol)
+    gain_class = value_class(row.get("var_da_carico_eur", 0.0))
+    daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
 
-        gain_class = value_class(row.get("var_da_carico_eur", 0.0))
-        daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
+    html_card = (
+        '<div class="portfolio-mobile-card">'
+        '<div class="portfolio-mobile-card-header">'
+        '<div>'
+        f'<div class="portfolio-mobile-title">{title}</div>'
+        f'<div class="portfolio-mobile-subtitle">{display_symbol} · {valuta}{_fx_label(row, valuta)}</div>'
+        '</div>'
+        f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
+        '</div>'
+        '<div class="portfolio-mobile-metrics-grid">'
+        + _render_mobile_metric("Valore mercato", f'{fmt_eur(row.get("valore_mercato_eur", 0.0))} EUR')
+        + _render_mobile_metric("Guadagno", f'{fmt_eur(row.get("var_da_carico_eur", 0.0))} EUR · {fmt_pct(row.get("var_da_carico_pct", 0.0))}', gain_class)
+        + _render_mobile_metric("Var oggi", f'{fmt_eur(row.get("var_quotidiana_eur", 0.0))} EUR · {fmt_pct(row.get("var_quotidiana_pct", 0.0))}', daily_class)
+        + _render_mobile_metric("Quantità", fmt_qty(row.get("quantita", 0.0)))
+        + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
+        + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
+        + '</div>'
+        + str(row.get("portfolio_target_mobile_html", "") or "")
+        + '</div>'
+    )
+    st.markdown(html_card, unsafe_allow_html=True)
 
-        html_card_open = (
-            '<div class="portfolio-mobile-card">'
-            '<div class="portfolio-mobile-card-header">'
-            '<div>'
-            f'<div class="portfolio-mobile-title">{title}</div>'
-            f'<div class="portfolio-mobile-subtitle">{display_symbol} · {valuta}{_fx_label(row, valuta)}</div>'
-            '</div>'
-            f'<div class="portfolio-mobile-daily {daily_class}">{fmt_pct(row.get("var_quotidiana_pct", 0.0))}</div>'
-            '</div>'
-            '<div class="portfolio-mobile-metrics-grid">'
-            + _render_mobile_metric("Valore mercato", f'{fmt_eur(row.get("valore_mercato_eur", 0.0))} EUR')
-            + _render_mobile_metric("Guadagno", f'{fmt_eur(row.get("var_da_carico_eur", 0.0))} EUR · {fmt_pct(row.get("var_da_carico_pct", 0.0))}', gain_class)
-            + _render_mobile_metric("Var oggi", f'{fmt_eur(row.get("var_quotidiana_eur", 0.0))} EUR · {fmt_pct(row.get("var_quotidiana_pct", 0.0))}', daily_class)
-            + _render_mobile_metric("Quantità", fmt_qty(row.get("quantita", 0.0)))
-            + _render_mobile_metric("Prezzo medio", fmt_num(row.get("prezzo_medio", 0.0), 5))
-            + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
-            + '</div>'
-            + str(row.get("portfolio_target_mobile_html", "") or "")
-        )
-        st.markdown(html_card_open, unsafe_allow_html=True)
+    tv_url = tradingview_url_builder(
+        row.get("mercato", ""),
+        row.get("ticker", ""),
+        row.get("tv_symbol", ""),
+        row.get("valuta", ""),
+    )
+    target_url = _target_url_from_tradingview_url(tv_url)
 
-        tv_url = tradingview_url_builder(
-            row.get("mercato", ""),
-            row.get("ticker", ""),
-            row.get("tv_symbol", ""),
-            row.get("valuta", ""),
-        )
-        target_url = _target_url_from_tradingview_url(tv_url)
-
-        # Mobile action rows: no wrapper markdown between rows, so CSS can attach rows tightly.
+    # Important: actions get their own keyed wrapper. This keeps CSS for the outer
+    # card grid from turning action rows into full-page single-column rows.
+    with st.container(key=f"portfolio_mobile_actions_grid_{idx}"):
         row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
         with row_1_col_1:
             st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
@@ -10104,10 +10224,36 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
         with row_3_col_2:
             st.empty()
 
-        if inline_renderer is not None:
-            inline_renderer(df, idx)
+    if inline_renderer is not None:
+        inline_renderer(df, idx)
 
-        st.markdown('</div></div>', unsafe_allow_html=True)
+
+def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
+    """Render positions as a responsive card grid in the mobile/card view only.
+
+    The desktop table view is intentionally untouched.
+    """
+    st.markdown('<div class="portfolio-mobile-list-title">Posizioni</div>', unsafe_allow_html=True)
+
+    rows = list(df.iterrows())
+    if not rows:
+        return
+
+    cards_per_row = 3
+    for start in range(0, len(rows), cards_per_row):
+        chunk = rows[start:start + cards_per_row]
+        with st.container(key=f"portfolio_mobile_card_grid_row_{start}"):
+            columns = st.columns(cards_per_row, gap="medium")
+            for column, (idx, row) in zip(columns, chunk):
+                with column:
+                    _render_one_mobile_portfolio_card(
+                        row,
+                        idx,
+                        df,
+                        tradingview_url_builder,
+                        inline_renderer=inline_renderer,
+                        target_renderer=target_renderer,
+                    )
 
 
 
