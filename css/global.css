@@ -396,3 +396,22 @@ div[class*="st-key-allocation_header_back"] button:hover {
     font-size: 0.80rem;
   }
 }
+
+/* ========================= GLOBAL MOBILE ANTI PULL-TO-REFRESH =========================
+   Riduce il rischio che il pull-down da smartphone provochi il refresh del browser
+   e quindi la perdita della sessione Streamlit. Vale per tutto il portale.
+*/
+html,
+body,
+[data-testid="stAppViewContainer"] {
+  overscroll-behavior-y: none;
+}
+
+@media screen and (max-width: 768px) {
+  html,
+  body,
+  [data-testid="stAppViewContainer"],
+  [data-testid="stAppViewContainer"] > .main {
+    overscroll-behavior-y: none !important;
+  }
+}
