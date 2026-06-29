@@ -166,6 +166,22 @@ def _mobile_current_market_price(row: pd.Series) -> float | None:
     return None
 
 
+def _mobile_current_gain_eur(row: pd.Series, current_price: float | None) -> float | None:
+    """Return current gain/loss in EUR vs average load price for mobile marker."""
+    if current_price is None or current_price <= 0:
+        return None
+
+    cost_basis = _mobile_cost_basis_price(row)
+    quantity = _safe_float(row.get("quantita"))
+    currency = _key(row.get("valuta"))
+    if cost_basis is None or cost_basis <= 0 or quantity is None or quantity <= 0:
+        return None
+
+    gain_currency = (float(current_price) - cost_basis) * quantity
+    fx = convert_to_eur(gain_currency, currency)
+    return _safe_float(fx.get("value")) if fx.get("ok") else None
+
+
 def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[dict]:
     if not target_item:
         return []
@@ -238,7 +254,13 @@ def _mobile_tower_height_pct(value: float, max_value: float) -> float:
     return max(12.0, min(100.0, (float(value) / max_value) * 100.0))
 
 
-def _mobile_target_tower_html(item: dict, max_value: float) -> str:
+def _mobile_level_segment_html(current_height_pct: float | None) -> str:
+    if current_height_pct is None:
+        return ""
+    return '<span class="portfolio-mobile-target-current-level-segment" style="bottom:' + fmt_num(current_height_pct, 1).replace(",", ".") + '%"></span>'
+
+
+def _mobile_target_tower_html(item: dict, max_value: float, current_height_pct: float | None = None) -> str:
     height_pct = _mobile_tower_height_pct(float(item["target"]), max_value)
     bar_class = "portfolio-mobile-target-tower-bar-current" if item.get("is_current") else "portfolio-mobile-target-tower-bar-target"
     if not item.get("is_current") and item.get("gain_eur") is not None and item["gain_eur"] < 0:
@@ -249,6 +271,7 @@ def _mobile_target_tower_html(item: dict, max_value: float) -> str:
         '<div class="portfolio-mobile-target-tower-value">' + _target_quote(item["target"], item["currency"]) + '</div>'
         '<div class="portfolio-mobile-target-tower-track">'
         '<div class="portfolio-mobile-target-tower-bar ' + bar_class + '" style="height:' + fmt_num(height_pct, 1).replace(",", ".") + '%"></div>'
+        + _mobile_level_segment_html(current_height_pct) +
         '</div>'
         '<div class="portfolio-mobile-target-tower-label">' + _esc(item["label"]) + '</div>'
         '<div class="portfolio-mobile-target-tower-money">' + _esc(money_text) + '</div>'
@@ -256,11 +279,13 @@ def _mobile_target_tower_html(item: dict, max_value: float) -> str:
     )
 
 
-def _mobile_current_marker_tower_html(current_price: float | None, max_value: float, currency: str) -> str:
+def _mobile_current_marker_tower_html(current_price: float | None, max_value: float, currency: str, current_gain_eur: float | None = None) -> str:
     if current_price is None or current_price <= 0 or max_value <= 0:
         return ""
 
     height_pct = _mobile_tower_height_pct(float(current_price), max_value)
+    gain_class = "portfolio-mobile-target-current-marker-money-positive" if (current_gain_eur or 0.0) >= 0 else "portfolio-mobile-target-current-marker-money-negative"
+    gain_text = _signed_money_eur(current_gain_eur) if current_gain_eur is not None else ""
     return (
         '<div class="portfolio-mobile-target-tower-item portfolio-mobile-target-current-marker-item">'
         '<div class="portfolio-mobile-target-tower-value portfolio-mobile-target-current-marker-value">' + _target_quote(current_price, currency) + '</div>'
@@ -268,9 +293,10 @@ def _mobile_current_marker_tower_html(current_price: float | None, max_value: fl
         '<div class="portfolio-mobile-target-current-marker-linebar" style="height:' + fmt_num(height_pct, 1).replace(",", ".") + '%">'
         '<span class="portfolio-mobile-target-current-marker-dot"></span>'
         '</div>'
+        + _mobile_level_segment_html(height_pct) +
         '</div>'
         '<div class="portfolio-mobile-target-tower-label portfolio-mobile-target-current-marker-label">Attuale</div>'
-        '<div class="portfolio-mobile-target-tower-money"></div>'
+        '<div class="portfolio-mobile-target-tower-money portfolio-mobile-target-current-marker-money ' + gain_class + '">' + _esc(gain_text) + '</div>'
         '</div>'
     )
 
@@ -282,17 +308,19 @@ def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
 
     current_price = _mobile_current_market_price(row)
     currency = _key(row.get("valuta"))
+    current_gain_eur = _mobile_current_gain_eur(row, current_price)
     scale_values = [float(item["target"]) for item in scenarios]
     if current_price is not None and current_price > 0:
         scale_values.append(float(current_price))
     max_target = max(scale_values)
+    current_height_pct = _mobile_tower_height_pct(float(current_price), max_target) if current_price is not None and current_price > 0 else None
 
     chips_html = "".join(_mobile_target_chip_html(item) for item in scenarios)
     tower_parts = []
     for index, item in enumerate(scenarios):
-        tower_parts.append(_mobile_target_tower_html(item, max_target))
+        tower_parts.append(_mobile_target_tower_html(item, max_target, current_height_pct))
         if index == 0:
-            tower_parts.append(_mobile_current_marker_tower_html(current_price, max_target, currency))
+            tower_parts.append(_mobile_current_marker_tower_html(current_price, max_target, currency, current_gain_eur))
     towers_html = "".join(tower_parts)
 
     return (
