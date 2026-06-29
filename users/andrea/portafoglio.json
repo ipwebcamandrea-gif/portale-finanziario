@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T09:06:24+00:00",
+  "updated_at": "2026-06-29T09:11:22+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,8 +10,8 @@
       "valuta": "USD",
       "quantita": 1600.0,
       "prezzo_medio": 6.66,
-      "prezzo_mercato": 5.829999923706055,
-      "prezzo_precedente": 5.95,
+      "prezzo_mercato": 5.840000152587891,
+      "prezzo_precedente": 5.75,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 150.0,
       "prezzo_medio": 325.06,
-      "prezzo_mercato": 333.04998779296875,
+      "prezzo_mercato": 333.20001220703125,
       "prezzo_precedente": 324.8999938964844,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
