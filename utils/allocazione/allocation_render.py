@@ -120,30 +120,6 @@ def _render_current_price_box(row) -> str:
     )
 
 
-def _target_marker_left_pct(current_price: float | None, scenarios: list[dict]) -> float | None:
-    """Map the current price to the target mini-chart width using scenario values as domain."""
-    if current_price is None or current_price <= 0 or not scenarios:
-        return None
-
-    values = []
-    for item in scenarios:
-        value = _safe_float(item.get("value"))
-        if value is not None and value > 0:
-            values.append(value)
-    values.append(float(current_price))
-
-    if len(values) < 2:
-        return None
-
-    min_value = min(values)
-    max_value = max(values)
-    if max_value <= min_value:
-        return 50.0
-
-    raw_pct = ((float(current_price) - min_value) / (max_value - min_value)) * 100.0
-    return max(6.0, min(94.0, raw_pct))
-
-
 def _format_signed_eur(value: float | None) -> str:
     if value is None:
         return "€ n/d"
@@ -238,25 +214,22 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
     if len(scenarios) <= 1:
         return ""
 
-    max_value = max((_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios)
+    scale_values = [(_safe_float(item.get("value"), 0.0) or 0.0) for item in scenarios]
+    if current_price is not None and current_price > 0:
+        scale_values.append(float(current_price))
+
+    max_value = max(scale_values) if scale_values else 0.0
     if max_value <= 0:
         return ""
 
-    marker_left = _target_marker_left_pct(current_price, scenarios)
-    marker_html = ""
-    if marker_left is not None and current_price is not None:
-        marker_html = (
-            f'<div class="allocation-target-current-marker" style="left:{marker_left:.2f}%">'
-            '<div class="allocation-target-current-marker-line"></div>'
-            '<div class="allocation-target-current-marker-dot"></div>'
-            f'<div class="allocation-target-current-marker-label">Attuale {escape(_format_price(current_price, current_currency))}</div>'
-            '</div>'
-        )
+    def _height(value: float | None) -> float:
+        value = _safe_float(value, 0.0) or 0.0
+        return max(12.0, min(100.0, value / max_value * 100.0))
 
     bars = []
-    for item in scenarios:
+    for index, item in enumerate(scenarios):
         value = _safe_float(item.get("value"), 0.0) or 0.0
-        height_pct = max(12.0, min(100.0, value / max_value * 100.0))
+        height_pct = _height(value)
         is_current = item["field"] == "cost_basis"
         bar_class = "allocation-target-current-bar" if is_current else "allocation-target-scenario-bar"
         if not is_current and item.get("gain_eur") is not None and item["gain_eur"] < 0:
@@ -273,10 +246,25 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
             '</div>'
         )
 
+        # Marker current price as a fixed categorical marker after Carico, not as absolute x-axis overlay.
+        if index == 0 and current_price is not None and current_price > 0:
+            current_height = _height(current_price)
+            bars.append(
+                '<div class="allocation-target-tower-item allocation-target-current-marker-item">'
+                f'<div class="allocation-target-tower-value allocation-target-current-marker-value">{escape(_format_price(current_price, current_currency))}</div>'
+                '<div class="allocation-target-tower-track allocation-target-current-marker-track">'
+                f'<div class="allocation-target-current-marker-linebar" style="height:{current_height:.1f}%">'
+                '<span class="allocation-target-current-marker-dot"></span>'
+                '</div>'
+                '</div>'
+                '<div class="allocation-target-tower-label allocation-target-current-marker-label">Attuale</div>'
+                '<div class="allocation-target-tower-money"></div>'
+                '</div>'
+            )
+
     return (
         '<div class="allocation-target-towers-title">Mini grafico target</div>'
-        '<div class="allocation-target-towers">'
-        + marker_html
+        '<div class="allocation-target-towers allocation-target-towers-with-current">'
         + "".join(bars)
         + '</div>'
     )
