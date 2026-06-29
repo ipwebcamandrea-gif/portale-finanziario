@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T14:01:27+00:00",
+  "updated_at": "2026-06-29T14:02:53+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -125,8 +125,8 @@
       "mercato": "NYSE",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 110.0,
-      "prezzo_medio": 94.65,
+      "quantita": 126.0,
+      "prezzo_medio": 94.51,
       "prezzo_mercato": 93.38500213623047,
       "prezzo_precedente": 93.9,
       "yf_symbol": "ABT",
