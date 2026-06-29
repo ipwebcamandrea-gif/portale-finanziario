@@ -758,3 +758,188 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
   .portfolio-mobile-target-current-marker-value { font-size: 0.45rem !important; }
   .portfolio-mobile-target-current-marker-money { font-size: 0.44rem !important; }
 }
+
+/* ========================= PORTFOLIO MOBILE/CARD RESPONSIVE GRID FINAL =========================
+   Scope: only the card renderer used when Portafoglio "Vista mobile" is active.
+   The desktop table view uses css/portafoglio.css and utils/portfolio_render.py.
+*/
+.portfolio-mobile-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 0 1rem 0 !important;
+  padding: 0.82rem 0.86rem 0.78rem 0.86rem !important;
+  box-sizing: border-box !important;
+}
+
+.portfolio-mobile-card-header {
+  gap: 0.55rem !important;
+}
+
+.portfolio-mobile-title {
+  font-size: 0.96rem !important;
+  overflow-wrap: anywhere !important;
+}
+
+.portfolio-mobile-subtitle,
+.portfolio-mobile-tv-symbol {
+  overflow-wrap: anywhere !important;
+}
+
+.portfolio-mobile-daily {
+  flex-shrink: 0 !important;
+}
+
+/* Inside narrower desktop cards the metric boxes must stay compact. */
+.portfolio-mobile-card .portfolio-mobile-metrics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.46rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-metric {
+  padding: 0.56rem 0.58rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-metric-label {
+  font-size: 0.58rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-metric-value {
+  font-size: 0.76rem !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Target card content must fit inside 3-column desktop cards. */
+.portfolio-mobile-card .portfolio-mobile-target-modern-box {
+  padding: 0.66rem 0.58rem 0.62rem 0.58rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-chip-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.22rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-chip {
+  padding: 0.40rem 0.22rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-chip-label {
+  font-size: 0.50rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-chip-price {
+  font-size: 0.61rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-chip-pct,
+.portfolio-mobile-card .portfolio-mobile-target-chip-money {
+  font-size: 0.50rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-towers {
+  gap: 0.14rem !important;
+  padding-left: 0.10rem !important;
+  padding-right: 0.10rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-tower-value {
+  font-size: 0.46rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-tower-label {
+  font-size: 0.50rem !important;
+}
+
+.portfolio-mobile-card .portfolio-mobile-target-tower-money {
+  font-size: 0.43rem !important;
+}
+
+/* Action buttons stay in a compact 2-column grid inside each card. */
+.portfolio-mobile-card .portfolio-mobile-actions-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin-top: 0.60rem !important;
+  margin-bottom: 0.42rem !important;
+  display: block !important;
+}
+
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]),
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]),
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]),
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 0.45rem !important;
+  row-gap: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0.22rem 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) > div[data-testid="column"],
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) > div[data-testid="column"],
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) > div[data-testid="column"],
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) > div[data-testid="column"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
+.portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
+.portfolio-mobile-card div[class*="st-key-portfolio_mobile_sim_"] button,
+.portfolio-mobile-card div[class*="st-key-portfolio_mobile_edit_"] button,
+.portfolio-mobile-card div[class*="st-key-portfolio_mobile_delete_"] button,
+.portfolio-mobile-card div[class*="st-key-portfolio_mobile_target_"] button {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0.92rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media screen and (max-width: 768px) {
+  .portfolio-mobile-card {
+    padding: 0.88rem 0.92rem 0.82rem 0.92rem !important;
+  }
+
+  .portfolio-mobile-card .portfolio-mobile-metrics-grid {
+    gap: 0.52rem !important;
+  }
+
+  .portfolio-mobile-card .portfolio-mobile-metric-value {
+    font-size: 0.82rem !important;
+  }
+
+  .portfolio-mobile-card .portfolio-mobile-target-tower-value {
+    font-size: 0.49rem !important;
+  }
+
+  .portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_sim_"]) a,
+  .portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_edit_"]) a,
+  .portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_delete_"]) a,
+  .portfolio-mobile-card div[data-testid="stHorizontalBlock"]:has(div[class*="st-key-portfolio_mobile_target_"]) a,
+  .portfolio-mobile-card div[class*="st-key-portfolio_mobile_sim_"] button,
+  .portfolio-mobile-card div[class*="st-key-portfolio_mobile_edit_"] button,
+  .portfolio-mobile-card div[class*="st-key-portfolio_mobile_delete_"] button,
+  .portfolio-mobile-card div[class*="st-key-portfolio_mobile_target_"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    font-size: 0.98rem !important;
+  }
+}
