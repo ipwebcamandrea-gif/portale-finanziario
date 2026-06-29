@@ -721,3 +721,40 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
     font-size: 0.45rem !important;
   }
 }
+
+/* ========================= FINAL PORTFOLIO MOBILE CURRENT GAIN + VISIBLE LEVEL LINE ========================= */
+.portfolio-mobile-target-towers-with-current {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+.portfolio-mobile-target-tower-track {
+  position: relative !important;
+  overflow: visible !important;
+}
+.portfolio-mobile-target-tower-bar,
+.portfolio-mobile-target-current-marker-linebar {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.portfolio-mobile-target-current-level-segment {
+  position: absolute;
+  left: -0.10rem;
+  right: -0.10rem;
+  z-index: 6;
+  border-top: 2px dashed #ffac3c;
+  filter: drop-shadow(0 1px 0 rgba(7,12,18,0.95)) drop-shadow(0 -1px 0 rgba(7,12,18,0.95));
+  pointer-events: none;
+}
+.portfolio-mobile-target-current-marker-money {
+  font-size: 0.50rem !important;
+  font-weight: 950 !important;
+  min-height: 0.78rem;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+.portfolio-mobile-target-current-marker-money-positive { color: #22c55e !important; }
+.portfolio-mobile-target-current-marker-money-negative { color: #ef4444 !important; }
+@media screen and (max-width: 390px) {
+  .portfolio-mobile-target-towers-with-current { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 0.12rem !important; }
+  .portfolio-mobile-target-current-marker-value { font-size: 0.45rem !important; }
+  .portfolio-mobile-target-current-marker-money { font-size: 0.44rem !important; }
+}
