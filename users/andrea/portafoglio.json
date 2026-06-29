@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-28T06:25:53+00:00",
+  "updated_at": "2026-06-29T05:05:10+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -36,7 +36,7 @@
       "valuta": "USD",
       "quantita": 700.0,
       "prezzo_medio": 8.34849,
-      "prezzo_mercato": 9.21,
+      "prezzo_mercato": 9.210000038146973,
       "prezzo_precedente": 8.69,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
-      "prezzo_mercato": 499.02,
+      "prezzo_mercato": 499.0199890136719,
       "prezzo_precedente": 490.9252,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 91.0,
       "prezzo_medio": 186.59,
-      "prezzo_mercato": 148.53,
+      "prezzo_mercato": 148.52999877929688,
       "prezzo_precedente": 151.4,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -153,7 +153,7 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.22,
-      "prezzo_mercato": 158.37,
+      "prezzo_mercato": 158.3699951171875,
       "prezzo_precedente": 151.0,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
