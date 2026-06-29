@@ -166,29 +166,6 @@ def _mobile_current_market_price(row: pd.Series) -> float | None:
     return None
 
 
-def _mobile_target_marker_left_pct(current_price: float | None, scenarios: list[dict]) -> float | None:
-    if current_price is None or current_price <= 0 or not scenarios:
-        return None
-
-    values = []
-    for item in scenarios:
-        value = _safe_float(item.get("target"))
-        if value is not None and value > 0:
-            values.append(value)
-    values.append(float(current_price))
-
-    if len(values) < 2:
-        return None
-
-    min_value = min(values)
-    max_value = max(values)
-    if max_value <= min_value:
-        return 50.0
-
-    raw_pct = ((float(current_price) - min_value) / (max_value - min_value)) * 100.0
-    return max(6.0, min(94.0, raw_pct))
-
-
 def _mobile_target_scenarios(row: pd.Series, target_item: dict | None) -> list[dict]:
     if not target_item:
         return []
@@ -279,16 +256,21 @@ def _mobile_target_tower_html(item: dict, max_value: float) -> str:
     )
 
 
-def _mobile_current_marker_html(current_price: float | None, scenarios: list[dict], currency: str) -> str:
-    marker_left = _mobile_target_marker_left_pct(current_price, scenarios)
-    if marker_left is None or current_price is None:
+def _mobile_current_marker_tower_html(current_price: float | None, max_value: float, currency: str) -> str:
+    if current_price is None or current_price <= 0 or max_value <= 0:
         return ""
 
+    height_pct = _mobile_tower_height_pct(float(current_price), max_value)
     return (
-        '<div class="portfolio-mobile-target-current-marker" style="left:' + fmt_num(marker_left, 2).replace(",", ".") + '%">'
-        '<div class="portfolio-mobile-target-current-marker-line"></div>'
-        '<div class="portfolio-mobile-target-current-marker-dot"></div>'
-        '<div class="portfolio-mobile-target-current-marker-label">Attuale ' + _target_quote(current_price, currency) + '</div>'
+        '<div class="portfolio-mobile-target-tower-item portfolio-mobile-target-current-marker-item">'
+        '<div class="portfolio-mobile-target-tower-value portfolio-mobile-target-current-marker-value">' + _target_quote(current_price, currency) + '</div>'
+        '<div class="portfolio-mobile-target-tower-track portfolio-mobile-target-current-marker-track">'
+        '<div class="portfolio-mobile-target-current-marker-linebar" style="height:' + fmt_num(height_pct, 1).replace(",", ".") + '%">'
+        '<span class="portfolio-mobile-target-current-marker-dot"></span>'
+        '</div>'
+        '</div>'
+        '<div class="portfolio-mobile-target-tower-label portfolio-mobile-target-current-marker-label">Attuale</div>'
+        '<div class="portfolio-mobile-target-tower-money"></div>'
         '</div>'
     )
 
@@ -298,19 +280,27 @@ def render_target_mobile_html(row: pd.Series, target_item: dict | None) -> str:
     if len(scenarios) <= 1:
         return ""
 
-    max_target = max(float(item["target"]) for item in scenarios)
     current_price = _mobile_current_market_price(row)
     currency = _key(row.get("valuta"))
+    scale_values = [float(item["target"]) for item in scenarios]
+    if current_price is not None and current_price > 0:
+        scale_values.append(float(current_price))
+    max_target = max(scale_values)
+
     chips_html = "".join(_mobile_target_chip_html(item) for item in scenarios)
-    marker_html = _mobile_current_marker_html(current_price, scenarios, currency)
-    towers_html = marker_html + "".join(_mobile_target_tower_html(item, max_target) for item in scenarios)
+    tower_parts = []
+    for index, item in enumerate(scenarios):
+        tower_parts.append(_mobile_target_tower_html(item, max_target))
+        if index == 0:
+            tower_parts.append(_mobile_current_marker_tower_html(current_price, max_target, currency))
+    towers_html = "".join(tower_parts)
 
     return (
         '<div class="portfolio-mobile-target-modern-box">'
         '<div class="portfolio-mobile-target-modern-title">Target analisti · impatto posizione</div>'
         '<div class="portfolio-mobile-target-chip-grid">' + chips_html + '</div>'
         '<div class="portfolio-mobile-target-towers-title">Mini grafico target</div>'
-        '<div class="portfolio-mobile-target-towers">' + towers_html + '</div>'
+        '<div class="portfolio-mobile-target-towers portfolio-mobile-target-towers-with-current">' + towers_html + '</div>'
         '<div class="portfolio-mobile-target-modern-note">€ stimati = (target - prezzo di carico) × quantità × cambio EUR</div>'
         '</div>'
     )
