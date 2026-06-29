@@ -81,7 +81,10 @@ st.markdown(
 # =========================
 
 if "authenticated" not in st.session_state:
-    logout_user()
+    # Do not call logout_user() here: after browser F5 the restore token in
+    # query params must remain available so is_authenticated() can rebuild
+    # session_state without sending the user back to login.
+    st.session_state["authenticated"] = False
 
 
 # =========================
