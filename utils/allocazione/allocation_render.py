@@ -120,6 +120,22 @@ def _render_current_price_box(row) -> str:
     )
 
 
+def _current_price_gain_eur(row, current_price: float | None) -> float | None:
+    """Return current gain/loss in EUR vs average load price for the orange marker."""
+    if current_price is None or current_price <= 0:
+        return None
+
+    cost_basis = _safe_float(row.get("prezzo_medio"))
+    quantity = _safe_float(row.get("quantita"), 0.0) or 0.0
+    currency = _key(row.get("valuta"))
+    fx = _fx_to_eur(row, currency)
+
+    if cost_basis is None or cost_basis <= 0 or quantity <= 0 or not fx:
+        return None
+
+    return (float(current_price) - cost_basis) * quantity * fx
+
+
 def _format_signed_eur(value: float | None) -> str:
     if value is None:
         return "€ n/d"
@@ -210,7 +226,7 @@ def _render_target_chips(scenarios: list[dict]) -> str:
     return '<div class="allocation-target-chip-grid">' + "".join(chips) + '</div>'
 
 
-def _render_target_towers(scenarios: list[dict], current_price: float | None = None, current_currency: str = "") -> str:
+def _render_target_towers(scenarios: list[dict], current_price: float | None = None, current_currency: str = "", current_gain_eur: float | None = None) -> str:
     if len(scenarios) <= 1:
         return ""
 
@@ -246,9 +262,10 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
             '</div>'
         )
 
-        # Marker current price as a fixed categorical marker after Carico, not as absolute x-axis overlay.
         if index == 0 and current_price is not None and current_price > 0:
             current_height = _height(current_price)
+            current_gain_class = "allocation-target-current-marker-money-positive" if (current_gain_eur or 0.0) >= 0 else "allocation-target-current-marker-money-negative"
+            current_gain_text = _format_signed_eur(current_gain_eur) if current_gain_eur is not None else ""
             bars.append(
                 '<div class="allocation-target-tower-item allocation-target-current-marker-item">'
                 f'<div class="allocation-target-tower-value allocation-target-current-marker-value">{escape(_format_price(current_price, current_currency))}</div>'
@@ -258,7 +275,7 @@ def _render_target_towers(scenarios: list[dict], current_price: float | None = N
                 '</div>'
                 '</div>'
                 '<div class="allocation-target-tower-label allocation-target-current-marker-label">Attuale</div>'
-                '<div class="allocation-target-tower-money"></div>'
+                f'<div class="allocation-target-tower-money allocation-target-current-marker-money {current_gain_class}">{escape(current_gain_text)}</div>'
                 '</div>'
             )
 
@@ -274,7 +291,8 @@ def _render_target_block(row, target_item: dict | None) -> str:
     scenarios = _build_target_scenarios(row, target_item)
     chips_html = _render_target_chips(scenarios)
     current_price = _current_market_price(row)
-    towers_html = _render_target_towers(scenarios, current_price, _key(row.get("valuta")))
+    current_gain_eur = _current_price_gain_eur(row, current_price)
+    towers_html = _render_target_towers(scenarios, current_price, _key(row.get("valuta")), current_gain_eur)
     return (
         '<div class="allocation-target-block">'
         '<div class="allocation-target-block-title">Target analisti · impatto posizione</div>'
