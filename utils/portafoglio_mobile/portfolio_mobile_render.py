@@ -96,7 +96,7 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
     gain_class = value_class(row.get("var_da_carico_eur", 0.0))
     daily_class = value_class(row.get("var_quotidiana_eur", 0.0))
 
-    html_card_open = (
+    html_card = (
         '<div class="portfolio-mobile-card">'
         '<div class="portfolio-mobile-card-header">'
         '<div>'
@@ -114,8 +114,9 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
         + _render_mobile_metric("Prezzo mercato", fmt_num(row.get("prezzo_mercato", 0.0), 2))
         + '</div>'
         + str(row.get("portfolio_target_mobile_html", "") or "")
+        + '</div>'
     )
-    st.markdown(html_card_open, unsafe_allow_html=True)
+    st.markdown(html_card, unsafe_allow_html=True)
 
     tv_url = tradingview_url_builder(
         row.get("mercato", ""),
@@ -125,49 +126,46 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
     )
     target_url = _target_url_from_tradingview_url(tv_url)
 
-    st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
+    # Important: actions get their own keyed wrapper. This keeps CSS for the outer
+    # card grid from turning action rows into full-page single-column rows.
+    with st.container(key=f"portfolio_mobile_actions_grid_{idx}"):
+        row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
+        with row_1_col_1:
+            st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
+        with row_1_col_2:
+            if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
+                st.session_state["portfolio_simulation_index"] = idx
+                st.session_state["portfolio_edit_index"] = None
+                st.session_state["portfolio_delete_index"] = None
+                st.rerun()
 
-    row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
-    with row_1_col_1:
-        st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
-    with row_1_col_2:
-        if st.button("🧮", key=f"portfolio_mobile_sim_{idx}", help="Simula acquisto aggiuntivo", use_container_width=True):
-            st.session_state["portfolio_simulation_index"] = idx
-            st.session_state["portfolio_edit_index"] = None
-            st.session_state["portfolio_delete_index"] = None
-            st.rerun()
+        row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
+        with row_2_col_1:
+            if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
+                st.session_state["portfolio_edit_index"] = idx
+                st.session_state["portfolio_delete_index"] = None
+                st.session_state["portfolio_simulation_index"] = None
+                st.rerun()
+        with row_2_col_2:
+            if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
+                st.session_state["portfolio_delete_index"] = idx
+                st.session_state["portfolio_edit_index"] = None
+                st.session_state["portfolio_simulation_index"] = None
+                st.rerun()
 
-    row_2_col_1, row_2_col_2 = st.columns(2, gap="small")
-    with row_2_col_1:
-        if st.button("✏️", key=f"portfolio_mobile_edit_{idx}", help="Modifica posizione", use_container_width=True):
-            st.session_state["portfolio_edit_index"] = idx
-            st.session_state["portfolio_delete_index"] = None
-            st.session_state["portfolio_simulation_index"] = None
-            st.rerun()
-    with row_2_col_2:
-        if st.button("🗑️", key=f"portfolio_mobile_delete_{idx}", help="Elimina posizione", use_container_width=True):
-            st.session_state["portfolio_delete_index"] = idx
-            st.session_state["portfolio_edit_index"] = None
-            st.session_state["portfolio_simulation_index"] = None
-            st.rerun()
-
-    row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
-    with row_3_col_1:
-        with st.container(key=f"portfolio_mobile_target_{idx}"):
-            if target_renderer is not None:
-                if st.button("🎯", key=f"portfolio_mobile_target_btn_{idx}", use_container_width=True, help="Apri Target Analisti interno"):
-                    target_renderer(row)
-            else:
-                st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
-    with row_3_col_2:
-        st.empty()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        row_3_col_1, row_3_col_2 = st.columns(2, gap="small")
+        with row_3_col_1:
+            with st.container(key=f"portfolio_mobile_target_{idx}"):
+                if target_renderer is not None:
+                    if st.button("🎯", key=f"portfolio_mobile_target_btn_{idx}", use_container_width=True, help="Apri Target Analisti interno"):
+                        target_renderer(row)
+                else:
+                    st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
+        with row_3_col_2:
+            st.empty()
 
     if inline_renderer is not None:
         inline_renderer(df, idx)
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=None, target_renderer=None) -> None:
@@ -184,8 +182,6 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
     cards_per_row = 3
     for start in range(0, len(rows), cards_per_row):
         chunk = rows[start:start + cards_per_row]
-        # Keyed container gives CSS a stable selector that does not rely on :has(),
-        # especially useful on mobile browsers/webviews.
         with st.container(key=f"portfolio_mobile_card_grid_row_{start}"):
             columns = st.columns(cards_per_row, gap="medium")
             for column, (idx, row) in zip(columns, chunk):
