@@ -759,11 +759,15 @@ div[class*="st-key-portfolio_mobile_delete_"] button {
   .portfolio-mobile-target-current-marker-money { font-size: 0.44rem !important; }
 }
 
-/* ========================= PORTFOLIO MOBILE CARD GRID KEYED ROW FIX V3 =========================
-   Uses the explicit Streamlit container key portfolio_mobile_card_grid_row_*.
-   This avoids relying on :has(), which can fail or behave differently on phones/webviews.
-   Scope: only Portafoglio "Vista mobile" card rows.
+/* ========================= PORTFOLIO MOBILE CARD GRID + ACTIONS FIX V4 =========================
+   Scope: only Portafoglio "Vista mobile" card renderer.
+   Fixes:
+   - smartphone: one card per row;
+   - desktop: card grid remains 3/2/1 responsive;
+   - action buttons stay grouped under their own card as compact 2-column rows.
 */
+
+/* OUTER CARD ROWS --------------------------------------------------------- */
 div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(320px, 1fr)) !important;
@@ -795,33 +799,84 @@ div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizont
   }
 }
 
-/* Extra protection for phones/tablets even when viewport is reported as wide. */
 @media (hover: none), (pointer: coarse) {
   div[class*="st-key-portfolio_mobile_card_grid_row_"] div[data-testid="stHorizontalBlock"] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 
-/* Keep the inner action rows as 2-button rows; do not let the outer grid rules squeeze them. */
-.portfolio-mobile-card div[data-testid="stHorizontalBlock"] {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-  column-gap: 0.45rem !important;
+/* CARD FIT ---------------------------------------------------------------- */
+.portfolio-mobile-card {
   width: 100% !important;
-  max-width: none !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 0.62rem !important;
 }
 
-.portfolio-mobile-card div[data-testid="stHorizontalBlock"] > * {
+.portfolio-mobile-title,
+.portfolio-mobile-subtitle,
+.portfolio-mobile-tv-symbol,
+.portfolio-mobile-metric-value {
+  overflow-wrap: anywhere !important;
+}
+
+/* ACTIONS: override outer row rules for keyed action wrappers ------------- */
+div[class*="st-key-portfolio_mobile_actions_grid_"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0.20rem 0 0.85rem 0 !important;
+}
+
+div[class*="st-key-portfolio_mobile_actions_grid_"] div[data-testid="stHorizontalBlock"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 0.48rem !important;
+  row-gap: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0.24rem 0 !important;
+  padding: 0 !important;
+}
+
+div[class*="st-key-portfolio_mobile_actions_grid_"] div[data-testid="stHorizontalBlock"] > * {
   width: 100% !important;
   min-width: 0 !important;
   max-width: none !important;
   flex: none !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+  margin: 0 !important;
 }
 
-.portfolio-mobile-card {
+div[class*="st-key-portfolio_mobile_actions_grid_"] a,
+div[class*="st-key-portfolio_mobile_actions_grid_"] button {
   width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0.92rem !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media screen and (max-width: 768px) {
+  div[class*="st-key-portfolio_mobile_actions_grid_"] {
+    max-width: 312px !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+  }
+
+  div[class*="st-key-portfolio_mobile_actions_grid_"] a,
+  div[class*="st-key-portfolio_mobile_actions_grid_"] button {
+    min-height: 42px !important;
+    height: 42px !important;
+    font-size: 0.98rem !important;
+  }
 }
