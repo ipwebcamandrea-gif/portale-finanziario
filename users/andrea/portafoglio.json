@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T10:16:09+00:00",
+  "updated_at": "2026-06-29T10:18:29+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 150.0,
       "prezzo_medio": 325.06,
-      "prezzo_mercato": 333.95001220703125,
+      "prezzo_mercato": 333.3500061035156,
       "prezzo_precedente": 324.8999938964844,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
