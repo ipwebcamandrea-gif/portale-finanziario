@@ -126,6 +126,7 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
     target_url = _target_url_from_tradingview_url(tv_url)
 
     st.markdown('<div class="portfolio-mobile-actions-grid">', unsafe_allow_html=True)
+
     row_1_col_1, row_1_col_2 = st.columns(2, gap="small")
     with row_1_col_1:
         st.link_button("📊", tv_url, use_container_width=True, help="Apri TradingView esterno")
@@ -160,10 +161,12 @@ def _render_one_mobile_portfolio_card(row, idx, df, tradingview_url_builder, inl
                 st.link_button("🎯", target_url, use_container_width=True, help="Apri target analisti TradingView")
     with row_3_col_2:
         st.empty()
+
     st.markdown('</div>', unsafe_allow_html=True)
 
     if inline_renderer is not None:
         inline_renderer(df, idx)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -181,14 +184,17 @@ def render_mobile_portfolio_rows(df, tradingview_url_builder, inline_renderer=No
     cards_per_row = 3
     for start in range(0, len(rows), cards_per_row):
         chunk = rows[start:start + cards_per_row]
-        columns = st.columns(cards_per_row, gap="medium")
-        for column, (idx, row) in zip(columns, chunk):
-            with column:
-                _render_one_mobile_portfolio_card(
-                    row,
-                    idx,
-                    df,
-                    tradingview_url_builder,
-                    inline_renderer=inline_renderer,
-                    target_renderer=target_renderer,
-                )
+        # Keyed container gives CSS a stable selector that does not rely on :has(),
+        # especially useful on mobile browsers/webviews.
+        with st.container(key=f"portfolio_mobile_card_grid_row_{start}"):
+            columns = st.columns(cards_per_row, gap="medium")
+            for column, (idx, row) in zip(columns, chunk):
+                with column:
+                    _render_one_mobile_portfolio_card(
+                        row,
+                        idx,
+                        df,
+                        tradingview_url_builder,
+                        inline_renderer=inline_renderer,
+                        target_renderer=target_renderer,
+                    )
