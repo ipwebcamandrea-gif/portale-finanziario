@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T08:00:16+00:00",
+  "updated_at": "2026-06-29T08:30:30+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -11,7 +11,7 @@
       "quantita": 1600.0,
       "prezzo_medio": 6.66,
       "prezzo_mercato": 5.829999923706055,
-      "prezzo_precedente": 5.75,
+      "prezzo_precedente": 5.95,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -24,7 +24,7 @@
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
       "prezzo_mercato": 267.7200012207031,
-      "prezzo_precedente": 256.85,
+      "prezzo_precedente": 268.46,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
     },
@@ -37,7 +37,7 @@
       "quantita": 700.0,
       "prezzo_medio": 8.34849,
       "prezzo_mercato": 9.210000038146973,
-      "prezzo_precedente": 8.69,
+      "prezzo_precedente": 9.29,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
     },
@@ -50,7 +50,7 @@
       "quantita": 330.0,
       "prezzo_medio": 16.96324,
       "prezzo_mercato": 17.8799991607666,
-      "prezzo_precedente": 17.22,
+      "prezzo_precedente": 17.765,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
     },
@@ -63,7 +63,7 @@
       "quantita": 45.0,
       "prezzo_medio": 491.67956,
       "prezzo_mercato": 499.0199890136719,
-      "prezzo_precedente": 490.9252,
+      "prezzo_precedente": 496.1545,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
     },
@@ -75,7 +75,7 @@
       "valuta": "EUR",
       "quantita": 150.0,
       "prezzo_medio": 325.06,
-      "prezzo_mercato": 332.20001220703125,
+      "prezzo_mercato": 331.70001220703125,
       "prezzo_precedente": 324.8999938964844,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
@@ -89,7 +89,7 @@
       "quantita": 157.0,
       "prezzo_medio": 56.64,
       "prezzo_mercato": 44.290000915527344,
-      "prezzo_precedente": 42.48,
+      "prezzo_precedente": 44.22,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
     },
@@ -102,7 +102,7 @@
       "quantita": 91.0,
       "prezzo_medio": 186.59,
       "prezzo_mercato": 148.52999877929688,
-      "prezzo_precedente": 151.4,
+      "prezzo_precedente": 148.9994,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
     },
@@ -115,7 +115,7 @@
       "quantita": 117.0,
       "prezzo_medio": 75.35,
       "prezzo_mercato": 71.44999694824219,
-      "prezzo_precedente": 66.0812,
+      "prezzo_precedente": 71.59,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
     },
@@ -141,7 +141,7 @@
       "quantita": 55.0,
       "prezzo_medio": 107.22,
       "prezzo_mercato": 112.93000030517578,
-      "prezzo_precedente": 107.9,
+      "prezzo_precedente": 112.15,
       "yf_symbol": "PLTR",
       "tv_symbol": "NASDAQ:PLTR"
     },
@@ -154,7 +154,7 @@
       "quantita": 72.0,
       "prezzo_medio": 157.22,
       "prezzo_mercato": 158.3699951171875,
-      "prezzo_precedente": 151.0,
+      "prezzo_precedente": 158.32,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
     }
