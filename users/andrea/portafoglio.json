@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T13:36:56+00:00",
+  "updated_at": "2026-06-29T13:38:34+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -118,6 +118,19 @@
       "prezzo_precedente": 158.32,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
+    },
+    {
+      "ticker": "ABT",
+      "titolo": "Abbott Laboratories",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 110.0,
+      "prezzo_medio": 94.65,
+      "prezzo_mercato": 94.1449966430664,
+      "prezzo_precedente": 93.9,
+      "yf_symbol": "ABT",
+      "tv_symbol": "NYSE:ABT"
     }
   ]
 }
