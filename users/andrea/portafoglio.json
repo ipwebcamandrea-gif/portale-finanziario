@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-29T14:02:53+00:00",
+  "updated_at": "2026-06-29T14:04:35+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -34,8 +34,8 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 700.0,
-      "prezzo_medio": 8.34849,
+      "quantita": 1000.0,
+      "prezzo_medio": 8.65,
       "prezzo_mercato": 9.40999984741211,
       "prezzo_precedente": 9.29,
       "yf_symbol": "PERI",
