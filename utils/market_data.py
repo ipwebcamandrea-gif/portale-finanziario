@@ -2,23 +2,6 @@ import pandas as pd
 import streamlit as st
 import yfinance as yf
 
-
-def yf_download_safe(*args, repair=False, **kwargs):
-    """Download yfinance con repair opzionale e fallback compatibile.
-
-    Su alcuni ambienti (es. PythonAnywhere con yfinance non aggiornato) il parametro
-    repair=True puo' non essere supportato o puo' fallire su alcuni intervalli.
-    In quel caso non blocchiamo Watchlist/SMA200W: riproviamo automaticamente senza repair.
-    """
-    if repair:
-        try:
-            return yf.download(*args, repair=True, **kwargs)
-        except TypeError:
-            return yf.download(*args, **kwargs)
-        except Exception:
-            return yf.download(*args, **kwargs)
-    return yf.download(*args, **kwargs)
-
 from utils.symbols import normalize_yfinance_symbol
 
 
@@ -68,7 +51,7 @@ def get_stock_metrics(symbol):
         long_name = ""
 
         try:
-            intraday = yf_download_safe(yf_symbol, period="5d", interval="15m", auto_adjust=False, repair=True, progress=False, threads=False)
+            intraday = yf.download(yf_symbol, period="5d", interval="15m", auto_adjust=False, progress=False, threads=False)
 
             if intraday is not None and not intraday.empty:
                 intraday = normalizza_dataframe_yfinance(intraday)
@@ -82,7 +65,7 @@ def get_stock_metrics(symbol):
             pass
 
         try:
-            daily = yf_download_safe(yf_symbol, period="10d", interval="1d", auto_adjust=False, repair=True, progress=False, threads=False)
+            daily = yf.download(yf_symbol, period="10d", interval="1d", auto_adjust=False, progress=False, threads=False)
 
             if daily is not None and not daily.empty:
                 daily = normalizza_dataframe_yfinance(daily)
@@ -145,7 +128,7 @@ def get_stock_metrics(symbol):
         hist_max_w_sma = None
 
         try:
-            weekly = yf_download_safe(yf_symbol, period="20y", interval="1wk", auto_adjust=False, repair=True, progress=False, threads=False)
+            weekly = yf.download(yf_symbol, period="20y", interval="1wk", auto_adjust=False, progress=False, threads=False)
 
             if weekly is not None and not weekly.empty:
                 weekly = normalizza_dataframe_yfinance(weekly)
