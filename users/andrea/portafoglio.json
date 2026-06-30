@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-06-30T16:24:31+00:00",
+  "updated_at": "2026-06-30T16:24:44+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 262.6600036621094,
+      "prezzo_mercato": 262.7850036621094,
       "prezzo_precedente": 267.5008,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 157.0,
       "prezzo_medio": 56.64,
-      "prezzo_mercato": 42.974998474121094,
+      "prezzo_mercato": 42.959999084472656,
       "prezzo_precedente": 44.3001,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 91.0,
       "prezzo_medio": 186.59,
-      "prezzo_mercato": 146.19000244140625,
+      "prezzo_mercato": 146.24000549316406,
       "prezzo_precedente": 148.6,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.22,
-      "prezzo_mercato": 155.32000732421875,
+      "prezzo_mercato": 155.3249969482422,
       "prezzo_precedente": 158.4866,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 126.0,
       "prezzo_medio": 94.51,
-      "prezzo_mercato": 91.11000061035156,
+      "prezzo_mercato": 91.12999725341797,
       "prezzo_precedente": 92.76,
       "yf_symbol": "ABT",
       "tv_symbol": "NYSE:ABT"
