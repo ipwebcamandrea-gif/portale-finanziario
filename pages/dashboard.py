@@ -84,7 +84,7 @@ st.markdown(
 # =========================
 # IMPORTANT: use st.button + st.switch_page, not HTML <a> links.
 # This preserves Streamlit session_state, including the login state.
-col_watchlist_tv, col_portafoglio, col_allocazione = st.columns(3)
+col_watchlist_tv, col_institutional, col_portafoglio, col_allocazione = st.columns(4)
 
 with col_watchlist_tv:
     if st.button(
@@ -93,6 +93,14 @@ with col_watchlist_tv:
         use_container_width=True,
     ):
         st.switch_page("pages/watchlist_tradingview.py")
+
+with col_institutional:
+    if st.button(
+        "🏁 Institutional Scanner\n\nMega Cap USA/ETF, score e range Buy Zone.",
+        key="card_institutional_scanner",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/institutional_scanner.py")
 
 with col_portafoglio:
     if st.button(
