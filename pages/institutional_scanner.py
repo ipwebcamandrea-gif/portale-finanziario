@@ -9,6 +9,7 @@ from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
 from utils.institutional_scanner import (
+    BUY_ZONE_THRESHOLD,
     fmt_gap_points,
     fmt_num,
     fmt_pct,
@@ -82,6 +83,34 @@ def label_icon(label: str) -> str:
 
 def orange_metric_box_class(record: dict) -> str:
     return "institutional-metric-orange" if bool(record.get("orange_zone")) else ""
+
+
+def record_key(record: dict) -> str:
+    return str(record.get("ticker") or record.get("yahoo") or "").upper().strip()
+
+
+def is_buy_or_strong(record: dict) -> bool:
+    return (safe_float(record.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD
+
+
+def build_display_records(records: list[dict]) -> list[dict]:
+    """Always show all Buy/Strong + all orange-zone names, then complete with Top 12.
+
+    Records arrive already sorted by Institutional Score descending. This function
+    preserves that order and removes duplicates by ticker/yahoo key.
+    """
+    priority = [record for record in records if is_buy_or_strong(record) or bool(record.get("orange_zone"))]
+    top12 = records[:12]
+
+    selected: list[dict] = []
+    seen: set[str] = set()
+    for record in priority + top12:
+        key = record_key(record)
+        if not key or key in seen:
+            continue
+        selected.append(record)
+        seen.add(key)
+    return selected
 
 
 def metric_html(label: str, value: str, css_class: str = "", box_class: str = "") -> str:
@@ -158,7 +187,7 @@ def render_card(record: dict, rank: int) -> str:
 
 render_standard_page_header(
     title="Institutional Scanner",
-    subtitle="Mega Cap USA/ETF · scoring tecnico/fondamentale · Top 12 istituzionale con range Buy Zone e Strong Buy Zone.",
+    subtitle="Mega Cap USA/ETF · scoring tecnico/fondamentale · Buy/Strong, area arancione e Top 12 istituzionale.",
     toggle_label="📱 Vista compatta",
     toggle_key="institutional_compact_mode",
     toggle_default=True,
@@ -171,12 +200,15 @@ with st.spinner("Calcolo Institutional Score su Mega Cap USA/ETF..."):
     records = load_institutional_scan()
 
 summary = scan_summary(records)
+display_records = build_display_records(records)
+priority_count = len([record for record in records if is_buy_or_strong(record) or bool(record.get("orange_zone"))])
+
 cols = st.columns(4)
 summary_cards = [
     ("Titoli analizzati", str(summary.get("count", 0)), "Lista Mega Cap USA/ETF"),
     ("Top score", fmt_num(summary.get("top_score"), 1), str(summary.get("top_ticker") or "-")),
-    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Score >= 65"),
-    ("Area arancione", str(summary.get("orange_count", 0)), "SMA200W + storico"),
+    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Sempre visibili"),
+    ("Area arancione", str(summary.get("orange_count", 0)), "Sempre visibili"),
 ]
 for col, (label, value, note) in zip(cols, summary_cards):
     with col:
@@ -189,14 +221,21 @@ for col, (label, value, note) in zip(cols, summary_cards):
             unsafe_allow_html=True,
         )
 
-st.caption(f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan.")
-st.markdown('<div class="institutional-section-title">🏁 Top 12 per Institutional Score</div>', unsafe_allow_html=True)
+st.caption(
+    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
+    f"Mostro {len(display_records)} card: tutti i Buy/Strong + tutti gli area arancione + completamento Top 12. "
+    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
+)
+st.markdown('<div class="institutional-section-title">🏁 Buy/Strong + Area arancione + Top 12</div>', unsafe_allow_html=True)
 
-if not records:
+if priority_count:
+    st.caption(f"Titoli prioritari intercettati: {priority_count}. Eventuali duplicati con la Top 12 vengono mostrati una sola volta.")
+
+if not display_records:
     st.warning("Nessun dato disponibile per lo scanner istituzionale.")
 else:
     st.markdown(
-        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records[:12], 1)) + '</div>',
+        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(display_records, 1)) + '</div>',
         unsafe_allow_html=True,
     )
 
