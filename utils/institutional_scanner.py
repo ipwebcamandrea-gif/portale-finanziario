@@ -122,7 +122,6 @@ def yf_download(symbol: str, **kwargs) -> pd.DataFrame:
 
 
 def get_info(symbol: str) -> dict[str, Any]:
-    """Same spirit as the local script: try get_info, return {} only on hard failure."""
     try:
         info = yf.Ticker(symbol).get_info()
         return info if isinstance(info, dict) else {}
@@ -250,7 +249,6 @@ def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
         returns = close.pct_change().tail(52).dropna()
         if not returns.empty:
             row["weekly_vol_52w_pct"] = float(returns.std() * 100)
-
         if "Low" in weekly.columns and "High" in weekly.columns:
             hist = weekly.copy()
             hist["SMA200W"] = sma200_series
@@ -321,14 +319,11 @@ def score_technical(row: dict[str, Any]) -> tuple[float, list[str]]:
     notes, score = [], 0.0
     dist, gap = safe_float(row.get("dist_pct")), safe_float(row.get("gap_points"))
     if row.get("orange_zone"):
-        score += 15
-        notes.append("area arancione")
+        score += 15; notes.append("area arancione")
     elif row.get("below_sma200w"):
-        score += 8
-        notes.append("sotto SMA200W")
+        score += 8; notes.append("sotto SMA200W")
     elif dist is not None and dist < 10:
-        score += 4
-        notes.append("vicino SMA200W")
+        score += 4; notes.append("vicino SMA200W")
     if gap is not None:
         score += clip(10 - gap, 0, 10)
         if gap <= 5:
@@ -341,22 +336,18 @@ def score_valuation(f: dict[str, Any]) -> tuple[float, list[str]]:
     fpe, peg, fcfy, ps, tgt = [safe_float(f.get(k)) for k in ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"]]
     if fpe is not None:
         score += 5 if fpe <= 15 else 4 if fpe <= 25 else 2 if fpe <= 35 else 0
-        if fpe <= 25:
-            notes.append("FwdPE ok/basso")
+        if fpe <= 25: notes.append("FwdPE ok/basso")
     if peg is not None:
         score += 4 if peg <= 1.2 else 2 if peg <= 2.0 else 0
-        if peg <= 1.2:
-            notes.append("PEG buono")
+        if peg <= 1.2: notes.append("PEG buono")
     if fcfy is not None:
         score += 5 if fcfy >= 5 else 3 if fcfy >= 3 else 1 if fcfy > 0 else 0
-        if fcfy >= 3:
-            notes.append("FCF yield ok")
+        if fcfy >= 3: notes.append("FCF yield ok")
     if ps is not None:
         score += 3 if ps <= 5 else 1 if ps <= 10 else 0
     if tgt is not None:
         score += 3 if tgt >= 15 else 1 if tgt >= 5 else 0
-        if tgt >= 15:
-            notes.append("upside target")
+        if tgt >= 15: notes.append("upside target")
     return round(clip(score, 0, 20), 1), notes
 
 
@@ -365,21 +356,14 @@ def score_quality(f: dict[str, Any]) -> tuple[float, list[str]]:
     roe, opm, pm, gm, dte, fcf = [safe_float(f.get(k)) for k in ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "debt_to_equity", "free_cashflow"]]
     if roe is not None:
         score += 5 if roe >= 25 else 3 if roe >= 15 else 0
-        if roe >= 25:
-            notes.append("ROE alto")
+        if roe >= 25: notes.append("ROE alto")
     if opm is not None:
         score += 5 if opm >= 25 else 3 if opm >= 15 else 0
-        if opm >= 25:
-            notes.append("margine operativo alto")
-    if pm is not None:
-        score += 4 if pm >= 20 else 2 if pm >= 10 else 0
-    if gm is not None:
-        score += 3 if gm >= 50 else 2 if gm >= 35 else 0
-    if dte is not None:
-        score += 2 if dte <= 80 else 1 if dte <= 150 else 0
-    if fcf is not None and fcf > 0:
-        score += 1
-        notes.append("FCF positivo")
+        if opm >= 25: notes.append("margine operativo alto")
+    if pm is not None: score += 4 if pm >= 20 else 2 if pm >= 10 else 0
+    if gm is not None: score += 3 if gm >= 50 else 2 if gm >= 35 else 0
+    if dte is not None: score += 2 if dte <= 80 else 1 if dte <= 150 else 0
+    if fcf is not None and fcf > 0: score += 1; notes.append("FCF positivo")
     return round(clip(score, 0, 20), 1), notes
 
 
@@ -388,18 +372,14 @@ def score_growth(f: dict[str, Any]) -> tuple[float, list[str]]:
     rev, earn, rec, tgt = [safe_float(f.get(k)) for k in ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean", "target_upside_pct"]]
     if rev is not None:
         score += 5 if rev >= 15 else 3 if rev >= 5 else 1 if rev >= 0 else 0
-        if rev >= 15:
-            notes.append("ricavi in crescita")
+        if rev >= 15: notes.append("ricavi in crescita")
     if earn is not None:
         score += 5 if earn >= 15 else 3 if earn >= 5 else 1 if earn >= 0 else 0
-        if earn >= 15:
-            notes.append("utili in crescita")
+        if earn >= 15: notes.append("utili in crescita")
     if rec is not None:
         score += 3 if rec <= 2.0 else 2 if rec <= 2.7 else 0
-        if rec <= 2.0:
-            notes.append("analyst rating buono")
-    if tgt is not None and tgt > 0:
-        score += 2
+        if rec <= 2.0: notes.append("analyst rating buono")
+    if tgt is not None and tgt > 0: score += 2
     return round(clip(score, 0, 15), 1), notes
 
 
@@ -408,30 +388,22 @@ def score_risk_momentum(row: dict[str, Any], f: dict[str, Any]) -> tuple[float, 
     beta, mom26, mom52, dd52, vol = [safe_float(x) for x in [f.get("beta"), row.get("momentum_26w_pct"), row.get("momentum_52w_pct"), row.get("drawdown_52w_pct"), row.get("weekly_vol_52w_pct")]]
     if beta is not None:
         score += 4 if beta <= 1.0 else 3 if beta <= 1.3 else 1 if beta <= 1.7 else 0
-        if beta <= 1.0:
-            notes.append("beta difensivo")
+        if beta <= 1.0: notes.append("beta difensivo")
     if mom26 is not None:
         score += 4 if mom26 > 10 else 3 if mom26 > 0 else 1 if mom26 > -10 else 0
-        if mom26 > 10:
-            notes.append("momentum 6m positivo")
-    if mom52 is not None:
-        score += 3 if mom52 > 10 else 2 if mom52 > 0 else 1 if mom52 > -15 else 0
-    if dd52 is not None:
-        score += 4 if dd52 > -10 else 2 if dd52 > -25 else 1 if dd52 > -40 else 0
+        if mom26 > 10: notes.append("momentum 6m positivo")
+    if mom52 is not None: score += 3 if mom52 > 10 else 2 if mom52 > 0 else 1 if mom52 > -15 else 0
+    if dd52 is not None: score += 4 if dd52 > -10 else 2 if dd52 > -25 else 1 if dd52 > -40 else 0
     if vol is not None:
         score += 5 if vol <= 3 else 3 if vol <= 5 else 1 if vol <= 8 else 0
-        if vol <= 3:
-            notes.append("volatilità bassa")
+        if vol <= 3: notes.append("volatilità bassa")
     return round(clip(score, 0, 20), 1), notes
 
 
 def institutional_label(score: float) -> str:
-    if score >= STRONG_BUY_ZONE_THRESHOLD:
-        return "Strong Buy Zone"
-    if score >= BUY_ZONE_THRESHOLD:
-        return "Buy Zone"
-    if score >= 50:
-        return "Watch"
+    if score >= STRONG_BUY_ZONE_THRESHOLD: return "Strong Buy Zone"
+    if score >= BUY_ZONE_THRESHOLD: return "Buy Zone"
+    if score >= 50: return "Watch"
     return "Monitor"
 
 
@@ -454,10 +426,8 @@ def compute_score(row: dict[str, Any], f: dict[str, Any]) -> dict[str, Any]:
 
 
 def data_quality(fund: dict[str, Any]) -> dict[str, Any]:
-    missing_groups: list[str] = []
-    missing_fields: list[str] = []
-    present_fields = 0
-    total_fields = 0
+    missing_groups, missing_fields = [], []
+    present_fields = total_fields = 0
     for group, fields in FUNDAMENTAL_FIELDS.items():
         group_present = 0
         for field in fields:
@@ -470,12 +440,7 @@ def data_quality(fund: dict[str, Any]) -> dict[str, Any]:
         if group_present == 0:
             missing_groups.append(group)
     ratio = present_fields / total_fields if total_fields else 0.0
-    if ratio >= 0.80:
-        label = "Dati completi"
-    elif ratio > 0:
-        label = "Dati parziali"
-    else:
-        label = "Fondamentali assenti"
+    label = "Dati completi" if ratio >= 0.80 else "Dati parziali" if ratio > 0 else "Fondamentali assenti"
     return {
         "data_complete": ratio >= 0.80,
         "data_partial": ratio > 0 and ratio < 0.80,
@@ -516,20 +481,32 @@ def simulate_at_price(record: dict[str, Any], price: float) -> dict[str, Any]:
 def find_zone_range(record: dict[str, Any], threshold: float) -> dict[str, Any]:
     current = safe_float(record.get("last_price"))
     if current is None or current <= 0:
-        return {"status": "not_enough_data", "low": None, "high": None, "active": False}
+        return {"status": "not_enough_data", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": None, "max_score_orange": None}
+
     valid: list[float] = []
+    max_score_any: float | None = None
+    max_score_orange: float | None = None
+
     for i in range(int((MAX_SIMULATED_DISCOUNT_PCT * 2) / SIMULATION_STEP_PCT) + 1):
         pct = -MAX_SIMULATED_DISCOUNT_PCT + i * SIMULATION_STEP_PCT
         price = current * (1 + pct / 100)
         if price <= 0:
             continue
         sim = simulate_at_price(record, price)
-        if bool(sim.get("orange_zone")) and (safe_float(sim.get("score_total")) or 0) >= threshold:
-            valid.append(price)
+        sim_score = safe_float(sim.get("score_total"))
+        if sim_score is not None:
+            max_score_any = sim_score if max_score_any is None else max(max_score_any, sim_score)
+        if bool(sim.get("orange_zone")):
+            if sim_score is not None:
+                max_score_orange = sim_score if max_score_orange is None else max(max_score_orange, sim_score)
+            if (sim_score or 0) >= threshold:
+                valid.append(price)
+
     if not valid:
-        return {"status": "not_price_only", "low": None, "high": None, "active": False}
+        return {"status": "threshold_not_reached", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
+
     active = bool(record.get("orange_zone")) and (safe_float(record.get("score_total")) or 0) >= threshold
-    return {"status": "range", "low": min(valid), "high": max(valid), "active": active}
+    return {"status": "range", "low": min(valid), "high": max(valid), "active": active, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
 
 
 def format_zone_range(record: dict[str, Any], key: str) -> str:
@@ -538,11 +515,19 @@ def format_zone_range(record: dict[str, Any], key: str) -> str:
     if not isinstance(data, dict):
         return "dati insufficienti"
     status = data.get("status")
+    threshold = safe_float(data.get("threshold"))
     if status == "range":
         return ("attiva · " if data.get("active") else "") + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
     if status == "not_enough_data":
         return "dati insufficienti"
-    return "non basta solo prezzo"
+    if status == "threshold_not_reached":
+        max_score = safe_float(data.get("max_score_orange"))
+        if max_score is None:
+            max_score = safe_float(data.get("max_score"))
+        threshold_text = fmt_num(threshold, 0) if threshold is not None else "N/D"
+        max_text = fmt_num(max_score, 1) if max_score is not None else "N/D"
+        return f"Soglia {threshold_text} non raggiunta · Max simulato: {max_text} / {threshold_text}"
+    return "dati insufficienti"
 
 
 def build_record(item: dict[str, str]) -> dict[str, Any]:
