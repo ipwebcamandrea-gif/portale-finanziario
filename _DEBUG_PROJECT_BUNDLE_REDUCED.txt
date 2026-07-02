@@ -6824,7 +6824,7 @@ def render_card(record: dict, rank: int) -> str:
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
     notes = escape(str(record.get("score_notes") or "-") or "-")
     orange_box = orange_metric_box_class(record)
-    hist_orange_box = "institutional-metric-orange"
+    hist_orange_box = orange_box
     hist_min_w = fmt_pct(record.get("hist_min_w_pct"), 1)
     hist_gap_from_min = fmt_pct(record.get("gap_points"), 1)
     hist_min_low = hist_price_date_text(record.get("hist_min_w_low"), currency, record.get("hist_min_w_date"))
