@@ -6657,13 +6657,15 @@ from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
 from utils.institutional_scanner import (
-    fmt_gap_points,
+    SYMBOLS,
+    SLEEP_BETWEEN_TICKERS_SECONDS,
+    build_record,
     fmt_num,
     fmt_pct,
     fmt_price,
     safe_float,
     scan_summary,
-    scan_symbols,
+    sort_priority,
 )
 
 require_login()
@@ -6682,14 +6684,59 @@ local_css(GLOBAL_CSS)
 local_css(PAGE_CSS)
 render_app_icon_meta()
 
-@st.cache_data(ttl=15 * 60, show_spinner=False)
-def load_institutional_scan() -> list[dict]:
-    return scan_symbols()
+SESSION_RECORDS_KEY = "institutional_scan_records"
+SESSION_LAST_UPDATE_KEY = "institutional_scan_last_update"
+SESSION_SCAN_REQUEST_KEY = "institutional_scan_requested"
 
 
 def refresh_scan() -> None:
-    st.cache_data.clear()
+    """Request a full sequential scan on the next rerun.
+
+    No JSON and no Streamlit data cache are used for the scanner page: completed
+    records are kept only in st.session_state. This avoids rendering partial
+    results and avoids caching temporarily-empty yfinance fundamentals.
+    """
+    st.session_state[SESSION_SCAN_REQUEST_KEY] = True
     st.rerun()
+
+
+def run_full_scan_sequential() -> list[dict]:
+    """Run the institutional scan ticker by ticker and publish only at the end."""
+    symbols = list(SYMBOLS)
+    total = len(symbols)
+    records: list[dict] = []
+
+    status_box = st.empty()
+    progress_bar = st.progress(0, text="Preparazione scan completo...")
+
+    for idx, item in enumerate(symbols, 1):
+        ticker = str(item.get("ticker") or item.get("yahoo") or "-")
+        name = str(item.get("name") or "")
+        status_box.info(
+            f"Scan completo in corso... {idx}/{total} · {ticker}"
+            + (f" · {name}" if name else "")
+        )
+        progress_bar.progress((idx - 1) / max(total, 1), text=f"{idx}/{total} · {ticker}")
+        records.append(build_record(item))
+
+        if idx < total and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
+            import time
+            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
+
+    records = sorted(records, key=sort_priority)
+    summary = scan_summary(records)
+    st.session_state[SESSION_RECORDS_KEY] = records
+    st.session_state[SESSION_LAST_UPDATE_KEY] = summary.get("last_update", "-")
+    st.session_state[SESSION_SCAN_REQUEST_KEY] = False
+
+    progress_bar.progress(1.0, text="Scan completato. Render risultati...")
+    status_box.success(f"Scan completato: {len(records)} titoli analizzati.")
+    return records
+
+
+def get_session_records() -> list[dict]:
+    records = st.session_state.get(SESSION_RECORDS_KEY, [])
+    return records if isinstance(records, list) else []
 
 
 def value_class(value) -> str:
@@ -6739,6 +6786,21 @@ def component_html(label: str, value) -> str:
     return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
+def hist_date_text(value) -> str:
+    text = str(value or "").strip()
+    return text[:10] if text else "N/D"
+
+
+def hist_price_date_text(price_value, currency: str, date_value) -> str:
+    price_text = fmt_price(price_value, currency)
+    date_text = hist_date_text(date_value)
+    if price_text == "N/D" and date_text == "N/D":
+        return "N/D"
+    if date_text == "N/D":
+        return price_text
+    return f"{price_text} ({date_text})"
+
+
 def data_panel_html(record: dict) -> str:
     label = str(record.get("data_quality_label") or "Dati parziali")
     ratio = safe_float(record.get("data_quality_ratio"))
@@ -6762,6 +6824,14 @@ def render_card(record: dict, rank: int) -> str:
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
     notes = escape(str(record.get("score_notes") or "-") or "-")
     orange_box = orange_metric_box_class(record)
+    hist_orange_box = "institutional-metric-orange"
+    hist_min_w = fmt_pct(record.get("hist_min_w_pct"), 1)
+    hist_gap_from_min = fmt_pct(record.get("gap_points"), 1)
+    hist_min_low = hist_price_date_text(record.get("hist_min_w_low"), currency, record.get("hist_min_w_date"))
+    hist_min_eq = fmt_price(record.get("hist_min_equivalent"), currency)
+    hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
+    hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
+    hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
     error = str(record.get("error") or "").strip()
 
     card = (
@@ -6789,9 +6859,15 @@ def render_card(record: dict, rank: int) -> str:
         '</div>'
         '<div class="institutional-metrics-grid">'
         + metric_html("SMA200W", fmt_price(record.get("sma200w"), currency), box_class=orange_box)
-        + metric_html("Distanza", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
-        + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=orange_box)
-        + metric_html("Scarto da Min W", fmt_gap_points(record.get("gap_points")), box_class=orange_box)
+        + metric_html("Distanza sotto la SMA200W", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
+        + metric_html("Hist Min W", hist_min_w, box_class=hist_orange_box)
+        + metric_html("Scarto da Min W", hist_gap_from_min, box_class=hist_orange_box)
+        + metric_html("MinW Low sotto SMA200W", hist_min_low, box_class=hist_orange_box)
+        + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
+        + metric_html("MaxW High sopra la SMA200W", hist_max_high, box_class=hist_orange_box)
+        + metric_html("Eq oggi MaxW", hist_max_eq, box_class=hist_orange_box)
+        + metric_html("Hist Max W sopra la SMA200W", hist_max_w, box_class=hist_orange_box)
+        + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=hist_orange_box)
         + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
         + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
@@ -6827,8 +6903,20 @@ render_standard_page_header(
     refresh_callback=refresh_scan,
 )
 
-with st.spinner("Calcolo Institutional Score su tutti i titoli..."):
-    records = load_institutional_scan()
+scan_requested = bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False))
+if scan_requested:
+    records = run_full_scan_sequential()
+else:
+    records = get_session_records()
+
+if not records:
+    st.info(
+        "Nessuno scan completo presente in questa sessione. "
+        "Premi 🔄 Aggiorna per avviare uno scan sequenziale ticker per ticker. "
+        "I risultati verranno mostrati solo a scan completato."
+    )
+    st.stop()
+
 summary = scan_summary(records)
 
 cols = st.columns(4)
@@ -6849,21 +6937,20 @@ for col, (label, value, note) in zip(cols, summary_cards):
             unsafe_allow_html=True,
         )
 
+last_update = st.session_state.get(SESSION_LAST_UPDATE_KEY) or summary.get("last_update", "-")
 st.caption(
-    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
+    f"Ultimo scan completo in sessione: {last_update}. "
     f"Mostro tutti i {len(records)} titoli analizzati. "
-    "Se alcuni fondamentali mancano, lo score viene comunque calcolato con i dati disponibili, come nello script locale. "
-    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
+    "Lo scan del portale ora è sequenziale come lo script locale: ticker per ticker, "
+    "nessun JSON e nessun risultato parziale mostrato durante il calcolo. "
+    "Usa 🔄 per avviare un nuovo scan completo."
 )
 st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
 
-if not records:
-    st.warning("Nessun dato disponibile per lo scanner istituzionale.")
-else:
-    st.markdown(
-        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
+    unsafe_allow_html=True,
+)
 
 errors = [r for r in records if str(r.get("error") or "").strip()]
 if errors:
