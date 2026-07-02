@@ -9,13 +9,16 @@ from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
 from utils.institutional_scanner import (
+    SYMBOLS,
+    SLEEP_BETWEEN_TICKERS_SECONDS,
+    build_record,
     fmt_gap_points,
     fmt_num,
     fmt_pct,
     fmt_price,
     safe_float,
     scan_summary,
-    scan_symbols,
+    sort_priority,
 )
 
 require_login()
@@ -34,14 +37,59 @@ local_css(GLOBAL_CSS)
 local_css(PAGE_CSS)
 render_app_icon_meta()
 
-@st.cache_data(ttl=15 * 60, show_spinner=False)
-def load_institutional_scan() -> list[dict]:
-    return scan_symbols()
+SESSION_RECORDS_KEY = "institutional_scan_records"
+SESSION_LAST_UPDATE_KEY = "institutional_scan_last_update"
+SESSION_SCAN_REQUEST_KEY = "institutional_scan_requested"
 
 
 def refresh_scan() -> None:
-    st.cache_data.clear()
+    """Request a full sequential scan on the next rerun.
+
+    No JSON and no Streamlit data cache are used for the scanner page: completed
+    records are kept only in st.session_state. This avoids rendering partial
+    results and avoids caching temporarily-empty yfinance fundamentals.
+    """
+    st.session_state[SESSION_SCAN_REQUEST_KEY] = True
     st.rerun()
+
+
+def run_full_scan_sequential() -> list[dict]:
+    """Run the institutional scan ticker by ticker and publish only at the end."""
+    symbols = list(SYMBOLS)
+    total = len(symbols)
+    records: list[dict] = []
+
+    status_box = st.empty()
+    progress_bar = st.progress(0, text="Preparazione scan completo...")
+
+    for idx, item in enumerate(symbols, 1):
+        ticker = str(item.get("ticker") or item.get("yahoo") or "-")
+        name = str(item.get("name") or "")
+        status_box.info(
+            f"Scan completo in corso... {idx}/{total} · {ticker}"
+            + (f" · {name}" if name else "")
+        )
+        progress_bar.progress((idx - 1) / max(total, 1), text=f"{idx}/{total} · {ticker}")
+        records.append(build_record(item))
+
+        if idx < total and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
+            import time
+            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
+
+    records = sorted(records, key=sort_priority)
+    summary = scan_summary(records)
+    st.session_state[SESSION_RECORDS_KEY] = records
+    st.session_state[SESSION_LAST_UPDATE_KEY] = summary.get("last_update", "-")
+    st.session_state[SESSION_SCAN_REQUEST_KEY] = False
+
+    progress_bar.progress(1.0, text="Scan completato. Render risultati...")
+    status_box.success(f"Scan completato: {len(records)} titoli analizzati.")
+    return records
+
+
+def get_session_records() -> list[dict]:
+    records = st.session_state.get(SESSION_RECORDS_KEY, [])
+    return records if isinstance(records, list) else []
 
 
 def value_class(value) -> str:
@@ -179,8 +227,20 @@ render_standard_page_header(
     refresh_callback=refresh_scan,
 )
 
-with st.spinner("Calcolo Institutional Score su tutti i titoli..."):
-    records = load_institutional_scan()
+scan_requested = bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False))
+if scan_requested:
+    records = run_full_scan_sequential()
+else:
+    records = get_session_records()
+
+if not records:
+    st.info(
+        "Nessuno scan completo presente in questa sessione. "
+        "Premi 🔄 Aggiorna per avviare uno scan sequenziale ticker per ticker. "
+        "I risultati verranno mostrati solo a scan completato."
+    )
+    st.stop()
+
 summary = scan_summary(records)
 
 cols = st.columns(4)
@@ -201,21 +261,20 @@ for col, (label, value, note) in zip(cols, summary_cards):
             unsafe_allow_html=True,
         )
 
+last_update = st.session_state.get(SESSION_LAST_UPDATE_KEY) or summary.get("last_update", "-")
 st.caption(
-    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
+    f"Ultimo scan completo in sessione: {last_update}. "
     f"Mostro tutti i {len(records)} titoli analizzati. "
-    "Se alcuni fondamentali mancano, lo score viene comunque calcolato con i dati disponibili, come nello script locale. "
-    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
+    "Lo scan del portale ora è sequenziale come lo script locale: ticker per ticker, "
+    "nessun JSON e nessun risultato parziale mostrato durante il calcolo. "
+    "Usa 🔄 per avviare un nuovo scan completo."
 )
 st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
 
-if not records:
-    st.warning("Nessun dato disponibile per lo scanner istituzionale.")
-else:
-    st.markdown(
-        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
+    unsafe_allow_html=True,
+)
 
 errors = [r for r in records if str(r.get("error") or "").strip()]
 if errors:
