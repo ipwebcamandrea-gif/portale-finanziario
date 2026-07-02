@@ -51,9 +51,7 @@ def value_class(value) -> str:
     return "institutional-positive" if v > 0 else "institutional-negative" if v < 0 else "institutional-neutral"
 
 
-def label_class(label: str, complete: bool) -> str:
-    if not complete:
-        return "institutional-label institutional-label-incomplete"
+def label_class(label: str) -> str:
     if label == "Strong Buy Zone":
         return "institutional-label institutional-label-strong"
     if label == "Buy Zone":
@@ -61,9 +59,7 @@ def label_class(label: str, complete: bool) -> str:
     return "institutional-label"
 
 
-def card_class(label: str, complete: bool) -> str:
-    if not complete:
-        return "institutional-card institutional-card-incomplete"
+def card_class(label: str) -> str:
     if label == "Strong Buy Zone":
         return "institutional-card institutional-card-strong"
     if label == "Buy Zone":
@@ -71,9 +67,7 @@ def card_class(label: str, complete: bool) -> str:
     return "institutional-card"
 
 
-def label_icon(label: str, complete: bool) -> str:
-    if not complete:
-        return "⚠️"
+def label_icon(label: str) -> str:
     if label == "Strong Buy Zone":
         return "🔥"
     if label == "Buy Zone":
@@ -97,13 +91,23 @@ def component_html(label: str, value) -> str:
     return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
+def data_panel_html(record: dict) -> str:
+    label = str(record.get("data_quality_label") or "Dati parziali")
+    ratio = safe_float(record.get("data_quality_ratio"))
+    pct = f"{ratio * 100:.0f}%" if ratio is not None else "N/D"
+    missing_groups = ", ".join(record.get("data_missing_groups") or [])
+    if record.get("data_complete"):
+        return f'<div class="institutional-data-ok">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato normalmente</div>'
+    suffix = f" · mancanti: {escape(missing_groups)}" if missing_groups else ""
+    return f'<div class="institutional-data-warning">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato con i dati disponibili{suffix}</div>'
+
+
 def render_card(record: dict, rank: int) -> str:
-    complete = bool(record.get("data_complete"))
     ticker = escape(str(record.get("ticker") or ""))
     name = escape(str(record.get("name") or ""))
-    label = str(record.get("score_label") or "Dati incompleti")
+    label = str(record.get("score_label") or "Monitor")
     currency = str(record.get("currency") or "").upper()
-    score = "N/D" if not complete else fmt_num(record.get("score_total"), 1)
+    score = fmt_num(record.get("score_total"), 1)
     price = fmt_price(record.get("last_price"), currency)
     daily = fmt_pct(record.get("daily_change_pct"), 2)
     daily_class = value_class(record.get("daily_change_pct"))
@@ -111,25 +115,18 @@ def render_card(record: dict, rank: int) -> str:
     notes = escape(str(record.get("score_notes") or "-") or "-")
     orange_box = orange_metric_box_class(record)
     error = str(record.get("error") or "").strip()
-    missing = ", ".join(record.get("data_missing_groups") or [])
-
-    data_panel = ""
-    if complete:
-        data_panel = '<div class="institutional-data-ok">Dati completi · score calcolato normalmente</div>'
-    else:
-        data_panel = f'<div class="institutional-data-warning">Score sospeso · fondamentali incompleti: {escape(missing or "n/d")}</div>'
 
     card = (
-        f'<div class="{card_class(label, complete)}">'
+        f'<div class="{card_class(label)}">'
         '<div class="institutional-card-header">'
         f'<div class="institutional-rank">#{rank}</div>'
         '<div class="institutional-title-wrap">'
         f'<div class="institutional-ticker">{ticker}</div>'
         f'<div class="institutional-name">{name}</div>'
         '</div>'
-        f'<div class="{label_class(label, complete)}">{label_icon(label, complete)} {escape(label)}</div>'
+        f'<div class="{label_class(label)}">{label_icon(label)} {escape(label)}</div>'
         '</div>'
-        f'{data_panel}'
+        f'{data_panel_html(record)}'
         '<div class="institutional-price-score-row">'
         '<div class="institutional-price-box">'
         '<div class="institutional-mini-label">Prezzo attuale</div>'
@@ -173,7 +170,7 @@ def render_card(record: dict, rank: int) -> str:
 
 render_standard_page_header(
     title="Institutional Scanner",
-    subtitle="Tutti i titoli Mega Cap USA/ETF · score, area arancione e qualità dati.",
+    subtitle="Tutti i titoli Mega Cap USA/ETF · score parziale stile script locale, area arancione e range operativo.",
     toggle_label="📱 Vista compatta",
     toggle_key="institutional_compact_mode",
     toggle_default=True,
@@ -191,7 +188,7 @@ summary_cards = [
     ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
     ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Score >= 65"),
     ("Area arancione", str(summary.get("orange_count", 0)), "SMA200W + storico"),
-    ("Dati incompleti", str(summary.get("incomplete_count", 0)), "Score sospeso"),
+    ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
 ]
 for col, (label, value, note) in zip(cols, summary_cards):
     with col:
@@ -204,7 +201,12 @@ for col, (label, value, note) in zip(cols, summary_cards):
             unsafe_allow_html=True,
         )
 
-st.caption(f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. Mostro tutti i {len(records)} titoli analizzati. Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan.")
+st.caption(
+    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
+    f"Mostro tutti i {len(records)} titoli analizzati. "
+    "Se alcuni fondamentali mancano, lo score viene comunque calcolato con i dati disponibili, come nello script locale. "
+    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
+)
 st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
 
 if not records:
