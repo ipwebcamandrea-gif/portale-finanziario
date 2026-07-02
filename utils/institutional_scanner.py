@@ -664,14 +664,14 @@ def fair_value_model(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def institutional_buy_zone_model(record: dict[str, Any]) -> dict[str, Any]:
-    """Institutional Buy Zone = Eq oggi MinW -> Fundamental Buy Price."""
+    """Buy Zone = Eq oggi MinW -> SMA200W."""
     low = safe_float(record.get("hist_min_equivalent"))
-    high = safe_float(record.get("fundamental_buy_price"))
+    high = safe_float(record.get("sma200w"))
     current = safe_float(record.get("last_price"))
     if low is None or low <= 0 or high is None or high <= 0:
         return {"status": "not_enough_data", "low": low, "high": high, "active": False}
     if high < low:
-        return {"status": "no_overlap", "low": low, "high": high, "active": False}
+        low, high = high, low
     active = bool(current is not None and low <= current <= high)
     if current is None:
         position = "N/D"
@@ -692,8 +692,6 @@ def format_institutional_buy_zone(record: dict[str, Any]) -> str:
     if data.get("status") == "range":
         prefix = "attiva · " if data.get("active") else ""
         return prefix + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
-    if data.get("status") == "no_overlap":
-        return "non attiva · Fundamental Buy sotto Eq MinW"
     return "dati insufficienti"
 
 
@@ -703,15 +701,13 @@ def format_institutional_buy_zone_status(record: dict[str, Any]) -> str:
         return "N/D"
     if data.get("status") == "range":
         return str(data.get("position") or "N/D")
-    if data.get("status") == "no_overlap":
-        return "nessuna sovrapposizione"
     return "dati insufficienti"
 
 
 def institutional_display_label(record: dict[str, Any]) -> str:
     zone = record.get("institutional_buy_zone")
     if isinstance(zone, dict) and zone.get("active"):
-        return "Institutional Buy Zone"
+        return "Buy Zone"
     if bool(record.get("orange_zone")):
         return "Technical Stress"
     score = safe_float(record.get("score_total")) or 0.0
@@ -753,7 +749,6 @@ def build_record(item: dict[str, str]) -> dict[str, Any]:
     record.update(fund)
     record.update(quality)
     record.update(score)
-    record.update(fair_value_model(record))
     record["institutional_buy_zone"] = institutional_buy_zone_model(record)
     record["institutional_buy_zone_text"] = format_institutional_buy_zone(record)
     record["institutional_buy_zone_status_text"] = format_institutional_buy_zone_status(record)
@@ -790,13 +785,14 @@ def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
 
 def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
-    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Institutional Buy Zone"])
+    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Buy Zone"])
     technical_stress_count = len([r for r in records if str(r.get("display_label") or "") == "Technical Stress"])
     return {
         "count": len(records),
         "top_ticker": top.get("ticker", "-"),
         "top_score": top.get("score_total"),
         "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
+        "buy_zone_count": institutional_count,
         "institutional_count": institutional_count,
         "technical_stress_count": technical_stress_count,
         "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
