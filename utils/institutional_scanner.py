@@ -9,9 +9,12 @@ import yfinance as yf
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
-LINREG_TREND_HIGH_LOOKBACK_WEEKS=int(os.getenv("INSTITUTIONAL_LINREG_TREND_HIGH_LOOKBACK_WEEKS","156"))
-LINREG_TREND_MIN_WEEKS=int(os.getenv("INSTITUTIONAL_LINREG_TREND_MIN_WEEKS","24"))
-LINREG_STD_MULT=float(os.getenv("INSTITUTIONAL_LINREG_STD_MULT","2.0"))
+
+# V20: TradingView-like LinReg definition shown in the screenshot: "LinReg 100 close 2 2".
+LINREG_LENGTH=int(os.getenv("INSTITUTIONAL_LINREG_LENGTH","100"))
+LINREG_SOURCE=os.getenv("INSTITUTIONAL_LINREG_SOURCE","close").strip().lower()
+LINREG_UPPER_MULT=float(os.getenv("INSTITUTIONAL_LINREG_UPPER_MULT","2.0"))
+LINREG_LOWER_MULT=float(os.getenv("INSTITUTIONAL_LINREG_LOWER_MULT","2.0"))
 LINREG_NEAR_LOWER_ABOVE_PCT=float(os.getenv("INSTITUTIONAL_LINREG_NEAR_LOWER_ABOVE_PCT","5.0"))
 LINREG_NEAR_LOWER_BELOW_PCT=float(os.getenv("INSTITUTIONAL_LINREG_NEAR_LOWER_BELOW_PCT","10.0"))
 SMA200_HIST_MIN_PROXIMITY_POINTS=float(os.getenv("INSTITUTIONAL_MIN_GAP_POINTS","10.0"))
@@ -86,35 +89,38 @@ def _linreg(vals):
     x=list(range(n)); sx=sum(x); sy=sum(vals); sxx=sum(i*i for i in x); sxy=sum(i*v for i,v in zip(x,vals)); den=n*sxx-sx*sx
     if den==0: return None
     slope=(n*sxy-sx*sy)/den; intercept=(sy-slope*sx)/n; preds=[intercept+slope*i for i in x]
-    res=[v-p for v,p in zip(vals,preds)]; std=(sum(r*r for r in res)/max(n-2,1))**0.5
+    residuals=[v-p for v,p in zip(vals,preds)]
+    std=(sum(r*r for r in residuals)/max(n-2,1))**0.5
     return preds,std
+
 def compute_linreg_w(weekly,current_price):
-    out={"linreg_available":False,"linreg_error":"","linreg_mid_w":None,"linreg_lower_w":None,"linreg_upper_w":None,"linreg_dist_lower_pct":None,"linreg_position_pct":None,"linreg_anchor_high":None,"linreg_anchor_high_date":None,"linreg_weeks":None,"linreg_method":"Current Trend W"}
+    out={"linreg_available":False,"linreg_error":"","linreg_mid_w":None,"linreg_lower_w":None,"linreg_upper_w":None,"linreg_dist_lower_pct":None,"linreg_position_pct":None,"linreg_anchor_high":None,"linreg_anchor_high_date":None,"linreg_weeks":None,"linreg_method":f"LinReg {LINREG_LENGTH} close {LINREG_UPPER_MULT:g} {LINREG_LOWER_MULT:g}"}
     try:
-        if weekly is None or weekly.empty or "Close" not in weekly.columns or "High" not in weekly.columns:
-            out["linreg_error"]="weekly Close/High mancanti"; return out
-        h=weekly.copy().dropna(subset=["Close","High"]); h=h[(h["Close"]>0)&(h["High"]>0)]
-        if len(h)<LINREG_TREND_MIN_WEEKS: out["linreg_error"]=f"storico trend insufficiente: {len(h)} settimane"; return out
-        start=max(0,len(h)-LINREG_TREND_HIGH_LOOKBACK_WEEKS); area=h.iloc[start:]
-        hi_idx=area["High"].astype(float).idxmax(); hi_pos=h.index.get_loc(hi_idx)
-        if len(h)-hi_pos<LINREG_TREND_MIN_WEEKS:
-            hi_pos=max(0,len(h)-LINREG_TREND_HIGH_LOOKBACK_WEEKS); hi_idx=h.index[hi_pos]
-        trend=h.iloc[hi_pos:].copy()
-        if len(trend)<LINREG_TREND_MIN_WEEKS: out["linreg_error"]=f"trend corrente insufficiente: {len(trend)} settimane"; return out
-        vals=[float(v) for v in trend["Close"].astype(float).tolist()]
+        if weekly is None or weekly.empty or "Close" not in weekly.columns:
+            out["linreg_error"]="weekly Close mancante"; return out
+        h=weekly.copy().dropna(subset=["Close"])
+        h=h[h["Close"]>0]
+        if len(h)<LINREG_LENGTH:
+            out["linreg_error"]=f"storico linreg insufficiente: {len(h)} settimane"; return out
+        win=h.iloc[-LINREG_LENGTH:].copy()
+        vals=[float(v) for v in win["Close"].astype(float).tolist()]
         reg=_linreg(vals)
-        if reg is None: out["linreg_error"]="regressione non valida"; return out
-        preds,std=reg; mid=preds[-1]; lower=mid-LINREG_STD_MULT*std; upper=mid+LINREG_STD_MULT*std
+        if reg is None:
+            out["linreg_error"]="regressione non valida"; return out
+        preds,std=reg
+        mid=preds[-1]
+        lower=mid-LINREG_LOWER_MULT*std
+        upper=mid+LINREG_UPPER_MULT*std
         if lower<=0: lower=min(vals)*0.80
         p=safe_float(current_price); dist=None; pos=None
         if p is not None and lower>0:
             dist=(p-lower)/lower*100
             if upper>lower: pos=clip((p-lower)/(upper-lower)*100,0,100)
-        anchor=safe_float(h.loc[hi_idx,"High"]); adate=hi_idx.strftime("%Y-%m-%d") if hasattr(hi_idx,"strftime") else str(hi_idx)
-        out.update({"linreg_available":True,"linreg_mid_w":mid,"linreg_lower_w":lower,"linreg_upper_w":upper,"linreg_dist_lower_pct":dist,"linreg_position_pct":pos,"linreg_anchor_high":anchor,"linreg_anchor_high_date":adate,"linreg_weeks":len(trend)})
+        out.update({"linreg_available":True,"linreg_mid_w":mid,"linreg_lower_w":lower,"linreg_upper_w":upper,"linreg_dist_lower_pct":dist,"linreg_position_pct":pos,"linreg_weeks":LINREG_LENGTH})
         return out
     except Exception as e:
         out["linreg_error"]=str(e); return out
+
 def technical_metrics(item):
     sym=item["yahoo"]
     row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":""}
@@ -143,6 +149,7 @@ def technical_metrics(item):
         row["technical_label"]="Buy Zone tecnica" if row["confluence_count"]==3 else "Watch tecnico" if row["confluence_count"]==2 else "Monitor tecnico"
         return row
     except Exception as e: row["error"]=str(e); return row
+
 def build_record(item):
     r=technical_metrics(item); r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or "")); return r
 def sort_priority(r):
