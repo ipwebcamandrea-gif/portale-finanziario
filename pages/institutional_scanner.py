@@ -146,6 +146,21 @@ def component_html(label: str, value) -> str:
     return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
+def hist_date_text(value) -> str:
+    text = str(value or "").strip()
+    return text[:10] if text else "N/D"
+
+
+def hist_price_date_text(price_value, currency: str, date_value) -> str:
+    price_text = fmt_price(price_value, currency)
+    date_text = hist_date_text(date_value)
+    if price_text == "N/D" and date_text == "N/D":
+        return "N/D"
+    if date_text == "N/D":
+        return price_text
+    return f"{price_text} ({date_text})"
+
+
 def fib_level_row_html(level: str, price: str, meaning: str, css_class: str) -> str:
     return (
         '<div class="institutional-fib-row">'
@@ -180,7 +195,6 @@ def render_fibonacci_panel(record: dict, currency: str) -> str:
     low_date = str(record.get("fib_low_date") or "N/D")
     high_date = str(record.get("fib_high_date") or "N/D")
     status = str(record.get("fib_status") or "dati insufficienti")
-
     first_buy = f"{fmt_price(record.get('fib_first_buy_low'), currency)} - {fmt_price(record.get('fib_first_buy_high'), currency)}"
     buy = f"{fmt_price(record.get('fib_buy_low'), currency)} - {fmt_price(record.get('fib_buy_high'), currency)}"
     strong = f"{fmt_price(record.get('fib_strong_low'), currency)} - {fmt_price(record.get('fib_strong_high'), currency)}"
@@ -189,7 +203,7 @@ def render_fibonacci_panel(record: dict, currency: str) -> str:
         '<div class="institutional-fib-panel">'
         '<div class="institutional-range-title">Fibonacci W automatico</div>'
         '<div class="institutional-fib-swing">'
-        'Swing da ultimo ciclo sotto SMA200W · '
+        'Swing da ciclo sotto SMA200W completato · '
         f'<span class="institutional-negative">Min {escape(low)} ({escape(low_date)})</span>'
         ' → '
         f'<span class="institutional-positive">Max {escape(high)} ({escape(high_date)})</span>'
@@ -210,21 +224,6 @@ def render_fibonacci_panel(record: dict, currency: str) -> str:
         '</div>'
         '</div>'
     )
-
-
-def hist_date_text(value) -> str:
-    text = str(value or "").strip()
-    return text[:10] if text else "N/D"
-
-
-def hist_price_date_text(price_value, currency: str, date_value) -> str:
-    price_text = fmt_price(price_value, currency)
-    date_text = hist_date_text(date_value)
-    if price_text == "N/D" and date_text == "N/D":
-        return "N/D"
-    if date_text == "N/D":
-        return price_text
-    return f"{price_text} ({date_text})"
 
 
 def data_panel_html(record: dict) -> str:
