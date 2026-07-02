@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-06-29T13:43:54+00:00",
+    "updated_at": "2026-07-02T16:50:10+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -340,6 +340,23 @@
             "analyst_count": 24,
             "rating": "buy",
             "updated_at": "2026-06-29T13:43:54+00:00"
+        },
+        "MCD": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MCD",
+            "ticker": "MCD",
+            "tv_symbol": "NYSE:MCD",
+            "name": "McDonald's Corporation",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 277.1700134277344,
+            "target_low": 250.0,
+            "target_mean": 330.46875,
+            "target_high": 407.0,
+            "analyst_count": 32,
+            "rating": "buy",
+            "updated_at": "2026-07-02T16:50:10+00:00"
         }
     }
 }
