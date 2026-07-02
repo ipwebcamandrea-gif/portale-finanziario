@@ -99,8 +99,6 @@ def value_class(value) -> str:
 
 
 def label_class(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "institutional-label institutional-label-buy"
     if label == "Technical Stress":
         return "institutional-label institutional-label-incomplete"
     if label == "Strong Buy Zone":
@@ -111,8 +109,6 @@ def label_class(label: str) -> str:
 
 
 def card_class(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "institutional-card institutional-card-buy"
     if label == "Technical Stress":
         return "institutional-card institutional-card-incomplete"
     if label == "Strong Buy Zone":
@@ -123,8 +119,6 @@ def card_class(label: str) -> str:
 
 
 def label_icon(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "🟢"
     if label == "Technical Stress":
         return "🟠"
     if label == "Fundamental Watch":
@@ -198,10 +192,6 @@ def render_card(record: dict, rank: int) -> str:
     hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
     hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
     hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
-    fair_value = fmt_price(record.get("fair_value_composite"), currency)
-    margin_safety = fmt_pct(record.get("required_margin_safety_pct"), 1)
-    fundamental_buy = fmt_price(record.get("fundamental_buy_price"), currency)
-    upside_fv = fmt_pct(record.get("upside_to_fair_value_pct"), 1)
     institutional_zone_text = str(record.get("institutional_buy_zone_text") or "dati insufficienti")
     institutional_status_text = str(record.get("institutional_buy_zone_status_text") or "N/D")
     error = str(record.get("error") or "").strip()
@@ -236,12 +226,6 @@ def render_card(record: dict, rank: int) -> str:
         + metric_html("Scarto da Min W", hist_gap_from_min, box_class=hist_orange_box)
         + metric_html("MinW Low sotto SMA200W", hist_min_low, box_class=hist_orange_box)
         + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
-        + metric_html("Fair Value composito", fair_value)
-        + metric_html("Margine sicurezza", margin_safety)
-        + metric_html("Fundamental Buy Price", fundamental_buy)
-        + metric_html("Upside vs Fair Value", upside_fv, value_class(record.get("upside_to_fair_value_pct")))
-        + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
-        + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
         '<div class="institutional-components-grid">'
         + component_html("Tecnico", record.get("score_technical"))
@@ -251,9 +235,9 @@ def render_card(record: dict, rank: int) -> str:
         + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
         + '</div>'
         '<div class="institutional-range-panel">'
-        '<div class="institutional-range-title">Institutional Buy Zone</div>'
+        '<div class="institutional-range-title">Buy Zone</div>'
         '<div class="institutional-range-grid">'
-        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Institutional Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
+        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
         f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Stato attuale</div><div class="institutional-range-value">{escape(institutional_status_text)}</div></div>'
         '</div>'
         '</div>'
@@ -294,7 +278,7 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_cards = [
     ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
-    ("Institutional", str(summary.get("institutional_count", 0)), "Dentro Institutional Buy Zone"),
+    ("Buy Zone", str(summary.get("buy_zone_count", summary.get("institutional_count", 0))), "Eq oggi MinW → SMA200W"),
     ("Technical Stress", str(summary.get("technical_stress_count", 0)), "Area tecnica/storica"),
     ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
 ]
