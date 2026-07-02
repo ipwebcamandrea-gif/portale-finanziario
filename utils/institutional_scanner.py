@@ -246,6 +246,128 @@ def equivalent_price(sma: Any, pct_value: Any) -> float | None:
     return s * (1 + p / 100)
 
 
+FIB_LEVELS = (0.500, 0.618, 0.786, 0.887)
+
+
+def fib_level_price(low: float, high: float, ratio: float) -> float:
+    return high - (high - low) * ratio
+
+
+def compute_fibonacci_w(weekly: pd.DataFrame, sma200_series: pd.Series, current_price: Any) -> dict[str, Any]:
+    """Automatic weekly Fibonacci from last cycle below SMA200W to next weekly high.
+
+    Rule used:
+    - find all weekly periods where Low is below SMA200W;
+    - take the most recent contiguous period below SMA200W;
+    - swing low = lowest Low of that period;
+    - swing high = highest High after the swing low.
+    """
+    result: dict[str, Any] = {
+        "fib_available": False,
+        "fib_error": "",
+        "fib_low": None,
+        "fib_low_date": None,
+        "fib_high": None,
+        "fib_high_date": None,
+        "fib_0500": None,
+        "fib_0618": None,
+        "fib_0786": None,
+        "fib_0887": None,
+        "fib_first_buy_low": None,
+        "fib_first_buy_high": None,
+        "fib_buy_low": None,
+        "fib_buy_high": None,
+        "fib_strong_low": None,
+        "fib_strong_high": None,
+        "fib_status": "dati insufficienti",
+    }
+    try:
+        if weekly is None or weekly.empty or "Low" not in weekly.columns or "High" not in weekly.columns:
+            result["fib_error"] = "weekly Low/High mancanti"
+            return result
+        hist = weekly.copy()
+        hist["SMA200W"] = sma200_series
+        hist = hist.dropna(subset=["Low", "High", "SMA200W"])
+        hist = hist[(hist["Low"] > 0) & (hist["High"] > 0) & (hist["SMA200W"] > 0)]
+        below_mask = hist["Low"] < hist["SMA200W"]
+        if not bool(below_mask.any()):
+            result["fib_error"] = "nessun ciclo sotto SMA200W"
+            return result
+
+        # Most recent contiguous block where Low < SMA200W.
+        below_positions = [idx for idx, flag in enumerate(below_mask.tolist()) if flag]
+        last_pos = below_positions[-1]
+        start_pos = last_pos
+        while start_pos > 0 and bool(below_mask.iloc[start_pos - 1]):
+            start_pos -= 1
+        cycle = hist.iloc[start_pos:last_pos + 1]
+        if cycle.empty:
+            result["fib_error"] = "ciclo sotto SMA200W vuoto"
+            return result
+
+        low_idx = cycle["Low"].astype(float).idxmin()
+        low_value = safe_float(cycle.loc[low_idx, "Low"])
+        if low_value is None:
+            result["fib_error"] = "minimo ciclo non valido"
+            return result
+
+        after_low = hist.loc[low_idx:]
+        if after_low.empty:
+            result["fib_error"] = "nessun massimo successivo"
+            return result
+        high_idx = after_low["High"].astype(float).idxmax()
+        high_value = safe_float(after_low.loc[high_idx, "High"])
+        if high_value is None or high_value <= low_value:
+            result["fib_error"] = "massimo successivo non valido"
+            return result
+
+        levels = {ratio: fib_level_price(low_value, high_value, ratio) for ratio in FIB_LEVELS}
+        p = safe_float(current_price)
+        fib_0500 = levels[0.500]
+        fib_0618 = levels[0.618]
+        fib_0786 = levels[0.786]
+        fib_0887 = levels[0.887]
+
+        status = "fuori area"
+        if p is not None:
+            if fib_0618 <= p <= fib_0500:
+                status = "Fib First Buy Area"
+            elif fib_0786 <= p < fib_0618:
+                status = "Fib Buy Area"
+            elif fib_0887 <= p < fib_0786:
+                status = "Fib Strong Buy Area"
+            elif p > fib_0500:
+                status = f"Fuori area · prezzo sopra 0.500 ({fmt_price(fib_0500)})"
+            elif p < fib_0887:
+                status = f"Sotto Fib Strong · prezzo sotto 0.887 ({fmt_price(fib_0887)})"
+
+        def date_text(idx: Any) -> str:
+            return idx.strftime("%Y-%m-%d") if hasattr(idx, "strftime") else str(idx)
+
+        result.update({
+            "fib_available": True,
+            "fib_low": low_value,
+            "fib_low_date": date_text(low_idx),
+            "fib_high": high_value,
+            "fib_high_date": date_text(high_idx),
+            "fib_0500": fib_0500,
+            "fib_0618": fib_0618,
+            "fib_0786": fib_0786,
+            "fib_0887": fib_0887,
+            "fib_first_buy_low": fib_0618,
+            "fib_first_buy_high": fib_0500,
+            "fib_buy_low": fib_0786,
+            "fib_buy_high": fib_0618,
+            "fib_strong_low": fib_0887,
+            "fib_strong_high": fib_0786,
+            "fib_status": status,
+        })
+        return result
+    except Exception as exc:
+        result["fib_error"] = str(exc)
+        return result
+
+
 def quote_data(symbol: str) -> dict[str, Any]:
     last_price = previous_close = None
     currency = ""
@@ -345,6 +467,7 @@ def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
         row["gap_points"] = hist_gap(row["dist_pct"], row["hist_min_w_pct"])
         row["below_sma200w"] = below_sma(row["dist_pct"])
         row["orange_zone"] = orange_zone(row["dist_pct"], row["hist_min_w_pct"])
+        row.update(compute_fibonacci_w(weekly, sma200_series, row.get("last_price")))
         return row
     except Exception as exc:
         row["error"] = str(exc)
