@@ -110,8 +110,8 @@ def compute_fibonacci_w(weekly,sma200_series,current_price):
             if f0618<=p<=f0500: status="Dentro Fib First Buy Area"
             elif f0786<=p<f0618: status="Dentro Fib Buy Area"
             elif f0887<=p<f0786: status="Dentro Fib Strong Buy Area"
-            elif p>f0500: status=f"Fuori area · prezzo sopra 0.500 ({fmt_price(f0500)})"
-            elif p<f0887: status=f"Sotto Fib Strong · prezzo sotto 0.887 ({fmt_price(f0887)})"
+            elif p>f0500: status=f"Fuori area - prezzo sopra 0.500 ({fmt_price(f0500)})"
+            elif p<f0887: status=f"Sotto Fib Strong - prezzo sotto 0.887 ({fmt_price(f0887)})"
         def dt(idx): return idx.strftime("%Y-%m-%d") if hasattr(idx,"strftime") else str(idx)
         res.update({"fib_available":True,"fib_low":low,"fib_low_date":dt(low_idx),"fib_high":high,"fib_high_date":dt(hi_idx),"fib_0500":f0500,"fib_0618":f0618,"fib_0786":f0786,"fib_0887":f0887,"fib_first_buy_low":f0618,"fib_first_buy_high":f0500,"fib_buy_low":f0786,"fib_buy_high":f0618,"fib_strong_low":f0887,"fib_strong_high":f0786,"fib_marker_pct":marker,"fib_status":status,"fib_swing_gain_pct":gain*100,"fib_swing_weeks":weeks})
         return res
