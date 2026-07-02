@@ -10671,12 +10671,86 @@ def yf_download(symbol: str, **kwargs) -> pd.DataFrame:
     return yf.download(symbol, progress=False, threads=False, **kwargs)
 
 
-def get_info(symbol: str) -> dict[str, Any]:
+FUNDAMENTAL_INFO_KEYS = (
+    "marketCap",
+    "forwardPE",
+    "trailingPE",
+    "pegRatio",
+    "trailingPegRatio",
+    "priceToSalesTrailing12Months",
+    "freeCashflow",
+    "returnOnEquity",
+    "grossMargins",
+    "operatingMargins",
+    "profitMargins",
+    "debtToEquity",
+    "revenueGrowth",
+    "earningsGrowth",
+    "beta",
+    "targetMeanPrice",
+    "recommendationMean",
+)
+
+GET_INFO_RETRY_COUNT = int(os.getenv("INSTITUTIONAL_GET_INFO_RETRY_COUNT", "3"))
+GET_INFO_RETRY_SLEEP_SECONDS = float(os.getenv("INSTITUTIONAL_GET_INFO_RETRY_SLEEP", "0.85"))
+
+
+def info_has_useful_fundamentals(info: dict[str, Any] | None) -> bool:
+    """Return True only when yfinance info contains at least some useful fundamentals.
+
+    Yahoo/yfinance can occasionally return an empty or almost-empty dict inside
+    Streamlit/cloud while historical price downloads still work. Treat those
+    responses as failed attempts and retry before accepting missing fundamentals.
+    """
+    if not isinstance(info, dict) or not info:
+        return False
+    useful_count = 0
+    for key in FUNDAMENTAL_INFO_KEYS:
+        value = info.get(key)
+        if value is None:
+            continue
+        if isinstance(value, str) and not value.strip():
+            continue
+        useful_count += 1
+        if useful_count >= 2:
+            return True
+    return False
+
+
+def _ticker_info_dict(ticker: Any, method: str) -> dict[str, Any]:
     try:
-        info = yf.Ticker(symbol).get_info()
+        if method == "get_info":
+            info = ticker.get_info()
+        else:
+            info = ticker.info
         return info if isinstance(info, dict) else {}
     except Exception:
         return {}
+
+
+def get_info(symbol: str) -> dict[str, Any]:
+    """Robust yfinance fundamentals retrieval without session/json fallback.
+
+    For each scan this function uses only live data from the current run:
+    1. try Ticker.get_info();
+    2. if the response is empty/useless, try Ticker.info;
+    3. retry a few times with a small delay.
+
+    No previous session data and no JSON cache are used.
+    """
+    symbol = str(symbol or "").strip()
+    if not symbol:
+        return {}
+    attempts = max(1, GET_INFO_RETRY_COUNT)
+    for attempt in range(attempts):
+        ticker = yf.Ticker(symbol)
+        for method in ("get_info", "info"):
+            info = _ticker_info_dict(ticker, method)
+            if info_has_useful_fundamentals(info):
+                return info
+        if attempt < attempts - 1:
+            time.sleep(GET_INFO_RETRY_SLEEP_SECONDS * (attempt + 1))
+    return {}
 
 
 def get_info_value(info: dict[str, Any], *keys: str) -> Any:
@@ -10839,6 +10913,8 @@ def fundamentals(symbol: str, last_price: Any) -> dict[str, Any]:
     out["info_error"] = ""
     try:
         info = get_info(symbol)
+        if not info:
+            out["info_error"] = "fondamentali yfinance non disponibili dopo retry live"
         out["market_cap"] = safe_float(get_info_value(info, "marketCap"))
         out["forward_pe"] = safe_float(get_info_value(info, "forwardPE"))
         out["trailing_pe"] = safe_float(get_info_value(info, "trailingPE"))
