@@ -9,7 +9,6 @@ from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
 from utils.institutional_scanner import (
-    BUY_ZONE_THRESHOLD,
     fmt_gap_points,
     fmt_num,
     fmt_pct,
@@ -18,7 +17,6 @@ from utils.institutional_scanner import (
     scan_summary,
     scan_symbols,
 )
-
 
 require_login()
 
@@ -32,11 +30,9 @@ def local_css(file_path: Path) -> None:
         with open(file_path, "r", encoding="utf-8") as file:
             st.markdown(f"<style>{file.read()}</style>", unsafe_allow_html=True)
 
-
 local_css(GLOBAL_CSS)
 local_css(PAGE_CSS)
 render_app_icon_meta()
-
 
 @st.cache_data(ttl=15 * 60, show_spinner=False)
 def load_institutional_scan() -> list[dict]:
@@ -55,7 +51,9 @@ def value_class(value) -> str:
     return "institutional-positive" if v > 0 else "institutional-negative" if v < 0 else "institutional-neutral"
 
 
-def label_class(label: str) -> str:
+def label_class(label: str, complete: bool) -> str:
+    if not complete:
+        return "institutional-label institutional-label-incomplete"
     if label == "Strong Buy Zone":
         return "institutional-label institutional-label-strong"
     if label == "Buy Zone":
@@ -63,7 +61,9 @@ def label_class(label: str) -> str:
     return "institutional-label"
 
 
-def card_class(label: str) -> str:
+def card_class(label: str, complete: bool) -> str:
+    if not complete:
+        return "institutional-card institutional-card-incomplete"
     if label == "Strong Buy Zone":
         return "institutional-card institutional-card-strong"
     if label == "Buy Zone":
@@ -71,7 +71,9 @@ def card_class(label: str) -> str:
     return "institutional-card"
 
 
-def label_icon(label: str) -> str:
+def label_icon(label: str, complete: bool) -> str:
+    if not complete:
+        return "⚠️"
     if label == "Strong Buy Zone":
         return "🔥"
     if label == "Buy Zone":
@@ -85,51 +87,23 @@ def orange_metric_box_class(record: dict) -> str:
     return "institutional-metric-orange" if bool(record.get("orange_zone")) else ""
 
 
-def record_key(record: dict) -> str:
-    return str(record.get("ticker") or record.get("yahoo") or "").upper().strip()
-
-
-def is_buy_or_strong(record: dict) -> bool:
-    return (safe_float(record.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD
-
-
-def build_display_records(records: list[dict]) -> list[dict]:
-    """Always show all Buy/Strong + all orange-zone names, then complete with Top 12.
-
-    Records arrive already sorted by Institutional Score descending. This function
-    preserves that order and removes duplicates by ticker/yahoo key.
-    """
-    priority = [record for record in records if is_buy_or_strong(record) or bool(record.get("orange_zone"))]
-    top12 = records[:12]
-
-    selected: list[dict] = []
-    seen: set[str] = set()
-    for record in priority + top12:
-        key = record_key(record)
-        if not key or key in seen:
-            continue
-        selected.append(record)
-        seen.add(key)
-    return selected
-
-
 def metric_html(label: str, value: str, css_class: str = "", box_class: str = "") -> str:
     value_css = f"institutional-metric-value {css_class}" if css_class else "institutional-metric-value"
     wrapper_css = f"institutional-metric {box_class}" if box_class else "institutional-metric"
-    return (
-        f'<div class="{wrapper_css}">'
-        f'<div class="institutional-mini-label">{escape(label)}</div>'
-        f'<div class="{value_css}">{escape(value)}</div>'
-        '</div>'
-    )
+    return f'<div class="{wrapper_css}"><div class="institutional-mini-label">{escape(label)}</div><div class="{value_css}">{escape(value)}</div></div>'
+
+
+def component_html(label: str, value) -> str:
+    return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
 def render_card(record: dict, rank: int) -> str:
+    complete = bool(record.get("data_complete"))
     ticker = escape(str(record.get("ticker") or ""))
     name = escape(str(record.get("name") or ""))
-    label = str(record.get("score_label") or "Monitor")
+    label = str(record.get("score_label") or "Dati incompleti")
     currency = str(record.get("currency") or "").upper()
-    score = fmt_num(record.get("score_total"), 1)
+    score = "N/D" if not complete else fmt_num(record.get("score_total"), 1)
     price = fmt_price(record.get("last_price"), currency)
     daily = fmt_pct(record.get("daily_change_pct"), 2)
     daily_class = value_class(record.get("daily_change_pct"))
@@ -137,17 +111,25 @@ def render_card(record: dict, rank: int) -> str:
     notes = escape(str(record.get("score_notes") or "-") or "-")
     orange_box = orange_metric_box_class(record)
     error = str(record.get("error") or "").strip()
+    missing = ", ".join(record.get("data_missing_groups") or [])
+
+    data_panel = ""
+    if complete:
+        data_panel = '<div class="institutional-data-ok">Dati completi · score calcolato normalmente</div>'
+    else:
+        data_panel = f'<div class="institutional-data-warning">Score sospeso · fondamentali incompleti: {escape(missing or "n/d")}</div>'
 
     card = (
-        f'<div class="{card_class(label)}">'
+        f'<div class="{card_class(label, complete)}">'
         '<div class="institutional-card-header">'
         f'<div class="institutional-rank">#{rank}</div>'
         '<div class="institutional-title-wrap">'
         f'<div class="institutional-ticker">{ticker}</div>'
         f'<div class="institutional-name">{name}</div>'
         '</div>'
-        f'<div class="{label_class(label)}">{label_icon(label)} {escape(label)}</div>'
+        f'<div class="{label_class(label, complete)}">{label_icon(label, complete)} {escape(label)}</div>'
         '</div>'
+        f'{data_panel}'
         '<div class="institutional-price-score-row">'
         '<div class="institutional-price-box">'
         '<div class="institutional-mini-label">Prezzo attuale</div>'
@@ -168,6 +150,13 @@ def render_card(record: dict, rank: int) -> str:
         + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
         + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
+        '<div class="institutional-components-grid">'
+        + component_html("Tecnico", record.get("score_technical"))
+        + component_html("Valutazione", record.get("score_valuation"))
+        + component_html("Qualità", record.get("score_quality"))
+        + component_html("Crescita", record.get("score_growth"))
+        + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
+        + '</div>'
         '<div class="institutional-range-panel">'
         '<div class="institutional-range-title">Range operativo stimato</div>'
         '<div class="institutional-range-grid">'
@@ -176,18 +165,15 @@ def render_card(record: dict, rank: int) -> str:
         '</div>'
         '</div>'
         f'<div class="institutional-notes">Motivi: {notes}</div>'
-        '<div class="institutional-card-actions">'
-        f'<a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView →</a>'
-        '</div>'
+        f'<div class="institutional-card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView →</a></div>'
     )
     if error:
-        card += f'<div class="institutional-error-box">Dato incompleto: {escape(error)}</div>'
+        card += f'<div class="institutional-error-box">Dato tecnico incompleto: {escape(error)}</div>'
     return card + '</div>'
-
 
 render_standard_page_header(
     title="Institutional Scanner",
-    subtitle="Mega Cap USA/ETF · scoring tecnico/fondamentale · Buy/Strong, area arancione e Top 12 istituzionale.",
+    subtitle="Tutti i titoli Mega Cap USA/ETF · score, area arancione e qualità dati.",
     toggle_label="📱 Vista compatta",
     toggle_key="institutional_compact_mode",
     toggle_default=True,
@@ -196,19 +182,16 @@ render_standard_page_header(
     refresh_callback=refresh_scan,
 )
 
-with st.spinner("Calcolo Institutional Score su Mega Cap USA/ETF..."):
+with st.spinner("Calcolo Institutional Score su tutti i titoli..."):
     records = load_institutional_scan()
-
 summary = scan_summary(records)
-display_records = build_display_records(records)
-priority_count = len([record for record in records if is_buy_or_strong(record) or bool(record.get("orange_zone"))])
 
 cols = st.columns(4)
 summary_cards = [
-    ("Titoli analizzati", str(summary.get("count", 0)), "Lista Mega Cap USA/ETF"),
-    ("Top score", fmt_num(summary.get("top_score"), 1), str(summary.get("top_ticker") or "-")),
-    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Sempre visibili"),
-    ("Area arancione", str(summary.get("orange_count", 0)), "Sempre visibili"),
+    ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
+    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Score >= 65"),
+    ("Area arancione", str(summary.get("orange_count", 0)), "SMA200W + storico"),
+    ("Dati incompleti", str(summary.get("incomplete_count", 0)), "Score sospeso"),
 ]
 for col, (label, value, note) in zip(cols, summary_cards):
     with col:
@@ -221,26 +204,19 @@ for col, (label, value, note) in zip(cols, summary_cards):
             unsafe_allow_html=True,
         )
 
-st.caption(
-    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
-    f"Mostro {len(display_records)} card: tutti i Buy/Strong + tutti gli area arancione + completamento Top 12. "
-    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
-)
-st.markdown('<div class="institutional-section-title">🏁 Buy/Strong + Area arancione + Top 12</div>', unsafe_allow_html=True)
+st.caption(f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. Mostro tutti i {len(records)} titoli analizzati. Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan.")
+st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
 
-if priority_count:
-    st.caption(f"Titoli prioritari intercettati: {priority_count}. Eventuali duplicati con la Top 12 vengono mostrati una sola volta.")
-
-if not display_records:
+if not records:
     st.warning("Nessun dato disponibile per lo scanner istituzionale.")
 else:
     st.markdown(
-        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(display_records, 1)) + '</div>',
+        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
         unsafe_allow_html=True,
     )
 
 errors = [r for r in records if str(r.get("error") or "").strip()]
 if errors:
-    with st.expander(f"⚠️ Titoli con dati incompleti ({len(errors)})", expanded=False):
+    with st.expander(f"⚠️ Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
         for r in errors:
             st.write(f"{r.get('ticker', '-')}: {r.get('error')}")
