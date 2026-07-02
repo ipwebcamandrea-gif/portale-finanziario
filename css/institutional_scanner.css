@@ -336,15 +336,8 @@
   font-weight: 920;
   line-height: 1.18;
 }
-.institutional-fib-status strong {
-  color: #ffbf69;
-  text-align: right;
-}
-.institutional-fib-missing {
-  color: #ffd8a8;
-  font-size: 0.70rem;
-  font-weight: 850;
-}
+.institutional-fib-status strong { color: #ffbf69; text-align: right; }
+.institutional-fib-missing { color: #ffd8a8; font-size: 0.70rem; font-weight: 850; }
 @media screen and (max-width: 820px) {
   .institutional-fib-zones { grid-template-columns: minmax(0, 1fr); }
   .institutional-fib-row { grid-template-columns: 3.6rem minmax(0, 1fr); }
