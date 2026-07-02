@@ -6747,8 +6747,6 @@ def value_class(value) -> str:
 
 
 def label_class(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "institutional-label institutional-label-buy"
     if label == "Technical Stress":
         return "institutional-label institutional-label-incomplete"
     if label == "Strong Buy Zone":
@@ -6759,8 +6757,6 @@ def label_class(label: str) -> str:
 
 
 def card_class(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "institutional-card institutional-card-buy"
     if label == "Technical Stress":
         return "institutional-card institutional-card-incomplete"
     if label == "Strong Buy Zone":
@@ -6771,8 +6767,6 @@ def card_class(label: str) -> str:
 
 
 def label_icon(label: str) -> str:
-    if label == "Institutional Buy Zone":
-        return "🟢"
     if label == "Technical Stress":
         return "🟠"
     if label == "Fundamental Watch":
@@ -6846,10 +6840,6 @@ def render_card(record: dict, rank: int) -> str:
     hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
     hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
     hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
-    fair_value = fmt_price(record.get("fair_value_composite"), currency)
-    margin_safety = fmt_pct(record.get("required_margin_safety_pct"), 1)
-    fundamental_buy = fmt_price(record.get("fundamental_buy_price"), currency)
-    upside_fv = fmt_pct(record.get("upside_to_fair_value_pct"), 1)
     institutional_zone_text = str(record.get("institutional_buy_zone_text") or "dati insufficienti")
     institutional_status_text = str(record.get("institutional_buy_zone_status_text") or "N/D")
     error = str(record.get("error") or "").strip()
@@ -6884,12 +6874,6 @@ def render_card(record: dict, rank: int) -> str:
         + metric_html("Scarto da Min W", hist_gap_from_min, box_class=hist_orange_box)
         + metric_html("MinW Low sotto SMA200W", hist_min_low, box_class=hist_orange_box)
         + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
-        + metric_html("Fair Value composito", fair_value)
-        + metric_html("Margine sicurezza", margin_safety)
-        + metric_html("Fundamental Buy Price", fundamental_buy)
-        + metric_html("Upside vs Fair Value", upside_fv, value_class(record.get("upside_to_fair_value_pct")))
-        + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
-        + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
         '<div class="institutional-components-grid">'
         + component_html("Tecnico", record.get("score_technical"))
@@ -6899,9 +6883,9 @@ def render_card(record: dict, rank: int) -> str:
         + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
         + '</div>'
         '<div class="institutional-range-panel">'
-        '<div class="institutional-range-title">Institutional Buy Zone</div>'
+        '<div class="institutional-range-title">Buy Zone</div>'
         '<div class="institutional-range-grid">'
-        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Institutional Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
+        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
         f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Stato attuale</div><div class="institutional-range-value">{escape(institutional_status_text)}</div></div>'
         '</div>'
         '</div>'
@@ -6942,7 +6926,7 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_cards = [
     ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
-    ("Institutional", str(summary.get("institutional_count", 0)), "Dentro Institutional Buy Zone"),
+    ("Buy Zone", str(summary.get("buy_zone_count", summary.get("institutional_count", 0))), "Eq oggi MinW → SMA200W"),
     ("Technical Stress", str(summary.get("technical_stress_count", 0)), "Area tecnica/storica"),
     ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
 ]
@@ -11236,14 +11220,14 @@ def fair_value_model(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def institutional_buy_zone_model(record: dict[str, Any]) -> dict[str, Any]:
-    """Institutional Buy Zone = Eq oggi MinW -> Fundamental Buy Price."""
+    """Buy Zone = Eq oggi MinW -> SMA200W."""
     low = safe_float(record.get("hist_min_equivalent"))
-    high = safe_float(record.get("fundamental_buy_price"))
+    high = safe_float(record.get("sma200w"))
     current = safe_float(record.get("last_price"))
     if low is None or low <= 0 or high is None or high <= 0:
         return {"status": "not_enough_data", "low": low, "high": high, "active": False}
     if high < low:
-        return {"status": "no_overlap", "low": low, "high": high, "active": False}
+        low, high = high, low
     active = bool(current is not None and low <= current <= high)
     if current is None:
         position = "N/D"
@@ -11264,8 +11248,6 @@ def format_institutional_buy_zone(record: dict[str, Any]) -> str:
     if data.get("status") == "range":
         prefix = "attiva · " if data.get("active") else ""
         return prefix + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
-    if data.get("status") == "no_overlap":
-        return "non attiva · Fundamental Buy sotto Eq MinW"
     return "dati insufficienti"
 
 
@@ -11275,15 +11257,13 @@ def format_institutional_buy_zone_status(record: dict[str, Any]) -> str:
         return "N/D"
     if data.get("status") == "range":
         return str(data.get("position") or "N/D")
-    if data.get("status") == "no_overlap":
-        return "nessuna sovrapposizione"
     return "dati insufficienti"
 
 
 def institutional_display_label(record: dict[str, Any]) -> str:
     zone = record.get("institutional_buy_zone")
     if isinstance(zone, dict) and zone.get("active"):
-        return "Institutional Buy Zone"
+        return "Buy Zone"
     if bool(record.get("orange_zone")):
         return "Technical Stress"
     score = safe_float(record.get("score_total")) or 0.0
@@ -11325,7 +11305,6 @@ def build_record(item: dict[str, str]) -> dict[str, Any]:
     record.update(fund)
     record.update(quality)
     record.update(score)
-    record.update(fair_value_model(record))
     record["institutional_buy_zone"] = institutional_buy_zone_model(record)
     record["institutional_buy_zone_text"] = format_institutional_buy_zone(record)
     record["institutional_buy_zone_status_text"] = format_institutional_buy_zone_status(record)
@@ -11362,13 +11341,14 @@ def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
 
 def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
-    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Institutional Buy Zone"])
+    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Buy Zone"])
     technical_stress_count = len([r for r in records if str(r.get("display_label") or "") == "Technical Stress"])
     return {
         "count": len(records),
         "top_ticker": top.get("ticker", "-"),
         "top_score": top.get("score_total"),
         "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
+        "buy_zone_count": institutional_count,
         "institutional_count": institutional_count,
         "technical_stress_count": technical_stress_count,
         "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
