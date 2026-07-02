@@ -583,6 +583,145 @@ def find_zone_range(record: dict[str, Any], threshold: float) -> dict[str, Any]:
     return {"status": "range", "low": min(valid), "high": max(valid), "active": active, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
 
 
+def median_value(values: list[float]) -> float | None:
+    cleaned = sorted(v for v in values if safe_float(v) is not None and float(v) > 0)
+    if not cleaned:
+        return None
+    n = len(cleaned)
+    mid = n // 2
+    return cleaned[mid] if n % 2 else (cleaned[mid - 1] + cleaned[mid]) / 2
+
+
+def fair_value_model(record: dict[str, Any]) -> dict[str, Any]:
+    """Conservative fair-value model for the Institutional Buy Zone V1."""
+    current = safe_float(record.get("last_price"))
+    quality = safe_float(record.get("score_quality")) or 0.0
+    growth = safe_float(record.get("score_growth")) or 0.0
+    beta = safe_float(record.get("beta"))
+    candidates: list[float] = []
+    methods: list[str] = []
+
+    fwd_pe = safe_float(record.get("forward_pe"))
+    if current is not None and current > 0 and fwd_pe is not None and fwd_pe > 0:
+        target_pe = 10.0 + (clip(quality, 0, 20) / 20.0) * 2.0 + (clip(growth, 0, 15) / 15.0) * 2.0
+        target_pe = clip(target_pe, 10.0, 14.5)
+        fv_pe = (current / fwd_pe) * target_pe
+        if fv_pe > 0:
+            candidates.append(fv_pe)
+            methods.append("Fwd P/E")
+
+    fcf_yield = safe_float(record.get("fcf_yield_pct"))
+    if current is not None and current > 0 and fcf_yield is not None and fcf_yield > 0:
+        required_fcf_yield = 11.0 - (clip(quality, 0, 20) / 20.0) * 2.0 - (clip(growth, 0, 15) / 15.0) * 1.0
+        required_fcf_yield = clip(required_fcf_yield, 8.0, 12.0)
+        fv_fcf = current * (fcf_yield / required_fcf_yield)
+        if fv_fcf > 0:
+            candidates.append(fv_fcf)
+            methods.append("FCF Yield")
+
+    target_mean = safe_float(record.get("target_mean_price"))
+    if target_mean is not None and target_mean > 0:
+        fv_target = target_mean * 0.80
+        if fv_target > 0:
+            candidates.append(fv_target)
+            methods.append("Target analisti 80%")
+
+    fair_value = median_value(candidates)
+    margin = None
+    fundamental_buy_price = None
+    if fair_value is not None:
+        if quality >= 15:
+            margin = 22.0
+        elif quality >= 11:
+            margin = 25.0
+        else:
+            margin = 30.0
+        if beta is not None:
+            if beta >= 1.50:
+                margin += 5.0
+            elif beta >= 1.20:
+                margin += 3.0
+        if growth >= 12:
+            margin -= 2.0
+        elif growth < 6:
+            margin += 3.0
+        if not bool(record.get("data_complete")):
+            margin += 5.0
+        margin = clip(margin, 20.0, 40.0)
+        fundamental_buy_price = fair_value * (1 - margin / 100.0)
+
+    upside = None
+    if current is not None and current > 0 and fair_value is not None:
+        upside = (fair_value / current - 1) * 100.0
+
+    return {
+        "fair_value_composite": round(fair_value, 2) if fair_value is not None else None,
+        "fair_value_methods": methods,
+        "required_margin_safety_pct": round(margin, 1) if margin is not None else None,
+        "fundamental_buy_price": round(fundamental_buy_price, 2) if fundamental_buy_price is not None else None,
+        "upside_to_fair_value_pct": round(upside, 1) if upside is not None else None,
+    }
+
+
+def institutional_buy_zone_model(record: dict[str, Any]) -> dict[str, Any]:
+    """Institutional Buy Zone = Eq oggi MinW -> Fundamental Buy Price."""
+    low = safe_float(record.get("hist_min_equivalent"))
+    high = safe_float(record.get("fundamental_buy_price"))
+    current = safe_float(record.get("last_price"))
+    if low is None or low <= 0 or high is None or high <= 0:
+        return {"status": "not_enough_data", "low": low, "high": high, "active": False}
+    if high < low:
+        return {"status": "no_overlap", "low": low, "high": high, "active": False}
+    active = bool(current is not None and low <= current <= high)
+    if current is None:
+        position = "N/D"
+    elif current < low:
+        position = "sotto la zona"
+    elif current > high:
+        position = "sopra la zona"
+    else:
+        position = "dentro la zona"
+    return {"status": "range", "low": low, "high": high, "active": active, "position": position}
+
+
+def format_institutional_buy_zone(record: dict[str, Any]) -> str:
+    data = record.get("institutional_buy_zone")
+    currency = str(record.get("currency") or "").upper()
+    if not isinstance(data, dict):
+        return "dati insufficienti"
+    if data.get("status") == "range":
+        prefix = "attiva · " if data.get("active") else ""
+        return prefix + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
+    if data.get("status") == "no_overlap":
+        return "non attiva · Fundamental Buy sotto Eq MinW"
+    return "dati insufficienti"
+
+
+def format_institutional_buy_zone_status(record: dict[str, Any]) -> str:
+    data = record.get("institutional_buy_zone")
+    if not isinstance(data, dict):
+        return "N/D"
+    if data.get("status") == "range":
+        return str(data.get("position") or "N/D")
+    if data.get("status") == "no_overlap":
+        return "nessuna sovrapposizione"
+    return "dati insufficienti"
+
+
+def institutional_display_label(record: dict[str, Any]) -> str:
+    zone = record.get("institutional_buy_zone")
+    if isinstance(zone, dict) and zone.get("active"):
+        return "Institutional Buy Zone"
+    if bool(record.get("orange_zone")):
+        return "Technical Stress"
+    score = safe_float(record.get("score_total")) or 0.0
+    if score >= BUY_ZONE_THRESHOLD:
+        return "Fundamental Watch"
+    if score >= 50:
+        return "Watch"
+    return "Monitor"
+
+
 def format_zone_range(record: dict[str, Any], key: str) -> str:
     data = record.get(key)
     currency = str(record.get("currency") or "").upper()
@@ -614,21 +753,23 @@ def build_record(item: dict[str, str]) -> dict[str, Any]:
     record.update(fund)
     record.update(quality)
     record.update(score)
+    record.update(fair_value_model(record))
+    record["institutional_buy_zone"] = institutional_buy_zone_model(record)
+    record["institutional_buy_zone_text"] = format_institutional_buy_zone(record)
+    record["institutional_buy_zone_status_text"] = format_institutional_buy_zone_status(record)
+    record["display_label"] = institutional_display_label(record)
     record["tradingview_url"] = tv_chart_url(str(record.get("tv") or item.get("tv") or ""))
-    record["buy_zone_range"] = find_zone_range(record, BUY_ZONE_THRESHOLD)
-    record["strong_buy_zone_range"] = find_zone_range(record, STRONG_BUY_ZONE_THRESHOLD)
-    record["buy_zone_text"] = format_zone_range(record, "buy_zone_range")
-    record["strong_buy_zone_text"] = format_zone_range(record, "strong_buy_zone_range")
     return record
 
 
 def sort_priority(record: dict[str, Any]) -> tuple[int, float, str]:
     score = safe_float(record.get("score_total")) or 0
-    if score >= STRONG_BUY_ZONE_THRESHOLD:
+    label = str(record.get("display_label") or "")
+    if label == "Institutional Buy Zone":
         group = 0
-    elif score >= BUY_ZONE_THRESHOLD:
+    elif label == "Technical Stress":
         group = 1
-    elif bool(record.get("orange_zone")):
+    elif label == "Fundamental Watch":
         group = 2
     elif score >= 50:
         group = 3
@@ -649,11 +790,15 @@ def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
 
 def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
+    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Institutional Buy Zone"])
+    technical_stress_count = len([r for r in records if str(r.get("display_label") or "") == "Technical Stress"])
     return {
         "count": len(records),
         "top_ticker": top.get("ticker", "-"),
         "top_score": top.get("score_total"),
         "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
+        "institutional_count": institutional_count,
+        "technical_stress_count": technical_stress_count,
         "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
         "partial_count": len([r for r in records if not r.get("data_complete", False)]),
         "errors_count": len([r for r in records if str(r.get("error") or "").strip()]),
