@@ -254,13 +254,12 @@ def fib_level_price(low: float, high: float, ratio: float) -> float:
 
 
 def compute_fibonacci_w(weekly: pd.DataFrame, sma200_series: pd.Series, current_price: Any) -> dict[str, Any]:
-    """Automatic weekly Fibonacci from last cycle below SMA200W to next weekly high.
+    """Automatic weekly Fibonacci from latest completed meaningful cycle below SMA200W.
 
-    Rule used:
-    - find all weekly periods where Low is below SMA200W;
-    - take the most recent contiguous period below SMA200W;
-    - swing low = lowest Low of that period;
-    - swing high = highest High after the swing low.
+    The current/active breakdown cycle is skipped when it has not yet produced
+    a meaningful recovery high. This fixes cases like CRM, where a current
+    breakdown created a tiny low -> bounce swing instead of the previous major
+    completed cycle.
     """
     result: dict[str, Any] = {
         "fib_available": False,
@@ -285,48 +284,91 @@ def compute_fibonacci_w(weekly: pd.DataFrame, sma200_series: pd.Series, current_
         if weekly is None or weekly.empty or "Low" not in weekly.columns or "High" not in weekly.columns:
             result["fib_error"] = "weekly Low/High mancanti"
             return result
+
         hist = weekly.copy()
         hist["SMA200W"] = sma200_series
         hist = hist.dropna(subset=["Low", "High", "SMA200W"])
         hist = hist[(hist["Low"] > 0) & (hist["High"] > 0) & (hist["SMA200W"] > 0)]
-        below_mask = hist["Low"] < hist["SMA200W"]
-        if not bool(below_mask.any()):
+        if hist.empty:
+            result["fib_error"] = "storico weekly insufficiente"
+            return result
+
+        below_mask = (hist["Low"] < hist["SMA200W"]).tolist()
+        if not any(below_mask):
             result["fib_error"] = "nessun ciclo sotto SMA200W"
             return result
 
-        # Most recent contiguous block where Low < SMA200W.
-        below_positions = [idx for idx, flag in enumerate(below_mask.tolist()) if flag]
-        last_pos = below_positions[-1]
-        start_pos = last_pos
-        while start_pos > 0 and bool(below_mask.iloc[start_pos - 1]):
-            start_pos -= 1
-        cycle = hist.iloc[start_pos:last_pos + 1]
-        if cycle.empty:
-            result["fib_error"] = "ciclo sotto SMA200W vuoto"
+        blocks: list[tuple[int, int]] = []
+        pos = 0
+        while pos < len(below_mask):
+            if not below_mask[pos]:
+                pos += 1
+                continue
+            start = pos
+            while pos + 1 < len(below_mask) and below_mask[pos + 1]:
+                pos += 1
+            blocks.append((start, pos))
+            pos += 1
+
+        last_hist_pos = len(hist) - 1
+        min_follow_weeks = 12
+        min_swing_ratio = 0.25
+        chosen: dict[str, Any] | None = None
+
+        for block_index in range(len(blocks) - 1, -1, -1):
+            start_pos, end_pos = blocks[block_index]
+            next_start_pos = blocks[block_index + 1][0] if block_index + 1 < len(blocks) else None
+
+            # Skip current/recent active breakdown if it has not produced enough follow-through.
+            if next_start_pos is None and (last_hist_pos - end_pos) < min_follow_weeks:
+                continue
+
+            cycle = hist.iloc[start_pos:end_pos + 1]
+            if cycle.empty:
+                continue
+
+            low_idx = cycle["Low"].astype(float).idxmin()
+            low_value = safe_float(cycle.loc[low_idx, "Low"])
+            if low_value is None or low_value <= 0:
+                continue
+
+            low_pos = hist.index.get_loc(low_idx)
+            high_search_end = (next_start_pos - 1) if next_start_pos is not None else last_hist_pos
+            if high_search_end <= low_pos:
+                continue
+
+            after_low = hist.iloc[low_pos:high_search_end + 1]
+            if after_low.empty:
+                continue
+
+            high_idx = after_low["High"].astype(float).idxmax()
+            high_value = safe_float(after_low.loc[high_idx, "High"])
+            if high_value is None or high_value <= low_value:
+                continue
+
+            swing_ratio = (high_value - low_value) / low_value
+            follow_weeks = high_search_end - end_pos
+            if swing_ratio < min_swing_ratio or follow_weeks < min_follow_weeks:
+                continue
+
+            chosen = {"low_idx": low_idx, "low_value": low_value, "high_idx": high_idx, "high_value": high_value}
+            break
+
+        if not chosen:
+            result["fib_error"] = "nessun ciclo completato significativo"
             return result
 
-        low_idx = cycle["Low"].astype(float).idxmin()
-        low_value = safe_float(cycle.loc[low_idx, "Low"])
-        if low_value is None:
-            result["fib_error"] = "minimo ciclo non valido"
-            return result
-
-        after_low = hist.loc[low_idx:]
-        if after_low.empty:
-            result["fib_error"] = "nessun massimo successivo"
-            return result
-        high_idx = after_low["High"].astype(float).idxmax()
-        high_value = safe_float(after_low.loc[high_idx, "High"])
-        if high_value is None or high_value <= low_value:
-            result["fib_error"] = "massimo successivo non valido"
-            return result
+        low_idx = chosen["low_idx"]
+        low_value = chosen["low_value"]
+        high_idx = chosen["high_idx"]
+        high_value = chosen["high_value"]
 
         levels = {ratio: fib_level_price(low_value, high_value, ratio) for ratio in FIB_LEVELS}
-        p = safe_float(current_price)
         fib_0500 = levels[0.500]
         fib_0618 = levels[0.618]
         fib_0786 = levels[0.786]
         fib_0887 = levels[0.887]
+        p = safe_float(current_price)
 
         status = "fuori area"
         if p is not None:
