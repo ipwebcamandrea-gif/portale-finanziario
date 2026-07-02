@@ -96,7 +96,7 @@ with col_watchlist_tv:
 
 with col_institutional:
     if st.button(
-        "🏁 Institutional Scanner\n\nMega Cap USA/ETF, score e range Buy Zone.",
+        "🏁 Institutional Scanner\n\nMega Cap USA/ETF, score e qualità dati.",
         key="card_institutional_scanner",
         use_container_width=True,
     ):
