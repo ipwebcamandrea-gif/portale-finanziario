@@ -99,6 +99,10 @@ def value_class(value) -> str:
 
 
 def label_class(label: str) -> str:
+    if label == "Institutional Buy Zone":
+        return "institutional-label institutional-label-buy"
+    if label == "Technical Stress":
+        return "institutional-label institutional-label-incomplete"
     if label == "Strong Buy Zone":
         return "institutional-label institutional-label-strong"
     if label == "Buy Zone":
@@ -107,6 +111,10 @@ def label_class(label: str) -> str:
 
 
 def card_class(label: str) -> str:
+    if label == "Institutional Buy Zone":
+        return "institutional-card institutional-card-buy"
+    if label == "Technical Stress":
+        return "institutional-card institutional-card-incomplete"
     if label == "Strong Buy Zone":
         return "institutional-card institutional-card-strong"
     if label == "Buy Zone":
@@ -115,6 +123,12 @@ def card_class(label: str) -> str:
 
 
 def label_icon(label: str) -> str:
+    if label == "Institutional Buy Zone":
+        return "🟢"
+    if label == "Technical Stress":
+        return "🟠"
+    if label == "Fundamental Watch":
+        return "🔵"
     if label == "Strong Buy Zone":
         return "🔥"
     if label == "Buy Zone":
@@ -167,7 +181,7 @@ def data_panel_html(record: dict) -> str:
 def render_card(record: dict, rank: int) -> str:
     ticker = escape(str(record.get("ticker") or ""))
     name = escape(str(record.get("name") or ""))
-    label = str(record.get("score_label") or "Monitor")
+    label = str(record.get("display_label") or record.get("score_label") or "Monitor")
     currency = str(record.get("currency") or "").upper()
     score = fmt_num(record.get("score_total"), 1)
     price = fmt_price(record.get("last_price"), currency)
@@ -184,6 +198,12 @@ def render_card(record: dict, rank: int) -> str:
     hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
     hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
     hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
+    fair_value = fmt_price(record.get("fair_value_composite"), currency)
+    margin_safety = fmt_pct(record.get("required_margin_safety_pct"), 1)
+    fundamental_buy = fmt_price(record.get("fundamental_buy_price"), currency)
+    upside_fv = fmt_pct(record.get("upside_to_fair_value_pct"), 1)
+    institutional_zone_text = str(record.get("institutional_buy_zone_text") or "dati insufficienti")
+    institutional_status_text = str(record.get("institutional_buy_zone_status_text") or "N/D")
     error = str(record.get("error") or "").strip()
 
     card = (
@@ -220,6 +240,10 @@ def render_card(record: dict, rank: int) -> str:
         + metric_html("Eq oggi MaxW", hist_max_eq, box_class=hist_orange_box)
         + metric_html("Hist Max W sopra la SMA200W", hist_max_w, box_class=hist_orange_box)
         + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=hist_orange_box)
+        + metric_html("Fair Value composito", fair_value)
+        + metric_html("Margine sicurezza", margin_safety)
+        + metric_html("Fundamental Buy Price", fundamental_buy)
+        + metric_html("Upside vs Fair Value", upside_fv, value_class(record.get("upside_to_fair_value_pct")))
         + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
         + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
@@ -231,10 +255,10 @@ def render_card(record: dict, rank: int) -> str:
         + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
         + '</div>'
         '<div class="institutional-range-panel">'
-        '<div class="institutional-range-title">Range operativo stimato</div>'
+        '<div class="institutional-range-title">Institutional Buy Zone</div>'
         '<div class="institutional-range-grid">'
-        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Buy Zone</div><div class="institutional-range-value">{escape(str(record.get("buy_zone_text") or "dati insufficienti"))}</div></div>'
-        f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Strong Buy Zone</div><div class="institutional-range-value">{escape(str(record.get("strong_buy_zone_text") or "dati insufficienti"))}</div></div>'
+        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Institutional Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
+        f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Stato attuale</div><div class="institutional-range-value">{escape(institutional_status_text)}</div></div>'
         '</div>'
         '</div>'
         f'<div class="institutional-notes">Motivi: {notes}</div>'
@@ -274,8 +298,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_cards = [
     ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
-    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Score >= 65"),
-    ("Area arancione", str(summary.get("orange_count", 0)), "SMA200W + storico"),
+    ("Institutional", str(summary.get("institutional_count", 0)), "Dentro Institutional Buy Zone"),
+    ("Technical Stress", str(summary.get("technical_stress_count", 0)), "Area tecnica/storica"),
     ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
 ]
 for col, (label, value, note) in zip(cols, summary_cards):
