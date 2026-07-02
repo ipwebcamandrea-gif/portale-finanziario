@@ -12,7 +12,6 @@ from utils.institutional_scanner import (
     SYMBOLS,
     SLEEP_BETWEEN_TICKERS_SECONDS,
     build_record,
-    fmt_gap_points,
     fmt_num,
     fmt_pct,
     fmt_price,
@@ -179,6 +178,7 @@ def render_card(record: dict, rank: int) -> str:
     orange_box = orange_metric_box_class(record)
     hist_orange_box = "institutional-metric-orange"
     hist_min_w = fmt_pct(record.get("hist_min_w_pct"), 1)
+    hist_gap_from_min = fmt_pct(record.get("gap_points"), 1)
     hist_min_low = hist_price_date_text(record.get("hist_min_w_low"), currency, record.get("hist_min_w_date"))
     hist_min_eq = fmt_price(record.get("hist_min_equivalent"), currency)
     hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
@@ -211,15 +211,15 @@ def render_card(record: dict, rank: int) -> str:
         '</div>'
         '<div class="institutional-metrics-grid">'
         + metric_html("SMA200W", fmt_price(record.get("sma200w"), currency), box_class=orange_box)
-        + metric_html("Distanza", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
-        + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=orange_box)
-        + metric_html("Scarto da Min W", fmt_gap_points(record.get("gap_points")), box_class=orange_box)
+        + metric_html("Distanza sotto la SMA200W", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
         + metric_html("Hist Min W", hist_min_w, box_class=hist_orange_box)
-        + metric_html("MinW Low", hist_min_low, box_class=hist_orange_box)
+        + metric_html("Scarto da Min W", hist_gap_from_min, box_class=hist_orange_box)
+        + metric_html("MinW Low sotto SMA200W", hist_min_low, box_class=hist_orange_box)
         + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
-        + metric_html("Hist Max W", hist_max_w, box_class=hist_orange_box)
-        + metric_html("MaxW High", hist_max_high, box_class=hist_orange_box)
+        + metric_html("MaxW High sopra la SMA200W", hist_max_high, box_class=hist_orange_box)
         + metric_html("Eq oggi MaxW", hist_max_eq, box_class=hist_orange_box)
+        + metric_html("Hist Max W sopra la SMA200W", hist_max_w, box_class=hist_orange_box)
+        + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=hist_orange_box)
         + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
         + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
