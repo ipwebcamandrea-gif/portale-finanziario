@@ -139,6 +139,21 @@ def component_html(label: str, value) -> str:
     return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
+def hist_date_text(value) -> str:
+    text = str(value or "").strip()
+    return text[:10] if text else "N/D"
+
+
+def hist_price_date_text(price_value, currency: str, date_value) -> str:
+    price_text = fmt_price(price_value, currency)
+    date_text = hist_date_text(date_value)
+    if price_text == "N/D" and date_text == "N/D":
+        return "N/D"
+    if date_text == "N/D":
+        return price_text
+    return f"{price_text} ({date_text})"
+
+
 def data_panel_html(record: dict) -> str:
     label = str(record.get("data_quality_label") or "Dati parziali")
     ratio = safe_float(record.get("data_quality_ratio"))
@@ -162,6 +177,13 @@ def render_card(record: dict, rank: int) -> str:
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
     notes = escape(str(record.get("score_notes") or "-") or "-")
     orange_box = orange_metric_box_class(record)
+    hist_orange_box = "institutional-metric-orange"
+    hist_min_w = fmt_pct(record.get("hist_min_w_pct"), 1)
+    hist_min_low = hist_price_date_text(record.get("hist_min_w_low"), currency, record.get("hist_min_w_date"))
+    hist_min_eq = fmt_price(record.get("hist_min_equivalent"), currency)
+    hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
+    hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
+    hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
     error = str(record.get("error") or "").strip()
 
     card = (
@@ -192,6 +214,12 @@ def render_card(record: dict, rank: int) -> str:
         + metric_html("Distanza", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
         + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=orange_box)
         + metric_html("Scarto da Min W", fmt_gap_points(record.get("gap_points")), box_class=orange_box)
+        + metric_html("Hist Min W", hist_min_w, box_class=hist_orange_box)
+        + metric_html("MinW Low", hist_min_low, box_class=hist_orange_box)
+        + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
+        + metric_html("Hist Max W", hist_max_w, box_class=hist_orange_box)
+        + metric_html("MaxW High", hist_max_high, box_class=hist_orange_box)
+        + metric_html("Eq oggi MaxW", hist_max_eq, box_class=hist_orange_box)
         + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
         + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
         + '</div>'
