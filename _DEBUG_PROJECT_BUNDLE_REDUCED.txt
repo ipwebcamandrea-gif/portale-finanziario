@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 61
+# Files included: 64
 
 
 
@@ -3062,6 +3062,263 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 
 
 ====================================================================================================
+===== FILE: css/institutional_scanner.css =====
+====================================================================================================
+
+/* ========================= INSTITUTIONAL SCANNER PAGE ========================= */
+.institutional-summary-card {
+  min-height: 112px;
+  padding: 0.88rem 0.96rem;
+  margin-bottom: 1rem;
+  border-radius: 15px;
+  border: 1px solid rgba(48, 54, 61, 0.78);
+  background: radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%), linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+.institutional-summary-label {
+  color: #9fb3d1;
+  font-size: 0.70rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  margin-bottom: 0.34rem;
+}
+.institutional-summary-value {
+  color: #f9fafb;
+  font-size: 1.34rem;
+  font-weight: 950;
+  line-height: 1.12;
+}
+.institutional-summary-note {
+  color: #8bd3ff;
+  font-size: 0.78rem;
+  font-weight: 820;
+  margin-top: 0.28rem;
+}
+.institutional-section-title {
+  color: #f9fafb;
+  font-size: 1.08rem;
+  font-weight: 950;
+  margin: 1.10rem 0 0.72rem 0;
+}
+.institutional-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.institutional-card {
+  min-width: 0;
+  border-radius: 18px;
+  border: 1px solid rgba(48, 54, 61, 0.84);
+  background: radial-gradient(circle at top right, rgba(0, 176, 255, 0.09), transparent 35%), linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.88) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 0 14px rgba(0, 176, 255, 0.05);
+  padding: 0.88rem 0.92rem 0.86rem 0.92rem;
+}
+.institutional-card-buy { border-color: rgba(88, 214, 141, 0.70); }
+.institutional-card-strong { border-color: rgba(43, 213, 118, 0.86); }
+.institutional-card-incomplete { border-color: rgba(245, 158, 11, 0.70); }
+.institutional-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.70rem;
+  margin-bottom: 0.68rem;
+}
+.institutional-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.15rem;
+  height: 1.70rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: rgba(13, 17, 23, 0.65);
+  border: 1px solid rgba(48, 54, 61, 0.90);
+  color: #9fb3d1;
+  font-size: 0.70rem;
+  font-weight: 950;
+}
+.institutional-title-wrap { min-width: 0; flex: 1; }
+.institutional-ticker {
+  color: #ffffff;
+  font-size: 1.08rem;
+  font-weight: 950;
+  line-height: 1.10;
+}
+.institutional-name {
+  color: #9fb3d1;
+  font-size: 0.72rem;
+  font-weight: 760;
+  line-height: 1.18;
+  margin-top: 0.12rem;
+  overflow-wrap: anywhere;
+}
+.institutional-label {
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 0.36rem 0.54rem;
+  font-size: 0.62rem;
+  font-weight: 950;
+  border: 1px solid rgba(127, 183, 255, 0.34);
+  color: #9ec5ff;
+  background: #142236;
+}
+.institutional-label-buy { color: #58d68d; background: #172c1d; border-color: rgba(88,214,141,0.62); }
+.institutional-label-strong { color: #2bd576; background: #173520; border-color: rgba(43,213,118,0.74); }
+.institutional-label-incomplete { color: #ffd8a8; background: #2b2114; border-color: rgba(245,158,11,0.68); }
+.institutional-data-ok,
+.institutional-data-warning {
+  margin: 0 0 0.62rem 0;
+  padding: 0.48rem 0.58rem;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  font-weight: 850;
+  line-height: 1.18;
+}
+.institutional-data-ok {
+  color: #d7ffe6;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+.institutional-data-warning {
+  color: #ffd8a8;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.34);
+}
+.institutional-price-score-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.1rem;
+  gap: 0.64rem;
+  margin-bottom: 0.62rem;
+}
+.institutional-price-box,
+.institutional-score-box,
+.institutional-metric,
+.institutional-range-panel {
+  border-radius: 13px;
+  border: 1px solid rgba(48, 54, 61, 0.62);
+  background: rgba(13, 17, 23, 0.38);
+}
+.institutional-price-box { padding: 0.58rem 0.66rem; }
+.institutional-score-box { padding: 0.50rem 0.42rem; text-align: center; }
+.institutional-mini-label {
+  color: #9fb3d1;
+  font-size: 0.57rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  margin-bottom: 0.18rem;
+}
+.institutional-price-value { color: #ffffff; font-size: 0.98rem; font-weight: 950; }
+.institutional-daily { margin-top: 0.16rem; font-size: 0.76rem; font-weight: 950; }
+.institutional-positive { color: #41d67a !important; }
+.institutional-negative { color: #ff4d5a !important; }
+.institutional-neutral { color: #d1d5db !important; }
+.institutional-score-value { color: #8bd3ff; font-size: 1.34rem; font-weight: 950; line-height: 1.0; }
+.institutional-score-suffix { color: #8a99ad; font-size: 0.58rem; font-weight: 900; margin-top: 0.12rem; }
+.institutional-metrics-grid,
+.institutional-components-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-bottom: 0.62rem;
+}
+.institutional-components-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.institutional-metric { padding: 0.48rem 0.52rem; }
+.institutional-metric-value {
+  color: #f9fafb;
+  font-size: 0.76rem;
+  font-weight: 920;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.institutional-metric-orange {
+  border-color: rgba(255, 159, 28, 0.82) !important;
+  background: radial-gradient(circle at top right, rgba(255, 159, 28, 0.20), transparent 34%), linear-gradient(180deg, rgba(43, 29, 18, 0.92) 0%, rgba(23, 22, 19, 0.96) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 216, 168, 0.08), 0 0 13px rgba(255, 159, 28, 0.14) !important;
+}
+.institutional-metric-orange .institutional-mini-label { color: #ffd8a8 !important; }
+.institutional-metric-orange .institutional-metric-value { color: #fff8ef !important; }
+.institutional-range-panel { padding: 0.62rem 0.64rem; margin-bottom: 0.64rem; }
+.institutional-range-title { color: #f9fafb; font-size: 0.76rem; font-weight: 950; margin-bottom: 0.45rem; }
+.institutional-range-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.44rem; }
+.institutional-range-box {
+  min-width: 0;
+  border-radius: 12px;
+  padding: 0.50rem 0.46rem;
+  border: 1px solid rgba(48, 54, 61, 0.76);
+  background: rgba(13, 17, 23, 0.42);
+}
+.institutional-range-buy { border-color: rgba(88,214,141,0.54); }
+.institutional-range-strong { border-color: rgba(255,159,28,0.58); }
+.institutional-range-label {
+  font-size: 0.56rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  margin-bottom: 0.25rem;
+}
+.institutional-range-buy .institutional-range-label { color: #58d68d; }
+.institutional-range-strong .institutional-range-label { color: #ffbf69; }
+.institutional-range-value {
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.institutional-notes {
+  color: #9fb3d1;
+  font-size: 0.68rem;
+  font-weight: 740;
+  line-height: 1.28;
+  min-height: 2.6rem;
+  margin-bottom: 0.62rem;
+}
+.institutional-card-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.05rem;
+  padding: 0 0.78rem;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 211, 255, 0.34);
+  background: rgba(0, 176, 255, 0.08);
+  color: #8bd3ff !important;
+  text-decoration: none !important;
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+.institutional-error-box {
+  margin: 0.75rem 0;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.36);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ffc0c0;
+  font-size: 0.82rem;
+}
+@media screen and (max-width: 1320px) {
+  .institutional-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media screen and (max-width: 820px) {
+  .institutional-grid { grid-template-columns: minmax(0, 1fr); }
+  .institutional-components-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .institutional-summary-value { font-size: 1.12rem; }
+  .institutional-card { padding: 0.82rem 0.82rem; }
+}
+@media screen and (max-width: 430px) {
+  .institutional-card-header { flex-wrap: wrap; }
+  .institutional-label { white-space: normal; }
+  .institutional-price-score-row { grid-template-columns: minmax(0, 1fr); }
+  .institutional-score-box { text-align: left; }
+  .institutional-range-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+
+====================================================================================================
 ===== FILE: css/portafoglio.css =====
 ====================================================================================================
 
@@ -5628,7 +5885,7 @@ st.markdown(
 # =========================
 # IMPORTANT: use st.button + st.switch_page, not HTML <a> links.
 # This preserves Streamlit session_state, including the login state.
-col_watchlist_tv, col_portafoglio, col_allocazione = st.columns(3)
+col_watchlist_tv, col_institutional, col_portafoglio, col_allocazione = st.columns(4)
 
 with col_watchlist_tv:
     if st.button(
@@ -5637,6 +5894,14 @@ with col_watchlist_tv:
         use_container_width=True,
     ):
         st.switch_page("pages/watchlist_tradingview.py")
+
+with col_institutional:
+    if st.button(
+        "🏁 Institutional Scanner\n\nMega Cap USA/ETF, score e qualità dati.",
+        key="card_institutional_scanner",
+        use_container_width=True,
+    ):
+        st.switch_page("pages/institutional_scanner.py")
 
 with col_portafoglio:
     if st.button(
@@ -6374,6 +6639,237 @@ components.html(
     scrolling=False
 )
 st.markdown('</div>', unsafe_allow_html=True)
+
+
+
+====================================================================================================
+===== FILE: pages/institutional_scanner.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+from html import escape
+from pathlib import Path
+
+import streamlit as st
+
+from components.standard_header import render_standard_page_header
+from utils.app_branding import render_app_icon_meta
+from utils.auth import require_login
+from utils.institutional_scanner import (
+    fmt_gap_points,
+    fmt_num,
+    fmt_pct,
+    fmt_price,
+    safe_float,
+    scan_summary,
+    scan_symbols,
+)
+
+require_login()
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
+PAGE_CSS = ROOT_DIR / "css" / "institutional_scanner.css"
+
+
+def local_css(file_path: Path) -> None:
+    if file_path.exists():
+        with open(file_path, "r", encoding="utf-8") as file:
+            st.markdown(f"<style>{file.read()}</style>", unsafe_allow_html=True)
+
+local_css(GLOBAL_CSS)
+local_css(PAGE_CSS)
+render_app_icon_meta()
+
+@st.cache_data(ttl=15 * 60, show_spinner=False)
+def load_institutional_scan() -> list[dict]:
+    return scan_symbols()
+
+
+def refresh_scan() -> None:
+    st.cache_data.clear()
+    st.rerun()
+
+
+def value_class(value) -> str:
+    v = safe_float(value)
+    if v is None:
+        return "institutional-neutral"
+    return "institutional-positive" if v > 0 else "institutional-negative" if v < 0 else "institutional-neutral"
+
+
+def label_class(label: str) -> str:
+    if label == "Strong Buy Zone":
+        return "institutional-label institutional-label-strong"
+    if label == "Buy Zone":
+        return "institutional-label institutional-label-buy"
+    return "institutional-label"
+
+
+def card_class(label: str) -> str:
+    if label == "Strong Buy Zone":
+        return "institutional-card institutional-card-strong"
+    if label == "Buy Zone":
+        return "institutional-card institutional-card-buy"
+    return "institutional-card"
+
+
+def label_icon(label: str) -> str:
+    if label == "Strong Buy Zone":
+        return "🔥"
+    if label == "Buy Zone":
+        return "🟢"
+    if label == "Watch":
+        return "🔵"
+    return "⚪"
+
+
+def orange_metric_box_class(record: dict) -> str:
+    return "institutional-metric-orange" if bool(record.get("orange_zone")) else ""
+
+
+def metric_html(label: str, value: str, css_class: str = "", box_class: str = "") -> str:
+    value_css = f"institutional-metric-value {css_class}" if css_class else "institutional-metric-value"
+    wrapper_css = f"institutional-metric {box_class}" if box_class else "institutional-metric"
+    return f'<div class="{wrapper_css}"><div class="institutional-mini-label">{escape(label)}</div><div class="{value_css}">{escape(value)}</div></div>'
+
+
+def component_html(label: str, value) -> str:
+    return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
+
+
+def data_panel_html(record: dict) -> str:
+    label = str(record.get("data_quality_label") or "Dati parziali")
+    ratio = safe_float(record.get("data_quality_ratio"))
+    pct = f"{ratio * 100:.0f}%" if ratio is not None else "N/D"
+    missing_groups = ", ".join(record.get("data_missing_groups") or [])
+    if record.get("data_complete"):
+        return f'<div class="institutional-data-ok">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato normalmente</div>'
+    suffix = f" · mancanti: {escape(missing_groups)}" if missing_groups else ""
+    return f'<div class="institutional-data-warning">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato con i dati disponibili{suffix}</div>'
+
+
+def render_card(record: dict, rank: int) -> str:
+    ticker = escape(str(record.get("ticker") or ""))
+    name = escape(str(record.get("name") or ""))
+    label = str(record.get("score_label") or "Monitor")
+    currency = str(record.get("currency") or "").upper()
+    score = fmt_num(record.get("score_total"), 1)
+    price = fmt_price(record.get("last_price"), currency)
+    daily = fmt_pct(record.get("daily_change_pct"), 2)
+    daily_class = value_class(record.get("daily_change_pct"))
+    tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
+    notes = escape(str(record.get("score_notes") or "-") or "-")
+    orange_box = orange_metric_box_class(record)
+    error = str(record.get("error") or "").strip()
+
+    card = (
+        f'<div class="{card_class(label)}">'
+        '<div class="institutional-card-header">'
+        f'<div class="institutional-rank">#{rank}</div>'
+        '<div class="institutional-title-wrap">'
+        f'<div class="institutional-ticker">{ticker}</div>'
+        f'<div class="institutional-name">{name}</div>'
+        '</div>'
+        f'<div class="{label_class(label)}">{label_icon(label)} {escape(label)}</div>'
+        '</div>'
+        f'{data_panel_html(record)}'
+        '<div class="institutional-price-score-row">'
+        '<div class="institutional-price-box">'
+        '<div class="institutional-mini-label">Prezzo attuale</div>'
+        f'<div class="institutional-price-value">{escape(price)}</div>'
+        f'<div class="institutional-daily {daily_class}">Daily {escape(daily)}</div>'
+        '</div>'
+        '<div class="institutional-score-box">'
+        '<div class="institutional-mini-label">Score</div>'
+        f'<div class="institutional-score-value">{escape(score)}</div>'
+        '<div class="institutional-score-suffix">/100</div>'
+        '</div>'
+        '</div>'
+        '<div class="institutional-metrics-grid">'
+        + metric_html("SMA200W", fmt_price(record.get("sma200w"), currency), box_class=orange_box)
+        + metric_html("Distanza", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
+        + metric_html("Area arancione", "SI" if record.get("orange_zone") else "NO", box_class=orange_box)
+        + metric_html("Scarto da Min W", fmt_gap_points(record.get("gap_points")), box_class=orange_box)
+        + metric_html("Fwd P/E", fmt_num(record.get("forward_pe"), 1))
+        + metric_html("FCF Yield", fmt_pct(record.get("fcf_yield_pct"), 1), value_class(record.get("fcf_yield_pct")))
+        + '</div>'
+        '<div class="institutional-components-grid">'
+        + component_html("Tecnico", record.get("score_technical"))
+        + component_html("Valutazione", record.get("score_valuation"))
+        + component_html("Qualità", record.get("score_quality"))
+        + component_html("Crescita", record.get("score_growth"))
+        + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
+        + '</div>'
+        '<div class="institutional-range-panel">'
+        '<div class="institutional-range-title">Range operativo stimato</div>'
+        '<div class="institutional-range-grid">'
+        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Buy Zone</div><div class="institutional-range-value">{escape(str(record.get("buy_zone_text") or "dati insufficienti"))}</div></div>'
+        f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Strong Buy Zone</div><div class="institutional-range-value">{escape(str(record.get("strong_buy_zone_text") or "dati insufficienti"))}</div></div>'
+        '</div>'
+        '</div>'
+        f'<div class="institutional-notes">Motivi: {notes}</div>'
+        f'<div class="institutional-card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView →</a></div>'
+    )
+    if error:
+        card += f'<div class="institutional-error-box">Dato tecnico incompleto: {escape(error)}</div>'
+    return card + '</div>'
+
+render_standard_page_header(
+    title="Institutional Scanner",
+    subtitle="Tutti i titoli Mega Cap USA/ETF · score parziale stile script locale, area arancione e range operativo.",
+    toggle_label="📱 Vista compatta",
+    toggle_key="institutional_compact_mode",
+    toggle_default=True,
+    refresh_key="institutional_header_refresh",
+    back_key="institutional_header_back",
+    refresh_callback=refresh_scan,
+)
+
+with st.spinner("Calcolo Institutional Score su tutti i titoli..."):
+    records = load_institutional_scan()
+summary = scan_summary(records)
+
+cols = st.columns(4)
+summary_cards = [
+    ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
+    ("Buy/Strong", str(summary.get("buy_strong_count", 0)), "Score >= 65"),
+    ("Area arancione", str(summary.get("orange_count", 0)), "SMA200W + storico"),
+    ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
+]
+for col, (label, value, note) in zip(cols, summary_cards):
+    with col:
+        st.markdown(
+            '<div class="institutional-summary-card">'
+            f'<div class="institutional-summary-label">{escape(label)}</div>'
+            f'<div class="institutional-summary-value">{escape(value)}</div>'
+            f'<div class="institutional-summary-note">{escape(note)}</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+st.caption(
+    f"Ultimo aggiornamento pagina: {summary.get('last_update', '-')}. "
+    f"Mostro tutti i {len(records)} titoli analizzati. "
+    "Se alcuni fondamentali mancano, lo score viene comunque calcolato con i dati disponibili, come nello script locale. "
+    "Cache dati: 15 minuti. Usa 🔄 per forzare un nuovo scan."
+)
+st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
+
+if not records:
+    st.warning("Nessun dato disponibile per lo scanner istituzionale.")
+else:
+    st.markdown(
+        '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
+        unsafe_allow_html=True,
+    )
+
+errors = [r for r in records if str(r.get("error") or "").strip()]
+if errors:
+    with st.expander(f"⚠️ Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
+        for r in errors:
+            st.write(f"{r.get('ticker', '-')}: {r.get('error')}")
 
 
 
@@ -9959,6 +10455,600 @@ def test_github_storage_connection(watchlists_path=None):
         "sha": sha,
         "watchlists_count": len(data.get("watchlists", {})) if isinstance(data, dict) else 0,
         "active_watchlist": data.get("active_watchlist") if isinstance(data, dict) else None,
+    }
+
+
+
+====================================================================================================
+===== FILE: utils/institutional_scanner.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import math
+import os
+import time
+import urllib.parse
+from datetime import datetime
+from typing import Any
+from zoneinfo import ZoneInfo
+
+import pandas as pd
+import yfinance as yf
+
+TIMEZONE = ZoneInfo("Europe/Rome")
+SMA_WEEKS = 200
+BUY_ZONE_THRESHOLD = 65.0
+STRONG_BUY_ZONE_THRESHOLD = 80.0
+SMA200_HIST_MIN_PROXIMITY_POINTS = 10.0
+SMA200_HIST_MIN_DIST_LIMIT = 0.0
+MAX_SIMULATED_DISCOUNT_PCT = 60.0
+SIMULATION_STEP_PCT = 0.5
+SLEEP_BETWEEN_TICKERS_SECONDS = float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP", "0.35"))
+YF_REPAIR = os.getenv("YF_REPAIR", "false").strip().lower() in {"1", "true", "yes", "y"}
+
+SYMBOLS = [
+    {"ticker": "ACWI", "yahoo": "ACWI", "tv": "NASDAQ:ACWI", "name": "iShares MSCI ACWI ETF"},
+    {"ticker": "SPY", "yahoo": "SPY", "tv": "AMEX:SPY", "name": "SPDR S&P 500 ETF Trust"},
+    {"ticker": "TSLA", "yahoo": "TSLA", "tv": "NASDAQ:TSLA", "name": "Tesla"},
+    {"ticker": "COST", "yahoo": "COST", "tv": "NASDAQ:COST", "name": "Costco"},
+    {"ticker": "MSFT", "yahoo": "MSFT", "tv": "NASDAQ:MSFT", "name": "Microsoft"},
+    {"ticker": "V", "yahoo": "V", "tv": "NYSE:V", "name": "Visa"},
+    {"ticker": "MA", "yahoo": "MA", "tv": "NYSE:MA", "name": "Mastercard"},
+    {"ticker": "ORCL", "yahoo": "ORCL", "tv": "NYSE:ORCL", "name": "Oracle"},
+    {"ticker": "PG", "yahoo": "PG", "tv": "NYSE:PG", "name": "Procter & Gamble"},
+    {"ticker": "JNJ", "yahoo": "JNJ", "tv": "NYSE:JNJ", "name": "Johnson & Johnson"},
+    {"ticker": "KO", "yahoo": "KO", "tv": "NYSE:KO", "name": "Coca-Cola"},
+    {"ticker": "PEP", "yahoo": "PEP", "tv": "NASDAQ:PEP", "name": "PepsiCo"},
+    {"ticker": "MCD", "yahoo": "MCD", "tv": "NYSE:MCD", "name": "McDonald's"},
+    {"ticker": "ABT", "yahoo": "ABT", "tv": "NYSE:ABT", "name": "Abbott Laboratories"},
+    {"ticker": "WMT", "yahoo": "WMT", "tv": "NYSE:WMT", "name": "Walmart"},
+    {"ticker": "AAPL", "yahoo": "AAPL", "tv": "NASDAQ:AAPL", "name": "Apple"},
+    {"ticker": "GOOG", "yahoo": "GOOG", "tv": "NASDAQ:GOOG", "name": "Alphabet Class C"},
+    {"ticker": "BRK.B", "yahoo": "BRK-B", "tv": "NYSE:BRK.B", "name": "Berkshire Hathaway"},
+    {"ticker": "NVDA", "yahoo": "NVDA", "tv": "NASDAQ:NVDA", "name": "NVIDIA"},
+    {"ticker": "ASML", "yahoo": "ASML", "tv": "NASDAQ:ASML", "name": "ASML Holding"},
+    {"ticker": "META", "yahoo": "META", "tv": "NASDAQ:META", "name": "Meta Platforms"},
+    {"ticker": "IBM", "yahoo": "IBM", "tv": "NYSE:IBM", "name": "IBM"},
+    {"ticker": "AVGO", "yahoo": "AVGO", "tv": "NASDAQ:AVGO", "name": "Broadcom"},
+    {"ticker": "AXP", "yahoo": "AXP", "tv": "NYSE:AXP", "name": "American Express"},
+    {"ticker": "AMZN", "yahoo": "AMZN", "tv": "NASDAQ:AMZN", "name": "Amazon"},
+    {"ticker": "CRM", "yahoo": "CRM", "tv": "NYSE:CRM", "name": "Salesforce"},
+]
+
+FUNDAMENTAL_FIELDS = {
+    "valuation": ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"],
+    "quality": ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "free_cashflow"],
+    "growth": ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean"],
+    "risk": ["beta"],
+}
+
+
+def now_rome() -> datetime:
+    return datetime.now(TIMEZONE)
+
+
+def safe_float(value: Any) -> float | None:
+    try:
+        if value is None:
+            return None
+        out = float(value)
+        if pd.isna(out) or math.isinf(out):
+            return None
+        return out
+    except Exception:
+        return None
+
+
+def clip(value: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, value))
+
+
+def fmt_num(value: Any, digits: int = 1) -> str:
+    v = safe_float(value)
+    return "N/D" if v is None else f"{v:.{digits}f}".replace(".", ",")
+
+
+def fmt_price(value: Any, currency: str = "") -> str:
+    v = safe_float(value)
+    if v is None:
+        return "N/D"
+    txt = f"{v:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+    cur = str(currency or "").strip().upper()
+    return txt + (f" {cur}" if cur else "")
+
+
+def fmt_pct(value: Any, digits: int = 1) -> str:
+    v = safe_float(value)
+    return "N/D" if v is None else f"{v:+.{digits}f}%".replace(".", ",")
+
+
+def fmt_gap_points(value: Any) -> str:
+    v = safe_float(value)
+    return "N/D" if v is None else f"{abs(v):.1f}".replace(".", ",") + " pt"
+
+
+def normalize_df(df: pd.DataFrame | None) -> pd.DataFrame:
+    if df is None or df.empty:
+        return pd.DataFrame()
+    out = df.copy()
+    if isinstance(out.columns, pd.MultiIndex):
+        if "Close" in out.columns.get_level_values(0):
+            out.columns = out.columns.get_level_values(0)
+        elif "Close" in out.columns.get_level_values(-1):
+            out.columns = out.columns.get_level_values(-1)
+    return out
+
+
+def yf_download(symbol: str, **kwargs) -> pd.DataFrame:
+    if YF_REPAIR:
+        return yf.download(symbol, repair=True, progress=False, threads=False, **kwargs)
+    return yf.download(symbol, progress=False, threads=False, **kwargs)
+
+
+def get_info(symbol: str) -> dict[str, Any]:
+    try:
+        info = yf.Ticker(symbol).get_info()
+        return info if isinstance(info, dict) else {}
+    except Exception:
+        return {}
+
+
+def get_info_value(info: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = info.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def pct_from_ratio(value: Any) -> float | None:
+    v = safe_float(value)
+    return None if v is None else v * 100
+
+
+def tv_chart_url(tv_symbol: str) -> str:
+    encoded = urllib.parse.quote(str(tv_symbol or "").strip(), safe="")
+    return f"https://www.tradingview.com/chart/?symbol={encoded}" if encoded else ""
+
+
+def hist_gap(dist_pct: Any, hist_min_pct: Any) -> float | None:
+    d = safe_float(dist_pct)
+    h = safe_float(hist_min_pct)
+    return None if d is None or h is None else abs(d - h)
+
+
+def below_sma(dist_pct: Any) -> bool:
+    d = safe_float(dist_pct)
+    return bool(d is not None and d < 0)
+
+
+def orange_zone(dist_pct: Any, hist_min_pct: Any) -> bool:
+    d = safe_float(dist_pct)
+    if d is None or d >= SMA200_HIST_MIN_DIST_LIMIT:
+        return False
+    gap = hist_gap(d, hist_min_pct)
+    return bool(gap is not None and gap <= SMA200_HIST_MIN_PROXIMITY_POINTS)
+
+
+def equivalent_price(sma: Any, pct_value: Any) -> float | None:
+    s = safe_float(sma)
+    p = safe_float(pct_value)
+    if s is None or s <= 0 or p is None:
+        return None
+    return s * (1 + p / 100)
+
+
+def quote_data(symbol: str) -> dict[str, Any]:
+    last_price = previous_close = None
+    currency = ""
+    try:
+        intraday = normalize_df(yf_download(symbol, period="5d", interval="15m", auto_adjust=False))
+        if not intraday.empty and "Close" in intraday.columns:
+            intraday = intraday.dropna(subset=["Close"])
+            if not intraday.empty:
+                last_price = safe_float(intraday["Close"].iloc[-1])
+    except Exception:
+        pass
+    try:
+        daily = normalize_df(yf_download(symbol, period="10d", interval="1d", auto_adjust=False))
+        if not daily.empty and "Close" in daily.columns:
+            daily = daily.dropna(subset=["Close"])
+            if last_price is None and not daily.empty:
+                last_price = safe_float(daily["Close"].iloc[-1])
+            if len(daily) >= 2:
+                previous_close = safe_float(daily["Close"].iloc[-2])
+            elif len(daily) == 1:
+                previous_close = safe_float(daily["Close"].iloc[-1])
+    except Exception:
+        pass
+    try:
+        fast = yf.Ticker(symbol).fast_info
+        currency = str(fast.get("currency") or "").upper()
+        if last_price is None:
+            last_price = safe_float(fast.get("last_price") or fast.get("lastPrice"))
+        if previous_close is None:
+            previous_close = safe_float(fast.get("previous_close") or fast.get("previousClose"))
+    except Exception:
+        pass
+    daily_change_pct = None
+    if last_price is not None and previous_close not in (None, 0):
+        daily_change_pct = ((last_price - previous_close) / previous_close) * 100
+    return {"last_price": last_price, "previous_close": previous_close, "daily_change_pct": daily_change_pct, "currency": currency}
+
+
+def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
+    symbol = item["yahoo"]
+    row: dict[str, Any] = {
+        "ticker": item["ticker"], "yahoo": symbol, "tv": item.get("tv", ""), "name": item.get("name", ""),
+        "last_price": None, "previous_close": None, "daily_change_pct": None, "currency": "",
+        "sma200w": None, "dist_pct": None, "hist_min_w_pct": None, "hist_min_w_date": None, "hist_min_w_low": None, "hist_min_equivalent": None,
+        "hist_max_w_pct": None, "hist_max_w_date": None, "hist_max_w_high": None, "hist_max_equivalent": None,
+        "gap_points": None, "below_sma200w": False, "orange_zone": False,
+        "momentum_26w_pct": None, "momentum_52w_pct": None, "drawdown_52w_pct": None, "weekly_vol_52w_pct": None,
+        "error": "",
+    }
+    try:
+        row.update(quote_data(symbol))
+        weekly = normalize_df(yf_download(symbol, period="20y", interval="1wk", auto_adjust=False))
+        if weekly.empty or "Close" not in weekly.columns:
+            row["error"] = "weekly vuoto o Close mancante"
+            return row
+        weekly = weekly.dropna(subset=["Close"])
+        if len(weekly) < SMA_WEEKS:
+            row["error"] = f"storico insufficiente: {len(weekly)} settimane"
+            return row
+        close = weekly["Close"].astype(float)
+        sma200_series = close.rolling(SMA_WEEKS).mean()
+        sma200 = safe_float(sma200_series.iloc[-1])
+        row["sma200w"] = sma200
+        if sma200 and row["last_price"] is not None:
+            row["dist_pct"] = ((row["last_price"] - sma200) / sma200) * 100
+        if len(close) >= 27:
+            row["momentum_26w_pct"] = ((close.iloc[-1] / close.iloc[-27]) - 1) * 100
+        if len(close) >= 53:
+            row["momentum_52w_pct"] = ((close.iloc[-1] / close.iloc[-53]) - 1) * 100
+        high_52 = safe_float(close.tail(52).max())
+        if high_52 and high_52 > 0:
+            row["drawdown_52w_pct"] = ((close.iloc[-1] / high_52) - 1) * 100
+        returns = close.pct_change().tail(52).dropna()
+        if not returns.empty:
+            row["weekly_vol_52w_pct"] = float(returns.std() * 100)
+        if "Low" in weekly.columns and "High" in weekly.columns:
+            hist = weekly.copy()
+            hist["SMA200W"] = sma200_series
+            hist = hist.dropna(subset=["Low", "High", "SMA200W"])
+            hist = hist[(hist["Low"] > 0) & (hist["High"] > 0) & (hist["SMA200W"] > 0)]
+            below = hist[hist["Low"] < hist["SMA200W"]]
+            if not below.empty:
+                dd = ((below["SMA200W"] - below["Low"]) / below["SMA200W"]) * 100
+                min_idx = dd.idxmax()
+                row["hist_min_w_pct"] = -safe_float(dd.max())
+                row["hist_min_w_date"] = min_idx.strftime("%Y-%m-%d") if hasattr(min_idx, "strftime") else str(min_idx)
+                row["hist_min_w_low"] = safe_float(below.loc[min_idx].get("Low"))
+                row["hist_min_equivalent"] = equivalent_price(sma200, row["hist_min_w_pct"])
+            above = hist[hist["High"] > hist["SMA200W"]]
+            if not above.empty:
+                mx = ((above["High"] - above["SMA200W"]) / above["SMA200W"]) * 100
+                max_idx = mx.idxmax()
+                row["hist_max_w_pct"] = safe_float(mx.max())
+                row["hist_max_w_date"] = max_idx.strftime("%Y-%m-%d") if hasattr(max_idx, "strftime") else str(max_idx)
+                row["hist_max_w_high"] = safe_float(above.loc[max_idx].get("High"))
+                row["hist_max_equivalent"] = equivalent_price(sma200, row["hist_max_w_pct"])
+        row["gap_points"] = hist_gap(row["dist_pct"], row["hist_min_w_pct"])
+        row["below_sma200w"] = below_sma(row["dist_pct"])
+        row["orange_zone"] = orange_zone(row["dist_pct"], row["hist_min_w_pct"])
+        return row
+    except Exception as exc:
+        row["error"] = str(exc)
+        return row
+
+
+def fundamentals(symbol: str, last_price: Any) -> dict[str, Any]:
+    out = {key: None for key in [
+        "market_cap", "forward_pe", "trailing_pe", "peg_ratio", "price_to_sales", "free_cashflow",
+        "fcf_yield_pct", "return_on_equity_pct", "gross_margin_pct", "operating_margin_pct",
+        "profit_margin_pct", "debt_to_equity", "revenue_growth_pct", "earnings_growth_pct",
+        "beta", "target_mean_price", "target_upside_pct", "recommendation_mean",
+    ]}
+    out["info_error"] = ""
+    try:
+        info = get_info(symbol)
+        out["market_cap"] = safe_float(get_info_value(info, "marketCap"))
+        out["forward_pe"] = safe_float(get_info_value(info, "forwardPE"))
+        out["trailing_pe"] = safe_float(get_info_value(info, "trailingPE"))
+        out["peg_ratio"] = safe_float(get_info_value(info, "pegRatio", "trailingPegRatio"))
+        out["price_to_sales"] = safe_float(get_info_value(info, "priceToSalesTrailing12Months"))
+        out["free_cashflow"] = safe_float(get_info_value(info, "freeCashflow"))
+        out["return_on_equity_pct"] = pct_from_ratio(get_info_value(info, "returnOnEquity"))
+        out["gross_margin_pct"] = pct_from_ratio(get_info_value(info, "grossMargins"))
+        out["operating_margin_pct"] = pct_from_ratio(get_info_value(info, "operatingMargins"))
+        out["profit_margin_pct"] = pct_from_ratio(get_info_value(info, "profitMargins"))
+        out["debt_to_equity"] = safe_float(get_info_value(info, "debtToEquity"))
+        out["revenue_growth_pct"] = pct_from_ratio(get_info_value(info, "revenueGrowth"))
+        out["earnings_growth_pct"] = pct_from_ratio(get_info_value(info, "earningsGrowth"))
+        out["beta"] = safe_float(get_info_value(info, "beta"))
+        out["target_mean_price"] = safe_float(get_info_value(info, "targetMeanPrice"))
+        out["recommendation_mean"] = safe_float(get_info_value(info, "recommendationMean"))
+        if out["market_cap"] and out["free_cashflow"] is not None:
+            out["fcf_yield_pct"] = (out["free_cashflow"] / out["market_cap"]) * 100
+        price = safe_float(last_price)
+        if out["target_mean_price"] is not None and price:
+            out["target_upside_pct"] = ((out["target_mean_price"] - price) / price) * 100
+    except Exception as exc:
+        out["info_error"] = str(exc)
+    return out
+
+
+def score_technical(row: dict[str, Any]) -> tuple[float, list[str]]:
+    notes, score = [], 0.0
+    dist, gap = safe_float(row.get("dist_pct")), safe_float(row.get("gap_points"))
+    if row.get("orange_zone"):
+        score += 15; notes.append("area arancione")
+    elif row.get("below_sma200w"):
+        score += 8; notes.append("sotto SMA200W")
+    elif dist is not None and dist < 10:
+        score += 4; notes.append("vicino SMA200W")
+    if gap is not None:
+        score += clip(10 - gap, 0, 10)
+        if gap <= 5:
+            notes.append("scarto storico stretto")
+    return round(clip(score, 0, 25), 1), notes
+
+
+def score_valuation(f: dict[str, Any]) -> tuple[float, list[str]]:
+    notes, score = [], 0.0
+    fpe, peg, fcfy, ps, tgt = [safe_float(f.get(k)) for k in ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"]]
+    if fpe is not None:
+        score += 5 if fpe <= 15 else 4 if fpe <= 25 else 2 if fpe <= 35 else 0
+        if fpe <= 25: notes.append("FwdPE ok/basso")
+    if peg is not None:
+        score += 4 if peg <= 1.2 else 2 if peg <= 2.0 else 0
+        if peg <= 1.2: notes.append("PEG buono")
+    if fcfy is not None:
+        score += 5 if fcfy >= 5 else 3 if fcfy >= 3 else 1 if fcfy > 0 else 0
+        if fcfy >= 3: notes.append("FCF yield ok")
+    if ps is not None:
+        score += 3 if ps <= 5 else 1 if ps <= 10 else 0
+    if tgt is not None:
+        score += 3 if tgt >= 15 else 1 if tgt >= 5 else 0
+        if tgt >= 15: notes.append("upside target")
+    return round(clip(score, 0, 20), 1), notes
+
+
+def score_quality(f: dict[str, Any]) -> tuple[float, list[str]]:
+    notes, score = [], 0.0
+    roe, opm, pm, gm, dte, fcf = [safe_float(f.get(k)) for k in ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "debt_to_equity", "free_cashflow"]]
+    if roe is not None:
+        score += 5 if roe >= 25 else 3 if roe >= 15 else 0
+        if roe >= 25: notes.append("ROE alto")
+    if opm is not None:
+        score += 5 if opm >= 25 else 3 if opm >= 15 else 0
+        if opm >= 25: notes.append("margine operativo alto")
+    if pm is not None: score += 4 if pm >= 20 else 2 if pm >= 10 else 0
+    if gm is not None: score += 3 if gm >= 50 else 2 if gm >= 35 else 0
+    if dte is not None: score += 2 if dte <= 80 else 1 if dte <= 150 else 0
+    if fcf is not None and fcf > 0: score += 1; notes.append("FCF positivo")
+    return round(clip(score, 0, 20), 1), notes
+
+
+def score_growth(f: dict[str, Any]) -> tuple[float, list[str]]:
+    notes, score = [], 0.0
+    rev, earn, rec, tgt = [safe_float(f.get(k)) for k in ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean", "target_upside_pct"]]
+    if rev is not None:
+        score += 5 if rev >= 15 else 3 if rev >= 5 else 1 if rev >= 0 else 0
+        if rev >= 15: notes.append("ricavi in crescita")
+    if earn is not None:
+        score += 5 if earn >= 15 else 3 if earn >= 5 else 1 if earn >= 0 else 0
+        if earn >= 15: notes.append("utili in crescita")
+    if rec is not None:
+        score += 3 if rec <= 2.0 else 2 if rec <= 2.7 else 0
+        if rec <= 2.0: notes.append("analyst rating buono")
+    if tgt is not None and tgt > 0: score += 2
+    return round(clip(score, 0, 15), 1), notes
+
+
+def score_risk_momentum(row: dict[str, Any], f: dict[str, Any]) -> tuple[float, list[str]]:
+    notes, score = [], 0.0
+    beta, mom26, mom52, dd52, vol = [safe_float(x) for x in [f.get("beta"), row.get("momentum_26w_pct"), row.get("momentum_52w_pct"), row.get("drawdown_52w_pct"), row.get("weekly_vol_52w_pct")]]
+    if beta is not None:
+        score += 4 if beta <= 1.0 else 3 if beta <= 1.3 else 1 if beta <= 1.7 else 0
+        if beta <= 1.0: notes.append("beta difensivo")
+    if mom26 is not None:
+        score += 4 if mom26 > 10 else 3 if mom26 > 0 else 1 if mom26 > -10 else 0
+        if mom26 > 10: notes.append("momentum 6m positivo")
+    if mom52 is not None: score += 3 if mom52 > 10 else 2 if mom52 > 0 else 1 if mom52 > -15 else 0
+    if dd52 is not None: score += 4 if dd52 > -10 else 2 if dd52 > -25 else 1 if dd52 > -40 else 0
+    if vol is not None:
+        score += 5 if vol <= 3 else 3 if vol <= 5 else 1 if vol <= 8 else 0
+        if vol <= 3: notes.append("volatilità bassa")
+    return round(clip(score, 0, 20), 1), notes
+
+
+def institutional_label(score: float) -> str:
+    if score >= STRONG_BUY_ZONE_THRESHOLD: return "Strong Buy Zone"
+    if score >= BUY_ZONE_THRESHOLD: return "Buy Zone"
+    if score >= 50: return "Watch"
+    return "Monitor"
+
+
+def compute_score(row: dict[str, Any], f: dict[str, Any]) -> dict[str, Any]:
+    buckets = [score_technical(row), score_valuation(f), score_quality(f), score_growth(f), score_risk_momentum(row, f)]
+    total = round(sum(bucket[0] for bucket in buckets), 1)
+    notes: list[str] = []
+    for _, bucket_notes in buckets:
+        notes.extend(bucket_notes[:2])
+    return {
+        "score_total": total,
+        "score_label": institutional_label(total),
+        "score_technical": buckets[0][0],
+        "score_valuation": buckets[1][0],
+        "score_quality": buckets[2][0],
+        "score_growth": buckets[3][0],
+        "score_risk_momentum": buckets[4][0],
+        "score_notes": "; ".join(notes[:8]),
+    }
+
+
+def data_quality(fund: dict[str, Any]) -> dict[str, Any]:
+    missing_groups, missing_fields = [], []
+    present_fields = total_fields = 0
+    for group, fields in FUNDAMENTAL_FIELDS.items():
+        group_present = 0
+        for field in fields:
+            total_fields += 1
+            if safe_float(fund.get(field)) is not None:
+                present_fields += 1
+                group_present += 1
+            else:
+                missing_fields.append(field)
+        if group_present == 0:
+            missing_groups.append(group)
+    ratio = present_fields / total_fields if total_fields else 0.0
+    label = "Dati completi" if ratio >= 0.80 else "Dati parziali" if ratio > 0 else "Fondamentali assenti"
+    return {
+        "data_complete": ratio >= 0.80,
+        "data_partial": ratio > 0 and ratio < 0.80,
+        "data_quality_ratio": round(ratio, 3),
+        "data_quality_label": label,
+        "data_missing_groups": missing_groups,
+        "data_missing_fields": missing_fields,
+    }
+
+
+def simulate_at_price(record: dict[str, Any], price: float) -> dict[str, Any]:
+    sim = dict(record)
+    current = safe_float(record.get("last_price"))
+    if current is None or current <= 0 or price <= 0:
+        return sim
+    ratio = price / current
+    sim["last_price"] = price
+    sma = safe_float(sim.get("sma200w"))
+    if sma and sma > 0:
+        sim["dist_pct"] = ((price - sma) / sma) * 100
+    sim["gap_points"] = hist_gap(sim.get("dist_pct"), sim.get("hist_min_w_pct"))
+    sim["below_sma200w"] = below_sma(sim.get("dist_pct"))
+    sim["orange_zone"] = orange_zone(sim.get("dist_pct"), sim.get("hist_min_w_pct"))
+    for key in ("forward_pe", "trailing_pe", "price_to_sales"):
+        value = safe_float(record.get(key))
+        if value is not None:
+            sim[key] = value * ratio
+    fcfy = safe_float(record.get("fcf_yield_pct"))
+    if fcfy is not None and ratio > 0:
+        sim["fcf_yield_pct"] = fcfy / ratio
+    target = safe_float(record.get("target_mean_price"))
+    if target is not None:
+        sim["target_upside_pct"] = ((target - price) / price) * 100
+    sim.update(compute_score(sim, sim))
+    return sim
+
+
+def find_zone_range(record: dict[str, Any], threshold: float) -> dict[str, Any]:
+    current = safe_float(record.get("last_price"))
+    if current is None or current <= 0:
+        return {"status": "not_enough_data", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": None, "max_score_orange": None}
+
+    valid: list[float] = []
+    max_score_any: float | None = None
+    max_score_orange: float | None = None
+
+    for i in range(int((MAX_SIMULATED_DISCOUNT_PCT * 2) / SIMULATION_STEP_PCT) + 1):
+        pct = -MAX_SIMULATED_DISCOUNT_PCT + i * SIMULATION_STEP_PCT
+        price = current * (1 + pct / 100)
+        if price <= 0:
+            continue
+        sim = simulate_at_price(record, price)
+        sim_score = safe_float(sim.get("score_total"))
+        if sim_score is not None:
+            max_score_any = sim_score if max_score_any is None else max(max_score_any, sim_score)
+        if bool(sim.get("orange_zone")):
+            if sim_score is not None:
+                max_score_orange = sim_score if max_score_orange is None else max(max_score_orange, sim_score)
+            if (sim_score or 0) >= threshold:
+                valid.append(price)
+
+    if not valid:
+        return {"status": "threshold_not_reached", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
+
+    active = bool(record.get("orange_zone")) and (safe_float(record.get("score_total")) or 0) >= threshold
+    return {"status": "range", "low": min(valid), "high": max(valid), "active": active, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
+
+
+def format_zone_range(record: dict[str, Any], key: str) -> str:
+    data = record.get(key)
+    currency = str(record.get("currency") or "").upper()
+    if not isinstance(data, dict):
+        return "dati insufficienti"
+    status = data.get("status")
+    threshold = safe_float(data.get("threshold"))
+    if status == "range":
+        return ("attiva · " if data.get("active") else "") + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
+    if status == "not_enough_data":
+        return "dati insufficienti"
+    if status == "threshold_not_reached":
+        max_score = safe_float(data.get("max_score_orange"))
+        if max_score is None:
+            max_score = safe_float(data.get("max_score"))
+        threshold_text = fmt_num(threshold, 0) if threshold is not None else "N/D"
+        max_text = fmt_num(max_score, 1) if max_score is not None else "N/D"
+        return f"Soglia {threshold_text} non raggiunta · Max simulato: {max_text} / {threshold_text}"
+    return "dati insufficienti"
+
+
+def build_record(item: dict[str, str]) -> dict[str, Any]:
+    tech = technical_metrics(item)
+    fund = fundamentals(tech.get("yahoo", item.get("yahoo", "")), tech.get("last_price"))
+    quality = data_quality(fund)
+    score = compute_score(tech, fund)
+    record: dict[str, Any] = {}
+    record.update(tech)
+    record.update(fund)
+    record.update(quality)
+    record.update(score)
+    record["tradingview_url"] = tv_chart_url(str(record.get("tv") or item.get("tv") or ""))
+    record["buy_zone_range"] = find_zone_range(record, BUY_ZONE_THRESHOLD)
+    record["strong_buy_zone_range"] = find_zone_range(record, STRONG_BUY_ZONE_THRESHOLD)
+    record["buy_zone_text"] = format_zone_range(record, "buy_zone_range")
+    record["strong_buy_zone_text"] = format_zone_range(record, "strong_buy_zone_range")
+    return record
+
+
+def sort_priority(record: dict[str, Any]) -> tuple[int, float, str]:
+    score = safe_float(record.get("score_total")) or 0
+    if score >= STRONG_BUY_ZONE_THRESHOLD:
+        group = 0
+    elif score >= BUY_ZONE_THRESHOLD:
+        group = 1
+    elif bool(record.get("orange_zone")):
+        group = 2
+    elif score >= 50:
+        group = 3
+    else:
+        group = 4
+    return (group, -score, str(record.get("ticker") or ""))
+
+
+def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
+    symbols = SYMBOLS[:limit] if limit else SYMBOLS
+    records: list[dict[str, Any]] = []
+    for idx, item in enumerate(symbols, 1):
+        records.append(build_record(item))
+        if idx < len(symbols) and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
+            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
+    return sorted(records, key=sort_priority)
+
+
+def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
+    return {
+        "count": len(records),
+        "top_ticker": top.get("ticker", "-"),
+        "top_score": top.get("score_total"),
+        "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
+        "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
+        "partial_count": len([r for r in records if not r.get("data_complete", False)]),
+        "errors_count": len([r for r in records if str(r.get("error") or "").strip()]),
+        "last_update": now_rome().strftime("%d/%m/%Y %H:%M:%S"),
     }
 
 
