@@ -146,6 +146,72 @@ def component_html(label: str, value) -> str:
     return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
 
 
+def fib_level_row_html(level: str, price: str, meaning: str, css_class: str) -> str:
+    return (
+        '<div class="institutional-fib-row">'
+        f'<div class="institutional-fib-level {css_class}">{escape(level)}</div>'
+        f'<div class="institutional-fib-price">{escape(price)}</div>'
+        f'<div class="institutional-fib-meaning {css_class}">{escape(meaning)}</div>'
+        '</div>'
+    )
+
+
+def fib_zone_box_html(label: str, value: str, css_class: str) -> str:
+    return (
+        f'<div class="institutional-fib-zone-box {css_class}">'
+        f'<div class="institutional-fib-zone-label">{escape(label)}</div>'
+        f'<div class="institutional-fib-zone-value">{escape(value)}</div>'
+        '</div>'
+    )
+
+
+def render_fibonacci_panel(record: dict, currency: str) -> str:
+    if not record.get("fib_available"):
+        reason = str(record.get("fib_error") or "dati insufficienti")
+        return (
+            '<div class="institutional-fib-panel">'
+            '<div class="institutional-range-title">Fibonacci W automatico</div>'
+            f'<div class="institutional-fib-missing">Non disponibile · {escape(reason)}</div>'
+            '</div>'
+        )
+
+    low = fmt_price(record.get("fib_low"), currency)
+    high = fmt_price(record.get("fib_high"), currency)
+    low_date = str(record.get("fib_low_date") or "N/D")
+    high_date = str(record.get("fib_high_date") or "N/D")
+    status = str(record.get("fib_status") or "dati insufficienti")
+
+    first_buy = f"{fmt_price(record.get('fib_first_buy_low'), currency)} - {fmt_price(record.get('fib_first_buy_high'), currency)}"
+    buy = f"{fmt_price(record.get('fib_buy_low'), currency)} - {fmt_price(record.get('fib_buy_high'), currency)}"
+    strong = f"{fmt_price(record.get('fib_strong_low'), currency)} - {fmt_price(record.get('fib_strong_high'), currency)}"
+
+    return (
+        '<div class="institutional-fib-panel">'
+        '<div class="institutional-range-title">Fibonacci W automatico</div>'
+        '<div class="institutional-fib-swing">'
+        'Swing da ultimo ciclo sotto SMA200W · '
+        f'<span class="institutional-negative">Min {escape(low)} ({escape(low_date)})</span>'
+        ' → '
+        f'<span class="institutional-positive">Max {escape(high)} ({escape(high_date)})</span>'
+        '</div>'
+        '<div class="institutional-fib-table">'
+        + fib_level_row_html("0.500", fmt_price(record.get("fib_0500"), currency), "Inizio First Buy", "institutional-fib-blue")
+        + fib_level_row_html("0.618", fmt_price(record.get("fib_0618"), currency), "Inizio Buy Area", "institutional-fib-green")
+        + fib_level_row_html("0.786", fmt_price(record.get("fib_0786"), currency), "Inizio Strong Buy", "institutional-fib-green")
+        + fib_level_row_html("0.887", fmt_price(record.get("fib_0887"), currency), "Estensione Strong", "institutional-fib-orange")
+        + '</div>'
+        '<div class="institutional-fib-zones">'
+        + fib_zone_box_html("Fib First Buy Area", first_buy, "institutional-fib-zone-first")
+        + fib_zone_box_html("Fib Buy Area", buy, "institutional-fib-zone-buy")
+        + fib_zone_box_html("Fib Strong Buy Area", strong, "institutional-fib-zone-strong")
+        + '</div>'
+        '<div class="institutional-fib-status">'
+        f'<span>Stato prezzo Fib</span><strong>{escape(status)}</strong>'
+        '</div>'
+        '</div>'
+    )
+
+
 def hist_date_text(value) -> str:
     text = str(value or "").strip()
     return text[:10] if text else "N/D"
@@ -241,7 +307,8 @@ def render_card(record: dict, rank: int) -> str:
         f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Stato attuale</div><div class="institutional-range-value">{escape(institutional_status_text)}</div></div>'
         '</div>'
         '</div>'
-        f'<div class="institutional-notes">Motivi: {notes}</div>'
+        + render_fibonacci_panel(record, currency)
+        + f'<div class="institutional-notes">Motivi: {notes}</div>'
         f'<div class="institutional-card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView →</a></div>'
     )
     if error:
