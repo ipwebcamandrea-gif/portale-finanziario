@@ -23,8 +23,6 @@ SLEEP_BETWEEN_TICKERS_SECONDS = float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP", "
 YF_REPAIR = os.getenv("YF_REPAIR", "false").strip().lower() in {"1", "true", "yes", "y"}
 
 SYMBOLS = [
-    {"ticker": "ACWI", "yahoo": "ACWI", "tv": "NASDAQ:ACWI", "name": "iShares MSCI ACWI ETF"},
-    {"ticker": "SPY", "yahoo": "SPY", "tv": "AMEX:SPY", "name": "SPDR S&P 500 ETF Trust"},
     {"ticker": "TSLA", "yahoo": "TSLA", "tv": "NASDAQ:TSLA", "name": "Tesla"},
     {"ticker": "COST", "yahoo": "COST", "tv": "NASDAQ:COST", "name": "Costco"},
     {"ticker": "MSFT", "yahoo": "MSFT", "tv": "NASDAQ:MSFT", "name": "Microsoft"},
