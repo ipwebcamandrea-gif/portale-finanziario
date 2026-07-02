@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import math
+import os
+import time
 import urllib.parse
 from datetime import datetime
 from typing import Any
@@ -17,6 +19,8 @@ SMA200_HIST_MIN_PROXIMITY_POINTS = 10.0
 SMA200_HIST_MIN_DIST_LIMIT = 0.0
 MAX_SIMULATED_DISCOUNT_PCT = 60.0
 SIMULATION_STEP_PCT = 0.5
+SLEEP_BETWEEN_TICKERS_SECONDS = float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP", "0.35"))
+YF_REPAIR = os.getenv("YF_REPAIR", "false").strip().lower() in {"1", "true", "yes", "y"}
 
 SYMBOLS = [
     {"ticker": "ACWI", "yahoo": "ACWI", "tv": "NASDAQ:ACWI", "name": "iShares MSCI ACWI ETF"},
@@ -47,8 +51,8 @@ SYMBOLS = [
     {"ticker": "CRM", "yahoo": "CRM", "tv": "NYSE:CRM", "name": "Salesforce"},
 ]
 
-FUNDAMENTAL_REQUIRED_GROUPS = {
-    "valuation": ["forward_pe", "price_to_sales", "fcf_yield_pct", "target_upside_pct"],
+FUNDAMENTAL_FIELDS = {
+    "valuation": ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"],
     "quality": ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "free_cashflow"],
     "growth": ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean"],
     "risk": ["beta"],
@@ -112,10 +116,13 @@ def normalize_df(df: pd.DataFrame | None) -> pd.DataFrame:
 
 
 def yf_download(symbol: str, **kwargs) -> pd.DataFrame:
+    if YF_REPAIR:
+        return yf.download(symbol, repair=True, progress=False, threads=False, **kwargs)
     return yf.download(symbol, progress=False, threads=False, **kwargs)
 
 
 def get_info(symbol: str) -> dict[str, Any]:
+    """Same spirit as the local script: try get_info, return {} only on hard failure."""
     try:
         info = yf.Ticker(symbol).get_info()
         return info if isinstance(info, dict) else {}
@@ -203,42 +210,18 @@ def quote_data(symbol: str) -> dict[str, Any]:
     daily_change_pct = None
     if last_price is not None and previous_close not in (None, 0):
         daily_change_pct = ((last_price - previous_close) / previous_close) * 100
-    return {
-        "last_price": last_price,
-        "previous_close": previous_close,
-        "daily_change_pct": daily_change_pct,
-        "currency": currency,
-    }
+    return {"last_price": last_price, "previous_close": previous_close, "daily_change_pct": daily_change_pct, "currency": currency}
 
 
 def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
     symbol = item["yahoo"]
     row: dict[str, Any] = {
-        "ticker": item["ticker"],
-        "yahoo": symbol,
-        "tv": item.get("tv", ""),
-        "name": item.get("name", ""),
-        "last_price": None,
-        "previous_close": None,
-        "daily_change_pct": None,
-        "currency": "",
-        "sma200w": None,
-        "dist_pct": None,
-        "hist_min_w_pct": None,
-        "hist_min_w_date": None,
-        "hist_min_w_low": None,
-        "hist_min_equivalent": None,
-        "hist_max_w_pct": None,
-        "hist_max_w_date": None,
-        "hist_max_w_high": None,
-        "hist_max_equivalent": None,
-        "gap_points": None,
-        "below_sma200w": False,
-        "orange_zone": False,
-        "momentum_26w_pct": None,
-        "momentum_52w_pct": None,
-        "drawdown_52w_pct": None,
-        "weekly_vol_52w_pct": None,
+        "ticker": item["ticker"], "yahoo": symbol, "tv": item.get("tv", ""), "name": item.get("name", ""),
+        "last_price": None, "previous_close": None, "daily_change_pct": None, "currency": "",
+        "sma200w": None, "dist_pct": None, "hist_min_w_pct": None, "hist_min_w_date": None, "hist_min_w_low": None, "hist_min_equivalent": None,
+        "hist_max_w_pct": None, "hist_max_w_date": None, "hist_max_w_high": None, "hist_max_equivalent": None,
+        "gap_points": None, "below_sma200w": False, "orange_zone": False,
+        "momentum_26w_pct": None, "momentum_52w_pct": None, "drawdown_52w_pct": None, "weekly_vol_52w_pct": None,
         "error": "",
     }
     try:
@@ -251,7 +234,6 @@ def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
         if len(weekly) < SMA_WEEKS:
             row["error"] = f"storico insufficiente: {len(weekly)} settimane"
             return row
-
         close = weekly["Close"].astype(float)
         sma200_series = close.rolling(SMA_WEEKS).mean()
         sma200 = safe_float(sma200_series.iloc[-1])
@@ -290,7 +272,6 @@ def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
                 row["hist_max_w_date"] = max_idx.strftime("%Y-%m-%d") if hasattr(max_idx, "strftime") else str(max_idx)
                 row["hist_max_w_high"] = safe_float(above.loc[max_idx].get("High"))
                 row["hist_max_equivalent"] = equivalent_price(sma200, row["hist_max_w_pct"])
-
         row["gap_points"] = hist_gap(row["dist_pct"], row["hist_min_w_pct"])
         row["below_sma200w"] = below_sma(row["dist_pct"])
         row["orange_zone"] = orange_zone(row["dist_pct"], row["hist_min_w_pct"])
@@ -473,18 +454,35 @@ def compute_score(row: dict[str, Any], f: dict[str, Any]) -> dict[str, Any]:
 
 
 def data_quality(fund: dict[str, Any]) -> dict[str, Any]:
-    missing: list[str] = []
-    groups_ok: dict[str, bool] = {}
-    for group, keys in FUNDAMENTAL_REQUIRED_GROUPS.items():
-        present = [key for key in keys if safe_float(fund.get(key)) is not None]
-        groups_ok[group] = bool(present)
-        if not present:
-            missing.append(group)
-    complete = bool(groups_ok.get("valuation") and groups_ok.get("quality") and groups_ok.get("growth") and groups_ok.get("risk"))
+    missing_groups: list[str] = []
+    missing_fields: list[str] = []
+    present_fields = 0
+    total_fields = 0
+    for group, fields in FUNDAMENTAL_FIELDS.items():
+        group_present = 0
+        for field in fields:
+            total_fields += 1
+            if safe_float(fund.get(field)) is not None:
+                present_fields += 1
+                group_present += 1
+            else:
+                missing_fields.append(field)
+        if group_present == 0:
+            missing_groups.append(group)
+    ratio = present_fields / total_fields if total_fields else 0.0
+    if ratio >= 0.80:
+        label = "Dati completi"
+    elif ratio > 0:
+        label = "Dati parziali"
+    else:
+        label = "Fondamentali assenti"
     return {
-        "data_complete": complete,
-        "data_missing_groups": missing,
-        "data_quality_label": "Dati completi" if complete else "Dati incompleti",
+        "data_complete": ratio >= 0.80,
+        "data_partial": ratio > 0 and ratio < 0.80,
+        "data_quality_ratio": round(ratio, 3),
+        "data_quality_label": label,
+        "data_missing_groups": missing_groups,
+        "data_missing_fields": missing_fields,
     }
 
 
@@ -516,8 +514,6 @@ def simulate_at_price(record: dict[str, Any], price: float) -> dict[str, Any]:
 
 
 def find_zone_range(record: dict[str, Any], threshold: float) -> dict[str, Any]:
-    if not record.get("data_complete", False):
-        return {"status": "not_enough_data", "low": None, "high": None, "active": False}
     current = safe_float(record.get("last_price"))
     if current is None or current <= 0:
         return {"status": "not_enough_data", "low": None, "high": None, "active": False}
@@ -553,26 +549,12 @@ def build_record(item: dict[str, str]) -> dict[str, Any]:
     tech = technical_metrics(item)
     fund = fundamentals(tech.get("yahoo", item.get("yahoo", "")), tech.get("last_price"))
     quality = data_quality(fund)
+    score = compute_score(tech, fund)
     record: dict[str, Any] = {}
     record.update(tech)
     record.update(fund)
     record.update(quality)
-
-    if quality["data_complete"]:
-        record.update(compute_score(tech, fund))
-    else:
-        technical_score, technical_notes = score_technical(tech)
-        record.update({
-            "score_total": None,
-            "score_label": "Dati incompleti",
-            "score_technical": technical_score,
-            "score_valuation": None,
-            "score_quality": None,
-            "score_growth": None,
-            "score_risk_momentum": None,
-            "score_notes": "; ".join(technical_notes) if technical_notes else "fondamentali incompleti",
-        })
-
+    record.update(score)
     record["tradingview_url"] = tv_chart_url(str(record.get("tv") or item.get("tv") or ""))
     record["buy_zone_range"] = find_zone_range(record, BUY_ZONE_THRESHOLD)
     record["strong_buy_zone_range"] = find_zone_range(record, STRONG_BUY_ZONE_THRESHOLD)
@@ -582,38 +564,39 @@ def build_record(item: dict[str, str]) -> dict[str, Any]:
 
 
 def sort_priority(record: dict[str, Any]) -> tuple[int, float, str]:
-    if not record.get("data_complete", False):
-        group = 5
-    elif (safe_float(record.get("score_total")) or 0) >= STRONG_BUY_ZONE_THRESHOLD:
+    score = safe_float(record.get("score_total")) or 0
+    if score >= STRONG_BUY_ZONE_THRESHOLD:
         group = 0
-    elif (safe_float(record.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD:
+    elif score >= BUY_ZONE_THRESHOLD:
         group = 1
     elif bool(record.get("orange_zone")):
         group = 2
-    elif (safe_float(record.get("score_total")) or 0) >= 50:
+    elif score >= 50:
         group = 3
     else:
         group = 4
-    score = safe_float(record.get("score_total"))
-    return (group, -(score if score is not None else -1), str(record.get("ticker") or ""))
+    return (group, -score, str(record.get("ticker") or ""))
 
 
 def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
     symbols = SYMBOLS[:limit] if limit else SYMBOLS
-    records = [build_record(item) for item in symbols]
+    records: list[dict[str, Any]] = []
+    for idx, item in enumerate(symbols, 1):
+        records.append(build_record(item))
+        if idx < len(symbols) and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
+            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
     return sorted(records, key=sort_priority)
 
 
 def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
-    complete_records = [r for r in records if r.get("data_complete")]
-    top = max(complete_records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
+    top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
     return {
         "count": len(records),
         "top_ticker": top.get("ticker", "-"),
         "top_score": top.get("score_total"),
-        "buy_strong_count": len([r for r in records if r.get("data_complete") and (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
+        "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
         "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
-        "incomplete_count": len([r for r in records if not r.get("data_complete")]),
+        "partial_count": len([r for r in records if not r.get("data_complete", False)]),
         "errors_count": len([r for r in records if str(r.get("error") or "").strip()]),
         "last_update": now_rome().strftime("%d/%m/%Y %H:%M:%S"),
     }
