@@ -275,3 +275,334 @@ div[class*="st-key-buyzone_forecast_wrap_"] .card-actions a{
   div[class*="st-key-buyzone_forecast_wrap_"] .decision-row{grid-template-columns:1fr!important;}
   div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row{grid-template-columns:1fr!important;}
 }
+
+
+
+/* ========================= BUY ZONE FINDER - V41 APPEND ONLY
+   Restore upper card typography + orange Watch cards.
+   IMPORTANT: this block intentionally does NOT target .linreg-* or .forecast-* sections. */
+
+/* 1) Watch tecnico 2/3: orange outside frame/background only */
+div[class*="st-key-buyzone_forecast_wrap_"]:has(.redesign-card.is-watch){
+  border:1.5px solid rgba(245,158,11,.95)!important;
+  background:
+    linear-gradient(180deg,rgba(245,158,11,.20),rgba(245,158,11,.075) 26%,rgba(16,22,31,.98) 62%)!important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.20), inset 0 2px 0 rgba(245,158,11,.95)!important;
+}
+.redesign-card.is-watch{
+  outline:1.5px solid rgba(245,158,11,.90)!important;
+  outline-offset:-1px!important;
+  background:linear-gradient(180deg,rgba(245,158,11,.10),rgba(16,22,31,.96) 24%)!important;
+}
+.redesign-card.is-watch .status-badge{
+  border-color:rgba(245,158,11,.95)!important;
+  color:#ffd27a!important;
+  background:rgba(245,158,11,.12)!important;
+}
+
+/* 2) Top identity section */
+div[class*="st-key-buyzone_forecast_wrap_"] .card-top,
+.redesign-card .card-top{
+  display:flex!important;
+  align-items:center!important;
+  gap:.70rem!important;
+  margin-bottom:.78rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .rank,
+.redesign-card .rank{
+  flex:0 0 2.20rem!important;
+  width:2.20rem!important;
+  height:2.20rem!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:999px!important;
+  font-size:1.02rem!important;
+  font-weight:950!important;
+  line-height:1!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .identity,
+.redesign-card .identity{
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .ticker-row strong,
+.redesign-card .ticker-row strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.30rem!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  letter-spacing:-.012em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .company-name,
+.redesign-card .company-name{
+  color:#9fb3d1!important;
+  font-size:.70rem!important;
+  line-height:1.15!important;
+  margin-top:.14rem!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge,
+.redesign-card .status-badge{
+  flex:0 0 auto!important;
+  margin-left:auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.25rem!important;
+  white-space:nowrap!important;
+  font-size:.66rem!important;
+  line-height:1!important;
+  font-weight:950!important;
+  padding:.58rem .78rem!important;
+  border-radius:999px!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge span,
+.redesign-card .status-badge span{
+  display:inline!important;
+  font-size:.62rem!important;
+  line-height:1!important;
+}
+
+/* 3) Price + reason: no vertical letter wrapping */
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-row,
+.redesign-card .decision-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,.92fr) minmax(13.5rem,1.28fr)!important;
+  gap:.70rem!important;
+  margin-bottom:.86rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text,
+.redesign-card .price-main,
+.redesign-card .decision-text{
+  min-width:0!important;
+  min-height:auto!important;
+  padding:.76rem .86rem!important;
+  border-radius:13px!important;
+  background:rgba(13,17,23,.30)!important;
+  border:1px solid rgba(48,54,61,.72)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main > span,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text > span,
+.redesign-card .price-main > span,
+.redesign-card .decision-text > span{
+  display:block!important;
+  margin:0 0 .48rem 0!important;
+  color:#8fb9ff!important;
+  font-size:.58rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.055em!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main strong,
+.redesign-card .price-main strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.14rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  margin:0 0 .54rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main small,
+.redesign-card .price-main small{
+  display:block!important;
+  font-size:.74rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line,
+.redesign-card .reason-line{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-start!important;
+  gap:.36rem!important;
+  margin:.18rem 0!important;
+  padding:0!important;
+  width:100%!important;
+  min-width:0!important;
+  font-size:.70rem!important;
+  line-height:1.16!important;
+  font-weight:900!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line b,
+.redesign-card .reason-line b{
+  flex:0 0 .82rem!important;
+  width:.82rem!important;
+  min-width:.82rem!important;
+  text-align:center!important;
+  line-height:1.16!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line span,
+.redesign-card .reason-line span{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok b,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok span,
+.redesign-card .reason-line.ok,
+.redesign-card .reason-line.ok b,
+.redesign-card .reason-line.ok span{color:#41d67a!important;}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko b,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko span,
+.redesign-card .reason-line.ko,
+.redesign-card .reason-line.ko b,
+.redesign-card .reason-line.ko span{color:#9fb3d1!important;}
+
+/* 4) KPI cards: readable stacked layout */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+.redesign-card .condition-metrics-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:.56rem!important;
+  margin:.10rem 0 .84rem 0!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric,
+.redesign-card .condition-metric{
+  min-width:0!important;
+  min-height:6.45rem!important;
+  padding:.68rem .72rem!important;
+  border-radius:14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  background:rgba(13,17,23,.28)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric span,
+.redesign-card .condition-metric span{
+  display:block!important;
+  color:#9ec5ff!important;
+  font-size:.55rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.045em!important;
+  margin:0 0 .50rem 0!important;
+  min-height:1.20rem!important;
+  max-height:2.55rem!important;
+  overflow:hidden!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric strong,
+.redesign-card .condition-metric strong{
+  display:block!important;
+  font-size:1.00rem!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  margin:0 0 .33rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric small,
+.redesign-card .condition-metric small{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.68rem!important;
+  line-height:1.15!important;
+  font-weight:850!important;
+  margin:0 0 .34rem 0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric em,
+.redesign-card .condition-metric em{
+  display:block!important;
+  margin-top:auto!important;
+  font-style:normal!important;
+  font-size:.64rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+
+/* 5) Details SMA200W / Storico: clean key/value layout */
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander,
+.redesign-card .details-expander{
+  margin:.48rem 0 .86rem 0!important;
+  padding:0!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:rgba(13,17,23,.26)!important;
+  border:1px solid rgba(48,54,61,.62)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander summary,
+.redesign-card .details-expander summary{
+  display:flex!important;
+  align-items:center!important;
+  min-height:2.48rem!important;
+  padding:.62rem .80rem!important;
+  color:#8bd3ff!important;
+  font-size:.76rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid,
+.redesign-card .technical-details-grid{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:.34rem .82rem!important;
+  padding:.68rem .80rem .82rem .80rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid > div,
+.redesign-card .technical-details-grid > div{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(5.2rem,.90fr) minmax(0,1fr)!important;
+  column-gap:.48rem!important;
+  align-items:baseline!important;
+  padding:.32rem 0!important;
+  border-bottom:1px solid rgba(48,54,61,.34)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid span,
+.redesign-card .technical-details-grid span{
+  display:block!important;
+  color:#9fb3d1!important;
+  font-size:.66rem!important;
+  line-height:1.12!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
+.redesign-card .technical-details-grid strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.74rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+@media(max-width:1320px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .decision-row,
+  .redesign-card .decision-row{grid-template-columns:1fr!important;}
+  div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid,
+  .redesign-card .technical-details-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:980px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:1fr!important;}
+}
