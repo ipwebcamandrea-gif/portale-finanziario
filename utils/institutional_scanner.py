@@ -6,6 +6,8 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import yfinance as yf
 from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
+from utils.target_data import fetch_yfinance_targets
+from utils.target_symbol_resolver import tradingview_forecast_url
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -151,26 +153,15 @@ def technical_metrics(item):
     except Exception as e: row["error"]=str(e); return row
 
 def scanner_item_from_symbol(symbol: str) -> dict:
-    """Build a scanner item from a Watchlist TradingView/yfinance symbol.
-
-    V25 uses the central project symbol normalizers from utils.symbols.
-    This keeps class-share tickers consistent across the portal, for example:
-    - BRK.B -> yahoo BRK-B, TradingView NYSE:BRK.B
-    - BRK-B -> yahoo BRK-B, TradingView NYSE:BRK.B
-    """
+    """Build a scanner item from a Watchlist TradingView/yfinance symbol using central normalizers."""
     raw = str(symbol or "").strip().upper()
     if not raw:
         return {"ticker": "", "yahoo": "", "tv": "", "name": ""}
-
     yahoo = normalize_yfinance_symbol(raw)
     tv = normalize_tradingview_symbol(raw)
-
-    # Display ticker: keep TradingView ticker style when available, otherwise yfinance style.
     tv_ticker = strip_exchange_prefix(tv).strip().upper() if tv else ""
     ticker = tv_ticker or str(yahoo or raw).replace("-", ".")
-
     return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": ""}
-
 
 def scanner_items_from_symbols(symbols) -> list[dict]:
     """Normalize watchlist symbols/dicts into scanner item dictionaries."""
@@ -179,28 +170,49 @@ def scanner_items_from_symbols(symbols) -> list[dict]:
         if isinstance(entry, dict):
             raw = str(entry.get("yahoo") or entry.get("ticker") or entry.get("tv") or "").strip().upper()
             item = scanner_item_from_symbol(raw)
-            # Preserve optional descriptive metadata from richer sources.
             if entry.get("name"):
                 item["name"] = str(entry.get("name") or "")
         else:
             item = scanner_item_from_symbol(str(entry))
-
         key = str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
         if not key or key in seen:
             continue
         seen.add(key); items.append(item)
     return items
 
+def enrich_record_with_targets(record: dict, item: dict) -> dict:
+    """Add analyst price target fields used by the Buy Zone Finder forecast card."""
+    yf_symbol = str(record.get("yahoo") or item.get("yahoo") or "").strip().upper()
+    tv_symbol = str(record.get("tv") or item.get("tv") or "").strip().upper()
+    ticker = str(record.get("ticker") or item.get("ticker") or yf_symbol).strip().upper()
+    currency = str(record.get("currency") or "").strip().upper()
+    market = tv_symbol.split(":", 1)[0] if ":" in tv_symbol else ""
+    record["forecast_url"] = tradingview_forecast_url(tv_symbol, yf_symbol=yf_symbol, market=market, ticker=ticker)
+    try:
+        target = fetch_yfinance_targets(yf_symbol, ticker=ticker, market=market, currency=currency, tv_symbol=tv_symbol)
+    except Exception as exc:
+        record.update({"forecast_ok": False, "forecast_error": str(exc)})
+        return record
+    record["forecast_ok"] = bool(target.get("ok"))
+    record["forecast_error"] = str(target.get("error") or "")
+    record["forecast_target_low"] = target.get("target_low")
+    record["forecast_target_mean"] = target.get("target_mean")
+    record["forecast_target_high"] = target.get("target_high")
+    record["forecast_analyst_count"] = target.get("analyst_count")
+    record["forecast_rating"] = target.get("rating")
+    record["forecast_currency"] = str(target.get("currency") or currency).upper()
+    record["forecast_current_price"] = target.get("current_price") if target.get("current_price") is not None else record.get("last_price")
+    return record
+
 def build_record(item):
-    r=technical_metrics(item); r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or "")); return r
+    r=technical_metrics(item)
+    r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or ""))
+    r=enrich_record_with_targets(r,item)
+    return r
 def sort_priority(r):
     cc=int(r.get("confluence_count") or 0); gap=safe_float(r.get("gap_points")); lin=safe_float(r.get("linreg_dist_lower_pct")); return (-cc,gap if gap is not None else 999,abs(lin) if lin is not None else 999,str(r.get("ticker") or ""))
 def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
-    """Scan explicit watchlist symbols or the legacy hardcoded universe.
-
-    symbols=None keeps backward compatibility with the old SYMBOLS list.
-    symbols=(...) is used by BUY ZONE FINDER for the selected TradingView watchlist.
-    """
+    """Scan explicit watchlist symbols or the legacy hardcoded universe."""
     if symbols is None:
         arr = SYMBOLS[:limit] if limit else SYMBOLS
     else:
