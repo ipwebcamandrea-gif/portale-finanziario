@@ -65,9 +65,12 @@ def render_watchlist_selector_panel(data: dict) -> tuple[str, tuple[str, ...]]:
         st.markdown(f'<div class="buyzone-watchlist-count"><strong>{len(symbols)}</strong><span>ticker</span></div>', unsafe_allow_html=True)
     preview = list(symbols[:8])
     chips = ''.join(f'<span>{escape(sym)}</span>' for sym in preview)
-    if len(symbols) > len(preview): chips += f'<span class="more">+{len(symbols)-len(preview)}</span>'
-    if chips: st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
-    else: st.warning("La watchlist selezionata non contiene ticker.")
+    if len(symbols) > len(preview):
+        chips += f'<span class="more">+{len(symbols)-len(preview)}</span>'
+    if chips:
+        st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
+    else:
+        st.warning("La watchlist selezionata non contiene ticker.")
     return selected, symbols
 
 def vclass(value) -> str:
@@ -144,6 +147,14 @@ def signed_delta_value(target, current) -> str:
     sign = "+" if (t - c) >= 0 else ""
     return f"{sign}{t-c:.2f}"
 
+def forecast_history_path(current_top: float) -> str:
+    """Small decorative history line that ends exactly at the current/forecast anchor."""
+    return (
+        "M0,68 L7,58 L13,62 L20,49 L27,42 L33,50 L40,45 "
+        "L47,48 L54,43 L61,36 L68,49 L75,45 L82,58 L89,66 "
+        f"L100,{current_top:.2f}"
+    )
+
 def forecast_section(record: dict, currency: str) -> str:
     mean = _fnum(record.get("forecast_target_mean")); low = _fnum(record.get("forecast_target_low")); high = _fnum(record.get("forecast_target_high")); current = _fnum(record.get("forecast_current_price") or record.get("last_price"))
     url = escape(str(record.get("forecast_url") or "#"), quote=True)
@@ -155,8 +166,15 @@ def forecast_section(record: dict, currency: str) -> str:
     pct_max = ((high-current)/current*100) if current else None
     pct_min = ((low-current)/current*100) if current else None
     analysts = record.get("forecast_analyst_count") or "N/D"
-    scale_low = min(low, current); scale_high = max(high, mean, current)
-    max_top = forecast_bar_top(high, scale_low, scale_high); avg_top = forecast_bar_top(mean, scale_low, scale_high); cur_top = forecast_bar_top(current, scale_low, scale_high); min_top = forecast_bar_top(low, scale_low, scale_high)
+    scale_low = min(low, current)
+    scale_high = max(high, mean, current)
+    max_top = forecast_bar_top(high, scale_low, scale_high)
+    avg_top = forecast_bar_top(mean, scale_low, scale_high)
+    cur_top = forecast_bar_top(current, scale_low, scale_high)
+    min_top = forecast_bar_top(low, scale_low, scale_high)
+    min_label_top = min(92.0, min_top + 8.0)
+    current_label_top = min(92.0, cur_top + 16.0)
+    history_path = escape(forecast_history_path(cur_top), quote=True)
     return (
         '<details class="forecast-expander">'
         '<summary>Price Target Forecast <span>richiudibile</span></summary>'
@@ -164,15 +182,18 @@ def forecast_section(record: dict, currency: str) -> str:
         f'<div class="forecast-main"><strong>{mean:.2f}</strong><span>{escape(fcur)}</span><em>{escape(signed_delta_value(mean,current))}</em><em>{escape(fmt_pct(pct_avg,2))}</em></div></div>'
         f'<p>{escape(str(analysts))} analisti · Max {high:.2f} · Min {low:.2f}</p></div>'
         '<div class="forecast-chart">'
-        '<svg class="forecast-history" viewBox="0 0 220 120" preserveAspectRatio="none"><path d="M0,75 L13,68 L25,78 L36,54 L49,48 L58,60 L73,42 L92,46 L108,36 L126,55 L142,48 L158,70 L174,84 L190,110 L205,94 L220,85"/></svg>'
+        f'<svg class="forecast-history" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="{history_path}"/></svg>'
+        f'<div class="forecast-anchor" style="top:{cur_top}%"></div>'
         f'<div class="forecast-cone forecast-green" style="clip-path:polygon(0% {cur_top}%,100% {max_top}%,100% {avg_top}%)"></div>'
         f'<div class="forecast-cone forecast-red" style="clip-path:polygon(0% {cur_top}%,100% {avg_top}%,100% {min_top}%)"></div>'
         f'<div class="forecast-line current" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-current-solid" style="top:{cur_top}%"></div>'
         f'<div class="forecast-label max" style="top:{max_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
         f'<div class="forecast-label avg" style="top:{avg_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
-        f'<div class="forecast-label current-l" style="top:{cur_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
-        f'<div class="forecast-label min" style="top:{min_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
-        '<div class="forecast-watermark">TradingView style</div><div class="forecast-chip past">PAST 2Y</div><div class="forecast-chip future">1Y FORECAST</div></div>'
+        f'<div class="forecast-label min" style="top:{min_label_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
+        f'<div class="forecast-label current-l" style="top:{current_label_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
+        '<div class="forecast-date forecast-date-left">2026</div><div class="forecast-date forecast-date-mid">Jul</div><div class="forecast-date forecast-date-right">2027</div>'
+        '</div>'
         f'<div class="forecast-actions"><a href="{url}" target="_blank" rel="noopener noreferrer">Apri Forecast</a></div>'
         '</details>'
     )
