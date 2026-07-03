@@ -122,7 +122,7 @@ def normalize_tradingview_symbol(symbol):
 
     nyse_symbols = {
         "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "BRK-B", "BRK-A", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT",
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "ABT", "NKE", "CAT",
         "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
     }
 
