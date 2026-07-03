@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 from html import escape
 from pathlib import Path
@@ -7,6 +6,7 @@ from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
 from utils.institutional_scanner import fmt_price, fmt_pct, safe_float, scan_summary, scan_symbols
+from utils.watchlist_storage import carica_watchlists_da_json
 
 require_login()
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -20,11 +20,12 @@ def local_css(file_path: Path) -> None:
 
 local_css(GLOBAL_CSS); local_css(PAGE_CSS); render_app_icon_meta()
 
-def run_full_scan() -> list[dict]:
+def run_full_scan(symbols: tuple[str, ...]) -> list[dict]:
     bar = st.progress(0, text="Preparazione dati tecnici weekly...")
     def cb(i: int, total: int, item: dict) -> None:
-        bar.progress((i - 1) / max(total, 1), text=f"Calcolo SMA200W/LinReg W {i}/{total}: {item.get('ticker', '')}")
-    records = scan_symbols(progress_callback=cb)
+        label = item.get('ticker') or item.get('yahoo') or ''
+        bar.progress((i - 1) / max(total, 1), text=f"Calcolo SMA200W/LinReg W {i}/{total}: {label}")
+    records = scan_symbols(symbols=symbols, progress_callback=cb)
     bar.progress(1.0, text="Scanner tecnico completato"); bar.empty()
     return records
 
@@ -32,8 +33,45 @@ def refresh_scan() -> None:
     st.cache_data.clear(); st.session_state[SESSION_SCAN_REQUEST_KEY] = True; st.rerun()
 
 @st.cache_data(ttl=15 * 60, show_spinner=False)
-def load_cached_scan() -> list[dict]:
-    return run_full_scan()
+def load_cached_scan(symbols: tuple[str, ...]) -> list[dict]:
+    return run_full_scan(symbols)
+
+def load_buy_zone_watchlists() -> dict:
+    try:
+        data = carica_watchlists_da_json()
+    except Exception:
+        data = {"active_watchlist": "Default", "watchlists": {"Default": []}}
+    watchlists = data.get("watchlists") if isinstance(data, dict) else {}
+    if not isinstance(watchlists, dict) or not watchlists:
+        watchlists = {"Default": []}
+    active = data.get("active_watchlist") if isinstance(data, dict) else None
+    if active not in watchlists:
+        active = list(watchlists.keys())[0]
+    return {"active_watchlist": active, "watchlists": watchlists}
+
+def render_watchlist_selector_panel(data: dict) -> tuple[str, tuple[str, ...]]:
+    watchlists = data.get("watchlists", {})
+    names = list(watchlists.keys()) or ["Default"]
+    active = data.get("active_watchlist") if data.get("active_watchlist") in names else names[0]
+    if "buy_zone_selected_watchlist" not in st.session_state or st.session_state.get("buy_zone_selected_watchlist") not in names:
+        st.session_state["buy_zone_selected_watchlist"] = active
+    st.markdown('<div class="buyzone-watchlist-panel"><div class="buyzone-watchlist-title">Watchlist TradingView</div><div class="buyzone-watchlist-subtitle">Scegli quale watchlist analizzare. BUY ZONE FINDER calcola i segnali solo sui ticker contenuti nella lista selezionata.</div></div>', unsafe_allow_html=True)
+    select_col, count_col = st.columns([3.4, 1.0], vertical_alignment="bottom")
+    with select_col:
+        selected = st.selectbox("Watchlist selezionata", options=names, index=names.index(st.session_state["buy_zone_selected_watchlist"]), key="buy_zone_watchlist_selector", help="Elenco caricato dalle Watchlist TradingView salvate per l'utente corrente.")
+    st.session_state["buy_zone_selected_watchlist"] = selected
+    symbols = tuple(str(s).strip().upper() for s in watchlists.get(selected, []) if str(s).strip())
+    with count_col:
+        st.markdown(f'<div class="buyzone-watchlist-count"><strong>{len(symbols)}</strong><span>ticker</span></div>', unsafe_allow_html=True)
+    preview = list(symbols[:8])
+    chips = ''.join(f'<span>{escape(sym)}</span>' for sym in preview)
+    if len(symbols) > len(preview):
+        chips += f'<span class="more">+{len(symbols)-len(preview)}</span>'
+    if chips:
+        st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
+    else:
+        st.warning("La watchlist selezionata non contiene ticker.")
+    return selected, symbols
 
 def vclass(value) -> str:
     x = safe_float(value)
@@ -109,20 +147,26 @@ def card(record: dict, rank: int) -> str:
     return html
 
 render_standard_page_header(title="BUY ZONE FINDER", subtitle="Scanner tecnico weekly: SMA200W, Min W storico e LinReg Lower W.", toggle_label="Vista compatta", toggle_key="linreg_compact_mode", toggle_default=True, refresh_key="linreg_header_refresh", back_key="linreg_header_back", refresh_callback=refresh_scan)
-records = run_full_scan() if bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False)) else load_cached_scan()
+watchlist_data = load_buy_zone_watchlists()
+selected_watchlist, selected_symbols = render_watchlist_selector_panel(watchlist_data)
+if selected_symbols:
+    records = run_full_scan(selected_symbols) if bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False)) else load_cached_scan(selected_symbols)
+else:
+    st.session_state.pop(SESSION_SCAN_REQUEST_KEY, None)
+    records = []
 summary = scan_summary(records)
 cols = st.columns(4)
-summary_items = [("Titoli", str(summary.get("count", 0)), "solo azioni"), ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"), ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"), ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W")]
+summary_items = [("Titoli", str(summary.get("count", 0)), selected_watchlist), ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"), ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"), ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W")]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
     with col:
         label_html = escape(summary_label).replace("\n", "<br>")
         st.markdown(f'<div class="summary-card"><div class="summary-label">{label_html}</div><div class="summary-value">{escape(summary_value)}</div><div class="summary-note">{escape(summary_note)}</div></div>', unsafe_allow_html=True)
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti.")
-st.markdown('<div class="section-title">Scanner tecnico</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)}</span></div>', unsafe_allow_html=True)
 if records:
     st.markdown('<div class="redesign-grid">' + ''.join(card(record, idx) for idx, record in enumerate(records, 1)) + '</div>', unsafe_allow_html=True)
 else:
-    st.warning("Nessun dato disponibile.")
+    st.warning("Nessun dato disponibile per la watchlist selezionata.")
 errors = [record for record in records if str(record.get("error") or "").strip()]
 if errors:
     with st.expander(f"Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
