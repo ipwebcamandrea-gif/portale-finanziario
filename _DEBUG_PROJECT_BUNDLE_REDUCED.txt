@@ -3065,8 +3065,16 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 ===== FILE: css/institutional_scanner.css =====
 ====================================================================================================
 
-
 .summary-card{border-radius:15px;border:1px solid rgba(48,54,61,.78);background:linear-gradient(180deg,rgba(32,39,51,.74),rgba(21,27,36,.82));padding:.85rem;min-height:118px}.summary-label{color:#9fb3d1;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em;line-height:1.35}.summary-value{color:#fff;font-size:1.25rem;font-weight:950;margin-top:.16rem}.summary-note{color:#8bd3ff;font-size:.75rem;font-weight:800;margin-top:.12rem}.section-title{color:#fff;font-size:1.05rem;font-weight:950;margin:1rem 0}.redesign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.redesign-card{border-radius:20px;border:1px solid rgba(48,54,61,.84);background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98));padding:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.redesign-card.is-buy{border-color:rgba(88,214,141,.88)}.redesign-card.is-watch{border-color:rgba(255,174,61,.85)}.redesign-card.is-monitor{border-color:rgba(70,86,108,.90)}.card-top{display:flex;align-items:flex-start;gap:.70rem;margin-bottom:.85rem}.rank{display:flex;align-items:center;justify-content:center;min-width:2.15rem;height:2.15rem;border-radius:999px;background:#0d1117;color:#9ec5ff;font-weight:950}.identity{flex:1;min-width:0}.ticker-row strong{color:#fff;font-size:1.25rem;font-weight:950}.company-name{color:#9fb3d1;font-size:.78rem;margin-top:.12rem}.status-badge{border-radius:999px;padding:.38rem .58rem;font-size:.64rem;font-weight:950;white-space:nowrap}.status-badge span{opacity:.85;margin-left:.25rem}.badge-buy{border:1px solid #58d68d;color:#58d68d;background:#172c1d}.badge-watch{border:1px solid #ffae3d;color:#ffbf69;background:#2e2212}.badge-monitor{border:1px solid #46566c;color:#9fb3d1;background:#111826}.decision-row{display:grid;grid-template-columns:.72fr 1.28fr;gap:.62rem;margin-bottom:.72rem}.price-main,.decision-text{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.43);padding:.68rem}.price-main span,.decision-text>span{display:block;color:#9fb3d1;font-size:.56rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.price-main strong{display:block;color:#fff;font-size:1.13rem;font-weight:950;margin:.18rem 0}.price-main small{font-size:.74rem;font-weight:950}.reason-lines{margin-top:.30rem;display:grid;gap:.26rem}.reason-line{display:flex;align-items:center;gap:.38rem;font-size:.80rem;line-height:1.20}.reason-line span{display:inline-flex;width:1rem;color:inherit;font-weight:950}.reason-line strong{color:inherit;font-weight:900}.reason-ok{color:#41d67a}.reason-ko{color:#9fb3d1}.positive{color:#41d67a!important}.negative{color:#ff4d5a!important}.neutral{color:#d1d5db!important}.condition-metrics-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin-bottom:.74rem}.condition-metric{border-radius:13px;padding:.56rem;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35);min-width:0}.condition-metric-on{border-color:rgba(88,214,141,.72);background:rgba(20,80,40,.18)}.condition-metric-off{border-color:rgba(70,86,108,.78);background:rgba(13,17,23,.30)}.condition-metric-label{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.condition-metric-value{display:block;font-size:1.02rem;font-weight:950;margin-top:.18rem;white-space:nowrap}.condition-metric-subvalue{display:block;color:#9ec5ff;font-size:.72rem;font-weight:900;margin-top:.16rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.condition-metric-state{display:block;color:#58d68d;font-size:.74rem;font-weight:950;margin-top:.30rem}.condition-metric-off .condition-metric-state{color:#9fb3d1}.compact-section{border-radius:16px;border:1px solid rgba(48,54,61,.78);background:rgba(13,17,23,.36);padding:.70rem;margin-bottom:.70rem}.section-head h4{color:#fff;font-size:.96rem;font-weight:950;margin:0 0 .36rem}.linreg-anchor{color:#dbeafe;font-size:.75rem;font-weight:800;line-height:1.32;margin:0 0 .55rem}.linreg-level-chart{position:relative;height:210px;margin:.65rem 0 .70rem;border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(8,13,21,.52);overflow:hidden}.linreg-level-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px solid rgba(255,255,255,.55);transform:translateY(-1px)}.linreg-level-line::before{content:"";position:absolute;left:0;right:0;top:-6px;height:12px;border-radius:999px;opacity:.52}.linreg-level-label{position:absolute;left:-5.8rem;top:-1.05rem;width:4.9rem;height:2.05rem;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:.62rem;font-weight:950;background:#0d1117}.linreg-level-value{position:absolute;right:.35rem;top:-1.0rem;padding:.22rem .42rem;border-radius:999px;background:#0d1117;border:1px solid rgba(255,255,255,.16);color:#f9fafb;font-size:.58rem;font-weight:950;white-space:nowrap}.level-lower{border-color:#41d67a}.level-lower::before{background:#41d67a}.level-lower .linreg-level-label{color:#41d67a;border:1px solid rgba(65,214,122,.58)}.level-mid{border-color:#8bd3ff}.level-mid::before{background:#2f9bff}.level-mid .linreg-level-label{color:#8bd3ff;border:1px solid rgba(139,211,255,.50)}.level-upper{border-color:#ff9aa4}.level-upper::before{background:#ff4d5a}.level-upper .linreg-level-label{color:#ff9aa4;border:1px solid rgba(255,77,90,.46)}.linreg-price-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px dashed #fff;transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(7,12,18,.95));z-index:6}.linreg-price-line::before{content:"";position:absolute;left:-.72rem;top:-.42rem;border-top:.42rem solid transparent;border-bottom:.42rem solid transparent;border-right:.58rem solid #fff}.linreg-price-badge{position:absolute;left:.65rem;top:-2.15rem;padding:.30rem .48rem;border-radius:999px;background:#fff;color:#0d1117;font-size:.58rem;font-weight:950;white-space:nowrap}.linreg-interpretation{padding:.58rem .65rem;border-radius:12px;border:1px solid rgba(48,54,61,.72);background:rgba(23,32,44,.72);color:#9fb3d1;font-size:.74rem;font-weight:850;line-height:1.30}.detail-item{border-radius:11px;border:1px solid rgba(48,54,61,.62);background:rgba(13,17,23,.30);padding:.45rem}.detail-label{display:block;color:#9fb3d1;font-size:.53rem;font-weight:950;text-transform:uppercase}.detail-value{display:block;color:#fff;font-size:.78rem;font-weight:930;margin-top:.10rem;line-height:1.15}.details-expander{border-radius:14px;border:1px solid rgba(48,54,61,.55);background:rgba(13,17,23,.22);padding:.58rem;margin-bottom:.68rem}.details-expander summary{cursor:pointer;color:#9ec5ff;font-weight:950;font-size:.74rem}.details-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin-top:.55rem}.card-actions a{color:#8bd3ff!important;text-decoration:none!important;border:1px solid rgba(139,211,255,.34);border-radius:999px;padding:.55rem .8rem;display:inline-flex;font-weight:900}.missing-box{color:#ffd8a8;font-weight:850;font-size:.78rem}@media(max-width:1320px){.redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:820px){.redesign-grid,.decision-row,.condition-metrics-row,.details-compact{grid-template-columns:1fr}.status-badge{white-space:normal;text-align:right}.linreg-level-line,.linreg-price-line{left:5.8rem}.linreg-level-label{left:-5.25rem;width:4.55rem}.linreg-level-value{right:.15rem;font-size:.54rem}}
+
+
+/* BUY ZONE FINDER - Watchlist selector and condition filter */
+.buyzone-watchlist-panel{margin:.75rem 0 .55rem 0;padding:1rem 1.1rem;border-radius:18px;border:1px solid rgba(80,101,128,.72);background:radial-gradient(circle at top right,rgba(139,211,255,.12),transparent 36%),linear-gradient(180deg,rgba(22,29,40,.88),rgba(14,20,29,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.buyzone-watchlist-title,.buyzone-filter-title{color:#9ec5ff;font-size:.72rem;font-weight:950;text-transform:uppercase;letter-spacing:.055em;margin-bottom:.25rem}.buyzone-watchlist-subtitle,.buyzone-filter-subtitle{color:#9fb3d1;font-size:.86rem;font-weight:760;line-height:1.38}.buyzone-watchlist-count{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;border:1px solid rgba(139,211,255,.40);background:rgba(13,30,42,.68);color:#8bd3ff}.buyzone-watchlist-count strong{font-size:1.18rem;font-weight:950;line-height:1.05;color:#8bd3ff}.buyzone-watchlist-count span{font-size:.62rem;font-weight:900;color:#9fb3d1;text-transform:uppercase}.buyzone-watchlist-chips{display:flex;flex-wrap:wrap;gap:.38rem;margin:.45rem 0 1rem 0}.buyzone-watchlist-chips span{display:inline-flex;align-items:center;justify-content:center;min-height:1.62rem;padding:.18rem .52rem;border-radius:999px;border:1px solid rgba(48,54,61,.82);background:#0d1117;color:#f9fafb;font-size:.68rem;font-weight:900}.buyzone-watchlist-chips span.more{color:#8bd3ff;border-color:rgba(139,211,255,.38)}.buyzone-filter-panel{margin:.45rem 0 .45rem 0;padding:.95rem 1.1rem;border-radius:18px;border:1px solid rgba(80,101,128,.72);background:linear-gradient(180deg,rgba(22,29,40,.84),rgba(14,20,29,.94))}.section-watchlist-name{color:#9fb3d1;font-size:.86rem;font-weight:850}.buyzone-card-spacer{height:1.05rem}
+
+
+/* BUY ZONE FINDER - Forecast on demand V29 */
+.forecast-loaded{margin:.25rem 0 .55rem}.forecast-empty{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(8,12,18,.72);color:#ffd8a8;font-size:.82rem;font-weight:850;padding:.8rem .9rem;margin:.25rem 0 .7rem}.forecast-head{display:grid;grid-template-columns:1fr 1.05fr;gap:.75rem;margin:.3rem 0 .55rem}.forecast-eyebrow{color:#dbeafe;font-size:.70rem;font-weight:900;margin-bottom:.20rem}.forecast-main{display:flex;align-items:baseline;gap:.35rem;flex-wrap:wrap}.forecast-main strong{font-size:1.55rem;color:#fff}.forecast-main span{font-size:.62rem;color:#fff;font-weight:900}.forecast-main em{font-style:normal;color:#00aa91;font-size:.74rem;font-weight:950}.forecast-head p{margin:.15rem 0 0;color:#f9fafb;font-size:.74rem;font-weight:760;line-height:1.28}.forecast-chart{position:relative;height:205px;border-radius:14px;border:1px solid rgba(48,54,61,.68);background:#05070c;overflow:hidden}.forecast-history{position:absolute;left:.65rem;top:.9rem;width:calc(50% - .65rem);height:calc(100% - 2.25rem);z-index:6}.forecast-history path{fill:none;stroke:#2f6fff;stroke-width:4;stroke-linejoin:round;stroke-linecap:round}.forecast-anchor{position:absolute;left:50%;width:10px;height:10px;margin-left:-5px;margin-top:-5px;border-radius:999px;background:#2f6fff;border:1px solid #8bd3ff;z-index:9}.forecast-cone{position:absolute;left:50%;right:.65rem;top:.9rem;bottom:1.35rem;z-index:2}.forecast-green{background:rgba(0,170,145,.30)}.forecast-red{background:rgba(236,72,153,.22)}.forecast-line.current{position:absolute;left:.65rem;right:.65rem;border-top:1px dashed rgba(115,130,150,.78);z-index:4}.forecast-current-solid{position:absolute;left:50%;right:5.95rem;border-top:3px solid #2f6fff;z-index:8}.forecast-label{position:absolute;right:.65rem;min-width:98px;display:flex;justify-content:space-between;gap:.28rem;transform:translateY(-50%);padding:.18rem .30rem;color:#fff;font-size:.50rem;font-weight:950;z-index:10;line-height:1.1}.forecast-label.max,.forecast-label.avg{background:#00aa91}.forecast-label.current-l{background:#2f6fff}.forecast-label.min{background:#ec4899}.forecast-label strong{font-size:.54rem}.forecast-date{position:absolute;bottom:.30rem;color:#6f7d93;font-size:.50rem;font-weight:900;z-index:6}.forecast-date-left{left:18%}.forecast-date-mid{left:52%}.forecast-date-right{right:18%}.forecast-watermark,.forecast-chip{display:none!important}
+@media(max-width:820px){.forecast-head{grid-template-columns:1fr}.forecast-chart{height:190px}.forecast-main strong{font-size:1.35rem}.forecast-label{font-size:.48rem;min-width:88px}.forecast-label strong{font-size:.50rem}}
 
 
 
@@ -6398,135 +6406,493 @@ st.markdown('</div>', unsafe_allow_html=True)
 ===== FILE: pages/institutional_scanner.py =====
 ====================================================================================================
 
-
-from __future__ import annotations
-from html import escape
+import html
+import math
+import re
 from pathlib import Path
+
 import streamlit as st
+
 from components.standard_header import render_standard_page_header
-from utils.app_branding import render_app_icon_meta
-from utils.auth import require_login
 from utils.institutional_scanner import fmt_price, fmt_pct, safe_float, scan_summary, scan_symbols
+from utils.target_data import fetch_yfinance_targets
+from utils.target_symbol_resolver import tradingview_forecast_url
+from utils.watchlist_storage import carica_watchlists_da_json
 
-require_login()
-ROOT_DIR = Path(__file__).resolve().parent.parent
-GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
-PAGE_CSS = ROOT_DIR / "css" / "institutional_scanner.css"
-SESSION_SCAN_REQUEST_KEY = "technical_linreg_scan_requested"
+PAGE_TITLE = "BUY ZONE FINDER"
+SESSION_SCAN_REQUEST_KEY = "buy_zone_finder_force_refresh"
 
-def local_css(file_path: Path) -> None:
-    if file_path.exists():
-        st.markdown(f"<style>{file_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+st.set_page_config(page_title=PAGE_TITLE, layout="wide")
 
-local_css(GLOBAL_CSS); local_css(PAGE_CSS); render_app_icon_meta()
 
-def run_full_scan() -> list[dict]:
-    bar = st.progress(0, text="Preparazione dati tecnici weekly...")
-    def cb(i: int, total: int, item: dict) -> None:
-        bar.progress((i - 1) / max(total, 1), text=f"Calcolo SMA200W/LinReg W {i}/{total}: {item.get('ticker', '')}")
-    records = scan_symbols(progress_callback=cb)
-    bar.progress(1.0, text="Scanner tecnico completato"); bar.empty()
-    return records
+def escape(value, quote: bool = False) -> str:
+    return html.escape(str(value if value is not None else ""), quote=quote)
+
+
+def load_page_css() -> None:
+    css_path = Path("css/institutional_scanner.css")
+    if css_path.exists():
+        st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+
+
+load_page_css()
+
 
 def refresh_scan() -> None:
-    st.cache_data.clear(); st.session_state[SESSION_SCAN_REQUEST_KEY] = True; st.rerun()
+    st.cache_data.clear()
+    st.session_state[SESSION_SCAN_REQUEST_KEY] = True
+
+
+def load_buy_zone_watchlists() -> dict:
+    try:
+        data = carica_watchlists_da_json()
+    except Exception:
+        data = {"active_watchlist": "Default", "watchlists": {"Default": []}}
+
+    watchlists = data.get("watchlists") if isinstance(data, dict) else {}
+    if not isinstance(watchlists, dict) or not watchlists:
+        watchlists = {"Default": []}
+
+    active = data.get("active_watchlist") if isinstance(data, dict) else None
+    if active not in watchlists:
+        active = list(watchlists.keys())[0]
+
+    return {"active_watchlist": active, "watchlists": watchlists}
+
+
+def render_watchlist_selector_panel(data: dict) -> tuple[str, tuple[str, ...]]:
+    watchlists = data.get("watchlists", {})
+    names = list(watchlists.keys()) or ["Default"]
+    active = data.get("active_watchlist") if data.get("active_watchlist") in names else names[0]
+
+    if "buy_zone_selected_watchlist" not in st.session_state or st.session_state.get("buy_zone_selected_watchlist") not in names:
+        st.session_state["buy_zone_selected_watchlist"] = active
+
+    st.markdown(
+        '<div class="buyzone-watchlist-panel">'
+        '<div class="buyzone-watchlist-title">Watchlist TradingView</div>'
+        '<div class="buyzone-watchlist-subtitle">Scegli quale watchlist analizzare. BUY ZONE FINDER calcola i segnali solo sui ticker contenuti nella lista selezionata.</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    select_col, count_col = st.columns([3.4, 1.0], vertical_alignment="bottom")
+    with select_col:
+        selected = st.selectbox(
+            "Watchlist selezionata",
+            options=names,
+            index=names.index(st.session_state["buy_zone_selected_watchlist"]),
+            key="buy_zone_watchlist_selector",
+            help="Elenco caricato dalle Watchlist TradingView salvate per l'utente corrente.",
+        )
+    st.session_state["buy_zone_selected_watchlist"] = selected
+
+    symbols = tuple(str(s).strip().upper() for s in watchlists.get(selected, []) if str(s).strip())
+
+    with count_col:
+        st.markdown(
+            f'<div class="buyzone-watchlist-count"><strong>{len(symbols)}</strong><span>ticker</span></div>',
+            unsafe_allow_html=True,
+        )
+
+    preview = list(symbols[:8])
+    chips = "".join(f"<span>{escape(sym)}</span>" for sym in preview)
+    if len(symbols) > len(preview):
+        chips += f'<span class="more">+{len(symbols) - len(preview)}</span>'
+
+    if chips:
+        st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
+    else:
+        st.warning("La watchlist selezionata non contiene ticker.")
+
+    return selected, symbols
+
+
+def filter_records_by_confluence(records: list[dict], selected_filter: str) -> list[dict]:
+    if selected_filter == "Tutte":
+        return records
+    try:
+        wanted = int(str(selected_filter).split("/", 1)[0])
+    except Exception:
+        return records
+    return [r for r in records if int(r.get("confluence_count") or 0) == wanted]
+
+
+def render_condition_filter(records: list[dict]) -> str:
+    counts = {i: 0 for i in range(4)}
+    for r in records:
+        c = int(r.get("confluence_count") or 0)
+        if c in counts:
+            counts[c] += 1
+
+    options = ["3/3 Buy", "2/3 Watch", "1/3 Early", "0/3", "Tutte"]
+    labels = {
+        "3/3 Buy": f"3/3 Buy ({counts[3]})",
+        "2/3 Watch": f"2/3 Watch ({counts[2]})",
+        "1/3 Early": f"1/3 Early ({counts[1]})",
+        "0/3": f"0/3 ({counts[0]})",
+        "Tutte": f"Tutte ({len(records)})",
+    }
+
+    if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
+        st.session_state["buy_zone_condition_filter"] = "2/3 Watch"
+
+    st.markdown(
+        '<div class="buyzone-filter-panel">'
+        '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 2/3. Cambiare filtro non riesegue lo scanner.</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    selected = st.radio(
+        "Filtro condizioni attive",
+        options=options,
+        format_func=lambda x: labels.get(x, x),
+        index=options.index(st.session_state["buy_zone_condition_filter"]),
+        horizontal=True,
+        key="buy_zone_condition_filter_radio",
+        label_visibility="collapsed",
+    )
+    st.session_state["buy_zone_condition_filter"] = selected
+    return selected
+
 
 @st.cache_data(ttl=15 * 60, show_spinner=False)
-def load_cached_scan() -> list[dict]:
-    return run_full_scan()
+def load_cached_scan(symbols: tuple[str, ...]) -> list[dict]:
+    return run_full_scan(symbols)
+
+
+def run_full_scan(symbols: tuple[str, ...]) -> list[dict]:
+    bar = st.progress(0, text="Preparazione dati tecnici weekly...")
+
+    def cb(i: int, total: int, item: dict) -> None:
+        label = item.get("ticker") or item.get("yahoo") or ""
+        bar.progress((i - 1) / max(total, 1), text=f"Calcolo SMA200W/LinReg W {i}/{total}: {label}")
+
+    records = scan_symbols(symbols=symbols, progress_callback=cb)
+    bar.progress(1.0, text="Scanner tecnico completato")
+    bar.empty()
+    return records
+
 
 def vclass(value) -> str:
-    x = safe_float(value)
-    if x is None: return "neutral"
-    if x > 0: return "positive"
-    if x < 0: return "negative"
-    return "neutral"
+    v = safe_float(value)
+    if v is None:
+        return "neutral"
+    return "positive" if v >= 0 else "negative"
 
-def detail_item(label: str, value: str, css: str = "") -> str:
-    return f'<div class="detail-item"><span class="detail-label">{escape(label)}</span><span class="detail-value {css}">{escape(value)}</span></div>'
 
-def condition_metric(label: str, value: str, subvalue: str, active: bool, value_css: str = "") -> str:
-    state = "ATTIVO" if active else "NO"
-    css = "condition-metric-on" if active else "condition-metric-off"
-    return f'<div class="condition-metric {css}"><span class="condition-metric-label">{escape(label)}</span><strong class="condition-metric-value {value_css}">{escape(value)}</strong><span class="condition-metric-subvalue">{escape(subvalue)}</span><span class="condition-metric-state">{state}</span></div>'
+def yesno(active: bool) -> str:
+    return "ATTIVO" if active else "NO"
 
-def reason_line(active: bool, text: str) -> str:
-    css = "reason-ok" if active else "reason-ko"; mark = "✓" if active else "✕"
-    return f'<div class="reason-line {css}"><span>{mark}</span><strong>{escape(text)}</strong></div>'
+
+def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral") -> str:
+    state_class = "active" if active else "inactive"
+    return (
+        f'<div class="condition-metric {state_class}">'
+        f'<span>{escape(title)}</span>'
+        f'<strong class="{escape(value_class)}">{escape(pct)}</strong>'
+        f'<small>{escape(value)}</small>'
+        f'<em>{yesno(active)}</em>'
+        '</div>'
+    )
+
 
 def reason_block(record: dict) -> str:
-    below = bool(record.get("below_sma200w")); near_min = bool(record.get("near_hist_min_w")); near_lr = bool(record.get("near_linreg_lower"))
-    return '<div class="reason-lines">' + reason_line(below, "Sotto SMA200W") + reason_line(near_min, "Vicino al Min W Storico") + reason_line(near_lr, "LinReg Lower vicino" if near_lr else "LinReg Lower non ancora vicino") + '</div>'
+    rows = []
+    rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
+    rows.append((bool(record.get("near_hist_min_w")), "Vicino al Min W Storico"))
+    rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower vicino" if bool(record.get("near_linreg_lower")) else "LinReg Lower non ancora vicino"))
+    html_rows = []
+    for ok, label in rows:
+        icon = "✓" if ok else "×"
+        cls = "ok" if ok else "ko"
+        html_rows.append(f'<div class="reason-line {cls}"><b>{icon}</b><span>{escape(label)}</span></div>')
+    return "".join(html_rows)
 
-def linreg_top_pct(value, lower, upper) -> float | None:
-    v = safe_float(value); lo = safe_float(lower); hi = safe_float(upper)
-    if v is None or lo is None or hi is None or hi <= lo: return None
-    return max(8.0, min(92.0, 92.0 - ((v - lo) / (hi - lo)) * 84.0))
+
+def line_top(value, low, high) -> float:
+    v = safe_float(value)
+    lo = safe_float(low)
+    hi = safe_float(high)
+    if v is None or lo is None or hi is None or hi <= lo:
+        return 50.0
+    return max(7.0, min(93.0, 93.0 - ((v - lo) / (hi - lo)) * 86.0))
+
 
 def linreg_section(record: dict, currency: str) -> str:
-    if not record.get("linreg_available"):
-        return '<div class="compact-section"><div class="section-head"><h4>LinReg W</h4></div><div class="missing-box">' + escape(str(record.get("linreg_error") or "Non disponibile")) + '</div></div>'
-    lower = safe_float(record.get("linreg_lower_w")); mid = safe_float(record.get("linreg_mid_w")); upper = safe_float(record.get("linreg_upper_w")); price = safe_float(record.get("last_price"))
-    method = str(record.get("linreg_method") or "LinReg 100 close 2 2"); weeks = str(record.get("linreg_weeks") or "N/D")
-    upper_top = linreg_top_pct(upper, lower, upper); mid_top = linreg_top_pct(mid, lower, upper); lower_top = linreg_top_pct(lower, lower, upper); price_top = linreg_top_pct(price, lower, upper)
-    if None in (upper_top, mid_top, lower_top, price_top):
-        return '<div class="compact-section"><div class="section-head"><h4>LinReg W</h4></div><div class="missing-box">LinReg disponibile ma valori non validi per il grafico.</div></div>'
-    relation = "Prezzo sopra la Lower e sotto la Mid"
-    if price is not None and lower is not None and price < lower: relation = "Prezzo sotto la Lower"
-    elif price is not None and mid is not None and upper is not None and mid <= price <= upper: relation = "Prezzo sopra la Mid"
-    elif price is not None and upper is not None and price > upper: relation = "Prezzo sopra la Upper"
-    html = '<div class="compact-section linreg-section"><div class="section-head"><h4>LinReg W</h4></div>'
-    html += f'<p class="linreg-anchor">{escape(method)} - {escape(weeks)} settimane</p><div class="linreg-level-chart">'
-    for label, value, top, css in [("UPPER", upper, upper_top, "upper"), ("MID", mid, mid_top, "mid"), ("LOWER", lower, lower_top, "lower")]:
-        html += f'<div class="linreg-level-line level-{css}" style="top:{top:.2f}%"><span class="linreg-level-label">{label}</span><span class="linreg-level-value">{escape(fmt_price(value, currency))}</span></div>'
-    html += f'<div class="linreg-price-line" style="top:{price_top:.2f}%"><span class="linreg-price-badge">Prezzo {escape(fmt_price(price, currency))}</span></div></div>'
-    html += f'<div class="linreg-interpretation">{escape(relation)}</div></div>'
-    return html
+    lower = safe_float(record.get("linreg_lower_w"))
+    mid = safe_float(record.get("linreg_mid_w"))
+    upper = safe_float(record.get("linreg_upper_w"))
+    price = safe_float(record.get("last_price"))
+    if lower is None or mid is None or upper is None or price is None:
+        return '<div class="linreg-box"><h4>LinReg W</h4><div class="linreg-empty">Dati LinReg non disponibili.</div></div>'
+
+    scale_min = min(lower, price)
+    scale_max = max(upper, price)
+    upper_top = line_top(upper, scale_min, scale_max)
+    mid_top = line_top(mid, scale_min, scale_max)
+    lower_top = line_top(lower, scale_min, scale_max)
+    price_top = line_top(price, scale_min, scale_max)
+
+    return (
+        '<div class="linreg-box">'
+        '<h4>LinReg W</h4>'
+        '<div class="linreg-subtitle">LinReg 100 close 2 2 - 100 settimane</div>'
+        '<div class="linreg-visual">'
+        f'<div class="linreg-level upper" style="top:{upper_top}%"><span>UPPER</span><b>{escape(fmt_price(upper, currency))}</b></div>'
+        f'<div class="linreg-level mid" style="top:{mid_top}%"><span>MID</span><b>{escape(fmt_price(mid, currency))}</b></div>'
+        f'<div class="linreg-level lower" style="top:{lower_top}%"><span>LOWER</span><b>{escape(fmt_price(lower, currency))}</b></div>'
+        f'<div class="linreg-price-line" style="top:{price_top}%"><span>Prezzo {escape(fmt_price(price, currency))}</span></div>'
+        '</div>'
+        '</div>'
+    )
+
 
 def technical_details(record: dict, currency: str) -> str:
-    html = '<div class="details-compact">'
-    html += detail_item("SMA200W", fmt_price(record.get("sma200w"), currency))
-    html += detail_item("Hist Min W", fmt_pct(record.get("hist_min_w_pct"), 1))
-    html += detail_item("MinW Low", f"{fmt_price(record.get('hist_min_w_low'), currency)} ({record.get('hist_min_w_date') or 'N/D'})")
-    html += detail_item("Eq MinW", fmt_price(record.get("hist_min_equivalent"), currency))
-    html += detail_item("Hist Max W", fmt_pct(record.get("hist_max_w_pct"), 1))
-    html += '</div>'
-    return html
+    items = [
+        ("SMA200W", fmt_price(record.get("sma200w"), currency)),
+        ("Hist Min W", fmt_pct(record.get("hist_min_w_pct"), 1)),
+        ("MinW Low", fmt_price(record.get("hist_min_w_low"), currency)),
+        ("Eq Min W", fmt_price(record.get("hist_min_equivalent"), currency)),
+        ("Hist Max W", fmt_pct(record.get("hist_max_w_pct"), 1)),
+        ("LinReg Lower", fmt_price(record.get("linreg_lower_w"), currency)),
+        ("LinReg Mid", fmt_price(record.get("linreg_mid_w"), currency)),
+        ("LinReg Upper", fmt_price(record.get("linreg_upper_w"), currency)),
+    ]
+    return '<div class="technical-details-grid">' + ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items) + '</div>'
+
+
+def _forecast_key(record: dict) -> str:
+    raw = str(record.get("yahoo") or record.get("ticker") or "").strip().upper()
+    return "buy_zone_forecast_" + re.sub(r"[^A-Z0-9_]+", "_", raw)
+
+
+def _forecast_url(record: dict) -> str:
+    tv = str(record.get("tv") or "").strip().upper()
+    yf = str(record.get("yahoo") or "").strip().upper()
+    ticker = str(record.get("ticker") or "").strip().upper()
+    market = tv.split(":", 1)[0] if ":" in tv else ""
+    return tradingview_forecast_url(tv, yf_symbol=yf, market=market, ticker=ticker)
+
+
+def forecast_bar_top(value, low, high) -> float:
+    v = safe_float(value)
+    lo = safe_float(low)
+    hi = safe_float(high)
+    if v is None or lo is None or hi is None or hi <= lo:
+        return 50.0
+    return max(8.0, min(92.0, 92.0 - ((v - lo) / (hi - lo)) * 84.0))
+
+
+def signed_delta_value(target, current) -> str:
+    t = safe_float(target)
+    c = safe_float(current)
+    if t is None or c is None:
+        return "N/D"
+    sign = "+" if (t - c) >= 0 else ""
+    return f"{sign}{t-c:.2f}"
+
+
+def forecast_history_path(current_top: float) -> str:
+    return (
+        "M0,68 L7,58 L13,62 L20,49 L27,42 L33,50 L40,45 "
+        "L47,48 L54,43 L61,36 L68,49 L75,45 L82,58 L89,66 "
+        f"L100,{current_top:.2f}"
+    )
+
+
+def forecast_chart_html(record: dict, data: dict) -> str:
+    currency = str(data.get("currency") or record.get("currency") or "").upper()
+    current = safe_float(data.get("current_price") or record.get("last_price"))
+    low = safe_float(data.get("target_low"))
+    mean = safe_float(data.get("target_mean"))
+    high = safe_float(data.get("target_high"))
+    analysts = data.get("analyst_count") or "N/D"
+    if current is None or low is None or mean is None or high is None:
+        return '<div class="forecast-empty">Target incompleti per questo titolo.</div>'
+    pct_avg = ((mean - current) / current * 100) if current else None
+    pct_max = ((high - current) / current * 100) if current else None
+    pct_min = ((low - current) / current * 100) if current else None
+    scale_low = min(low, current)
+    scale_high = max(high, mean, current)
+    max_top = forecast_bar_top(high, scale_low, scale_high)
+    avg_top = forecast_bar_top(mean, scale_low, scale_high)
+    cur_top = forecast_bar_top(current, scale_low, scale_high)
+    min_top = forecast_bar_top(low, scale_low, scale_high)
+    min_label_top = min(92.0, min_top + 8.0)
+    current_label_top = min(92.0, cur_top + 16.0)
+    history_path = escape(forecast_history_path(cur_top), quote=True)
+    return (
+        '<div class="forecast-loaded">'
+        '<div class="forecast-head"><div><div class="forecast-eyebrow">Price target</div>'
+        f'<div class="forecast-main"><strong>{mean:.2f}</strong><span>{escape(currency)}</span><em>{escape(signed_delta_value(mean,current))}</em><em>{escape(fmt_pct(pct_avg,2))}</em></div></div>'
+        f'<p>{escape(str(analysts))} analisti · Max {high:.2f} · Min {low:.2f}</p></div>'
+        '<div class="forecast-chart">'
+        f'<svg class="forecast-history" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="{history_path}"/></svg>'
+        f'<div class="forecast-anchor" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-cone forecast-green" style="clip-path:polygon(0% {cur_top}%,100% {max_top}%,100% {avg_top}%)"></div>'
+        f'<div class="forecast-cone forecast-red" style="clip-path:polygon(0% {cur_top}%,100% {avg_top}%,100% {min_top}%)"></div>'
+        f'<div class="forecast-line current" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-current-solid" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-label max" style="top:{max_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
+        f'<div class="forecast-label avg" style="top:{avg_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
+        f'<div class="forecast-label min" style="top:{min_label_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
+        f'<div class="forecast-label current-l" style="top:{current_label_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
+        '<div class="forecast-date forecast-date-left">2026</div><div class="forecast-date forecast-date-mid">Jul</div><div class="forecast-date forecast-date-right">2027</div>'
+        '</div></div>'
+    )
+
+
+def open_target_page_from_record(record: dict) -> None:
+    st.session_state["target_selected"] = {
+        "yf_symbol": str(record.get("yahoo") or "").strip().upper(),
+        "ticker": str(record.get("ticker") or "").strip().upper(),
+        "tv_symbol": str(record.get("tv") or "").strip().upper(),
+        "name": str(record.get("name") or "").strip(),
+        "market": str(record.get("tv") or "").split(":", 1)[0].upper() if ":" in str(record.get("tv") or "") else "",
+        "currency": str(record.get("currency") or "").strip().upper(),
+        "source": "direct",
+    }
+    st.session_state["target_source"] = "direct"
+    st.switch_page("pages/target_analisti.py")
+
+
+def render_forecast_on_demand(record: dict, rank: int, column_index: int, row_index: int) -> None:
+    key = _forecast_key(record)
+    title = f"Price Target Forecast · {record.get('ticker', '-') }"
+    with st.expander(title, expanded=False):
+        url = _forecast_url(record)
+        data = st.session_state.get(key)
+        status = st.session_state.get(key + "_status", "idle")
+        if isinstance(data, dict) and data.get("ok"):
+            st.markdown(forecast_chart_html(record, data), unsafe_allow_html=True)
+        else:
+            if status == "error":
+                err = st.session_state.get(key + "_error", "Dati forecast temporaneamente non disponibili.")
+                st.markdown(f'<div class="forecast-empty">{escape(str(err))}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="forecast-empty">Dati forecast non ancora scaricati per questo titolo.</div>', unsafe_allow_html=True)
+        c1, c2, c3 = st.columns([1.45, 1.05, 1.15])
+        safe_key = re.sub(r"[^A-Z0-9_]+", "_", str(record.get("yahoo") or record.get("ticker") or rank).upper())
+        with c1:
+            if st.button("Scarica dati forecast", key=f"download_forecast_{row_index}_{column_index}_{safe_key}"):
+                yf_symbol = str(record.get("yahoo") or "").strip().upper()
+                tv_symbol = str(record.get("tv") or "").strip().upper()
+                ticker = str(record.get("ticker") or "").strip().upper()
+                market = tv_symbol.split(":", 1)[0] if ":" in tv_symbol else ""
+                with st.spinner(f"Scarico forecast {ticker or yf_symbol}..."):
+                    result = fetch_yfinance_targets(
+                        yf_symbol,
+                        ticker=ticker,
+                        market=market,
+                        currency=str(record.get("currency") or ""),
+                        tv_symbol=tv_symbol,
+                    )
+                if result.get("ok"):
+                    st.session_state[key] = result
+                    st.session_state[key + "_status"] = "ok"
+                    st.session_state.pop(key + "_error", None)
+                else:
+                    st.session_state[key + "_status"] = "error"
+                    st.session_state[key + "_error"] = result.get("error") or "Dati forecast temporaneamente non disponibili. Riprova tra qualche minuto."
+                st.rerun()
+        with c2:
+            st.link_button("Apri Forecast", url, use_container_width=True)
+        with c3:
+            if st.button("Target Analisti", key=f"target_page_{row_index}_{column_index}_{safe_key}", use_container_width=True):
+                open_target_page_from_record(record)
+
 
 def card(record: dict, rank: int) -> str:
-    currency = str(record.get("currency") or "").upper(); ticker = str(record.get("ticker") or ""); name = str(record.get("name") or "")
-    label = str(record.get("technical_label") or "Monitor tecnico"); count = int(record.get("confluence_count") or 0); tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 3 else "is-watch" if count == 2 else "is-monitor"; badge_class = "badge-buy" if count == 3 else "badge-watch" if count == 2 else "badge-monitor"
-    html = f'<div class="redesign-card {card_class}"><div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
+    currency = str(record.get("currency") or "").upper()
+    ticker = str(record.get("ticker") or "")
+    name = str(record.get("name") or "")
+    label = str(record.get("technical_label") or "Monitor tecnico")
+    count = int(record.get("confluence_count") or 0)
+    tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
+    card_class = "is-buy" if count == 3 else "is-watch" if count == 2 else "is-monitor"
+    badge_class = "badge-buy" if count == 3 else "badge-watch" if count == 2 else "badge-monitor"
+
+    html = f'<div class="redesign-card {card_class}">'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
-    html += '</div>' + linreg_section(record, currency)
+    html += '</div>'
+    html += linreg_section(record, currency)
     html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
-render_standard_page_header(title="BUY ZONE FINDER", subtitle="Scanner tecnico weekly: SMA200W, Min W storico e LinReg Lower W.", toggle_label="Vista compatta", toggle_key="linreg_compact_mode", toggle_default=True, refresh_key="linreg_header_refresh", back_key="linreg_header_back", refresh_callback=refresh_scan)
-records = run_full_scan() if bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False)) else load_cached_scan()
+
+render_standard_page_header(
+    title="BUY ZONE FINDER",
+    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W e Forecast on demand.",
+    toggle_label="Vista compatta",
+    toggle_key="linreg_compact_mode",
+    toggle_default=True,
+    refresh_key="linreg_header_refresh",
+    back_key="linreg_header_back",
+    refresh_callback=refresh_scan,
+)
+
+watchlist_data = load_buy_zone_watchlists()
+selected_watchlist, selected_symbols = render_watchlist_selector_panel(watchlist_data)
+
+if selected_symbols:
+    records = run_full_scan(selected_symbols) if bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False)) else load_cached_scan(selected_symbols)
+else:
+    st.session_state.pop(SESSION_SCAN_REQUEST_KEY, None)
+    records = []
+
 summary = scan_summary(records)
 cols = st.columns(4)
-summary_items = [("Titoli", str(summary.get("count", 0)), "solo azioni"), ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"), ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"), ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W")]
+summary_items = [
+    ("Titoli", str(summary.get("count", 0)), selected_watchlist),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"),
+    ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
+]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
     with col:
         label_html = escape(summary_label).replace("\n", "<br>")
-        st.markdown(f'<div class="summary-card"><div class="summary-label">{label_html}</div><div class="summary-value">{escape(summary_value)}</div><div class="summary-note">{escape(summary_note)}</div></div>', unsafe_allow_html=True)
-st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti.")
-st.markdown('<div class="section-title">Scanner tecnico</div>', unsafe_allow_html=True)
-if records:
-    st.markdown('<div class="redesign-grid">' + ''.join(card(record, idx) for idx, record in enumerate(records, 1)) + '</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="summary-card"><div class="summary-label">{label_html}</div><div class="summary-value">{escape(summary_value)}</div><div class="summary-note">{escape(summary_note)}</div></div>',
+            unsafe_allow_html=True,
+        )
+
+st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
+selected_condition_filter = render_condition_filter(records) if records else "2/3 Watch"
+filtered_records = filter_records_by_confluence(records, selected_condition_filter)
+st.markdown(
+    f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
+    unsafe_allow_html=True,
+)
+
+if filtered_records:
+    for row_index, start in enumerate(range(0, len(filtered_records), 3), 1):
+        row_records = filtered_records[start:start + 3]
+        row_cols = st.columns(3)
+        for col_index, (col, record) in enumerate(zip(row_cols, row_records), 1):
+            rank = start + col_index
+            with col:
+                st.markdown(card(record, rank), unsafe_allow_html=True)
+                render_forecast_on_demand(record, rank, col_index, row_index)
+        st.markdown('<div class="buyzone-card-spacer"></div>', unsafe_allow_html=True)
+elif records:
+    st.info("Nessuna card corrisponde al filtro selezionato.")
 else:
-    st.warning("Nessun dato disponibile.")
+    st.warning("Nessun dato disponibile per la watchlist selezionata.")
+
 errors = [record for record in records if str(record.get("error") or "").strip()]
 if errors:
     with st.expander(f"Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
-        for record in errors: st.write(f"{record.get('ticker', '-')}: {record.get('error')}")
+        for record in errors:
+            st.write(f"{record.get('ticker', '-')}: {record.get('error')}")
 
 
 
@@ -10120,7 +10486,6 @@ def test_github_storage_connection(watchlists_path=None):
 ===== FILE: utils/institutional_scanner.py =====
 ====================================================================================================
 
-
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -10128,6 +10493,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 import pandas as pd
 import yfinance as yf
+from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -10272,12 +10638,47 @@ def technical_metrics(item):
         return row
     except Exception as e: row["error"]=str(e); return row
 
+def scanner_item_from_symbol(symbol: str) -> dict:
+    """Build a scanner item from a Watchlist TradingView/yfinance symbol using central normalizers."""
+    raw = str(symbol or "").strip().upper()
+    if not raw:
+        return {"ticker": "", "yahoo": "", "tv": "", "name": ""}
+    yahoo = normalize_yfinance_symbol(raw)
+    tv = normalize_tradingview_symbol(raw)
+    tv_ticker = strip_exchange_prefix(tv).strip().upper() if tv else ""
+    ticker = tv_ticker or str(yahoo or raw).replace("-", ".")
+    return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": ""}
+
+def scanner_items_from_symbols(symbols) -> list[dict]:
+    """Normalize watchlist symbols/dicts into scanner item dictionaries."""
+    items=[]; seen=set()
+    for entry in symbols or []:
+        if isinstance(entry, dict):
+            raw = str(entry.get("yahoo") or entry.get("ticker") or entry.get("tv") or "").strip().upper()
+            item = scanner_item_from_symbol(raw)
+            if entry.get("name"):
+                item["name"] = str(entry.get("name") or "")
+        else:
+            item = scanner_item_from_symbol(str(entry))
+        key = str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
+        if not key or key in seen:
+            continue
+        seen.add(key); items.append(item)
+    return items
+
 def build_record(item):
     r=technical_metrics(item); r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or "")); return r
 def sort_priority(r):
     cc=int(r.get("confluence_count") or 0); gap=safe_float(r.get("gap_points")); lin=safe_float(r.get("linreg_dist_lower_pct")); return (-cc,gap if gap is not None else 999,abs(lin) if lin is not None else 999,str(r.get("ticker") or ""))
-def scan_symbols(limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
-    arr=SYMBOLS[:limit] if limit else SYMBOLS; out=[]; total=len(arr)
+def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
+    """Scan explicit watchlist symbols or the legacy hardcoded universe."""
+    if symbols is None:
+        arr = SYMBOLS[:limit] if limit else SYMBOLS
+    else:
+        arr = scanner_items_from_symbols(symbols)
+        if limit:
+            arr = arr[:limit]
+    out=[]; total=len(arr)
     for i,it in enumerate(arr,1):
         if progress_callback: progress_callback(i,total,it)
         out.append(build_record(it))
@@ -12980,7 +13381,7 @@ def normalize_tradingview_symbol(symbol):
 
     nyse_symbols = {
         "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "BRK-B", "BRK-A", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "NKE", "CAT",
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "ABT", "NKE", "CAT",
         "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
     }
 
