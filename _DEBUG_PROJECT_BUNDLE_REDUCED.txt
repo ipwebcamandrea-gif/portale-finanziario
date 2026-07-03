@@ -3065,256 +3065,8 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 ===== FILE: css/institutional_scanner.css =====
 ====================================================================================================
 
-/* ========================= INSTITUTIONAL SCANNER PAGE ========================= */
-.institutional-summary-card {
-  min-height: 112px;
-  padding: 0.88rem 0.96rem;
-  margin-bottom: 1rem;
-  border-radius: 15px;
-  border: 1px solid rgba(48, 54, 61, 0.78);
-  background: radial-gradient(circle at top right, rgba(0, 176, 255, 0.10), transparent 35%), linear-gradient(180deg, rgba(32, 39, 51, 0.74) 0%, rgba(21, 27, 36, 0.82) 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
-}
-.institutional-summary-label {
-  color: #9fb3d1;
-  font-size: 0.70rem;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.055em;
-  margin-bottom: 0.34rem;
-}
-.institutional-summary-value {
-  color: #f9fafb;
-  font-size: 1.34rem;
-  font-weight: 950;
-  line-height: 1.12;
-}
-.institutional-summary-note {
-  color: #8bd3ff;
-  font-size: 0.78rem;
-  font-weight: 820;
-  margin-top: 0.28rem;
-}
-.institutional-section-title {
-  color: #f9fafb;
-  font-size: 1.08rem;
-  font-weight: 950;
-  margin: 1.10rem 0 0.72rem 0;
-}
-.institutional-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.2rem;
-}
-.institutional-card {
-  min-width: 0;
-  border-radius: 18px;
-  border: 1px solid rgba(48, 54, 61, 0.84);
-  background: radial-gradient(circle at top right, rgba(0, 176, 255, 0.09), transparent 35%), linear-gradient(180deg, rgba(32, 39, 51, 0.78) 0%, rgba(21, 27, 36, 0.88) 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 0 14px rgba(0, 176, 255, 0.05);
-  padding: 0.88rem 0.92rem 0.86rem 0.92rem;
-}
-.institutional-card-buy { border-color: rgba(88, 214, 141, 0.70); }
-.institutional-card-strong { border-color: rgba(43, 213, 118, 0.86); }
-.institutional-card-incomplete { border-color: rgba(245, 158, 11, 0.70); }
-.institutional-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.70rem;
-  margin-bottom: 0.68rem;
-}
-.institutional-rank {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.15rem;
-  height: 1.70rem;
-  padding: 0 0.45rem;
-  border-radius: 999px;
-  background: rgba(13, 17, 23, 0.65);
-  border: 1px solid rgba(48, 54, 61, 0.90);
-  color: #9fb3d1;
-  font-size: 0.70rem;
-  font-weight: 950;
-}
-.institutional-title-wrap { min-width: 0; flex: 1; }
-.institutional-ticker {
-  color: #ffffff;
-  font-size: 1.08rem;
-  font-weight: 950;
-  line-height: 1.10;
-}
-.institutional-name {
-  color: #9fb3d1;
-  font-size: 0.72rem;
-  font-weight: 760;
-  line-height: 1.18;
-  margin-top: 0.12rem;
-  overflow-wrap: anywhere;
-}
-.institutional-label {
-  white-space: nowrap;
-  border-radius: 999px;
-  padding: 0.36rem 0.54rem;
-  font-size: 0.62rem;
-  font-weight: 950;
-  border: 1px solid rgba(127, 183, 255, 0.34);
-  color: #9ec5ff;
-  background: #142236;
-}
-.institutional-label-buy { color: #58d68d; background: #172c1d; border-color: rgba(88,214,141,0.62); }
-.institutional-label-strong { color: #2bd576; background: #173520; border-color: rgba(43,213,118,0.74); }
-.institutional-label-incomplete { color: #ffd8a8; background: #2b2114; border-color: rgba(245,158,11,0.68); }
-.institutional-data-ok,
-.institutional-data-warning {
-  margin: 0 0 0.62rem 0;
-  padding: 0.48rem 0.58rem;
-  border-radius: 12px;
-  font-size: 0.68rem;
-  font-weight: 850;
-  line-height: 1.18;
-}
-.institutional-data-ok {
-  color: #d7ffe6;
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.28);
-}
-.institutional-data-warning {
-  color: #ffd8a8;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.34);
-}
-.institutional-price-score-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 5.1rem;
-  gap: 0.64rem;
-  margin-bottom: 0.62rem;
-}
-.institutional-price-box,
-.institutional-score-box,
-.institutional-metric,
-.institutional-range-panel {
-  border-radius: 13px;
-  border: 1px solid rgba(48, 54, 61, 0.62);
-  background: rgba(13, 17, 23, 0.38);
-}
-.institutional-price-box { padding: 0.58rem 0.66rem; }
-.institutional-score-box { padding: 0.50rem 0.42rem; text-align: center; }
-.institutional-mini-label {
-  color: #9fb3d1;
-  font-size: 0.57rem;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.045em;
-  margin-bottom: 0.18rem;
-}
-.institutional-price-value { color: #ffffff; font-size: 0.98rem; font-weight: 950; }
-.institutional-daily { margin-top: 0.16rem; font-size: 0.76rem; font-weight: 950; }
-.institutional-positive { color: #41d67a !important; }
-.institutional-negative { color: #ff4d5a !important; }
-.institutional-neutral { color: #d1d5db !important; }
-.institutional-score-value { color: #8bd3ff; font-size: 1.34rem; font-weight: 950; line-height: 1.0; }
-.institutional-score-suffix { color: #8a99ad; font-size: 0.58rem; font-weight: 900; margin-top: 0.12rem; }
-.institutional-metrics-grid,
-.institutional-components-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin-bottom: 0.62rem;
-}
-.institutional-components-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.institutional-metric { padding: 0.48rem 0.52rem; }
-.institutional-metric-value {
-  color: #f9fafb;
-  font-size: 0.76rem;
-  font-weight: 920;
-  line-height: 1.12;
-  overflow-wrap: anywhere;
-}
-.institutional-metric-orange {
-  border-color: rgba(255, 159, 28, 0.82) !important;
-  background: radial-gradient(circle at top right, rgba(255, 159, 28, 0.20), transparent 34%), linear-gradient(180deg, rgba(43, 29, 18, 0.92) 0%, rgba(23, 22, 19, 0.96) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 216, 168, 0.08), 0 0 13px rgba(255, 159, 28, 0.14) !important;
-}
-.institutional-metric-orange .institutional-mini-label { color: #ffd8a8 !important; }
-.institutional-metric-orange .institutional-metric-value { color: #fff8ef !important; }
-.institutional-range-panel { padding: 0.62rem 0.64rem; margin-bottom: 0.64rem; }
-.institutional-range-title { color: #f9fafb; font-size: 0.76rem; font-weight: 950; margin-bottom: 0.45rem; }
-.institutional-range-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.44rem; }
-.institutional-range-box {
-  min-width: 0;
-  border-radius: 12px;
-  padding: 0.50rem 0.46rem;
-  border: 1px solid rgba(48, 54, 61, 0.76);
-  background: rgba(13, 17, 23, 0.42);
-}
-.institutional-range-buy { border-color: rgba(88,214,141,0.54); }
-.institutional-range-strong { border-color: rgba(255,159,28,0.58); }
-.institutional-range-label {
-  font-size: 0.56rem;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.045em;
-  margin-bottom: 0.25rem;
-}
-.institutional-range-buy .institutional-range-label { color: #58d68d; }
-.institutional-range-strong .institutional-range-label { color: #ffbf69; }
-.institutional-range-value {
-  color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 950;
-  line-height: 1.12;
-  overflow-wrap: anywhere;
-}
-.institutional-notes {
-  color: #9fb3d1;
-  font-size: 0.68rem;
-  font-weight: 740;
-  line-height: 1.28;
-  min-height: 2.6rem;
-  margin-bottom: 0.62rem;
-}
-.institutional-card-actions a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.05rem;
-  padding: 0 0.78rem;
-  border-radius: 999px;
-  border: 1px solid rgba(139, 211, 255, 0.34);
-  background: rgba(0, 176, 255, 0.08);
-  color: #8bd3ff !important;
-  text-decoration: none !important;
-  font-size: 0.72rem;
-  font-weight: 950;
-}
-.institutional-error-box {
-  margin: 0.75rem 0;
-  padding: 0.8rem 0.9rem;
-  border-radius: 14px;
-  border: 1px solid rgba(239, 68, 68, 0.36);
-  background: rgba(239, 68, 68, 0.08);
-  color: #ffc0c0;
-  font-size: 0.82rem;
-}
-@media screen and (max-width: 1320px) {
-  .institutional-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media screen and (max-width: 820px) {
-  .institutional-grid { grid-template-columns: minmax(0, 1fr); }
-  .institutional-components-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .institutional-summary-value { font-size: 1.12rem; }
-  .institutional-card { padding: 0.82rem 0.82rem; }
-}
-@media screen and (max-width: 430px) {
-  .institutional-card-header { flex-wrap: wrap; }
-  .institutional-label { white-space: normal; }
-  .institutional-price-score-row { grid-template-columns: minmax(0, 1fr); }
-  .institutional-score-box { text-align: left; }
-  .institutional-range-grid { grid-template-columns: minmax(0, 1fr); }
-}
+
+.summary-card{border-radius:15px;border:1px solid rgba(48,54,61,.78);background:linear-gradient(180deg,rgba(32,39,51,.74),rgba(21,27,36,.82));padding:.85rem}.summary-label{color:#9fb3d1;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.summary-value{color:#fff;font-size:1.25rem;font-weight:950}.summary-note{color:#8bd3ff;font-size:.75rem;font-weight:800}.section-title{color:#fff;font-size:1.05rem;font-weight:950;margin:1rem 0}.redesign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.redesign-card{border-radius:20px;border:1px solid rgba(48,54,61,.84);background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98));padding:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.redesign-card.is-buy{border-color:rgba(88,214,141,.88)}.redesign-card.is-watch{border-color:rgba(255,174,61,.85)}.redesign-card.is-monitor{border-color:rgba(70,86,108,.90)}.card-top{display:flex;align-items:flex-start;gap:.70rem;margin-bottom:.85rem}.rank{display:flex;align-items:center;justify-content:center;min-width:2.15rem;height:2.15rem;border-radius:999px;background:#0d1117;color:#9ec5ff;font-weight:950}.identity{flex:1;min-width:0}.ticker-row strong{color:#fff;font-size:1.25rem;font-weight:950}.company-name{color:#9fb3d1;font-size:.78rem;margin-top:.12rem}.status-badge{border-radius:999px;padding:.38rem .58rem;font-size:.64rem;font-weight:950;white-space:nowrap}.status-badge span{opacity:.85;margin-left:.25rem}.badge-buy{border:1px solid #58d68d;color:#58d68d;background:#172c1d}.badge-watch{border:1px solid #ffae3d;color:#ffbf69;background:#2e2212}.badge-monitor{border:1px solid #46566c;color:#9fb3d1;background:#111826}.decision-row{display:grid;grid-template-columns:.72fr 1.28fr;gap:.62rem;margin-bottom:.72rem}.price-main,.decision-text{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.43);padding:.68rem}.price-main span,.decision-text span{display:block;color:#9fb3d1;font-size:.56rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.price-main strong{display:block;color:#fff;font-size:1.13rem;font-weight:950;margin:.18rem 0}.price-main small{font-size:.74rem;font-weight:950}.decision-text p{color:#dbeafe;font-size:.78rem;font-weight:800;line-height:1.28;margin:.22rem 0 0}.positive{color:#41d67a!important}.negative{color:#ff4d5a!important}.neutral{color:#d1d5db!important}.chips-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin-bottom:.70rem}.condition-chip{border-radius:13px;padding:.52rem .56rem;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35)}.condition-chip span{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase}.condition-chip strong{display:block;margin-top:.16rem;font-size:.82rem;font-weight:950}.condition-chip small{display:block;margin-top:.10rem;color:#d1d5db;font-size:.68rem;font-weight:850}.chip-on{border-color:rgba(88,214,141,.7);background:rgba(20,80,40,.18)}.chip-on strong{color:#58d68d}.chip-off{border-color:rgba(70,86,108,.75);background:rgba(13,17,23,.28)}.chip-off strong{color:#9fb3d1}.key-metrics-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin-bottom:.74rem}.key-metric{border-radius:13px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35);padding:.58rem}.key-label{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase}.key-value{display:block;color:#fff;font-size:1.02rem;font-weight:950;margin-top:.16rem}.compact-section{border-radius:16px;border:1px solid rgba(48,54,61,.78);background:rgba(13,17,23,.36);padding:.70rem;margin-bottom:.70rem}.section-head h4{color:#fff;font-size:.96rem;font-weight:950;margin:0 0 .36rem}.linreg-anchor{color:#dbeafe;font-size:.75rem;font-weight:800;line-height:1.32;margin:.0 0 .55rem}.linreg-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin-bottom:.65rem}.detail-item{border-radius:11px;border:1px solid rgba(48,54,61,.62);background:rgba(13,17,23,.30);padding:.45rem}.detail-label{display:block;color:#9fb3d1;font-size:.53rem;font-weight:950;text-transform:uppercase}.detail-value{display:block;color:#fff;font-size:.78rem;font-weight:930;margin-top:.10rem;line-height:1.15}.linreg-mini-rail{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;height:2.30rem;border-radius:13px;overflow:visible;border:1px solid #30363d;margin:.55rem 0 .18rem}.rail-segment{display:flex;align-items:center;justify-content:center;font-size:.60rem;font-weight:950;text-transform:uppercase}.rail-lower{background:rgba(88,214,141,.24);color:#58d68d}.rail-mid{background:rgba(78,161,255,.18);color:#8bd3ff}.rail-upper{background:rgba(255,77,90,.16);color:#ff9aa4}.rail-marker{position:absolute;top:-.42rem;transform:translateX(-50%);width:.13rem;height:3.05rem;background:#fff;box-shadow:0 0 13px rgba(255,255,255,.35);z-index:3}.rail-marker span{position:absolute;top:-1.02rem;left:50%;transform:translateX(-50%);background:#0d1117;border:1px solid rgba(255,255,255,.32);border-radius:999px;padding:.10rem .32rem;color:#fff;font-size:.50rem;font-weight:950}.details-expander{border-radius:14px;border:1px solid rgba(48,54,61,.55);background:rgba(13,17,23,.22);padding:.58rem;margin-bottom:.68rem}.details-expander summary{cursor:pointer;color:#9ec5ff;font-weight:950;font-size:.74rem}.details-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin-top:.55rem}.card-actions a{color:#8bd3ff!important;text-decoration:none!important;border:1px solid rgba(139,211,255,.34);border-radius:999px;padding:.55rem .8rem;display:inline-flex;font-weight:900}.missing-box{color:#ffd8a8;font-weight:850;font-size:.78rem}@media(max-width:1320px){.redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:820px){.redesign-grid,.decision-row,.chips-row,.key-metrics-row,.linreg-strip,.details-compact{grid-template-columns:1fr}.status-badge{white-space:normal;text-align:right}}
 
 
 
@@ -6646,321 +6398,97 @@ st.markdown('</div>', unsafe_allow_html=True)
 ===== FILE: pages/institutional_scanner.py =====
 ====================================================================================================
 
-from __future__ import annotations
 
+from __future__ import annotations
 from html import escape
 from pathlib import Path
-
 import streamlit as st
-
 from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
-from utils.institutional_scanner import (
-    SYMBOLS,
-    SLEEP_BETWEEN_TICKERS_SECONDS,
-    build_record,
-    fmt_num,
-    fmt_pct,
-    fmt_price,
-    safe_float,
-    scan_summary,
-    sort_priority,
-)
-
+from utils.institutional_scanner import fmt_price, fmt_pct, safe_float, scan_summary, scan_symbols
 require_login()
-
 ROOT_DIR = Path(__file__).resolve().parent.parent
 GLOBAL_CSS = ROOT_DIR / "css" / "global.css"
 PAGE_CSS = ROOT_DIR / "css" / "institutional_scanner.css"
-
-
+SESSION_SCAN_REQUEST_KEY = "technical_linreg_scan_requested"
 def local_css(file_path: Path) -> None:
-    if file_path.exists():
-        with open(file_path, "r", encoding="utf-8") as file:
-            st.markdown(f"<style>{file.read()}</style>", unsafe_allow_html=True)
-
-local_css(GLOBAL_CSS)
-local_css(PAGE_CSS)
-render_app_icon_meta()
-
-SESSION_RECORDS_KEY = "institutional_scan_records"
-SESSION_LAST_UPDATE_KEY = "institutional_scan_last_update"
-SESSION_SCAN_REQUEST_KEY = "institutional_scan_requested"
-
-
-def refresh_scan() -> None:
-    """Request a full sequential scan on the next rerun.
-
-    No JSON and no Streamlit data cache are used for the scanner page: completed
-    records are kept only in st.session_state. This avoids rendering partial
-    results and avoids caching temporarily-empty yfinance fundamentals.
-    """
-    st.session_state[SESSION_SCAN_REQUEST_KEY] = True
-    st.rerun()
-
-
-def run_full_scan_sequential() -> list[dict]:
-    """Run the institutional scan ticker by ticker and publish only at the end."""
-    symbols = list(SYMBOLS)
-    total = len(symbols)
-    records: list[dict] = []
-
-    status_box = st.empty()
-    progress_bar = st.progress(0, text="Preparazione scan completo...")
-
-    for idx, item in enumerate(symbols, 1):
-        ticker = str(item.get("ticker") or item.get("yahoo") or "-")
-        name = str(item.get("name") or "")
-        status_box.info(
-            f"Scan completo in corso... {idx}/{total} · {ticker}"
-            + (f" · {name}" if name else "")
-        )
-        progress_bar.progress((idx - 1) / max(total, 1), text=f"{idx}/{total} · {ticker}")
-        records.append(build_record(item))
-
-        if idx < total and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
-            import time
-            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
-
-    records = sorted(records, key=sort_priority)
-    summary = scan_summary(records)
-    st.session_state[SESSION_RECORDS_KEY] = records
-    st.session_state[SESSION_LAST_UPDATE_KEY] = summary.get("last_update", "-")
-    st.session_state[SESSION_SCAN_REQUEST_KEY] = False
-
-    progress_bar.progress(1.0, text="Scan completato. Render risultati...")
-    status_box.success(f"Scan completato: {len(records)} titoli analizzati.")
-    return records
-
-
-def get_session_records() -> list[dict]:
-    records = st.session_state.get(SESSION_RECORDS_KEY, [])
-    return records if isinstance(records, list) else []
-
-
-def value_class(value) -> str:
-    v = safe_float(value)
-    if v is None:
-        return "institutional-neutral"
-    return "institutional-positive" if v > 0 else "institutional-negative" if v < 0 else "institutional-neutral"
-
-
-def label_class(label: str) -> str:
-    if label == "Technical Stress":
-        return "institutional-label institutional-label-incomplete"
-    if label == "Strong Buy Zone":
-        return "institutional-label institutional-label-strong"
-    if label == "Buy Zone":
-        return "institutional-label institutional-label-buy"
-    return "institutional-label"
-
-
-def card_class(label: str) -> str:
-    if label == "Technical Stress":
-        return "institutional-card institutional-card-incomplete"
-    if label == "Strong Buy Zone":
-        return "institutional-card institutional-card-strong"
-    if label == "Buy Zone":
-        return "institutional-card institutional-card-buy"
-    return "institutional-card"
-
-
-def label_icon(label: str) -> str:
-    if label == "Technical Stress":
-        return "🟠"
-    if label == "Fundamental Watch":
-        return "🔵"
-    if label == "Strong Buy Zone":
-        return "🔥"
-    if label == "Buy Zone":
-        return "🟢"
-    if label == "Watch":
-        return "🔵"
-    return "⚪"
-
-
-def orange_metric_box_class(record: dict) -> str:
-    return "institutional-metric-orange" if bool(record.get("orange_zone")) else ""
-
-
-def metric_html(label: str, value: str, css_class: str = "", box_class: str = "") -> str:
-    value_css = f"institutional-metric-value {css_class}" if css_class else "institutional-metric-value"
-    wrapper_css = f"institutional-metric {box_class}" if box_class else "institutional-metric"
-    return f'<div class="{wrapper_css}"><div class="institutional-mini-label">{escape(label)}</div><div class="{value_css}">{escape(value)}</div></div>'
-
-
-def component_html(label: str, value) -> str:
-    return metric_html(label, "N/D" if value is None else fmt_num(value, 1))
-
-
-def hist_date_text(value) -> str:
-    text = str(value or "").strip()
-    return text[:10] if text else "N/D"
-
-
-def hist_price_date_text(price_value, currency: str, date_value) -> str:
-    price_text = fmt_price(price_value, currency)
-    date_text = hist_date_text(date_value)
-    if price_text == "N/D" and date_text == "N/D":
-        return "N/D"
-    if date_text == "N/D":
-        return price_text
-    return f"{price_text} ({date_text})"
-
-
-def data_panel_html(record: dict) -> str:
-    label = str(record.get("data_quality_label") or "Dati parziali")
-    ratio = safe_float(record.get("data_quality_ratio"))
-    pct = f"{ratio * 100:.0f}%" if ratio is not None else "N/D"
-    missing_groups = ", ".join(record.get("data_missing_groups") or [])
-    if record.get("data_complete"):
-        return f'<div class="institutional-data-ok">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato normalmente</div>'
-    suffix = f" · mancanti: {escape(missing_groups)}" if missing_groups else ""
-    return f'<div class="institutional-data-warning">{escape(label)} · copertura fondamentali {escape(pct)} · score calcolato con i dati disponibili{suffix}</div>'
-
-
-def render_card(record: dict, rank: int) -> str:
-    ticker = escape(str(record.get("ticker") or ""))
-    name = escape(str(record.get("name") or ""))
-    label = str(record.get("display_label") or record.get("score_label") or "Monitor")
-    currency = str(record.get("currency") or "").upper()
-    score = fmt_num(record.get("score_total"), 1)
-    price = fmt_price(record.get("last_price"), currency)
-    daily = fmt_pct(record.get("daily_change_pct"), 2)
-    daily_class = value_class(record.get("daily_change_pct"))
-    tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    notes = escape(str(record.get("score_notes") or "-") or "-")
-    orange_box = orange_metric_box_class(record)
-    hist_orange_box = orange_box
-    hist_min_w = fmt_pct(record.get("hist_min_w_pct"), 1)
-    hist_gap_from_min = fmt_pct(record.get("gap_points"), 1)
-    hist_min_low = hist_price_date_text(record.get("hist_min_w_low"), currency, record.get("hist_min_w_date"))
-    hist_min_eq = fmt_price(record.get("hist_min_equivalent"), currency)
-    hist_max_w = fmt_pct(record.get("hist_max_w_pct"), 1)
-    hist_max_high = hist_price_date_text(record.get("hist_max_w_high"), currency, record.get("hist_max_w_date"))
-    hist_max_eq = fmt_price(record.get("hist_max_equivalent"), currency)
-    institutional_zone_text = str(record.get("institutional_buy_zone_text") or "dati insufficienti")
-    institutional_status_text = str(record.get("institutional_buy_zone_status_text") or "N/D")
-    error = str(record.get("error") or "").strip()
-
-    card = (
-        f'<div class="{card_class(label)}">'
-        '<div class="institutional-card-header">'
-        f'<div class="institutional-rank">#{rank}</div>'
-        '<div class="institutional-title-wrap">'
-        f'<div class="institutional-ticker">{ticker}</div>'
-        f'<div class="institutional-name">{name}</div>'
-        '</div>'
-        f'<div class="{label_class(label)}">{label_icon(label)} {escape(label)}</div>'
-        '</div>'
-        f'{data_panel_html(record)}'
-        '<div class="institutional-price-score-row">'
-        '<div class="institutional-price-box">'
-        '<div class="institutional-mini-label">Prezzo attuale</div>'
-        f'<div class="institutional-price-value">{escape(price)}</div>'
-        f'<div class="institutional-daily {daily_class}">Daily {escape(daily)}</div>'
-        '</div>'
-        '<div class="institutional-score-box">'
-        '<div class="institutional-mini-label">Score</div>'
-        f'<div class="institutional-score-value">{escape(score)}</div>'
-        '<div class="institutional-score-suffix">/100</div>'
-        '</div>'
-        '</div>'
-        '<div class="institutional-metrics-grid">'
-        + metric_html("SMA200W", fmt_price(record.get("sma200w"), currency), box_class=orange_box)
-        + metric_html("Distanza sotto la SMA200W", fmt_pct(record.get("dist_pct"), 2), value_class(record.get("dist_pct")), orange_box)
-        + metric_html("Hist Min W", hist_min_w, box_class=hist_orange_box)
-        + metric_html("Scarto da Min W", hist_gap_from_min, box_class=hist_orange_box)
-        + metric_html("MinW Low sotto SMA200W", hist_min_low, box_class=hist_orange_box)
-        + metric_html("Eq oggi MinW", hist_min_eq, box_class=hist_orange_box)
-        + '</div>'
-        '<div class="institutional-components-grid">'
-        + component_html("Tecnico", record.get("score_technical"))
-        + component_html("Valutazione", record.get("score_valuation"))
-        + component_html("Qualità", record.get("score_quality"))
-        + component_html("Crescita", record.get("score_growth"))
-        + component_html("Rischio/Mom.", record.get("score_risk_momentum"))
-        + '</div>'
-        '<div class="institutional-range-panel">'
-        '<div class="institutional-range-title">Buy Zone</div>'
-        '<div class="institutional-range-grid">'
-        f'<div class="institutional-range-box institutional-range-buy"><div class="institutional-range-label">Buy Zone</div><div class="institutional-range-value">{escape(institutional_zone_text)}</div></div>'
-        f'<div class="institutional-range-box institutional-range-strong"><div class="institutional-range-label">Stato attuale</div><div class="institutional-range-value">{escape(institutional_status_text)}</div></div>'
-        '</div>'
-        '</div>'
-        f'<div class="institutional-notes">Motivi: {notes}</div>'
-        f'<div class="institutional-card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView →</a></div>'
-    )
-    if error:
-        card += f'<div class="institutional-error-box">Dato tecnico incompleto: {escape(error)}</div>'
-    return card + '</div>'
-
-render_standard_page_header(
-    title="Institutional Scanner",
-    subtitle="Tutti i titoli Mega Cap USA/ETF · score parziale stile script locale, area arancione e range operativo.",
-    toggle_label="📱 Vista compatta",
-    toggle_key="institutional_compact_mode",
-    toggle_default=True,
-    refresh_key="institutional_header_refresh",
-    back_key="institutional_header_back",
-    refresh_callback=refresh_scan,
-)
-
-scan_requested = bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY, False))
-if scan_requested:
-    records = run_full_scan_sequential()
+    if file_path.exists(): st.markdown(f"<style>{file_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+local_css(GLOBAL_CSS); local_css(PAGE_CSS); render_app_icon_meta()
+def run_full_scan() -> list[dict]:
+    bar = st.progress(0, text="Preparazione dati tecnici weekly...")
+    def cb(i: int, total: int, item: dict) -> None: bar.progress((i - 1) / max(total, 1), text=f"Calcolo SMA200W/LinReg W {i}/{total}: {item.get('ticker', '')}")
+    records = scan_symbols(progress_callback=cb); bar.progress(1.0, text="Scanner tecnico completato"); bar.empty(); return records
+def refresh_scan() -> None: st.cache_data.clear(); st.session_state[SESSION_SCAN_REQUEST_KEY] = True; st.rerun()
+@st.cache_data(ttl=15 * 60, show_spinner=False)
+def load_cached_scan() -> list[dict]: return run_full_scan()
+def vclass(value) -> str:
+    x = safe_float(value)
+    if x is None: return "neutral"
+    if x > 0: return "positive"
+    if x < 0: return "negative"
+    return "neutral"
+def detail_item(label: str, value: str, css: str = "") -> str:
+    return f'<div class="detail-item"><span class="detail-label">{escape(label)}</span><span class="detail-value {css}">{escape(value)}</span></div>'
+def key_metric(label: str, value: str, css: str = "") -> str:
+    return f'<div class="key-metric"><span class="key-label">{escape(label)}</span><strong class="key-value {css}">{escape(value)}</strong></div>'
+def chip(label: str, active, short_value: str | None = None) -> str:
+    css = "chip-on" if bool(active) else "chip-off"; state = "ATTIVO" if bool(active) else "NO"; extra = f'<small>{escape(short_value)}</small>' if short_value else ""
+    return f'<div class="condition-chip {css}"><span>{escape(label)}</span><strong>{state}</strong>{extra}</div>'
+def sentence_for_record(record: dict) -> str:
+    below=bool(record.get("below_sma200w")); near_min=bool(record.get("near_hist_min_w")); near_lr=bool(record.get("near_linreg_lower")); count=int(record.get("confluence_count") or 0); dist_lower=fmt_pct(record.get("linreg_dist_lower_pct"),2)
+    if count==3: return "Setup completo: SMA200W, Min W e LinReg Lower sono tutti allineati."
+    if below and near_min and not near_lr: return f"Sotto SMA200W e vicino al Min W. Manca LinReg Lower: distanza {dist_lower}."
+    if below and near_lr and not near_min: return "Sotto SMA200W e in area LinReg Lower. Non ancora vicino al Min W."
+    if near_min and near_lr and not below: return "Vicino a Min W e LinReg Lower, ma non sotto SMA200W."
+    if count==1:
+        active="SMA200W" if below else "Min W" if near_min else "LinReg Lower" if near_lr else "nessuna"
+        return f"Solo una condizione attiva: {active}. Resta in monitoraggio."
+    return "Nessuna confluenza tecnica significativa: resta in monitoraggio."
+def linreg_bar(record: dict) -> str:
+    pos=safe_float(record.get("linreg_position_pct")); style=f"left:{pos:.1f}%;" if pos is not None else "left:0%;"
+    return '<div class="linreg-mini-rail"><div class="rail-segment rail-lower">Lower</div><div class="rail-segment rail-mid">Mid</div><div class="rail-segment rail-upper">Upper</div>'+f'<div class="rail-marker" style="{style}"><span>Prezzo</span></div></div>'
+def linreg_section(record: dict, currency: str) -> str:
+    if not record.get("linreg_available"):
+        return '<div class="compact-section"><div class="section-head"><h4>LinReg W</h4></div><div class="missing-box">'+escape(str(record.get("linreg_error") or "Non disponibile"))+'</div></div>'
+    method = str(record.get("linreg_method") or "LinReg 100 close 2 2")
+    weeks = str(record.get("linreg_weeks") or "N/D")
+    html='<div class="compact-section linreg-section"><div class="section-head"><h4>LinReg W</h4></div>'
+    html+=f'<p class="linreg-anchor">{escape(method)} - {escape(weeks)} settimane</p>'
+    html+='<div class="linreg-strip">'
+    html+=detail_item("Lower", fmt_price(record.get("linreg_lower_w"), currency), "positive")
+    html+=detail_item("Prezzo", fmt_price(record.get("last_price"), currency), "")
+    html+=detail_item("Mid", fmt_price(record.get("linreg_mid_w"), currency), "")
+    html+=detail_item("Upper", fmt_price(record.get("linreg_upper_w"), currency), "")
+    html+='</div>'+linreg_bar(record)+'</div>'
+    return html
+def technical_details(record: dict, currency: str) -> str:
+    html='<div class="details-compact">'
+    html+=detail_item("SMA200W", fmt_price(record.get("sma200w"), currency)); html+=detail_item("Hist Min W", fmt_pct(record.get("hist_min_w_pct"), 1)); html+=detail_item("MinW Low", f"{fmt_price(record.get('hist_min_w_low'), currency)} ({record.get('hist_min_w_date') or 'N/D'})"); html+=detail_item("Eq MinW", fmt_price(record.get("hist_min_equivalent"), currency)); html+=detail_item("Hist Max W", fmt_pct(record.get("hist_max_w_pct"), 1)); html+='</div>'; return html
+def card(record: dict, rank: int) -> str:
+    currency=str(record.get("currency") or "").upper(); ticker=str(record.get("ticker") or ""); name=str(record.get("name") or ""); label=str(record.get("technical_label") or "Monitor tecnico"); count=int(record.get("confluence_count") or 0); tv_url=escape(str(record.get("tradingview_url") or "#"), quote=True)
+    card_class="is-buy" if count==3 else "is-watch" if count==2 else "is-monitor"; badge_class="badge-buy" if count==3 else "badge-watch" if count==2 else "badge-monitor"
+    html=f'<div class="redesign-card {card_class}"><div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
+    html+=f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"),currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"),2))}</small></div><div class="decision-text"><span>Motivo principale</span><p>{escape(sentence_for_record(record))}</p></div></div>'
+    html+='<div class="chips-row">'+chip("SMA200W",record.get("below_sma200w"),fmt_pct(record.get("dist_pct"),1))+chip("Min W",record.get("near_hist_min_w"),fmt_pct(record.get("gap_points"),1))+chip("LinReg Lower",record.get("near_linreg_lower"),fmt_pct(record.get("linreg_dist_lower_pct"),1))+'</div>'
+    html+='<div class="key-metrics-row">'+key_metric("Distanza SMA200W",fmt_pct(record.get("dist_pct"),2),vclass(record.get("dist_pct")))+key_metric("Scarto Min W",fmt_pct(record.get("gap_points"),1),"")+key_metric("Distanza Lower",fmt_pct(record.get("linreg_dist_lower_pct"),2),vclass(record.get("linreg_dist_lower_pct")))+'</div>'
+    html+=linreg_section(record,currency)+'<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>'+technical_details(record,currency)+'</details>'+f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
+    return html
+render_standard_page_header(title="Scanner SMA200W / LinReg W", subtitle="Vista decisionale: SMA200W, Min W e LinReg Lower W.", toggle_label="Vista compatta", toggle_key="linreg_compact_mode", toggle_default=True, refresh_key="linreg_header_refresh", back_key="linreg_header_back", refresh_callback=refresh_scan)
+records=run_full_scan() if bool(st.session_state.pop(SESSION_SCAN_REQUEST_KEY,False)) else load_cached_scan(); summary=scan_summary(records)
+cols=st.columns(4)
+for col,(label,value,note) in zip(cols,[("Titoli",str(summary.get("count",0)),"solo azioni"),("Buy Zone",str(summary.get("buy_count",0)),"3/3 condizioni"),("Watch",str(summary.get("watch_count",0)),"2/3 condizioni"),("Area arancione",str(summary.get("orange_count",0)),"SMA200W + Min W")]):
+    with col: st.markdown(f'<div class="summary-card"><div class="summary-label">{escape(label)}</div><div class="summary-value">{escape(value)}</div><div class="summary-note">{escape(note)}</div></div>', unsafe_allow_html=True)
+st.caption(f"Ultimo aggiornamento: {summary.get('last_update','-')}. Cache 15 minuti.")
+st.markdown('<div class="section-title">Scanner tecnico</div>', unsafe_allow_html=True)
+if records:
+    st.markdown('<div class="redesign-grid">'+''.join(card(record,idx) for idx,record in enumerate(records,1))+'</div>', unsafe_allow_html=True)
 else:
-    records = get_session_records()
-
-if not records:
-    st.info(
-        "Nessuno scan completo presente in questa sessione. "
-        "Premi 🔄 Aggiorna per avviare uno scan sequenziale ticker per ticker. "
-        "I risultati verranno mostrati solo a scan completato."
-    )
-    st.stop()
-
-summary = scan_summary(records)
-
-cols = st.columns(4)
-summary_cards = [
-    ("Titoli analizzati", str(summary.get("count", 0)), "Mostrati tutti"),
-    ("Buy Zone", str(summary.get("buy_zone_count", summary.get("institutional_count", 0))), "Eq oggi MinW → SMA200W"),
-    ("Technical Stress", str(summary.get("technical_stress_count", 0)), "Area tecnica/storica"),
-    ("Dati parziali", str(summary.get("partial_count", 0)), "Score comunque calcolato"),
-]
-for col, (label, value, note) in zip(cols, summary_cards):
-    with col:
-        st.markdown(
-            '<div class="institutional-summary-card">'
-            f'<div class="institutional-summary-label">{escape(label)}</div>'
-            f'<div class="institutional-summary-value">{escape(value)}</div>'
-            f'<div class="institutional-summary-note">{escape(note)}</div>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-
-last_update = st.session_state.get(SESSION_LAST_UPDATE_KEY) or summary.get("last_update", "-")
-st.caption(
-    f"Ultimo scan completo in sessione: {last_update}. "
-    f"Mostro tutti i {len(records)} titoli analizzati. "
-    "Lo scan del portale ora è sequenziale come lo script locale: ticker per ticker, "
-    "nessun JSON e nessun risultato parziale mostrato durante il calcolo. "
-    "Usa 🔄 per avviare un nuovo scan completo."
-)
-st.markdown('<div class="institutional-section-title">🏁 Tutti i titoli analizzati</div>', unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="institutional-grid">' + ''.join(render_card(r, i) for i, r in enumerate(records, 1)) + '</div>',
-    unsafe_allow_html=True,
-)
-
-errors = [r for r in records if str(r.get("error") or "").strip()]
+    st.warning("Nessun dato disponibile.")
+errors=[record for record in records if str(record.get("error") or "").strip()]
 if errors:
-    with st.expander(f"⚠️ Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
-        for r in errors:
-            st.write(f"{r.get('ticker', '-')}: {r.get('error')}")
+    with st.expander(f"Titoli con dati tecnici incompleti ({len(errors)})", expanded=False):
+        for record in errors: st.write(f"{record.get('ticker','-')}: {record.get('error')}")
 
 
 
@@ -10554,808 +10082,171 @@ def test_github_storage_connection(watchlists_path=None):
 ===== FILE: utils/institutional_scanner.py =====
 ====================================================================================================
 
+
 from __future__ import annotations
-
-import math
-import os
-import time
-import urllib.parse
+import math, os, time, urllib.parse
 from datetime import datetime
-from typing import Any
+from typing import Any, Callable
 from zoneinfo import ZoneInfo
-
 import pandas as pd
 import yfinance as yf
 
-TIMEZONE = ZoneInfo("Europe/Rome")
-SMA_WEEKS = 200
-BUY_ZONE_THRESHOLD = 65.0
-STRONG_BUY_ZONE_THRESHOLD = 80.0
-SMA200_HIST_MIN_PROXIMITY_POINTS = 10.0
-SMA200_HIST_MIN_DIST_LIMIT = 0.0
-MAX_SIMULATED_DISCOUNT_PCT = 60.0
-SIMULATION_STEP_PCT = 0.5
-SLEEP_BETWEEN_TICKERS_SECONDS = float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP", "0.35"))
-YF_REPAIR = os.getenv("YF_REPAIR", "false").strip().lower() in {"1", "true", "yes", "y"}
+TIMEZONE=ZoneInfo("Europe/Rome")
+SMA_WEEKS=200
 
-SYMBOLS = [
-    {"ticker": "TSLA", "yahoo": "TSLA", "tv": "NASDAQ:TSLA", "name": "Tesla"},
-    {"ticker": "COST", "yahoo": "COST", "tv": "NASDAQ:COST", "name": "Costco"},
-    {"ticker": "MSFT", "yahoo": "MSFT", "tv": "NASDAQ:MSFT", "name": "Microsoft"},
-    {"ticker": "V", "yahoo": "V", "tv": "NYSE:V", "name": "Visa"},
-    {"ticker": "MA", "yahoo": "MA", "tv": "NYSE:MA", "name": "Mastercard"},
-    {"ticker": "ORCL", "yahoo": "ORCL", "tv": "NYSE:ORCL", "name": "Oracle"},
-    {"ticker": "PG", "yahoo": "PG", "tv": "NYSE:PG", "name": "Procter & Gamble"},
-    {"ticker": "JNJ", "yahoo": "JNJ", "tv": "NYSE:JNJ", "name": "Johnson & Johnson"},
-    {"ticker": "KO", "yahoo": "KO", "tv": "NYSE:KO", "name": "Coca-Cola"},
-    {"ticker": "PEP", "yahoo": "PEP", "tv": "NASDAQ:PEP", "name": "PepsiCo"},
-    {"ticker": "MCD", "yahoo": "MCD", "tv": "NYSE:MCD", "name": "McDonald's"},
-    {"ticker": "ABT", "yahoo": "ABT", "tv": "NYSE:ABT", "name": "Abbott Laboratories"},
-    {"ticker": "WMT", "yahoo": "WMT", "tv": "NYSE:WMT", "name": "Walmart"},
-    {"ticker": "AAPL", "yahoo": "AAPL", "tv": "NASDAQ:AAPL", "name": "Apple"},
-    {"ticker": "GOOG", "yahoo": "GOOG", "tv": "NASDAQ:GOOG", "name": "Alphabet Class C"},
-    {"ticker": "BRK.B", "yahoo": "BRK-B", "tv": "NYSE:BRK.B", "name": "Berkshire Hathaway"},
-    {"ticker": "NVDA", "yahoo": "NVDA", "tv": "NASDAQ:NVDA", "name": "NVIDIA"},
-    {"ticker": "ASML", "yahoo": "ASML", "tv": "NASDAQ:ASML", "name": "ASML Holding"},
-    {"ticker": "META", "yahoo": "META", "tv": "NASDAQ:META", "name": "Meta Platforms"},
-    {"ticker": "IBM", "yahoo": "IBM", "tv": "NYSE:IBM", "name": "IBM"},
-    {"ticker": "AVGO", "yahoo": "AVGO", "tv": "NASDAQ:AVGO", "name": "Broadcom"},
-    {"ticker": "AXP", "yahoo": "AXP", "tv": "NYSE:AXP", "name": "American Express"},
-    {"ticker": "AMZN", "yahoo": "AMZN", "tv": "NASDAQ:AMZN", "name": "Amazon"},
-    {"ticker": "CRM", "yahoo": "CRM", "tv": "NYSE:CRM", "name": "Salesforce"},
-]
+# V20: TradingView-like LinReg definition shown in the screenshot: "LinReg 100 close 2 2".
+LINREG_LENGTH=int(os.getenv("INSTITUTIONAL_LINREG_LENGTH","100"))
+LINREG_SOURCE=os.getenv("INSTITUTIONAL_LINREG_SOURCE","close").strip().lower()
+LINREG_UPPER_MULT=float(os.getenv("INSTITUTIONAL_LINREG_UPPER_MULT","2.0"))
+LINREG_LOWER_MULT=float(os.getenv("INSTITUTIONAL_LINREG_LOWER_MULT","2.0"))
+LINREG_NEAR_LOWER_ABOVE_PCT=float(os.getenv("INSTITUTIONAL_LINREG_NEAR_LOWER_ABOVE_PCT","5.0"))
+LINREG_NEAR_LOWER_BELOW_PCT=float(os.getenv("INSTITUTIONAL_LINREG_NEAR_LOWER_BELOW_PCT","10.0"))
+SMA200_HIST_MIN_PROXIMITY_POINTS=float(os.getenv("INSTITUTIONAL_MIN_GAP_POINTS","10.0"))
+SMA200_HIST_MIN_DIST_LIMIT=0.0
+SLEEP_BETWEEN_TICKERS_SECONDS=float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP","0.35"))
+YF_REPAIR=os.getenv("YF_REPAIR","false").strip().lower() in {"1","true","yes","y"}
+SYMBOLS=[{'ticker': 'TSLA', 'yahoo': 'TSLA', 'tv': 'NASDAQ:TSLA', 'name': 'Tesla'}, {'ticker': 'COST', 'yahoo': 'COST', 'tv': 'NASDAQ:COST', 'name': 'Costco'}, {'ticker': 'MSFT', 'yahoo': 'MSFT', 'tv': 'NASDAQ:MSFT', 'name': 'Microsoft'}, {'ticker': 'V', 'yahoo': 'V', 'tv': 'NYSE:V', 'name': 'Visa'}, {'ticker': 'MA', 'yahoo': 'MA', 'tv': 'NYSE:MA', 'name': 'Mastercard'}, {'ticker': 'ORCL', 'yahoo': 'ORCL', 'tv': 'NYSE:ORCL', 'name': 'Oracle'}, {'ticker': 'PG', 'yahoo': 'PG', 'tv': 'NYSE:PG', 'name': 'Procter & Gamble'}, {'ticker': 'JNJ', 'yahoo': 'JNJ', 'tv': 'NYSE:JNJ', 'name': 'Johnson & Johnson'}, {'ticker': 'KO', 'yahoo': 'KO', 'tv': 'NYSE:KO', 'name': 'Coca-Cola'}, {'ticker': 'PEP', 'yahoo': 'PEP', 'tv': 'NASDAQ:PEP', 'name': 'PepsiCo'}, {'ticker': 'MCD', 'yahoo': 'MCD', 'tv': 'NYSE:MCD', 'name': "McDonald's"}, {'ticker': 'ABT', 'yahoo': 'ABT', 'tv': 'NYSE:ABT', 'name': 'Abbott Laboratories'}, {'ticker': 'WMT', 'yahoo': 'WMT', 'tv': 'NYSE:WMT', 'name': 'Walmart'}, {'ticker': 'AAPL', 'yahoo': 'AAPL', 'tv': 'NASDAQ:AAPL', 'name': 'Apple'}, {'ticker': 'GOOG', 'yahoo': 'GOOG', 'tv': 'NASDAQ:GOOG', 'name': 'Alphabet Class C'}, {'ticker': 'BRK.B', 'yahoo': 'BRK-B', 'tv': 'NYSE:BRK.B', 'name': 'Berkshire Hathaway'}, {'ticker': 'NVDA', 'yahoo': 'NVDA', 'tv': 'NASDAQ:NVDA', 'name': 'NVIDIA'}, {'ticker': 'ASML', 'yahoo': 'ASML', 'tv': 'NASDAQ:ASML', 'name': 'ASML Holding'}, {'ticker': 'META', 'yahoo': 'META', 'tv': 'NASDAQ:META', 'name': 'Meta Platforms'}, {'ticker': 'IBM', 'yahoo': 'IBM', 'tv': 'NYSE:IBM', 'name': 'IBM'}, {'ticker': 'AVGO', 'yahoo': 'AVGO', 'tv': 'NASDAQ:AVGO', 'name': 'Broadcom'}, {'ticker': 'AXP', 'yahoo': 'AXP', 'tv': 'NYSE:AXP', 'name': 'American Express'}, {'ticker': 'AMZN', 'yahoo': 'AMZN', 'tv': 'NASDAQ:AMZN', 'name': 'Amazon'}, {'ticker': 'CRM', 'yahoo': 'CRM', 'tv': 'NYSE:CRM', 'name': 'Salesforce'}]
 
-FUNDAMENTAL_FIELDS = {
-    "valuation": ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"],
-    "quality": ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "free_cashflow"],
-    "growth": ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean"],
-    "risk": ["beta"],
-}
-
-
-def now_rome() -> datetime:
-    return datetime.now(TIMEZONE)
-
-
-def safe_float(value: Any) -> float | None:
+def now_rome(): return datetime.now(TIMEZONE)
+def safe_float(v):
     try:
-        if value is None:
-            return None
-        out = float(value)
-        if pd.isna(out) or math.isinf(out):
-            return None
+        if v is None: return None
+        x=float(v)
+        return None if pd.isna(x) or math.isinf(x) else x
+    except Exception: return None
+def clip(v,lo,hi): return max(lo,min(hi,v))
+def fmt_price(v,currency=""):
+    x=safe_float(v)
+    if x is None: return "N/D"
+    txt=f"{x:,.2f}".replace(",","_").replace(".",",").replace("_", ".")
+    cur=str(currency or "").strip().upper()
+    return txt+(f" {cur}" if cur else "")
+def fmt_pct(v,digits=1):
+    x=safe_float(v)
+    return "N/D" if x is None else f"{x:+.{digits}f}%".replace(".",",")
+def normalize_df(df):
+    if df is None or df.empty: return pd.DataFrame()
+    out=df.copy()
+    if isinstance(out.columns,pd.MultiIndex):
+        if "Close" in out.columns.get_level_values(0): out.columns=out.columns.get_level_values(0)
+        elif "Close" in out.columns.get_level_values(-1): out.columns=out.columns.get_level_values(-1)
+    return out
+def yf_download(symbol,**kwargs):
+    return yf.download(symbol, repair=True, progress=False, threads=False, **kwargs) if YF_REPAIR else yf.download(symbol, progress=False, threads=False, **kwargs)
+def tv_chart_url(tv):
+    e=urllib.parse.quote(str(tv or "").strip(), safe="")
+    return f"https://www.tradingview.com/chart/?symbol={e}" if e else ""
+def hist_gap(dist,hmin):
+    d=safe_float(dist); h=safe_float(hmin)
+    return None if d is None or h is None else abs(d-h)
+def below_sma(dist):
+    d=safe_float(dist); return bool(d is not None and d<0)
+def orange_zone(dist,hmin):
+    d=safe_float(dist)
+    if d is None or d>=SMA200_HIST_MIN_DIST_LIMIT: return False
+    g=hist_gap(d,hmin)
+    return bool(g is not None and g<=SMA200_HIST_MIN_PROXIMITY_POINTS)
+def equivalent_price(sma,pct):
+    s=safe_float(sma); p=safe_float(pct)
+    return None if s is None or s<=0 or p is None else s*(1+p/100)
+def quote_data(symbol):
+    last=prev=None; cur=""
+    try:
+        d=normalize_df(yf_download(symbol,period="10d",interval="1d",auto_adjust=False))
+        if not d.empty and "Close" in d.columns:
+            d=d.dropna(subset=["Close"])
+            if not d.empty: last=safe_float(d["Close"].iloc[-1])
+            if len(d)>=2: prev=safe_float(d["Close"].iloc[-2])
+            elif len(d)==1: prev=last
+    except Exception: pass
+    try:
+        f=yf.Ticker(symbol).fast_info
+        cur=str(f.get("currency") or "").upper()
+        if last is None: last=safe_float(f.get("last_price") or f.get("lastPrice"))
+        if prev is None: prev=safe_float(f.get("previous_close") or f.get("previousClose"))
+    except Exception: pass
+    ch=((last-prev)/prev*100) if last is not None and prev not in (None,0) else None
+    return {"last_price":last,"previous_close":prev,"daily_change_pct":ch,"currency":cur}
+def _linreg(vals):
+    n=len(vals)
+    if n<2: return None
+    x=list(range(n)); sx=sum(x); sy=sum(vals); sxx=sum(i*i for i in x); sxy=sum(i*v for i,v in zip(x,vals)); den=n*sxx-sx*sx
+    if den==0: return None
+    slope=(n*sxy-sx*sy)/den; intercept=(sy-slope*sx)/n; preds=[intercept+slope*i for i in x]
+    residuals=[v-p for v,p in zip(vals,preds)]
+    std=(sum(r*r for r in residuals)/max(n-2,1))**0.5
+    return preds,std
+
+def compute_linreg_w(weekly,current_price):
+    out={"linreg_available":False,"linreg_error":"","linreg_mid_w":None,"linreg_lower_w":None,"linreg_upper_w":None,"linreg_dist_lower_pct":None,"linreg_position_pct":None,"linreg_anchor_high":None,"linreg_anchor_high_date":None,"linreg_weeks":None,"linreg_method":f"LinReg {LINREG_LENGTH} close {LINREG_UPPER_MULT:g} {LINREG_LOWER_MULT:g}"}
+    try:
+        if weekly is None or weekly.empty or "Close" not in weekly.columns:
+            out["linreg_error"]="weekly Close mancante"; return out
+        h=weekly.copy().dropna(subset=["Close"])
+        h=h[h["Close"]>0]
+        if len(h)<LINREG_LENGTH:
+            out["linreg_error"]=f"storico linreg insufficiente: {len(h)} settimane"; return out
+        win=h.iloc[-LINREG_LENGTH:].copy()
+        vals=[float(v) for v in win["Close"].astype(float).tolist()]
+        reg=_linreg(vals)
+        if reg is None:
+            out["linreg_error"]="regressione non valida"; return out
+        preds,std=reg
+        mid=preds[-1]
+        lower=mid-LINREG_LOWER_MULT*std
+        upper=mid+LINREG_UPPER_MULT*std
+        if lower<=0: lower=min(vals)*0.80
+        p=safe_float(current_price); dist=None; pos=None
+        if p is not None and lower>0:
+            dist=(p-lower)/lower*100
+            if upper>lower: pos=clip((p-lower)/(upper-lower)*100,0,100)
+        out.update({"linreg_available":True,"linreg_mid_w":mid,"linreg_lower_w":lower,"linreg_upper_w":upper,"linreg_dist_lower_pct":dist,"linreg_position_pct":pos,"linreg_weeks":LINREG_LENGTH})
         return out
-    except Exception:
-        return None
+    except Exception as e:
+        out["linreg_error"]=str(e); return out
 
-
-def clip(value: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, value))
-
-
-def fmt_num(value: Any, digits: int = 1) -> str:
-    v = safe_float(value)
-    return "N/D" if v is None else f"{v:.{digits}f}".replace(".", ",")
-
-
-def fmt_price(value: Any, currency: str = "") -> str:
-    v = safe_float(value)
-    if v is None:
-        return "N/D"
-    txt = f"{v:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
-    cur = str(currency or "").strip().upper()
-    return txt + (f" {cur}" if cur else "")
-
-
-def fmt_pct(value: Any, digits: int = 1) -> str:
-    v = safe_float(value)
-    return "N/D" if v is None else f"{v:+.{digits}f}%".replace(".", ",")
-
-
-def fmt_gap_points(value: Any) -> str:
-    v = safe_float(value)
-    return "N/D" if v is None else f"{abs(v):.1f}".replace(".", ",") + " pt"
-
-
-def normalize_df(df: pd.DataFrame | None) -> pd.DataFrame:
-    if df is None or df.empty:
-        return pd.DataFrame()
-    out = df.copy()
-    if isinstance(out.columns, pd.MultiIndex):
-        if "Close" in out.columns.get_level_values(0):
-            out.columns = out.columns.get_level_values(0)
-        elif "Close" in out.columns.get_level_values(-1):
-            out.columns = out.columns.get_level_values(-1)
-    return out
-
-
-def yf_download(symbol: str, **kwargs) -> pd.DataFrame:
-    if YF_REPAIR:
-        return yf.download(symbol, repair=True, progress=False, threads=False, **kwargs)
-    return yf.download(symbol, progress=False, threads=False, **kwargs)
-
-
-FUNDAMENTAL_INFO_KEYS = (
-    "marketCap",
-    "forwardPE",
-    "trailingPE",
-    "pegRatio",
-    "trailingPegRatio",
-    "priceToSalesTrailing12Months",
-    "freeCashflow",
-    "returnOnEquity",
-    "grossMargins",
-    "operatingMargins",
-    "profitMargins",
-    "debtToEquity",
-    "revenueGrowth",
-    "earningsGrowth",
-    "beta",
-    "targetMeanPrice",
-    "recommendationMean",
-)
-
-GET_INFO_RETRY_COUNT = int(os.getenv("INSTITUTIONAL_GET_INFO_RETRY_COUNT", "3"))
-GET_INFO_RETRY_SLEEP_SECONDS = float(os.getenv("INSTITUTIONAL_GET_INFO_RETRY_SLEEP", "0.85"))
-
-
-def info_has_useful_fundamentals(info: dict[str, Any] | None) -> bool:
-    """Return True only when yfinance info contains at least some useful fundamentals.
-
-    Yahoo/yfinance can occasionally return an empty or almost-empty dict inside
-    Streamlit/cloud while historical price downloads still work. Treat those
-    responses as failed attempts and retry before accepting missing fundamentals.
-    """
-    if not isinstance(info, dict) or not info:
-        return False
-    useful_count = 0
-    for key in FUNDAMENTAL_INFO_KEYS:
-        value = info.get(key)
-        if value is None:
-            continue
-        if isinstance(value, str) and not value.strip():
-            continue
-        useful_count += 1
-        if useful_count >= 2:
-            return True
-    return False
-
-
-def _ticker_info_dict(ticker: Any, method: str) -> dict[str, Any]:
+def technical_metrics(item):
+    sym=item["yahoo"]
+    row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":""}
     try:
-        if method == "get_info":
-            info = ticker.get_info()
-        else:
-            info = ticker.info
-        return info if isinstance(info, dict) else {}
-    except Exception:
-        return {}
-
-
-def get_info(symbol: str) -> dict[str, Any]:
-    """Robust yfinance fundamentals retrieval without session/json fallback.
-
-    For each scan this function uses only live data from the current run:
-    1. try Ticker.get_info();
-    2. if the response is empty/useless, try Ticker.info;
-    3. retry a few times with a small delay.
-
-    No previous session data and no JSON cache are used.
-    """
-    symbol = str(symbol or "").strip()
-    if not symbol:
-        return {}
-    attempts = max(1, GET_INFO_RETRY_COUNT)
-    for attempt in range(attempts):
-        ticker = yf.Ticker(symbol)
-        for method in ("get_info", "info"):
-            info = _ticker_info_dict(ticker, method)
-            if info_has_useful_fundamentals(info):
-                return info
-        if attempt < attempts - 1:
-            time.sleep(GET_INFO_RETRY_SLEEP_SECONDS * (attempt + 1))
-    return {}
-
-
-def get_info_value(info: dict[str, Any], *keys: str) -> Any:
-    for key in keys:
-        value = info.get(key)
-        if value is not None:
-            return value
-    return None
-
-
-def pct_from_ratio(value: Any) -> float | None:
-    v = safe_float(value)
-    return None if v is None else v * 100
-
-
-def tv_chart_url(tv_symbol: str) -> str:
-    encoded = urllib.parse.quote(str(tv_symbol or "").strip(), safe="")
-    return f"https://www.tradingview.com/chart/?symbol={encoded}" if encoded else ""
-
-
-def hist_gap(dist_pct: Any, hist_min_pct: Any) -> float | None:
-    d = safe_float(dist_pct)
-    h = safe_float(hist_min_pct)
-    return None if d is None or h is None else abs(d - h)
-
-
-def below_sma(dist_pct: Any) -> bool:
-    d = safe_float(dist_pct)
-    return bool(d is not None and d < 0)
-
-
-def orange_zone(dist_pct: Any, hist_min_pct: Any) -> bool:
-    d = safe_float(dist_pct)
-    if d is None or d >= SMA200_HIST_MIN_DIST_LIMIT:
-        return False
-    gap = hist_gap(d, hist_min_pct)
-    return bool(gap is not None and gap <= SMA200_HIST_MIN_PROXIMITY_POINTS)
-
-
-def equivalent_price(sma: Any, pct_value: Any) -> float | None:
-    s = safe_float(sma)
-    p = safe_float(pct_value)
-    if s is None or s <= 0 or p is None:
-        return None
-    return s * (1 + p / 100)
-
-
-def quote_data(symbol: str) -> dict[str, Any]:
-    last_price = previous_close = None
-    currency = ""
-    try:
-        intraday = normalize_df(yf_download(symbol, period="5d", interval="15m", auto_adjust=False))
-        if not intraday.empty and "Close" in intraday.columns:
-            intraday = intraday.dropna(subset=["Close"])
-            if not intraday.empty:
-                last_price = safe_float(intraday["Close"].iloc[-1])
-    except Exception:
-        pass
-    try:
-        daily = normalize_df(yf_download(symbol, period="10d", interval="1d", auto_adjust=False))
-        if not daily.empty and "Close" in daily.columns:
-            daily = daily.dropna(subset=["Close"])
-            if last_price is None and not daily.empty:
-                last_price = safe_float(daily["Close"].iloc[-1])
-            if len(daily) >= 2:
-                previous_close = safe_float(daily["Close"].iloc[-2])
-            elif len(daily) == 1:
-                previous_close = safe_float(daily["Close"].iloc[-1])
-    except Exception:
-        pass
-    try:
-        fast = yf.Ticker(symbol).fast_info
-        currency = str(fast.get("currency") or "").upper()
-        if last_price is None:
-            last_price = safe_float(fast.get("last_price") or fast.get("lastPrice"))
-        if previous_close is None:
-            previous_close = safe_float(fast.get("previous_close") or fast.get("previousClose"))
-    except Exception:
-        pass
-    daily_change_pct = None
-    if last_price is not None and previous_close not in (None, 0):
-        daily_change_pct = ((last_price - previous_close) / previous_close) * 100
-    return {"last_price": last_price, "previous_close": previous_close, "daily_change_pct": daily_change_pct, "currency": currency}
-
-
-def technical_metrics(item: dict[str, str]) -> dict[str, Any]:
-    symbol = item["yahoo"]
-    row: dict[str, Any] = {
-        "ticker": item["ticker"], "yahoo": symbol, "tv": item.get("tv", ""), "name": item.get("name", ""),
-        "last_price": None, "previous_close": None, "daily_change_pct": None, "currency": "",
-        "sma200w": None, "dist_pct": None, "hist_min_w_pct": None, "hist_min_w_date": None, "hist_min_w_low": None, "hist_min_equivalent": None,
-        "hist_max_w_pct": None, "hist_max_w_date": None, "hist_max_w_high": None, "hist_max_equivalent": None,
-        "gap_points": None, "below_sma200w": False, "orange_zone": False,
-        "momentum_26w_pct": None, "momentum_52w_pct": None, "drawdown_52w_pct": None, "weekly_vol_52w_pct": None,
-        "error": "",
-    }
-    try:
-        row.update(quote_data(symbol))
-        weekly = normalize_df(yf_download(symbol, period="20y", interval="1wk", auto_adjust=False))
-        if weekly.empty or "Close" not in weekly.columns:
-            row["error"] = "weekly vuoto o Close mancante"
-            return row
-        weekly = weekly.dropna(subset=["Close"])
-        if len(weekly) < SMA_WEEKS:
-            row["error"] = f"storico insufficiente: {len(weekly)} settimane"
-            return row
-        close = weekly["Close"].astype(float)
-        sma200_series = close.rolling(SMA_WEEKS).mean()
-        sma200 = safe_float(sma200_series.iloc[-1])
-        row["sma200w"] = sma200
-        if sma200 and row["last_price"] is not None:
-            row["dist_pct"] = ((row["last_price"] - sma200) / sma200) * 100
-        if len(close) >= 27:
-            row["momentum_26w_pct"] = ((close.iloc[-1] / close.iloc[-27]) - 1) * 100
-        if len(close) >= 53:
-            row["momentum_52w_pct"] = ((close.iloc[-1] / close.iloc[-53]) - 1) * 100
-        high_52 = safe_float(close.tail(52).max())
-        if high_52 and high_52 > 0:
-            row["drawdown_52w_pct"] = ((close.iloc[-1] / high_52) - 1) * 100
-        returns = close.pct_change().tail(52).dropna()
-        if not returns.empty:
-            row["weekly_vol_52w_pct"] = float(returns.std() * 100)
-        if "Low" in weekly.columns and "High" in weekly.columns:
-            hist = weekly.copy()
-            hist["SMA200W"] = sma200_series
-            hist = hist.dropna(subset=["Low", "High", "SMA200W"])
-            hist = hist[(hist["Low"] > 0) & (hist["High"] > 0) & (hist["SMA200W"] > 0)]
-            below = hist[hist["Low"] < hist["SMA200W"]]
+        row.update(quote_data(sym)); w=normalize_df(yf_download(sym,period="20y",interval="1wk",auto_adjust=False))
+        if w.empty or "Close" not in w.columns: row["error"]="weekly vuoto o Close mancante"; return row
+        w=w.dropna(subset=["Close"])
+        if len(w)<SMA_WEEKS: row["error"]=f"storico insufficiente: {len(w)} settimane"; return row
+        close=w["Close"].astype(float); sma=close.rolling(SMA_WEEKS).mean(); s=safe_float(sma.iloc[-1]); row["sma200w"]=s
+        if s and row["last_price"] is not None: row["dist_pct"]=(row["last_price"]-s)/s*100
+        if "Low" in w.columns and "High" in w.columns:
+            hist=w.copy(); hist["SMA200W"]=sma; hist=hist.dropna(subset=["Low","High","SMA200W"]); hist=hist[(hist["Low"]>0)&(hist["High"]>0)&(hist["SMA200W"]>0)]
+            below=hist[hist["Low"]<hist["SMA200W"]]
             if not below.empty:
-                dd = ((below["SMA200W"] - below["Low"]) / below["SMA200W"]) * 100
-                min_idx = dd.idxmax()
-                row["hist_min_w_pct"] = -safe_float(dd.max())
-                row["hist_min_w_date"] = min_idx.strftime("%Y-%m-%d") if hasattr(min_idx, "strftime") else str(min_idx)
-                row["hist_min_w_low"] = safe_float(below.loc[min_idx].get("Low"))
-                row["hist_min_equivalent"] = equivalent_price(sma200, row["hist_min_w_pct"])
-            above = hist[hist["High"] > hist["SMA200W"]]
+                dd=(below["SMA200W"]-below["Low"])/below["SMA200W"]*100; mi=dd.idxmax()
+                row["hist_min_w_pct"]=-safe_float(dd.max()); row["hist_min_w_date"]=mi.strftime("%Y-%m-%d") if hasattr(mi,"strftime") else str(mi); row["hist_min_w_low"]=safe_float(below.loc[mi,"Low"]); row["hist_min_equivalent"]=equivalent_price(s,row["hist_min_w_pct"])
+            above=hist[hist["High"]>hist["SMA200W"]]
             if not above.empty:
-                mx = ((above["High"] - above["SMA200W"]) / above["SMA200W"]) * 100
-                max_idx = mx.idxmax()
-                row["hist_max_w_pct"] = safe_float(mx.max())
-                row["hist_max_w_date"] = max_idx.strftime("%Y-%m-%d") if hasattr(max_idx, "strftime") else str(max_idx)
-                row["hist_max_w_high"] = safe_float(above.loc[max_idx].get("High"))
-                row["hist_max_equivalent"] = equivalent_price(sma200, row["hist_max_w_pct"])
-        row["gap_points"] = hist_gap(row["dist_pct"], row["hist_min_w_pct"])
-        row["below_sma200w"] = below_sma(row["dist_pct"])
-        row["orange_zone"] = orange_zone(row["dist_pct"], row["hist_min_w_pct"])
+                mx=(above["High"]-above["SMA200W"])/above["SMA200W"]*100; ma=mx.idxmax()
+                row["hist_max_w_pct"]=safe_float(mx.max()); row["hist_max_w_date"]=ma.strftime("%Y-%m-%d") if hasattr(ma,"strftime") else str(ma); row["hist_max_w_high"]=safe_float(above.loc[ma,"High"]); row["hist_max_equivalent"]=equivalent_price(s,row["hist_max_w_pct"])
+        row["gap_points"]=hist_gap(row["dist_pct"],row["hist_min_w_pct"]); row["below_sma200w"]=below_sma(row["dist_pct"]); row["near_hist_min_w"]=bool(row["gap_points"] is not None and row["gap_points"]<=SMA200_HIST_MIN_PROXIMITY_POINTS); row["orange_zone"]=orange_zone(row["dist_pct"],row["hist_min_w_pct"])
+        row.update(compute_linreg_w(w,row.get("last_price")))
+        dl=safe_float(row.get("linreg_dist_lower_pct")); row["near_linreg_lower"]=bool(dl is not None and -LINREG_NEAR_LOWER_BELOW_PCT<=dl<=LINREG_NEAR_LOWER_ABOVE_PCT)
+        c=[bool(row["below_sma200w"]),bool(row["near_hist_min_w"]),bool(row["near_linreg_lower"])]
+        row["confluence_count"]=sum(1 for v in c if v)
+        row["technical_label"]="Buy Zone tecnica" if row["confluence_count"]==3 else "Watch tecnico" if row["confluence_count"]==2 else "Monitor tecnico"
         return row
-    except Exception as exc:
-        row["error"] = str(exc)
-        return row
+    except Exception as e: row["error"]=str(e); return row
 
-
-def fundamentals(symbol: str, last_price: Any) -> dict[str, Any]:
-    out = {key: None for key in [
-        "market_cap", "forward_pe", "trailing_pe", "peg_ratio", "price_to_sales", "free_cashflow",
-        "fcf_yield_pct", "return_on_equity_pct", "gross_margin_pct", "operating_margin_pct",
-        "profit_margin_pct", "debt_to_equity", "revenue_growth_pct", "earnings_growth_pct",
-        "beta", "target_mean_price", "target_upside_pct", "recommendation_mean",
-    ]}
-    out["info_error"] = ""
-    try:
-        info = get_info(symbol)
-        if not info:
-            out["info_error"] = "fondamentali yfinance non disponibili dopo retry live"
-        out["market_cap"] = safe_float(get_info_value(info, "marketCap"))
-        out["forward_pe"] = safe_float(get_info_value(info, "forwardPE"))
-        out["trailing_pe"] = safe_float(get_info_value(info, "trailingPE"))
-        out["peg_ratio"] = safe_float(get_info_value(info, "pegRatio", "trailingPegRatio"))
-        out["price_to_sales"] = safe_float(get_info_value(info, "priceToSalesTrailing12Months"))
-        out["free_cashflow"] = safe_float(get_info_value(info, "freeCashflow"))
-        out["return_on_equity_pct"] = pct_from_ratio(get_info_value(info, "returnOnEquity"))
-        out["gross_margin_pct"] = pct_from_ratio(get_info_value(info, "grossMargins"))
-        out["operating_margin_pct"] = pct_from_ratio(get_info_value(info, "operatingMargins"))
-        out["profit_margin_pct"] = pct_from_ratio(get_info_value(info, "profitMargins"))
-        out["debt_to_equity"] = safe_float(get_info_value(info, "debtToEquity"))
-        out["revenue_growth_pct"] = pct_from_ratio(get_info_value(info, "revenueGrowth"))
-        out["earnings_growth_pct"] = pct_from_ratio(get_info_value(info, "earningsGrowth"))
-        out["beta"] = safe_float(get_info_value(info, "beta"))
-        out["target_mean_price"] = safe_float(get_info_value(info, "targetMeanPrice"))
-        out["recommendation_mean"] = safe_float(get_info_value(info, "recommendationMean"))
-        if out["market_cap"] and out["free_cashflow"] is not None:
-            out["fcf_yield_pct"] = (out["free_cashflow"] / out["market_cap"]) * 100
-        price = safe_float(last_price)
-        if out["target_mean_price"] is not None and price:
-            out["target_upside_pct"] = ((out["target_mean_price"] - price) / price) * 100
-    except Exception as exc:
-        out["info_error"] = str(exc)
-    return out
-
-
-def score_technical(row: dict[str, Any]) -> tuple[float, list[str]]:
-    notes, score = [], 0.0
-    dist, gap = safe_float(row.get("dist_pct")), safe_float(row.get("gap_points"))
-    if row.get("orange_zone"):
-        score += 15; notes.append("area arancione")
-    elif row.get("below_sma200w"):
-        score += 8; notes.append("sotto SMA200W")
-    elif dist is not None and dist < 10:
-        score += 4; notes.append("vicino SMA200W")
-    if gap is not None:
-        score += clip(10 - gap, 0, 10)
-        if gap <= 5:
-            notes.append("scarto storico stretto")
-    return round(clip(score, 0, 25), 1), notes
-
-
-def score_valuation(f: dict[str, Any]) -> tuple[float, list[str]]:
-    notes, score = [], 0.0
-    fpe, peg, fcfy, ps, tgt = [safe_float(f.get(k)) for k in ["forward_pe", "peg_ratio", "fcf_yield_pct", "price_to_sales", "target_upside_pct"]]
-    if fpe is not None:
-        score += 5 if fpe <= 15 else 4 if fpe <= 25 else 2 if fpe <= 35 else 0
-        if fpe <= 25: notes.append("FwdPE ok/basso")
-    if peg is not None:
-        score += 4 if peg <= 1.2 else 2 if peg <= 2.0 else 0
-        if peg <= 1.2: notes.append("PEG buono")
-    if fcfy is not None:
-        score += 5 if fcfy >= 5 else 3 if fcfy >= 3 else 1 if fcfy > 0 else 0
-        if fcfy >= 3: notes.append("FCF yield ok")
-    if ps is not None:
-        score += 3 if ps <= 5 else 1 if ps <= 10 else 0
-    if tgt is not None:
-        score += 3 if tgt >= 15 else 1 if tgt >= 5 else 0
-        if tgt >= 15: notes.append("upside target")
-    return round(clip(score, 0, 20), 1), notes
-
-
-def score_quality(f: dict[str, Any]) -> tuple[float, list[str]]:
-    notes, score = [], 0.0
-    roe, opm, pm, gm, dte, fcf = [safe_float(f.get(k)) for k in ["return_on_equity_pct", "operating_margin_pct", "profit_margin_pct", "gross_margin_pct", "debt_to_equity", "free_cashflow"]]
-    if roe is not None:
-        score += 5 if roe >= 25 else 3 if roe >= 15 else 0
-        if roe >= 25: notes.append("ROE alto")
-    if opm is not None:
-        score += 5 if opm >= 25 else 3 if opm >= 15 else 0
-        if opm >= 25: notes.append("margine operativo alto")
-    if pm is not None: score += 4 if pm >= 20 else 2 if pm >= 10 else 0
-    if gm is not None: score += 3 if gm >= 50 else 2 if gm >= 35 else 0
-    if dte is not None: score += 2 if dte <= 80 else 1 if dte <= 150 else 0
-    if fcf is not None and fcf > 0: score += 1; notes.append("FCF positivo")
-    return round(clip(score, 0, 20), 1), notes
-
-
-def score_growth(f: dict[str, Any]) -> tuple[float, list[str]]:
-    notes, score = [], 0.0
-    rev, earn, rec, tgt = [safe_float(f.get(k)) for k in ["revenue_growth_pct", "earnings_growth_pct", "recommendation_mean", "target_upside_pct"]]
-    if rev is not None:
-        score += 5 if rev >= 15 else 3 if rev >= 5 else 1 if rev >= 0 else 0
-        if rev >= 15: notes.append("ricavi in crescita")
-    if earn is not None:
-        score += 5 if earn >= 15 else 3 if earn >= 5 else 1 if earn >= 0 else 0
-        if earn >= 15: notes.append("utili in crescita")
-    if rec is not None:
-        score += 3 if rec <= 2.0 else 2 if rec <= 2.7 else 0
-        if rec <= 2.0: notes.append("analyst rating buono")
-    if tgt is not None and tgt > 0: score += 2
-    return round(clip(score, 0, 15), 1), notes
-
-
-def score_risk_momentum(row: dict[str, Any], f: dict[str, Any]) -> tuple[float, list[str]]:
-    notes, score = [], 0.0
-    beta, mom26, mom52, dd52, vol = [safe_float(x) for x in [f.get("beta"), row.get("momentum_26w_pct"), row.get("momentum_52w_pct"), row.get("drawdown_52w_pct"), row.get("weekly_vol_52w_pct")]]
-    if beta is not None:
-        score += 4 if beta <= 1.0 else 3 if beta <= 1.3 else 1 if beta <= 1.7 else 0
-        if beta <= 1.0: notes.append("beta difensivo")
-    if mom26 is not None:
-        score += 4 if mom26 > 10 else 3 if mom26 > 0 else 1 if mom26 > -10 else 0
-        if mom26 > 10: notes.append("momentum 6m positivo")
-    if mom52 is not None: score += 3 if mom52 > 10 else 2 if mom52 > 0 else 1 if mom52 > -15 else 0
-    if dd52 is not None: score += 4 if dd52 > -10 else 2 if dd52 > -25 else 1 if dd52 > -40 else 0
-    if vol is not None:
-        score += 5 if vol <= 3 else 3 if vol <= 5 else 1 if vol <= 8 else 0
-        if vol <= 3: notes.append("volatilità bassa")
-    return round(clip(score, 0, 20), 1), notes
-
-
-def institutional_label(score: float) -> str:
-    if score >= STRONG_BUY_ZONE_THRESHOLD: return "Strong Buy Zone"
-    if score >= BUY_ZONE_THRESHOLD: return "Buy Zone"
-    if score >= 50: return "Watch"
-    return "Monitor"
-
-
-def compute_score(row: dict[str, Any], f: dict[str, Any]) -> dict[str, Any]:
-    buckets = [score_technical(row), score_valuation(f), score_quality(f), score_growth(f), score_risk_momentum(row, f)]
-    total = round(sum(bucket[0] for bucket in buckets), 1)
-    notes: list[str] = []
-    for _, bucket_notes in buckets:
-        notes.extend(bucket_notes[:2])
-    return {
-        "score_total": total,
-        "score_label": institutional_label(total),
-        "score_technical": buckets[0][0],
-        "score_valuation": buckets[1][0],
-        "score_quality": buckets[2][0],
-        "score_growth": buckets[3][0],
-        "score_risk_momentum": buckets[4][0],
-        "score_notes": "; ".join(notes[:8]),
-    }
-
-
-def data_quality(fund: dict[str, Any]) -> dict[str, Any]:
-    missing_groups, missing_fields = [], []
-    present_fields = total_fields = 0
-    for group, fields in FUNDAMENTAL_FIELDS.items():
-        group_present = 0
-        for field in fields:
-            total_fields += 1
-            if safe_float(fund.get(field)) is not None:
-                present_fields += 1
-                group_present += 1
-            else:
-                missing_fields.append(field)
-        if group_present == 0:
-            missing_groups.append(group)
-    ratio = present_fields / total_fields if total_fields else 0.0
-    label = "Dati completi" if ratio >= 0.80 else "Dati parziali" if ratio > 0 else "Fondamentali assenti"
-    return {
-        "data_complete": ratio >= 0.80,
-        "data_partial": ratio > 0 and ratio < 0.80,
-        "data_quality_ratio": round(ratio, 3),
-        "data_quality_label": label,
-        "data_missing_groups": missing_groups,
-        "data_missing_fields": missing_fields,
-    }
-
-
-def simulate_at_price(record: dict[str, Any], price: float) -> dict[str, Any]:
-    sim = dict(record)
-    current = safe_float(record.get("last_price"))
-    if current is None or current <= 0 or price <= 0:
-        return sim
-    ratio = price / current
-    sim["last_price"] = price
-    sma = safe_float(sim.get("sma200w"))
-    if sma and sma > 0:
-        sim["dist_pct"] = ((price - sma) / sma) * 100
-    sim["gap_points"] = hist_gap(sim.get("dist_pct"), sim.get("hist_min_w_pct"))
-    sim["below_sma200w"] = below_sma(sim.get("dist_pct"))
-    sim["orange_zone"] = orange_zone(sim.get("dist_pct"), sim.get("hist_min_w_pct"))
-    for key in ("forward_pe", "trailing_pe", "price_to_sales"):
-        value = safe_float(record.get(key))
-        if value is not None:
-            sim[key] = value * ratio
-    fcfy = safe_float(record.get("fcf_yield_pct"))
-    if fcfy is not None and ratio > 0:
-        sim["fcf_yield_pct"] = fcfy / ratio
-    target = safe_float(record.get("target_mean_price"))
-    if target is not None:
-        sim["target_upside_pct"] = ((target - price) / price) * 100
-    sim.update(compute_score(sim, sim))
-    return sim
-
-
-def find_zone_range(record: dict[str, Any], threshold: float) -> dict[str, Any]:
-    current = safe_float(record.get("last_price"))
-    if current is None or current <= 0:
-        return {"status": "not_enough_data", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": None, "max_score_orange": None}
-
-    valid: list[float] = []
-    max_score_any: float | None = None
-    max_score_orange: float | None = None
-
-    for i in range(int((MAX_SIMULATED_DISCOUNT_PCT * 2) / SIMULATION_STEP_PCT) + 1):
-        pct = -MAX_SIMULATED_DISCOUNT_PCT + i * SIMULATION_STEP_PCT
-        price = current * (1 + pct / 100)
-        if price <= 0:
-            continue
-        sim = simulate_at_price(record, price)
-        sim_score = safe_float(sim.get("score_total"))
-        if sim_score is not None:
-            max_score_any = sim_score if max_score_any is None else max(max_score_any, sim_score)
-        if bool(sim.get("orange_zone")):
-            if sim_score is not None:
-                max_score_orange = sim_score if max_score_orange is None else max(max_score_orange, sim_score)
-            if (sim_score or 0) >= threshold:
-                valid.append(price)
-
-    if not valid:
-        return {"status": "threshold_not_reached", "low": None, "high": None, "active": False, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
-
-    active = bool(record.get("orange_zone")) and (safe_float(record.get("score_total")) or 0) >= threshold
-    return {"status": "range", "low": min(valid), "high": max(valid), "active": active, "threshold": threshold, "max_score": max_score_any, "max_score_orange": max_score_orange}
-
-
-def median_value(values: list[float]) -> float | None:
-    cleaned = sorted(v for v in values if safe_float(v) is not None and float(v) > 0)
-    if not cleaned:
-        return None
-    n = len(cleaned)
-    mid = n // 2
-    return cleaned[mid] if n % 2 else (cleaned[mid - 1] + cleaned[mid]) / 2
-
-
-def fair_value_model(record: dict[str, Any]) -> dict[str, Any]:
-    """Conservative fair-value model for the Institutional Buy Zone V1."""
-    current = safe_float(record.get("last_price"))
-    quality = safe_float(record.get("score_quality")) or 0.0
-    growth = safe_float(record.get("score_growth")) or 0.0
-    beta = safe_float(record.get("beta"))
-    candidates: list[float] = []
-    methods: list[str] = []
-
-    fwd_pe = safe_float(record.get("forward_pe"))
-    if current is not None and current > 0 and fwd_pe is not None and fwd_pe > 0:
-        target_pe = 10.0 + (clip(quality, 0, 20) / 20.0) * 2.0 + (clip(growth, 0, 15) / 15.0) * 2.0
-        target_pe = clip(target_pe, 10.0, 14.5)
-        fv_pe = (current / fwd_pe) * target_pe
-        if fv_pe > 0:
-            candidates.append(fv_pe)
-            methods.append("Fwd P/E")
-
-    fcf_yield = safe_float(record.get("fcf_yield_pct"))
-    if current is not None and current > 0 and fcf_yield is not None and fcf_yield > 0:
-        required_fcf_yield = 11.0 - (clip(quality, 0, 20) / 20.0) * 2.0 - (clip(growth, 0, 15) / 15.0) * 1.0
-        required_fcf_yield = clip(required_fcf_yield, 8.0, 12.0)
-        fv_fcf = current * (fcf_yield / required_fcf_yield)
-        if fv_fcf > 0:
-            candidates.append(fv_fcf)
-            methods.append("FCF Yield")
-
-    target_mean = safe_float(record.get("target_mean_price"))
-    if target_mean is not None and target_mean > 0:
-        fv_target = target_mean * 0.80
-        if fv_target > 0:
-            candidates.append(fv_target)
-            methods.append("Target analisti 80%")
-
-    fair_value = median_value(candidates)
-    margin = None
-    fundamental_buy_price = None
-    if fair_value is not None:
-        if quality >= 15:
-            margin = 22.0
-        elif quality >= 11:
-            margin = 25.0
-        else:
-            margin = 30.0
-        if beta is not None:
-            if beta >= 1.50:
-                margin += 5.0
-            elif beta >= 1.20:
-                margin += 3.0
-        if growth >= 12:
-            margin -= 2.0
-        elif growth < 6:
-            margin += 3.0
-        if not bool(record.get("data_complete")):
-            margin += 5.0
-        margin = clip(margin, 20.0, 40.0)
-        fundamental_buy_price = fair_value * (1 - margin / 100.0)
-
-    upside = None
-    if current is not None and current > 0 and fair_value is not None:
-        upside = (fair_value / current - 1) * 100.0
-
-    return {
-        "fair_value_composite": round(fair_value, 2) if fair_value is not None else None,
-        "fair_value_methods": methods,
-        "required_margin_safety_pct": round(margin, 1) if margin is not None else None,
-        "fundamental_buy_price": round(fundamental_buy_price, 2) if fundamental_buy_price is not None else None,
-        "upside_to_fair_value_pct": round(upside, 1) if upside is not None else None,
-    }
-
-
-def institutional_buy_zone_model(record: dict[str, Any]) -> dict[str, Any]:
-    """Buy Zone = Eq oggi MinW -> SMA200W."""
-    low = safe_float(record.get("hist_min_equivalent"))
-    high = safe_float(record.get("sma200w"))
-    current = safe_float(record.get("last_price"))
-    if low is None or low <= 0 or high is None or high <= 0:
-        return {"status": "not_enough_data", "low": low, "high": high, "active": False}
-    if high < low:
-        low, high = high, low
-    active = bool(current is not None and low <= current <= high)
-    if current is None:
-        position = "N/D"
-    elif current < low:
-        position = "sotto la zona"
-    elif current > high:
-        position = "sopra la zona"
-    else:
-        position = "dentro la zona"
-    return {"status": "range", "low": low, "high": high, "active": active, "position": position}
-
-
-def format_institutional_buy_zone(record: dict[str, Any]) -> str:
-    data = record.get("institutional_buy_zone")
-    currency = str(record.get("currency") or "").upper()
-    if not isinstance(data, dict):
-        return "dati insufficienti"
-    if data.get("status") == "range":
-        prefix = "attiva · " if data.get("active") else ""
-        return prefix + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
-    return "dati insufficienti"
-
-
-def format_institutional_buy_zone_status(record: dict[str, Any]) -> str:
-    data = record.get("institutional_buy_zone")
-    if not isinstance(data, dict):
-        return "N/D"
-    if data.get("status") == "range":
-        return str(data.get("position") or "N/D")
-    return "dati insufficienti"
-
-
-def institutional_display_label(record: dict[str, Any]) -> str:
-    zone = record.get("institutional_buy_zone")
-    if isinstance(zone, dict) and zone.get("active"):
-        return "Buy Zone"
-    if bool(record.get("orange_zone")):
-        return "Technical Stress"
-    score = safe_float(record.get("score_total")) or 0.0
-    if score >= BUY_ZONE_THRESHOLD:
-        return "Fundamental Watch"
-    if score >= 50:
-        return "Watch"
-    return "Monitor"
-
-
-def format_zone_range(record: dict[str, Any], key: str) -> str:
-    data = record.get(key)
-    currency = str(record.get("currency") or "").upper()
-    if not isinstance(data, dict):
-        return "dati insufficienti"
-    status = data.get("status")
-    threshold = safe_float(data.get("threshold"))
-    if status == "range":
-        return ("attiva · " if data.get("active") else "") + fmt_price(data.get("low"), currency) + " - " + fmt_price(data.get("high"), currency)
-    if status == "not_enough_data":
-        return "dati insufficienti"
-    if status == "threshold_not_reached":
-        max_score = safe_float(data.get("max_score_orange"))
-        if max_score is None:
-            max_score = safe_float(data.get("max_score"))
-        threshold_text = fmt_num(threshold, 0) if threshold is not None else "N/D"
-        max_text = fmt_num(max_score, 1) if max_score is not None else "N/D"
-        return f"Soglia {threshold_text} non raggiunta · Max simulato: {max_text} / {threshold_text}"
-    return "dati insufficienti"
-
-
-def build_record(item: dict[str, str]) -> dict[str, Any]:
-    tech = technical_metrics(item)
-    fund = fundamentals(tech.get("yahoo", item.get("yahoo", "")), tech.get("last_price"))
-    quality = data_quality(fund)
-    score = compute_score(tech, fund)
-    record: dict[str, Any] = {}
-    record.update(tech)
-    record.update(fund)
-    record.update(quality)
-    record.update(score)
-    record["institutional_buy_zone"] = institutional_buy_zone_model(record)
-    record["institutional_buy_zone_text"] = format_institutional_buy_zone(record)
-    record["institutional_buy_zone_status_text"] = format_institutional_buy_zone_status(record)
-    record["display_label"] = institutional_display_label(record)
-    record["tradingview_url"] = tv_chart_url(str(record.get("tv") or item.get("tv") or ""))
-    return record
-
-
-def sort_priority(record: dict[str, Any]) -> tuple[int, float, str]:
-    score = safe_float(record.get("score_total")) or 0
-    label = str(record.get("display_label") or "")
-    if label == "Institutional Buy Zone":
-        group = 0
-    elif label == "Technical Stress":
-        group = 1
-    elif label == "Fundamental Watch":
-        group = 2
-    elif score >= 50:
-        group = 3
-    else:
-        group = 4
-    return (group, -score, str(record.get("ticker") or ""))
-
-
-def scan_symbols(limit: int | None = None) -> list[dict[str, Any]]:
-    symbols = SYMBOLS[:limit] if limit else SYMBOLS
-    records: list[dict[str, Any]] = []
-    for idx, item in enumerate(symbols, 1):
-        records.append(build_record(item))
-        if idx < len(symbols) and SLEEP_BETWEEN_TICKERS_SECONDS > 0:
-            time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
-    return sorted(records, key=sort_priority)
-
-
-def scan_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
-    top = max(records, key=lambda r: safe_float(r.get("score_total")) or -1, default={})
-    institutional_count = len([r for r in records if str(r.get("display_label") or "") == "Buy Zone"])
-    technical_stress_count = len([r for r in records if str(r.get("display_label") or "") == "Technical Stress"])
-    return {
-        "count": len(records),
-        "top_ticker": top.get("ticker", "-"),
-        "top_score": top.get("score_total"),
-        "buy_strong_count": len([r for r in records if (safe_float(r.get("score_total")) or 0) >= BUY_ZONE_THRESHOLD]),
-        "buy_zone_count": institutional_count,
-        "institutional_count": institutional_count,
-        "technical_stress_count": technical_stress_count,
-        "orange_count": len([r for r in records if bool(r.get("orange_zone"))]),
-        "partial_count": len([r for r in records if not r.get("data_complete", False)]),
-        "errors_count": len([r for r in records if str(r.get("error") or "").strip()]),
-        "last_update": now_rome().strftime("%d/%m/%Y %H:%M:%S"),
-    }
+def build_record(item):
+    r=technical_metrics(item); r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or "")); return r
+def sort_priority(r):
+    cc=int(r.get("confluence_count") or 0); gap=safe_float(r.get("gap_points")); lin=safe_float(r.get("linreg_dist_lower_pct")); return (-cc,gap if gap is not None else 999,abs(lin) if lin is not None else 999,str(r.get("ticker") or ""))
+def scan_symbols(limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
+    arr=SYMBOLS[:limit] if limit else SYMBOLS; out=[]; total=len(arr)
+    for i,it in enumerate(arr,1):
+        if progress_callback: progress_callback(i,total,it)
+        out.append(build_record(it))
+        if i<total and SLEEP_BETWEEN_TICKERS_SECONDS>0: time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
+    return sorted(out,key=sort_priority)
+def scan_summary(records):
+    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==2]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
 
 
 
