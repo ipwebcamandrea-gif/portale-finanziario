@@ -361,6 +361,19 @@ def forecast_chart_html(record: dict, data: dict) -> str:
     min_top = forecast_bar_top(low, scale_low, scale_high)
     min_label_top = min(92.0, min_top + 8.0)
     current_label_top = min(92.0, cur_top + 16.0)
+
+    # Convert plot-area percentages to chart-area percentages.
+    # The SVG history and the cone use an inner plotting area, while the
+    # current marker/labels are absolutely positioned in the whole chart.
+    # This keeps the blue current dot attached to the end of the blue history line.
+    def chart_area_top(pct: float) -> float:
+        return max(2.0, min(96.0, 8.6 + (float(pct) * 0.786)))
+
+    max_chart_top = chart_area_top(max_top)
+    avg_chart_top = chart_area_top(avg_top)
+    cur_chart_top = chart_area_top(cur_top)
+    min_chart_top = chart_area_top(min_label_top)
+    current_label_chart_top = chart_area_top(current_label_top)
     history_path = escape(forecast_history_path(cur_top), quote=True)
     return (
         '<div class="forecast-loaded">'
@@ -369,15 +382,15 @@ def forecast_chart_html(record: dict, data: dict) -> str:
         f'<p>{escape(str(analysts))} analisti · Max {high:.2f} · Min {low:.2f}</p></div>'
         '<div class="forecast-chart">'
         f'<svg class="forecast-history" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="{history_path}"/></svg>'
-        f'<div class="forecast-anchor" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-anchor" style="top:{cur_chart_top}%"></div>'
         f'<div class="forecast-cone forecast-green" style="clip-path:polygon(0% {cur_top}%,100% {max_top}%,100% {avg_top}%)"></div>'
         f'<div class="forecast-cone forecast-red" style="clip-path:polygon(0% {cur_top}%,100% {avg_top}%,100% {min_top}%)"></div>'
-        f'<div class="forecast-line current" style="top:{cur_top}%"></div>'
-        f'<div class="forecast-current-solid" style="top:{cur_top}%"></div>'
-        f'<div class="forecast-label max" style="top:{max_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
-        f'<div class="forecast-label avg" style="top:{avg_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
-        f'<div class="forecast-label min" style="top:{min_label_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
-        f'<div class="forecast-label current-l" style="top:{current_label_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
+        f'<div class="forecast-line current" style="top:{cur_chart_top}%"></div>'
+        f'<div class="forecast-current-solid" style="top:{cur_chart_top}%"></div>'
+        f'<div class="forecast-label max" style="top:{max_chart_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
+        f'<div class="forecast-label avg" style="top:{avg_chart_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
+        f'<div class="forecast-label min" style="top:{min_chart_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
+        f'<div class="forecast-label current-l" style="top:{current_label_chart_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
         '<div class="forecast-date forecast-date-left">2026</div><div class="forecast-date forecast-date-mid">Jul</div><div class="forecast-date forecast-date-right">2027</div>'
         '</div></div>'
     )
