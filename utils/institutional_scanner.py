@@ -5,6 +5,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 import pandas as pd
 import yfinance as yf
+from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -150,35 +151,41 @@ def technical_metrics(item):
     except Exception as e: row["error"]=str(e); return row
 
 def scanner_item_from_symbol(symbol: str) -> dict:
-    """Build a scanner item from a Watchlist TradingView/yfinance symbol."""
+    """Build a scanner item from a Watchlist TradingView/yfinance symbol.
+
+    V25 uses the central project symbol normalizers from utils.symbols.
+    This keeps class-share tickers consistent across the portal, for example:
+    - BRK.B -> yahoo BRK-B, TradingView NYSE:BRK.B
+    - BRK-B -> yahoo BRK-B, TradingView NYSE:BRK.B
+    """
     raw = str(symbol or "").strip().upper()
     if not raw:
-        return {"ticker":"", "yahoo":"", "tv":"", "name":""}
-    if ":" in raw:
-        market, ticker = raw.split(":", 1)
-        market = market.strip().upper(); ticker = ticker.strip().upper()
-        yahoo = ticker.replace(".", "-") if market in {"NYSE", "NASDAQ", "AMEX"} else ticker
-        return {"ticker": ticker.replace("-", "."), "yahoo": yahoo, "tv": f"{market}:{ticker}", "name": ""}
-    yahoo = raw
-    ticker = raw.replace("-", ".")
-    if raw.endswith(".MI"):
-        tv = "MIL:" + raw[:-3]
-    elif raw.endswith(".L"):
-        tv = "LSE:" + raw[:-2]
-    elif raw.endswith(".PA"):
-        tv = "EURONEXT:" + raw[:-3]
-    else:
-        tv = ticker
+        return {"ticker": "", "yahoo": "", "tv": "", "name": ""}
+
+    yahoo = normalize_yfinance_symbol(raw)
+    tv = normalize_tradingview_symbol(raw)
+
+    # Display ticker: keep TradingView ticker style when available, otherwise yfinance style.
+    tv_ticker = strip_exchange_prefix(tv).strip().upper() if tv else ""
+    ticker = tv_ticker or str(yahoo or raw).replace("-", ".")
+
     return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": ""}
 
+
 def scanner_items_from_symbols(symbols) -> list[dict]:
-    """Normalize watchlist symbols/dicts into scanner items."""
+    """Normalize watchlist symbols/dicts into scanner item dictionaries."""
     items=[]; seen=set()
     for entry in symbols or []:
         if isinstance(entry, dict):
-            item=dict(entry); key=str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
+            raw = str(entry.get("yahoo") or entry.get("ticker") or entry.get("tv") or "").strip().upper()
+            item = scanner_item_from_symbol(raw)
+            # Preserve optional descriptive metadata from richer sources.
+            if entry.get("name"):
+                item["name"] = str(entry.get("name") or "")
         else:
-            item=scanner_item_from_symbol(str(entry)); key=str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
+            item = scanner_item_from_symbol(str(entry))
+
+        key = str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
         if not key or key in seen:
             continue
         seen.add(key); items.append(item)
