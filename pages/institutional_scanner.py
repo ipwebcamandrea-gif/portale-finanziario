@@ -536,8 +536,10 @@ if filtered_records:
         for col_index, (col, record) in enumerate(zip(row_cols, row_records), 1):
             rank = start + col_index
             with col:
-                st.markdown(card(record, rank), unsafe_allow_html=True)
-                render_forecast_on_demand(record, rank, col_index, row_index)
+                wrap_key = re.sub(r"[^A-Za-z0-9_]+", "_", str(record.get("yahoo") or record.get("ticker") or rank))
+                with st.container(key=f"buyzone_forecast_wrap_{row_index}_{col_index}_{wrap_key}"):
+                    st.markdown(card(record, rank), unsafe_allow_html=True)
+                    render_forecast_on_demand(record, rank, col_index, row_index)
         st.markdown('<div class="buyzone-card-spacer"></div>', unsafe_allow_html=True)
 elif records:
     st.info("Nessuna card corrisponde al filtro selezionato.")
