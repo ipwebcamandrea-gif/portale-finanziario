@@ -65,12 +65,9 @@ def render_watchlist_selector_panel(data: dict) -> tuple[str, tuple[str, ...]]:
         st.markdown(f'<div class="buyzone-watchlist-count"><strong>{len(symbols)}</strong><span>ticker</span></div>', unsafe_allow_html=True)
     preview = list(symbols[:8])
     chips = ''.join(f'<span>{escape(sym)}</span>' for sym in preview)
-    if len(symbols) > len(preview):
-        chips += f'<span class="more">+{len(symbols)-len(preview)}</span>'
-    if chips:
-        st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
-    else:
-        st.warning("La watchlist selezionata non contiene ticker.")
+    if len(symbols) > len(preview): chips += f'<span class="more">+{len(symbols)-len(preview)}</span>'
+    if chips: st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
+    else: st.warning("La watchlist selezionata non contiene ticker.")
     return selected, symbols
 
 def vclass(value) -> str:
@@ -131,6 +128,55 @@ def technical_details(record: dict, currency: str) -> str:
     html += '</div>'
     return html
 
+def _fnum(value) -> float | None:
+    return safe_float(value)
+
+def forecast_bar_top(value, low, high) -> float:
+    v = _fnum(value); lo = _fnum(low); hi = _fnum(high)
+    if v is None or lo is None or hi is None or hi <= lo:
+        return 50.0
+    return max(8.0, min(92.0, 92.0 - ((v - lo) / (hi - lo)) * 84.0))
+
+def signed_delta_value(target, current) -> str:
+    t = _fnum(target); c = _fnum(current)
+    if t is None or c is None:
+        return "N/D"
+    sign = "+" if (t - c) >= 0 else ""
+    return f"{sign}{t-c:.2f}"
+
+def forecast_section(record: dict, currency: str) -> str:
+    mean = _fnum(record.get("forecast_target_mean")); low = _fnum(record.get("forecast_target_low")); high = _fnum(record.get("forecast_target_high")); current = _fnum(record.get("forecast_current_price") or record.get("last_price"))
+    url = escape(str(record.get("forecast_url") or "#"), quote=True)
+    if mean is None or low is None or high is None or current is None:
+        msg = escape(str(record.get("forecast_error") or "Target analisti non disponibili"))
+        return f'<details class="forecast-expander"><summary>Price Target Forecast <span>non disponibile</span></summary><div class="forecast-empty">{msg}</div></details>'
+    fcur = str(record.get("forecast_currency") or currency or "").upper()
+    pct_avg = ((mean-current)/current*100) if current else None
+    pct_max = ((high-current)/current*100) if current else None
+    pct_min = ((low-current)/current*100) if current else None
+    analysts = record.get("forecast_analyst_count") or "N/D"
+    scale_low = min(low, current); scale_high = max(high, mean, current)
+    max_top = forecast_bar_top(high, scale_low, scale_high); avg_top = forecast_bar_top(mean, scale_low, scale_high); cur_top = forecast_bar_top(current, scale_low, scale_high); min_top = forecast_bar_top(low, scale_low, scale_high)
+    return (
+        '<details class="forecast-expander">'
+        '<summary>Price Target Forecast <span>richiudibile</span></summary>'
+        '<div class="forecast-head"><div><div class="forecast-eyebrow">Price target</div>'
+        f'<div class="forecast-main"><strong>{mean:.2f}</strong><span>{escape(fcur)}</span><em>{escape(signed_delta_value(mean,current))}</em><em>{escape(fmt_pct(pct_avg,2))}</em></div></div>'
+        f'<p>{escape(str(analysts))} analisti · Max {high:.2f} · Min {low:.2f}</p></div>'
+        '<div class="forecast-chart">'
+        '<svg class="forecast-history" viewBox="0 0 220 120" preserveAspectRatio="none"><path d="M0,75 L13,68 L25,78 L36,54 L49,48 L58,60 L73,42 L92,46 L108,36 L126,55 L142,48 L158,70 L174,84 L190,110 L205,94 L220,85"/></svg>'
+        f'<div class="forecast-cone forecast-green" style="clip-path:polygon(0% {cur_top}%,100% {max_top}%,100% {avg_top}%)"></div>'
+        f'<div class="forecast-cone forecast-red" style="clip-path:polygon(0% {cur_top}%,100% {avg_top}%,100% {min_top}%)"></div>'
+        f'<div class="forecast-line current" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-label max" style="top:{max_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
+        f'<div class="forecast-label avg" style="top:{avg_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
+        f'<div class="forecast-label current-l" style="top:{cur_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
+        f'<div class="forecast-label min" style="top:{min_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
+        '<div class="forecast-watermark">TradingView style</div><div class="forecast-chip past">PAST 2Y</div><div class="forecast-chip future">1Y FORECAST</div></div>'
+        f'<div class="forecast-actions"><a href="{url}" target="_blank" rel="noopener noreferrer">Apri Forecast</a></div>'
+        '</details>'
+    )
+
 def card(record: dict, rank: int) -> str:
     currency = str(record.get("currency") or "").upper(); ticker = str(record.get("ticker") or ""); name = str(record.get("name") or "")
     label = str(record.get("technical_label") or "Monitor tecnico"); count = int(record.get("confluence_count") or 0); tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
@@ -142,6 +188,7 @@ def card(record: dict, rank: int) -> str:
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
     html += '</div>' + linreg_section(record, currency)
+    html += forecast_section(record, currency)
     html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
