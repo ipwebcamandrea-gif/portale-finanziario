@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 from html import escape
 from pathlib import Path
@@ -70,8 +69,7 @@ def card(record: dict, rank: int) -> str:
     card_class="is-buy" if count==3 else "is-watch" if count==2 else "is-monitor"; badge_class="badge-buy" if count==3 else "badge-watch" if count==2 else "badge-monitor"
     html=f'<div class="redesign-card {card_class}"><div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
     html+=f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"),currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"),2))}</small></div><div class="decision-text"><span>Motivo principale</span><p>{escape(sentence_for_record(record))}</p></div></div>'
-    html+='<div class="chips-row">'+chip("SMA200W",record.get("below_sma200w"),fmt_pct(record.get("dist_pct"),1))+chip("Min W",record.get("near_hist_min_w"),fmt_pct(record.get("gap_points"),1))+chip("LinReg Lower",record.get("near_linreg_lower"),fmt_pct(record.get("linreg_dist_lower_pct"),1))+'</div>'
-    html+='<div class="key-metrics-row">'+key_metric("Distanza SMA200W",fmt_pct(record.get("dist_pct"),2),vclass(record.get("dist_pct")))+key_metric("Scarto Min W",fmt_pct(record.get("gap_points"),1),"")+key_metric("Distanza Lower",fmt_pct(record.get("linreg_dist_lower_pct"),2),vclass(record.get("linreg_dist_lower_pct")))+'</div>'
+    html+='<div class="key-metrics-row">'+key_metric("Distanza SMA200W",fmt_pct(record.get("dist_pct"),2),vclass(record.get("dist_pct")))+key_metric("Scarto Min W",fmt_pct(record.get("gap_points"),1),"")+key_metric("LinReg Lower",fmt_pct(record.get("linreg_dist_lower_pct"),2),vclass(record.get("linreg_dist_lower_pct")))+'</div>'
     html+=linreg_section(record,currency)+'<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>'+technical_details(record,currency)+'</details>'+f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 render_standard_page_header(title="Scanner SMA200W / LinReg W", subtitle="Vista decisionale: SMA200W, Min W e LinReg Lower W.", toggle_label="Vista compatta", toggle_key="linreg_compact_mode", toggle_default=True, refresh_key="linreg_header_refresh", back_key="linreg_header_back", refresh_callback=refresh_scan)
