@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -150,12 +149,58 @@ def technical_metrics(item):
         return row
     except Exception as e: row["error"]=str(e); return row
 
+def scanner_item_from_symbol(symbol: str) -> dict:
+    """Build a scanner item from a Watchlist TradingView/yfinance symbol."""
+    raw = str(symbol or "").strip().upper()
+    if not raw:
+        return {"ticker":"", "yahoo":"", "tv":"", "name":""}
+    if ":" in raw:
+        market, ticker = raw.split(":", 1)
+        market = market.strip().upper(); ticker = ticker.strip().upper()
+        yahoo = ticker.replace(".", "-") if market in {"NYSE", "NASDAQ", "AMEX"} else ticker
+        return {"ticker": ticker.replace("-", "."), "yahoo": yahoo, "tv": f"{market}:{ticker}", "name": ""}
+    yahoo = raw
+    ticker = raw.replace("-", ".")
+    if raw.endswith(".MI"):
+        tv = "MIL:" + raw[:-3]
+    elif raw.endswith(".L"):
+        tv = "LSE:" + raw[:-2]
+    elif raw.endswith(".PA"):
+        tv = "EURONEXT:" + raw[:-3]
+    else:
+        tv = ticker
+    return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": ""}
+
+def scanner_items_from_symbols(symbols) -> list[dict]:
+    """Normalize watchlist symbols/dicts into scanner items."""
+    items=[]; seen=set()
+    for entry in symbols or []:
+        if isinstance(entry, dict):
+            item=dict(entry); key=str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
+        else:
+            item=scanner_item_from_symbol(str(entry)); key=str(item.get("yahoo") or item.get("ticker") or "").strip().upper()
+        if not key or key in seen:
+            continue
+        seen.add(key); items.append(item)
+    return items
+
 def build_record(item):
     r=technical_metrics(item); r["tradingview_url"]=tv_chart_url(str(r.get("tv") or item.get("tv") or "")); return r
 def sort_priority(r):
     cc=int(r.get("confluence_count") or 0); gap=safe_float(r.get("gap_points")); lin=safe_float(r.get("linreg_dist_lower_pct")); return (-cc,gap if gap is not None else 999,abs(lin) if lin is not None else 999,str(r.get("ticker") or ""))
-def scan_symbols(limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
-    arr=SYMBOLS[:limit] if limit else SYMBOLS; out=[]; total=len(arr)
+def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,dict],None]|None=None):
+    """Scan explicit watchlist symbols or the legacy hardcoded universe.
+
+    symbols=None keeps backward compatibility with the old SYMBOLS list.
+    symbols=(...) is used by BUY ZONE FINDER for the selected TradingView watchlist.
+    """
+    if symbols is None:
+        arr = SYMBOLS[:limit] if limit else SYMBOLS
+    else:
+        arr = scanner_items_from_symbols(symbols)
+        if limit:
+            arr = arr[:limit]
+    out=[]; total=len(arr)
     for i,it in enumerate(arr,1):
         if progress_callback: progress_callback(i,total,it)
         out.append(build_record(it))
