@@ -368,11 +368,46 @@ def forecast_chart_html(record: dict, data: dict) -> str:
     def chart_area_top(pct: float) -> float:
         return max(2.0, min(96.0, 8.6 + (float(pct) * 0.786)))
 
-    max_chart_top = chart_area_top(max_top)
-    avg_chart_top = chart_area_top(avg_top)
+    def spread_label_tops(label_items: list[tuple[str, float]]) -> dict[str, float]:
+        """Avoid overlapping right-side forecast labels.
+
+        Labels such as Current and Min can land on nearly the same vertical
+        coordinate when current price is close to the low target. This small
+        deterministic layout pass preserves the natural order and guarantees
+        a minimum distance between labels inside the chart.
+        """
+        min_gap = 10.5
+        top_bound = 8.0
+        bottom_bound = 90.0
+        ordered = sorted([(name, max(top_bound, min(bottom_bound, float(top)))) for name, top in label_items], key=lambda item: item[1])
+        for idx in range(1, len(ordered)):
+            prev_name, prev_top = ordered[idx - 1]
+            name, top = ordered[idx]
+            if top - prev_top < min_gap:
+                ordered[idx] = (name, prev_top + min_gap)
+        overflow = ordered[-1][1] - bottom_bound if ordered else 0
+        if overflow > 0:
+            ordered = [(name, top - overflow) for name, top in ordered]
+            for idx in range(len(ordered) - 2, -1, -1):
+                next_name, next_top = ordered[idx + 1]
+                name, top = ordered[idx]
+                if next_top - top < min_gap:
+                    ordered[idx] = (name, next_top - min_gap)
+        ordered = [(name, max(top_bound, min(bottom_bound, top))) for name, top in ordered]
+        return dict(ordered)
+
+    raw_label_tops = {
+        "max": chart_area_top(max_top),
+        "avg": chart_area_top(avg_top),
+        "current": chart_area_top(current_label_top),
+        "min": chart_area_top(min_label_top),
+    }
+    adjusted_label_tops = spread_label_tops(list(raw_label_tops.items()))
+    max_chart_top = adjusted_label_tops["max"]
+    avg_chart_top = adjusted_label_tops["avg"]
+    current_label_chart_top = adjusted_label_tops["current"]
+    min_chart_top = adjusted_label_tops["min"]
     cur_chart_top = chart_area_top(cur_top)
-    min_chart_top = chart_area_top(min_label_top)
-    current_label_chart_top = chart_area_top(current_label_top)
     history_path = escape(forecast_history_path(cur_top), quote=True)
     return (
         '<div class="forecast-loaded">'
