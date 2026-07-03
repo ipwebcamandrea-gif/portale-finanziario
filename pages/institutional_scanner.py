@@ -211,7 +211,8 @@ def line_top(value, low, high) -> float:
     hi = safe_float(high)
     if v is None or lo is None or hi is None or hi <= lo:
         return 50.0
-    return max(7.0, min(93.0, 93.0 - ((v - lo) / (hi - lo)) * 86.0))
+    # Mantiene le label LinReg dentro al box anche nelle card strette.
+    return max(13.0, min(87.0, 87.0 - ((v - lo) / (hi - lo)) * 74.0))
 
 
 def linreg_section(record: dict, currency: str) -> str:
@@ -363,9 +364,7 @@ def forecast_chart_html(record: dict, data: dict) -> str:
     current_label_top = min(92.0, cur_top + 16.0)
 
     # Convert plot-area percentages to chart-area percentages.
-    # The SVG history and the cone use an inner plotting area, while the
-    # current marker/labels are absolutely positioned in the whole chart.
-    # This keeps the blue current dot attached to the end of the blue history line.
+    # SVG history/cone use an inner plotting area; marker/labels are in the outer chart.
     def chart_area_top(pct: float) -> float:
         return max(2.0, min(96.0, 8.6 + (float(pct) * 0.786)))
 
