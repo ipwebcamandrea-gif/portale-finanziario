@@ -2,6 +2,7 @@ from __future__ import annotations
 from html import escape
 from pathlib import Path
 import streamlit as st
+import re
 from components.standard_header import render_standard_page_header
 from utils.app_branding import render_app_icon_meta
 from utils.auth import require_login
