@@ -9,6 +9,7 @@ from components.standard_header import render_standard_page_header
 from utils.institutional_scanner import fmt_price, fmt_pct, safe_float, scan_summary, scan_symbols
 from utils.target_data import fetch_yfinance_targets
 from utils.target_symbol_resolver import tradingview_forecast_url
+from utils.symbols import normalize_tradingview_symbol, strip_exchange_prefix
 from utils.watchlist_storage import carica_watchlists_da_json
 
 PAGE_TITLE = "BUY ZONE FINDER"
@@ -194,8 +195,8 @@ def condition_metric(title: str, pct: str, value: str, active: bool, value_class
 def reason_block(record: dict) -> str:
     rows = []
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
-    rows.append((bool(record.get("near_hist_min_w")), "Vicino al Min W Storico"))
-    rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower vicino" if bool(record.get("near_linreg_lower")) else "LinReg Lower non ancora vicino"))
+    rows.append((bool(record.get("near_hist_min_w")), "Min W Storico"))
+    rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower" if bool(record.get("near_linreg_lower")) else "No LinReg Lower"))
     html_rows = []
     for ok, label in rows:
         icon = "✓" if ok else "×"
@@ -256,17 +257,62 @@ def technical_details(record: dict, currency: str) -> str:
     return '<div class="technical-details-grid">' + ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items) + '</div>'
 
 
+def _underlying_forecast_identity(record: dict) -> dict:
+    """Return the symbol identity to use for analyst forecasts.
+
+    Technical cards can be based on local listings such as 1MSFT.MI.
+    Analyst forecasts usually exist only for the underlying US symbol, so
+    1MSFT.MI must use MSFT for yfinance and TradingView Forecast.
+    """
+    yf = str(record.get("yahoo") or record.get("ticker") or "").strip().upper()
+    ticker = str(record.get("ticker") or yf or "").strip().upper()
+    tv = str(record.get("tv") or "").strip().upper()
+
+    underlying = None
+    if yf.startswith("1") and yf.endswith(".MI") and len(yf) > 4:
+        core = yf[1:-3].strip().upper()
+        if core:
+            underlying = core
+    elif ticker.startswith("1") and ticker.endswith(".MI") and len(ticker) > 4:
+        core = ticker[1:-3].strip().upper()
+        if core:
+            underlying = core
+
+    if underlying:
+        tv_underlying = normalize_tradingview_symbol(underlying)
+        return {
+            "yf_symbol": underlying,
+            "ticker": strip_exchange_prefix(tv_underlying) or underlying,
+            "tv_symbol": tv_underlying,
+            "market": tv_underlying.split(":", 1)[0] if ":" in tv_underlying else "",
+            "display": strip_exchange_prefix(tv_underlying) or underlying,
+            "note": f"Forecast sul sottostante {strip_exchange_prefix(tv_underlying) or underlying}",
+        }
+
+    market = tv.split(":", 1)[0] if ":" in tv else ""
+    return {
+        "yf_symbol": yf,
+        "ticker": ticker,
+        "tv_symbol": tv,
+        "market": market,
+        "display": ticker,
+        "note": "",
+    }
+
 def _forecast_key(record: dict) -> str:
-    raw = str(record.get("yahoo") or record.get("ticker") or "").strip().upper()
+    ident = _underlying_forecast_identity(record)
+    raw = str(ident.get("yf_symbol") or record.get("yahoo") or record.get("ticker") or "").strip().upper()
     return "buy_zone_forecast_" + re.sub(r"[^A-Z0-9_]+", "_", raw)
 
 
 def _forecast_url(record: dict) -> str:
-    tv = str(record.get("tv") or "").strip().upper()
-    yf = str(record.get("yahoo") or "").strip().upper()
-    ticker = str(record.get("ticker") or "").strip().upper()
-    market = tv.split(":", 1)[0] if ":" in tv else ""
-    return tradingview_forecast_url(tv, yf_symbol=yf, market=market, ticker=ticker)
+    ident = _underlying_forecast_identity(record)
+    return tradingview_forecast_url(
+        ident.get("tv_symbol") or "",
+        yf_symbol=ident.get("yf_symbol") or "",
+        market=ident.get("market") or "",
+        ticker=ident.get("ticker") or "",
+    )
 
 
 def forecast_bar_top(value, low, high) -> float:
@@ -338,12 +384,13 @@ def forecast_chart_html(record: dict, data: dict) -> str:
 
 
 def open_target_page_from_record(record: dict) -> None:
+    ident = _underlying_forecast_identity(record)
     st.session_state["target_selected"] = {
-        "yf_symbol": str(record.get("yahoo") or "").strip().upper(),
-        "ticker": str(record.get("ticker") or "").strip().upper(),
-        "tv_symbol": str(record.get("tv") or "").strip().upper(),
+        "yf_symbol": str(ident.get("yf_symbol") or "").strip().upper(),
+        "ticker": str(ident.get("ticker") or "").strip().upper(),
+        "tv_symbol": str(ident.get("tv_symbol") or "").strip().upper(),
         "name": str(record.get("name") or "").strip(),
-        "market": str(record.get("tv") or "").split(":", 1)[0].upper() if ":" in str(record.get("tv") or "") else "",
+        "market": str(ident.get("market") or "").strip().upper(),
         "currency": str(record.get("currency") or "").strip().upper(),
         "source": "direct",
     }
@@ -352,10 +399,15 @@ def open_target_page_from_record(record: dict) -> None:
 
 
 def render_forecast_on_demand(record: dict, rank: int, column_index: int, row_index: int) -> None:
+    ident = _underlying_forecast_identity(record)
     key = _forecast_key(record)
-    title = f"Price Target Forecast · {record.get('ticker', '-') }"
+    display = ident.get("display") or record.get("ticker") or "-"
+    title = f"Price Target Forecast · {display}"
     with st.expander(title, expanded=False):
         url = _forecast_url(record)
+        note = ident.get("note") or ""
+        if note:
+            st.caption(note)
         data = st.session_state.get(key)
         status = st.session_state.get(key + "_status", "idle")
         if isinstance(data, dict) and data.get("ok"):
@@ -367,13 +419,13 @@ def render_forecast_on_demand(record: dict, rank: int, column_index: int, row_in
             else:
                 st.markdown('<div class="forecast-empty">Dati forecast non ancora scaricati per questo titolo.</div>', unsafe_allow_html=True)
         c1, c2, c3 = st.columns([1.45, 1.05, 1.15])
-        safe_key = re.sub(r"[^A-Z0-9_]+", "_", str(record.get("yahoo") or record.get("ticker") or rank).upper())
+        safe_key = re.sub(r"[^A-Z0-9_]+", "_", str(ident.get("yf_symbol") or record.get("yahoo") or record.get("ticker") or rank).upper())
         with c1:
             if st.button("Scarica dati forecast", key=f"download_forecast_{row_index}_{column_index}_{safe_key}"):
-                yf_symbol = str(record.get("yahoo") or "").strip().upper()
-                tv_symbol = str(record.get("tv") or "").strip().upper()
-                ticker = str(record.get("ticker") or "").strip().upper()
-                market = tv_symbol.split(":", 1)[0] if ":" in tv_symbol else ""
+                yf_symbol = str(ident.get("yf_symbol") or record.get("yahoo") or "").strip().upper()
+                tv_symbol = str(ident.get("tv_symbol") or record.get("tv") or "").strip().upper()
+                ticker = str(ident.get("ticker") or record.get("ticker") or "").strip().upper()
+                market = str(ident.get("market") or (tv_symbol.split(":", 1)[0] if ":" in tv_symbol else "")).strip().upper()
                 with st.spinner(f"Scarico forecast {ticker or yf_symbol}..."):
                     result = fetch_yfinance_targets(
                         yf_symbol,
