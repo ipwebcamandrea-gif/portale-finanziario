@@ -2,6 +2,8 @@
     "version": 1,
     "active_watchlist": "Default",
     "watchlists": {
-        "Default": []
+        "Default": [
+            "MSFT"
+        ]
     }
 }
