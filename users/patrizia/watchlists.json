@@ -3,7 +3,8 @@
     "active_watchlist": "Default",
     "watchlists": {
         "Default": [
-            "MSFT"
+            "MSFT",
+            "AXP"
         ]
     }
 }
