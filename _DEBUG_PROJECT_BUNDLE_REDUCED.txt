@@ -3077,6 +3077,604 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 @media(max-width:820px){.forecast-head{grid-template-columns:1fr}.forecast-chart{height:190px}.forecast-main strong{font-size:1.35rem}.forecast-label{font-size:.48rem;min-width:88px}.forecast-label strong{font-size:.50rem}}
 
 
+/* ========================= BUY ZONE FINDER - V38 LINREG ROW CENTERING FINAL ========================= */
+[data-testid="stSidebar"],[data-testid="stSidebarCollapseButton"],[data-testid="stSidebarCollapsedControl"]{display:none!important;visibility:hidden!important;width:0!important;min-width:0!important;}
+[data-testid="stAppViewContainer"]>.main{margin-left:0!important;}[data-testid="stHeader"]{left:0!important;}
+div[class*="st-key-buyzone_forecast_wrap_"]{border-radius:20px!important;border:1px solid rgba(48,54,61,.84)!important;background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;overflow:hidden!important;margin-bottom:1rem!important;}
+div[class*="st-key-buyzone_forecast_wrap_"] .redesign-card{border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;margin-bottom:0!important;padding:.92rem!important;}
+div[class*="st-key-buyzone_forecast_wrap_"] .redesign-card.is-buy{box-shadow:inset 0 2px 0 rgba(88,214,141,.88)!important;}div[class*="st-key-buyzone_forecast_wrap_"] .redesign-card.is-watch{box-shadow:inset 0 2px 0 rgba(255,174,61,.85)!important;}div[class*="st-key-buyzone_forecast_wrap_"] .redesign-card.is-monitor{box-shadow:inset 0 2px 0 rgba(70,86,108,.90)!important;}
+.decision-row{display:grid!important;grid-template-columns:.92fr 1.42fr!important;gap:.52rem!important;margin-bottom:.66rem!important;}.price-main,.decision-text{padding:.62rem!important;border-radius:12px!important;min-width:0!important;}.price-main strong{font-size:1.12rem!important}.reason-line{font-size:.74rem!important;line-height:1.20!important}.reason-line.ok,.reason-line.ok b,.reason-line.ok span{color:#41d67a!important}.reason-line.ko,.reason-line.ko b,.reason-line.ko span{color:#9fb3d1!important}@media(max-width:1180px){.decision-row{grid-template-columns:1fr!important;}}
+.linreg-box{border-radius:14px!important;border:1px solid rgba(48,54,61,.70)!important;background:rgba(13,17,23,.34)!important;padding:.72rem!important;margin:.66rem 0!important;overflow:visible!important;}.linreg-visual{position:relative!important;height:198px!important;min-height:198px!important;border-radius:12px!important;border:1px solid rgba(48,54,61,.62)!important;background:rgba(6,10,16,.48)!important;overflow:hidden!important;padding-top:.18rem!important;padding-bottom:.60rem!important;}.linreg-level{position:absolute!important;left:.70rem!important;right:.70rem!important;height:30px!important;transform:translateY(-50%)!important;display:grid!important;grid-template-columns:4.05rem minmax(0,1fr) 4.90rem!important;grid-template-rows:30px!important;align-items:center!important;gap:.48rem!important;z-index:8!important;overflow:visible!important}.linreg-level::before{content:""!important;grid-column:2!important;grid-row:1!important;align-self:center!important;justify-self:stretch!important;height:6px!important;border-radius:999px!important;opacity:.86!important;transform:none!important;margin:0!important}.linreg-level.upper::before{background:#ff4d5a!important}.linreg-level.mid::before{background:#2f9bff!important}.linreg-level.lower::before{background:#41d67a!important}.linreg-level span{grid-column:1!important;grid-row:1!important;align-self:center!important;justify-self:stretch!important;display:flex!important;align-items:center!important;justify-content:center!important;height:1.80rem!important;min-height:1.80rem!important;border-radius:11px!important;background:#0d1117!important;font-size:.56rem!important;font-weight:950!important;line-height:1!important;z-index:12!important}.linreg-level b{grid-column:3!important;grid-row:1!important;align-self:center!important;justify-self:end!important;max-width:4.90rem!important;padding:.20rem .34rem!important;border-radius:999px!important;background:#0d1117!important;border:1px solid rgba(255,255,255,.18)!important;color:#f9fafb!important;font-size:.56rem!important;font-weight:950!important;line-height:1.08!important;text-align:right!important;z-index:12!important}.linreg-level.lower{transform:translateY(-62%)!important}.linreg-price-line{position:absolute!important;left:4.95rem!important;right:5.55rem!important;height:0!important;border-top:2px dashed rgba(255,255,255,.78)!important;transform:translateY(-1px)!important;z-index:5!important}.linreg-price-line::before{content:""!important;position:absolute!important;left:-.60rem!important;top:-.35rem!important;border-top:.34rem solid transparent!important;border-bottom:.34rem solid transparent!important;border-right:.48rem solid #fff!important;z-index:6!important}.linreg-price-line span{position:absolute!important;left:.10rem!important;top:-1.38rem!important;max-width:calc(100% - .3rem)!important;padding:.26rem .42rem!important;border-radius:999px!important;background:#fff!important;color:#0d1117!important;font-size:.60rem!important;font-weight:950!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;z-index:10!important}
+div[class*="st-key-buyzone_forecast_wrap_"] div[data-testid="stExpander"]{margin:-.18rem .92rem .92rem .92rem!important;border:0!important;border-top:1px solid rgba(48,54,61,.52)!important;border-radius:0 0 16px 16px!important;background:rgba(13,17,23,.18)!important;box-shadow:none!important;overflow:hidden!important;}div[class*="st-key-buyzone_forecast_wrap_"] .forecast-chart{height:178px!important;border-radius:13px!important;}div[class*="st-key-buyzone_forecast_wrap_"] .forecast-anchor{z-index:12!important;box-shadow:0 0 0 2px rgba(47,111,255,.20),0 0 8px rgba(47,111,255,.45)!important;}div[class*="st-key-buyzone_forecast_wrap_"] .forecast-current-solid{right:5.65rem!important;}
+@media(max-width:980px){.linreg-visual{height:188px!important;min-height:188px!important}.linreg-level{grid-template-columns:3.60rem minmax(0,1fr) 4.40rem!important;gap:.36rem!important}.linreg-price-line{left:4.50rem!important;right:5rem!important}}
+
+/* ========================= BUY ZONE FINDER - V39 FORECAST LABEL COLLISION AVOIDANCE ========================= */
+.forecast-label{min-height:1.28rem!important;align-items:center!important;z-index:14!important;box-shadow:0 0 0 1px rgba(7,12,18,.42)!important;}
+.forecast-label.current-l{z-index:15!important;}
+.forecast-label.min{z-index:14!important;}
+.forecast-label b,.forecast-label strong{line-height:1.05!important;}
+
+
+/* ========================= BUY ZONE FINDER - V40 TOP TYPOGRAPHY SAFE FIX =========================
+   Safe scope: only upper card, KPI cards and SMA200W/details typography.
+   DO NOT touch LinReg or Price Target Forecast sections. */
+
+/* Header/title part of the card: restore compact, readable typography. */
+div[class*="st-key-buyzone_forecast_wrap_"] .card-top{
+  display:flex!important;
+  align-items:center!important;
+  gap:.70rem!important;
+  margin-bottom:.82rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .rank{
+  min-width:2.18rem!important;
+  width:2.18rem!important;
+  height:2.18rem!important;
+  border-radius:999px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:1.02rem!important;
+  font-weight:950!important;
+  line-height:1!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .ticker-row strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.34rem!important;
+  line-height:1.08!important;
+  letter-spacing:-.015em!important;
+  font-weight:950!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .company-name{
+  margin-top:.16rem!important;
+  color:#9fb3d1!important;
+  font-size:.74rem!important;
+  line-height:1.16!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge{
+  margin-left:auto!important;
+  white-space:nowrap!important;
+  font-size:.68rem!important;
+  line-height:1!important;
+  font-weight:900!important;
+  padding:.58rem .72rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge span{
+  display:inline!important;
+  margin-left:.25rem!important;
+  font-size:.66rem!important;
+}
+
+/* Price + reason: prevent strange line breaks and oversized text. */
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-row{
+  display:grid!important;
+  grid-template-columns:1fr 1.45fr!important;
+  gap:.62rem!important;
+  margin-bottom:.78rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text{
+  min-width:0!important;
+  padding:.76rem .82rem!important;
+  border-radius:13px!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main > span,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text > span{
+  display:block!important;
+  color:#8fb9ff!important;
+  font-size:.60rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.060em!important;
+  margin-bottom:.48rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.18rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  margin:0 0 .58rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main small{
+  display:block!important;
+  font-size:.76rem!important;
+  line-height:1.18!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line{
+  display:grid!important;
+  grid-template-columns:.80rem minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:.34rem!important;
+  margin:.20rem 0!important;
+  font-size:.72rem!important;
+  line-height:1.15!important;
+  font-weight:900!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line b{
+  width:.80rem!important;
+  min-width:.80rem!important;
+  text-align:center!important;
+  line-height:1.15!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line span{
+  display:block!important;
+  min-width:0!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+}
+
+/* KPI/condition cards: each piece on its own line, no visual concatenation. */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:.56rem!important;
+  margin:.10rem 0 .84rem 0!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric{
+  min-width:0!important;
+  min-height:7.10rem!important;
+  padding:.72rem .72rem!important;
+  border-radius:14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric span{
+  display:block!important;
+  color:#9ec5ff!important;
+  font-size:.57rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.050em!important;
+  margin:0 0 .48rem 0!important;
+  min-height:1.28rem!important;
+  max-height:2.65rem!important;
+  overflow:hidden!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric strong{
+  display:block!important;
+  font-size:1.04rem!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  margin:0 0 .34rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric small{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.70rem!important;
+  line-height:1.18!important;
+  font-weight:850!important;
+  margin:0 0 .36rem 0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric em{
+  display:block!important;
+  margin-top:auto!important;
+  font-style:normal!important;
+  font-size:.66rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.030em!important;
+  white-space:nowrap!important;
+}
+
+/* SMA200W / Storico details: restore clean two-column key/value layout. */
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander{
+  margin:.46rem 0 .86rem 0!important;
+  padding:0!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander summary{
+  display:flex!important;
+  align-items:center!important;
+  min-height:2.70rem!important;
+  padding:.66rem .82rem!important;
+  color:#8bd3ff!important;
+  font-size:.78rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:.48rem .72rem!important;
+  padding:.76rem .82rem .88rem .82rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid > div{
+  min-width:0!important;
+  padding:.34rem 0!important;
+  display:grid!important;
+  grid-template-columns:minmax(5.4rem,.85fr) minmax(0,1fr)!important;
+  align-items:baseline!important;
+  column-gap:.50rem!important;
+  border-bottom:1px solid rgba(48,54,61,.32)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid span{
+  display:block!important;
+  color:#9fb3d1!important;
+  font-size:.68rem!important;
+  line-height:1.16!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.78rem!important;
+  line-height:1.16!important;
+  font-weight:950!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Keep buttons readable without touching chart sections. */
+div[class*="st-key-buyzone_forecast_wrap_"] .card-actions a{
+  font-size:.86rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  padding:.72rem .96rem!important;
+}
+
+@media(max-width:1320px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row{gap:.46rem!important;}
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric{padding:.66rem .62rem!important;}
+  div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:980px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .decision-row{grid-template-columns:1fr!important;}
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row{grid-template-columns:1fr!important;}
+}
+
+
+
+/* ========================= BUY ZONE FINDER - V41 APPEND ONLY
+   Restore upper card typography + orange Watch cards.
+   IMPORTANT: this block intentionally does NOT target .linreg-* or .forecast-* sections. */
+
+/* 1) Watch tecnico 2/3: orange outside frame/background only */
+div[class*="st-key-buyzone_forecast_wrap_"]:has(.redesign-card.is-watch){
+  border:1.5px solid rgba(245,158,11,.95)!important;
+  background:
+    linear-gradient(180deg,rgba(245,158,11,.20),rgba(245,158,11,.075) 26%,rgba(16,22,31,.98) 62%)!important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.20), inset 0 2px 0 rgba(245,158,11,.95)!important;
+}
+.redesign-card.is-watch{
+  outline:1.5px solid rgba(245,158,11,.90)!important;
+  outline-offset:-1px!important;
+  background:linear-gradient(180deg,rgba(245,158,11,.10),rgba(16,22,31,.96) 24%)!important;
+}
+.redesign-card.is-watch .status-badge{
+  border-color:rgba(245,158,11,.95)!important;
+  color:#ffd27a!important;
+  background:rgba(245,158,11,.12)!important;
+}
+
+/* 2) Top identity section */
+div[class*="st-key-buyzone_forecast_wrap_"] .card-top,
+.redesign-card .card-top{
+  display:flex!important;
+  align-items:center!important;
+  gap:.70rem!important;
+  margin-bottom:.78rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .rank,
+.redesign-card .rank{
+  flex:0 0 2.20rem!important;
+  width:2.20rem!important;
+  height:2.20rem!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:999px!important;
+  font-size:1.02rem!important;
+  font-weight:950!important;
+  line-height:1!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .identity,
+.redesign-card .identity{
+  min-width:0!important;
+  flex:1 1 auto!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .ticker-row strong,
+.redesign-card .ticker-row strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.30rem!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  letter-spacing:-.012em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .company-name,
+.redesign-card .company-name{
+  color:#9fb3d1!important;
+  font-size:.70rem!important;
+  line-height:1.15!important;
+  margin-top:.14rem!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge,
+.redesign-card .status-badge{
+  flex:0 0 auto!important;
+  margin-left:auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.25rem!important;
+  white-space:nowrap!important;
+  font-size:.66rem!important;
+  line-height:1!important;
+  font-weight:950!important;
+  padding:.58rem .78rem!important;
+  border-radius:999px!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .status-badge span,
+.redesign-card .status-badge span{
+  display:inline!important;
+  font-size:.62rem!important;
+  line-height:1!important;
+}
+
+/* 3) Price + reason: no vertical letter wrapping */
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-row,
+.redesign-card .decision-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,.92fr) minmax(13.5rem,1.28fr)!important;
+  gap:.70rem!important;
+  margin-bottom:.86rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text,
+.redesign-card .price-main,
+.redesign-card .decision-text{
+  min-width:0!important;
+  min-height:auto!important;
+  padding:.76rem .86rem!important;
+  border-radius:13px!important;
+  background:rgba(13,17,23,.30)!important;
+  border:1px solid rgba(48,54,61,.72)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main > span,
+div[class*="st-key-buyzone_forecast_wrap_"] .decision-text > span,
+.redesign-card .price-main > span,
+.redesign-card .decision-text > span{
+  display:block!important;
+  margin:0 0 .48rem 0!important;
+  color:#8fb9ff!important;
+  font-size:.58rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.055em!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main strong,
+.redesign-card .price-main strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:1.14rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  margin:0 0 .54rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .price-main small,
+.redesign-card .price-main small{
+  display:block!important;
+  font-size:.74rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line,
+.redesign-card .reason-line{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-start!important;
+  gap:.36rem!important;
+  margin:.18rem 0!important;
+  padding:0!important;
+  width:100%!important;
+  min-width:0!important;
+  font-size:.70rem!important;
+  line-height:1.16!important;
+  font-weight:900!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line b,
+.redesign-card .reason-line b{
+  flex:0 0 .82rem!important;
+  width:.82rem!important;
+  min-width:.82rem!important;
+  text-align:center!important;
+  line-height:1.16!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line span,
+.redesign-card .reason-line span{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok b,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ok span,
+.redesign-card .reason-line.ok,
+.redesign-card .reason-line.ok b,
+.redesign-card .reason-line.ok span{color:#41d67a!important;}
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko b,
+div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko span,
+.redesign-card .reason-line.ko,
+.redesign-card .reason-line.ko b,
+.redesign-card .reason-line.ko span{color:#9fb3d1!important;}
+
+/* 4) KPI cards: readable stacked layout */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+.redesign-card .condition-metrics-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:.56rem!important;
+  margin:.10rem 0 .84rem 0!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric,
+.redesign-card .condition-metric{
+  min-width:0!important;
+  min-height:6.45rem!important;
+  padding:.68rem .72rem!important;
+  border-radius:14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  background:rgba(13,17,23,.28)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric span,
+.redesign-card .condition-metric span{
+  display:block!important;
+  color:#9ec5ff!important;
+  font-size:.55rem!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.045em!important;
+  margin:0 0 .50rem 0!important;
+  min-height:1.20rem!important;
+  max-height:2.55rem!important;
+  overflow:hidden!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric strong,
+.redesign-card .condition-metric strong{
+  display:block!important;
+  font-size:1.00rem!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  margin:0 0 .33rem 0!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric small,
+.redesign-card .condition-metric small{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.68rem!important;
+  line-height:1.15!important;
+  font-weight:850!important;
+  margin:0 0 .34rem 0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric em,
+.redesign-card .condition-metric em{
+  display:block!important;
+  margin-top:auto!important;
+  font-style:normal!important;
+  font-size:.64rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+
+/* 5) Details SMA200W / Storico: clean key/value layout */
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander,
+.redesign-card .details-expander{
+  margin:.48rem 0 .86rem 0!important;
+  padding:0!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:rgba(13,17,23,.26)!important;
+  border:1px solid rgba(48,54,61,.62)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .details-expander summary,
+.redesign-card .details-expander summary{
+  display:flex!important;
+  align-items:center!important;
+  min-height:2.48rem!important;
+  padding:.62rem .80rem!important;
+  color:#8bd3ff!important;
+  font-size:.76rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid,
+.redesign-card .technical-details-grid{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:.34rem .82rem!important;
+  padding:.68rem .80rem .82rem .80rem!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid > div,
+.redesign-card .technical-details-grid > div{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(5.2rem,.90fr) minmax(0,1fr)!important;
+  column-gap:.48rem!important;
+  align-items:baseline!important;
+  padding:.32rem 0!important;
+  border-bottom:1px solid rgba(48,54,61,.34)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid span,
+.redesign-card .technical-details-grid span{
+  display:block!important;
+  color:#9fb3d1!important;
+  font-size:.66rem!important;
+  line-height:1.12!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
+.redesign-card .technical-details-grid strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.74rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+@media(max-width:1320px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .decision-row,
+  .redesign-card .decision-row{grid-template-columns:1fr!important;}
+  div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid,
+  .redesign-card .technical-details-grid{grid-template-columns:1fr!important;}
+}
+@media(max-width:980px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:1fr!important;}
+}
+
+
 
 ====================================================================================================
 ===== FILE: css/portafoglio.css =====
@@ -6417,6 +7015,7 @@ from components.standard_header import render_standard_page_header
 from utils.institutional_scanner import fmt_price, fmt_pct, safe_float, scan_summary, scan_symbols
 from utils.target_data import fetch_yfinance_targets
 from utils.target_symbol_resolver import tradingview_forecast_url
+from utils.symbols import normalize_tradingview_symbol, strip_exchange_prefix
 from utils.watchlist_storage import carica_watchlists_da_json
 
 PAGE_TITLE = "BUY ZONE FINDER"
@@ -6602,8 +7201,8 @@ def condition_metric(title: str, pct: str, value: str, active: bool, value_class
 def reason_block(record: dict) -> str:
     rows = []
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
-    rows.append((bool(record.get("near_hist_min_w")), "Vicino al Min W Storico"))
-    rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower vicino" if bool(record.get("near_linreg_lower")) else "LinReg Lower non ancora vicino"))
+    rows.append((bool(record.get("near_hist_min_w")), "Min W Storico"))
+    rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower" if bool(record.get("near_linreg_lower")) else "No LinReg Lower"))
     html_rows = []
     for ok, label in rows:
         icon = "✓" if ok else "×"
@@ -6618,7 +7217,8 @@ def line_top(value, low, high) -> float:
     hi = safe_float(high)
     if v is None or lo is None or hi is None or hi <= lo:
         return 50.0
-    return max(7.0, min(93.0, 93.0 - ((v - lo) / (hi - lo)) * 86.0))
+    # Mantiene le label LinReg dentro al box anche nelle card strette.
+    return max(13.0, min(87.0, 87.0 - ((v - lo) / (hi - lo)) * 74.0))
 
 
 def linreg_section(record: dict, currency: str) -> str:
@@ -6664,17 +7264,62 @@ def technical_details(record: dict, currency: str) -> str:
     return '<div class="technical-details-grid">' + ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items) + '</div>'
 
 
+def _underlying_forecast_identity(record: dict) -> dict:
+    """Return the symbol identity to use for analyst forecasts.
+
+    Technical cards can be based on local listings such as 1MSFT.MI.
+    Analyst forecasts usually exist only for the underlying US symbol, so
+    1MSFT.MI must use MSFT for yfinance and TradingView Forecast.
+    """
+    yf = str(record.get("yahoo") or record.get("ticker") or "").strip().upper()
+    ticker = str(record.get("ticker") or yf or "").strip().upper()
+    tv = str(record.get("tv") or "").strip().upper()
+
+    underlying = None
+    if yf.startswith("1") and yf.endswith(".MI") and len(yf) > 4:
+        core = yf[1:-3].strip().upper()
+        if core:
+            underlying = core
+    elif ticker.startswith("1") and ticker.endswith(".MI") and len(ticker) > 4:
+        core = ticker[1:-3].strip().upper()
+        if core:
+            underlying = core
+
+    if underlying:
+        tv_underlying = normalize_tradingview_symbol(underlying)
+        return {
+            "yf_symbol": underlying,
+            "ticker": strip_exchange_prefix(tv_underlying) or underlying,
+            "tv_symbol": tv_underlying,
+            "market": tv_underlying.split(":", 1)[0] if ":" in tv_underlying else "",
+            "display": strip_exchange_prefix(tv_underlying) or underlying,
+            "note": f"Forecast sul sottostante {strip_exchange_prefix(tv_underlying) or underlying}",
+        }
+
+    market = tv.split(":", 1)[0] if ":" in tv else ""
+    return {
+        "yf_symbol": yf,
+        "ticker": ticker,
+        "tv_symbol": tv,
+        "market": market,
+        "display": ticker,
+        "note": "",
+    }
+
 def _forecast_key(record: dict) -> str:
-    raw = str(record.get("yahoo") or record.get("ticker") or "").strip().upper()
+    ident = _underlying_forecast_identity(record)
+    raw = str(ident.get("yf_symbol") or record.get("yahoo") or record.get("ticker") or "").strip().upper()
     return "buy_zone_forecast_" + re.sub(r"[^A-Z0-9_]+", "_", raw)
 
 
 def _forecast_url(record: dict) -> str:
-    tv = str(record.get("tv") or "").strip().upper()
-    yf = str(record.get("yahoo") or "").strip().upper()
-    ticker = str(record.get("ticker") or "").strip().upper()
-    market = tv.split(":", 1)[0] if ":" in tv else ""
-    return tradingview_forecast_url(tv, yf_symbol=yf, market=market, ticker=ticker)
+    ident = _underlying_forecast_identity(record)
+    return tradingview_forecast_url(
+        ident.get("tv_symbol") or "",
+        yf_symbol=ident.get("yf_symbol") or "",
+        market=ident.get("market") or "",
+        ticker=ident.get("ticker") or "",
+    )
 
 
 def forecast_bar_top(value, low, high) -> float:
@@ -6723,6 +7368,52 @@ def forecast_chart_html(record: dict, data: dict) -> str:
     min_top = forecast_bar_top(low, scale_low, scale_high)
     min_label_top = min(92.0, min_top + 8.0)
     current_label_top = min(92.0, cur_top + 16.0)
+
+    # Convert plot-area percentages to chart-area percentages.
+    # SVG history/cone use an inner plotting area; marker/labels are in the outer chart.
+    def chart_area_top(pct: float) -> float:
+        return max(2.0, min(96.0, 8.6 + (float(pct) * 0.786)))
+
+    def spread_label_tops(label_items: list[tuple[str, float]]) -> dict[str, float]:
+        """Avoid overlapping right-side forecast labels.
+
+        Labels such as Current and Min can land on nearly the same vertical
+        coordinate when current price is close to the low target. This small
+        deterministic layout pass preserves the natural order and guarantees
+        a minimum distance between labels inside the chart.
+        """
+        min_gap = 10.5
+        top_bound = 8.0
+        bottom_bound = 90.0
+        ordered = sorted([(name, max(top_bound, min(bottom_bound, float(top)))) for name, top in label_items], key=lambda item: item[1])
+        for idx in range(1, len(ordered)):
+            prev_name, prev_top = ordered[idx - 1]
+            name, top = ordered[idx]
+            if top - prev_top < min_gap:
+                ordered[idx] = (name, prev_top + min_gap)
+        overflow = ordered[-1][1] - bottom_bound if ordered else 0
+        if overflow > 0:
+            ordered = [(name, top - overflow) for name, top in ordered]
+            for idx in range(len(ordered) - 2, -1, -1):
+                next_name, next_top = ordered[idx + 1]
+                name, top = ordered[idx]
+                if next_top - top < min_gap:
+                    ordered[idx] = (name, next_top - min_gap)
+        ordered = [(name, max(top_bound, min(bottom_bound, top))) for name, top in ordered]
+        return dict(ordered)
+
+    raw_label_tops = {
+        "max": chart_area_top(max_top),
+        "avg": chart_area_top(avg_top),
+        "current": chart_area_top(current_label_top),
+        "min": chart_area_top(min_label_top),
+    }
+    adjusted_label_tops = spread_label_tops(list(raw_label_tops.items()))
+    max_chart_top = adjusted_label_tops["max"]
+    avg_chart_top = adjusted_label_tops["avg"]
+    current_label_chart_top = adjusted_label_tops["current"]
+    min_chart_top = adjusted_label_tops["min"]
+    cur_chart_top = chart_area_top(cur_top)
     history_path = escape(forecast_history_path(cur_top), quote=True)
     return (
         '<div class="forecast-loaded">'
@@ -6731,27 +7422,28 @@ def forecast_chart_html(record: dict, data: dict) -> str:
         f'<p>{escape(str(analysts))} analisti · Max {high:.2f} · Min {low:.2f}</p></div>'
         '<div class="forecast-chart">'
         f'<svg class="forecast-history" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="{history_path}"/></svg>'
-        f'<div class="forecast-anchor" style="top:{cur_top}%"></div>'
+        f'<div class="forecast-anchor" style="top:{cur_chart_top}%"></div>'
         f'<div class="forecast-cone forecast-green" style="clip-path:polygon(0% {cur_top}%,100% {max_top}%,100% {avg_top}%)"></div>'
         f'<div class="forecast-cone forecast-red" style="clip-path:polygon(0% {cur_top}%,100% {avg_top}%,100% {min_top}%)"></div>'
-        f'<div class="forecast-line current" style="top:{cur_top}%"></div>'
-        f'<div class="forecast-current-solid" style="top:{cur_top}%"></div>'
-        f'<div class="forecast-label max" style="top:{max_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
-        f'<div class="forecast-label avg" style="top:{avg_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
-        f'<div class="forecast-label min" style="top:{min_label_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
-        f'<div class="forecast-label current-l" style="top:{current_label_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
+        f'<div class="forecast-line current" style="top:{cur_chart_top}%"></div>'
+        f'<div class="forecast-current-solid" style="top:{cur_chart_top}%"></div>'
+        f'<div class="forecast-label max" style="top:{max_chart_top}%"><b>Max {escape(fmt_pct(pct_max,2))}</b><strong>{high:.2f}</strong></div>'
+        f'<div class="forecast-label avg" style="top:{avg_chart_top}%"><b>Avg {escape(fmt_pct(pct_avg,2))}</b><strong>{mean:.2f}</strong></div>'
+        f'<div class="forecast-label min" style="top:{min_chart_top}%"><b>Min {escape(fmt_pct(pct_min,2))}</b><strong>{low:.2f}</strong></div>'
+        f'<div class="forecast-label current-l" style="top:{current_label_chart_top}%"><b>Current</b><strong>{current:.2f}</strong></div>'
         '<div class="forecast-date forecast-date-left">2026</div><div class="forecast-date forecast-date-mid">Jul</div><div class="forecast-date forecast-date-right">2027</div>'
         '</div></div>'
     )
 
 
 def open_target_page_from_record(record: dict) -> None:
+    ident = _underlying_forecast_identity(record)
     st.session_state["target_selected"] = {
-        "yf_symbol": str(record.get("yahoo") or "").strip().upper(),
-        "ticker": str(record.get("ticker") or "").strip().upper(),
-        "tv_symbol": str(record.get("tv") or "").strip().upper(),
+        "yf_symbol": str(ident.get("yf_symbol") or "").strip().upper(),
+        "ticker": str(ident.get("ticker") or "").strip().upper(),
+        "tv_symbol": str(ident.get("tv_symbol") or "").strip().upper(),
         "name": str(record.get("name") or "").strip(),
-        "market": str(record.get("tv") or "").split(":", 1)[0].upper() if ":" in str(record.get("tv") or "") else "",
+        "market": str(ident.get("market") or "").strip().upper(),
         "currency": str(record.get("currency") or "").strip().upper(),
         "source": "direct",
     }
@@ -6760,10 +7452,15 @@ def open_target_page_from_record(record: dict) -> None:
 
 
 def render_forecast_on_demand(record: dict, rank: int, column_index: int, row_index: int) -> None:
+    ident = _underlying_forecast_identity(record)
     key = _forecast_key(record)
-    title = f"Price Target Forecast · {record.get('ticker', '-') }"
+    display = ident.get("display") or record.get("ticker") or "-"
+    title = f"Price Target Forecast · {display}"
     with st.expander(title, expanded=False):
         url = _forecast_url(record)
+        note = ident.get("note") or ""
+        if note:
+            st.caption(note)
         data = st.session_state.get(key)
         status = st.session_state.get(key + "_status", "idle")
         if isinstance(data, dict) and data.get("ok"):
@@ -6775,13 +7472,13 @@ def render_forecast_on_demand(record: dict, rank: int, column_index: int, row_in
             else:
                 st.markdown('<div class="forecast-empty">Dati forecast non ancora scaricati per questo titolo.</div>', unsafe_allow_html=True)
         c1, c2, c3 = st.columns([1.45, 1.05, 1.15])
-        safe_key = re.sub(r"[^A-Z0-9_]+", "_", str(record.get("yahoo") or record.get("ticker") or rank).upper())
+        safe_key = re.sub(r"[^A-Z0-9_]+", "_", str(ident.get("yf_symbol") or record.get("yahoo") or record.get("ticker") or rank).upper())
         with c1:
             if st.button("Scarica dati forecast", key=f"download_forecast_{row_index}_{column_index}_{safe_key}"):
-                yf_symbol = str(record.get("yahoo") or "").strip().upper()
-                tv_symbol = str(record.get("tv") or "").strip().upper()
-                ticker = str(record.get("ticker") or "").strip().upper()
-                market = tv_symbol.split(":", 1)[0] if ":" in tv_symbol else ""
+                yf_symbol = str(ident.get("yf_symbol") or record.get("yahoo") or "").strip().upper()
+                tv_symbol = str(ident.get("tv_symbol") or record.get("tv") or "").strip().upper()
+                ticker = str(ident.get("ticker") or record.get("ticker") or "").strip().upper()
+                market = str(ident.get("market") or (tv_symbol.split(":", 1)[0] if ":" in tv_symbol else "")).strip().upper()
                 with st.spinner(f"Scarico forecast {ticker or yf_symbol}..."):
                     result = fetch_yfinance_targets(
                         yf_symbol,
@@ -6880,8 +7577,10 @@ if filtered_records:
         for col_index, (col, record) in enumerate(zip(row_cols, row_records), 1):
             rank = start + col_index
             with col:
-                st.markdown(card(record, rank), unsafe_allow_html=True)
-                render_forecast_on_demand(record, rank, col_index, row_index)
+                wrap_key = re.sub(r"[^A-Za-z0-9_]+", "_", str(record.get("yahoo") or record.get("ticker") or rank))
+                with st.container(key=f"buyzone_forecast_wrap_{row_index}_{col_index}_{wrap_key}"):
+                    st.markdown(card(record, rank), unsafe_allow_html=True)
+                    render_forecast_on_demand(record, rank, col_index, row_index)
         st.markdown('<div class="buyzone-card-spacer"></div>', unsafe_allow_html=True)
 elif records:
     st.info("Nessuna card corrisponde al filtro selezionato.")
