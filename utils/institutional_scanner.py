@@ -63,6 +63,42 @@ def known_symbol_name(*values: str) -> str:
             return str(item.get("name") or "").strip()
     return ""
 
+
+COMPANY_NAME_CACHE: dict[str, str] = {}
+
+def yfinance_company_name(yahoo_symbol: str) -> str:
+    """Fetch a company name from yfinance only when no local name is available.
+
+    This is a fallback for watchlists that contain only ticker strings not present
+    in the built-in BUY ZONE FINDER universe. Results are cached in-process to
+    avoid repeated get_info calls during the same Streamlit run.
+    """
+    symbol = str(yahoo_symbol or "").strip().upper()
+    if not symbol:
+        return ""
+    if symbol in COMPANY_NAME_CACHE:
+        return COMPANY_NAME_CACHE[symbol]
+
+    name = ""
+    try:
+        info = yf.Ticker(symbol).get_info()
+        if isinstance(info, dict):
+            name = str(
+                info.get("longName")
+                or info.get("shortName")
+                or info.get("displayName")
+                or ""
+            ).strip()
+    except Exception:
+        name = ""
+
+    # Avoid displaying the ticker again as if it were a company description.
+    if name.upper() in {symbol, symbol.replace("-", "."), symbol.replace(".", "-")}:
+        name = ""
+
+    COMPANY_NAME_CACHE[symbol] = name
+    return name
+
 def now_rome(): return datetime.now(TIMEZONE)
 def safe_float(v):
     try:
@@ -200,6 +236,8 @@ def scanner_item_from_symbol(symbol: str) -> dict:
     tv_ticker = strip_exchange_prefix(tv).strip().upper() if tv else ""
     ticker = tv_ticker or str(yahoo or raw).replace("-", ".")
     name = known_symbol_name(raw, yahoo, tv, ticker)
+    if not name:
+        name = yfinance_company_name(yahoo)
     return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": name}
 
 def scanner_items_from_symbols(symbols) -> list[dict]:
