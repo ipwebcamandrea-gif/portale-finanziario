@@ -1,4 +1,6 @@
+
 from datetime import datetime
+import time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from urllib.parse import parse_qs, quote, unquote, urlparse
@@ -61,7 +63,8 @@ CSS_PATH = BASE_DIR / "css" / "portafoglio.css"
 MOBILE_CSS_PATH = BASE_DIR / "css" / "portafoglio_mobile.css"
 COCKPIT_PAGE = "main.py"
 AUTO_REFRESH_QUOTES_ON_FIRST_LOAD = True
-PORTFOLIO_AUTO_REFRESH_SYNC_VERSION = "2026-06-22-render-sync-v2"
+PORTFOLIO_AUTO_REFRESH_SYNC_VERSION = "2026-07-06-open-refresh-v3"
+PORTFOLIO_AUTO_REFRESH_MIN_INTERVAL_SECONDS = 300
 MANUAL_REFRESH_MODE = True
 
 
@@ -97,6 +100,7 @@ def init_state() -> None:
         "portfolio_auto_refresh_skipped_reason": "",
         "portfolio_render_positions_after_refresh": None,
         "portfolio_last_auto_refresh_result": None,
+        "portfolio_last_auto_refresh_epoch": 0.0,
         "portfolio_storage_mode": "locale",
         "portfolio_last_github_error": "",
         "portfolio_mobile_view": True,
@@ -116,6 +120,7 @@ def init_state() -> None:
         st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
         st.session_state["portfolio_render_positions_after_refresh"] = None
         st.session_state["portfolio_last_auto_refresh_result"] = None
+        st.session_state["portfolio_last_auto_refresh_epoch"] = 0.0
 
 
 def reset_edit_state() -> None:
@@ -131,6 +136,7 @@ def reset_simulation_state() -> None:
 
 
 def go_to_cockpit() -> None:
+    reset_portfolio_auto_refresh_state()
     try:
         st.switch_page(COCKPIT_PAGE)
     except Exception:
@@ -220,6 +226,37 @@ def clear_financial_data_cache() -> None:
     st.cache_data.clear()
 
 
+def reset_portfolio_auto_refresh_state() -> None:
+    """Allow a fresh automatic refresh the next time the page is opened.
+
+    Streamlit keeps session_state while switching pages. Without this reset,
+    Portafoglio can show an old snapshot when the user returns from the cockpit.
+    """
+    st.session_state["portfolio_quotes_refreshed_on_load"] = False
+    st.session_state["portfolio_auto_refresh_render_synced"] = False
+    st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+    st.session_state["portfolio_render_positions_after_refresh"] = None
+
+
+def is_portfolio_auto_refresh_due() -> bool:
+    """Return True when the page should auto-refresh quotes on this open.
+
+    The refresh is performed on first load, when returning after enough time,
+    or after the page reset performed by the Cockpit navigation. The interval
+    avoids refreshing on every small Streamlit rerun while the user is already
+    interacting with the page.
+    """
+    try:
+        last_epoch = float(st.session_state.get("portfolio_last_auto_refresh_epoch") or 0.0)
+    except Exception:
+        last_epoch = 0.0
+
+    if last_epoch <= 0:
+        return True
+
+    return (time.time() - last_epoch) >= PORTFOLIO_AUTO_REFRESH_MIN_INTERVAL_SECONDS
+
+
 def auto_refresh_quotes_on_page_open() -> None:
     """Refresh quotes once and render the same data that has just been saved.
 
@@ -229,6 +266,13 @@ def auto_refresh_quotes_on_page_open() -> None:
     """
     if not AUTO_REFRESH_QUOTES_ON_FIRST_LOAD:
         return
+
+    refresh_due = is_portfolio_auto_refresh_due()
+
+    if refresh_due:
+        # A new page entry or stale quote window should behave like pressing the refresh button once.
+        st.session_state["portfolio_quotes_refreshed_on_load"] = False
+        st.session_state["portfolio_auto_refresh_render_synced"] = False
 
     if st.session_state.get("portfolio_auto_refresh_render_synced", False):
         return
@@ -251,6 +295,7 @@ def auto_refresh_quotes_on_page_open() -> None:
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     st.session_state["portfolio_auto_refresh_render_synced"] = False
     st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+    st.session_state["portfolio_last_auto_refresh_epoch"] = time.time()
     set_last_refresh_timestamp()
 
     # Rerun controllato: il giro successivo renderizza lo snapshot appena salvato.
@@ -358,6 +403,7 @@ def render_top_actions() -> bool:
             st.session_state["portfolio_quotes_refreshed_on_load"] = True
             st.session_state["portfolio_auto_refresh_render_synced"] = True
             st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+            st.session_state["portfolio_last_auto_refresh_epoch"] = time.time()
             set_last_refresh_timestamp()
 
             if result["updated"] > 0:
@@ -393,6 +439,7 @@ def refresh_portfolio_quotes_action() -> None:
     st.session_state["portfolio_quotes_refreshed_on_load"] = True
     st.session_state["portfolio_auto_refresh_render_synced"] = True
     st.session_state["portfolio_auto_refresh_skipped_reason"] = ""
+    st.session_state["portfolio_last_auto_refresh_epoch"] = time.time()
     set_last_refresh_timestamp()
 
     if result["updated"] > 0:
@@ -1037,3 +1084,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
