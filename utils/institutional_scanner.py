@@ -28,6 +28,13 @@ SYMBOL_NAME_OVERRIDES={
     "1MSFT.MI":"Microsoft su Milano",
     "1MSFT":"Microsoft su Milano",
     "MIL:1MSFT":"Microsoft su Milano",
+    # Common watchlist symbols that may not be part of the default Mega Cap universe.
+    "INTU":"Intuit",
+    "NASDAQ:INTU":"Intuit",
+    "NKE":"Nike",
+    "NYSE:NKE":"Nike",
+    "BABA":"Alibaba",
+    "NYSE:BABA":"Alibaba",
 }
 
 def known_symbol_name(*values: str) -> str:
@@ -81,12 +88,23 @@ def yfinance_company_name(yahoo_symbol: str) -> str:
 
     name = ""
     try:
-        info = yf.Ticker(symbol).get_info()
+        ticker = yf.Ticker(symbol)
+        info = {}
+        try:
+            info = ticker.get_info()
+        except Exception:
+            info = {}
+        if not isinstance(info, dict) or not info:
+            try:
+                info = ticker.info
+            except Exception:
+                info = {}
         if isinstance(info, dict):
             name = str(
                 info.get("longName")
                 or info.get("shortName")
                 or info.get("displayName")
+                or info.get("quoteType")
                 or ""
             ).strip()
     except Exception:
