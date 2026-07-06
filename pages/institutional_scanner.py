@@ -197,6 +197,10 @@ def reason_block(record: dict) -> str:
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
     rows.append((bool(record.get("near_hist_min_w")), "Min W Storico"))
     rows.append((bool(record.get("near_linreg_lower")), "LinReg Lower" if bool(record.get("near_linreg_lower")) else "No LinReg Lower"))
+
+    advanced_label = str(record.get("advanced_signal_label") or "Buy Zone Avanzate N/D")
+    rows.append((bool(record.get("advanced_signal_active")), advanced_label))
+
     html_rows = []
     for ok, label in rows:
         icon = "✓" if ok else "×"
@@ -256,6 +260,51 @@ def technical_details(record: dict, currency: str) -> str:
         ("LinReg Upper", fmt_price(record.get("linreg_upper_w"), currency)),
     ]
     return '<div class="technical-details-grid">' + ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items) + '</div>'
+
+
+def advanced_buyzone_section(record: dict, currency: str) -> str:
+    available = bool(record.get("advanced_buyzone_available"))
+    signal_active = bool(record.get("advanced_signal_active"))
+    signal_label = str(record.get("advanced_signal_label") or "Buy Zone Avanzate N/D")
+    signal_reason = str(record.get("advanced_signal_reason") or "Dati avanzati non disponibili.")
+    confidence = str(record.get("advanced_confidence") or "N/D")
+    confidence_note = str(record.get("advanced_confidence_note") or "")
+    confidence_class = "high" if confidence.lower() == "alta" else "medium" if confidence.lower() == "media" else "low"
+    signal_class = "ok" if signal_active else "ko"
+    icon = "✓" if signal_active else "×"
+
+    if not available:
+        error = str(record.get("advanced_buyzone_error") or "Dati avanzati non disponibili per questo ticker.")
+        return (
+            '<div class="advanced-buyzone-box">'
+            '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
+            '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+            f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
+            f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(error)}</div>'
+            '</div>'
+        )
+
+    start = fmt_price(record.get("buy_zone_start"), currency)
+    strong = fmt_price(record.get("buy_zone_strong"), currency)
+    panic = fmt_price(record.get("panic_zone"), currency)
+
+    return (
+        '<div class="advanced-buyzone-box">'
+        '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
+        '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+        f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
+        f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(signal_reason)}</div>'
+        '<div class="advanced-buyzone-levels">'
+        f'<div class="advanced-buyzone-level start"><span>Start</span><strong>{escape(start)}</strong></div>'
+        f'<div class="advanced-buyzone-level strong"><span>Strong</span><strong>{escape(strong)}</strong></div>'
+        f'<div class="advanced-buyzone-level panic"><span>Panic</span><strong>{escape(panic)}</strong></div>'
+        '</div>'
+        '<div class="advanced-buyzone-footer">'
+        f'<span>Confidenza: <strong class="conf-{confidence_class}">{escape(confidence)}</strong></span>'
+        f'<span>Nota: {escape(confidence_note)}</span>'
+        '</div>'
+        '</div>'
+    )
 
 
 def _underlying_forecast_identity(record: dict) -> dict:
@@ -516,6 +565,7 @@ def card(record: dict, rank: int) -> str:
     html += '</div>'
     html += linreg_section(record, currency)
     html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
+    html += advanced_buyzone_section(record, currency)
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
