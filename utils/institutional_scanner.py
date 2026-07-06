@@ -183,7 +183,7 @@ def technical_metrics(item):
                 row["hist_max_w_pct"]=safe_float(mx.max()); row["hist_max_w_date"]=ma.strftime("%Y-%m-%d") if hasattr(ma,"strftime") else str(ma); row["hist_max_w_high"]=safe_float(above.loc[ma,"High"]); row["hist_max_equivalent"]=equivalent_price(s,row["hist_max_w_pct"])
         row["gap_points"]=hist_gap(row["dist_pct"],row["hist_min_w_pct"]); row["below_sma200w"]=below_sma(row["dist_pct"]); row["near_hist_min_w"]=bool(row["gap_points"] is not None and row["gap_points"]<=SMA200_HIST_MIN_PROXIMITY_POINTS); row["orange_zone"]=orange_zone(row["dist_pct"],row["hist_min_w_pct"])
         row.update(compute_linreg_w(w,row.get("last_price")))
-        dl=safe_float(row.get("linreg_dist_lower_pct")); row["near_linreg_lower"]=bool(dl is not None and -LINREG_NEAR_LOWER_BELOW_PCT<=dl<=LINREG_NEAR_LOWER_ABOVE_PCT)
+        dl=safe_float(row.get("linreg_dist_lower_pct")); row["near_linreg_lower"]=bool(dl is not None and dl<=LINREG_NEAR_LOWER_ABOVE_PCT)
         c=[bool(row["below_sma200w"]),bool(row["near_hist_min_w"]),bool(row["near_linreg_lower"])]
         row["confluence_count"]=sum(1 for v in c if v)
         row["technical_label"]="Buy Zone tecnica" if row["confluence_count"]==3 else "Watch tecnico" if row["confluence_count"]==2 else "Monitor tecnico"
