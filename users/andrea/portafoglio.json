@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-06T17:13:41+00:00",
+  "updated_at": "2026-07-06T17:25:08+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 1600.0,
       "prezzo_medio": 6.66,
-      "prezzo_mercato": 6.375,
+      "prezzo_mercato": 6.364999771118164,
       "prezzo_precedente": 6.2611,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 270.5801086425781,
+      "prezzo_mercato": 271.2349853515625,
       "prezzo_precedente": 275.5048,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -36,7 +36,7 @@
       "valuta": "USD",
       "quantita": 1000.0,
       "prezzo_medio": 8.65,
-      "prezzo_mercato": 9.298999786376953,
+      "prezzo_mercato": 9.305000305175781,
       "prezzo_precedente": 9.41,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 23.0,
       "prezzo_medio": 491.68,
-      "prezzo_mercato": 531.4935913085938,
+      "prezzo_mercato": 532.9600219726562,
       "prezzo_precedente": 538.9757,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 157.0,
       "prezzo_medio": 56.64,
-      "prezzo_mercato": 45.095001220703125,
+      "prezzo_mercato": 45.099998474121094,
       "prezzo_precedente": 45.4052,
       "yf_symbol": "PYPL",
       "tv_symbol": "NASDAQ:PYPL"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 91.0,
       "prezzo_medio": 186.59,
-      "prezzo_mercato": 144.36000061035156,
+      "prezzo_mercato": 144.32000732421875,
       "prezzo_precedente": 141.0,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 390.0,
       "prezzo_medio": 18.73,
-      "prezzo_mercato": 17.239999771118164,
+      "prezzo_mercato": 17.1299991607666,
       "prezzo_precedente": 17.15,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.22,
-      "prezzo_mercato": 167.3249969482422,
+      "prezzo_mercato": 167.38499450683594,
       "prezzo_precedente": 166.31,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 276.79998779296875,
+      "prezzo_mercato": 277.6600036621094,
       "prezzo_precedente": 279.7,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
