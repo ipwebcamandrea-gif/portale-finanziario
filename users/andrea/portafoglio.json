@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-06T17:11:14+00:00",
+  "updated_at": "2026-07-06T17:12:08+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -118,6 +118,19 @@
       "prezzo_precedente": 166.31,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
+    },
+    {
+      "ticker": "MCD",
+      "titolo": "McDonald's Corporation",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 38.0,
+      "prezzo_medio": 276.4,
+      "prezzo_mercato": 276.6050109863281,
+      "prezzo_precedente": 279.7,
+      "yf_symbol": "MCD",
+      "tv_symbol": "NYSE:MCD"
     }
   ]
 }
