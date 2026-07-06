@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -7,6 +6,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import yfinance as yf
 from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
+from utils.advanced_buy_zones import analyze_advanced_buy_zone
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -238,6 +238,26 @@ def technical_metrics(item):
         row["gap_points"]=hist_gap(row["dist_pct"],row["hist_min_w_pct"]); row["below_sma200w"]=below_sma(row["dist_pct"]); row["near_hist_min_w"]=bool(row["gap_points"] is not None and row["gap_points"]<=SMA200_HIST_MIN_PROXIMITY_POINTS); row["orange_zone"]=orange_zone(row["dist_pct"],row["hist_min_w_pct"])
         row.update(compute_linreg_w(w,row.get("last_price")))
         dl=safe_float(row.get("linreg_dist_lower_pct")); row["near_linreg_lower"]=bool(dl is not None and dl<=LINREG_NEAR_LOWER_ABOVE_PCT)
+        # Buy Zone Avanzate: integrazione additiva e isolata.
+        # Non modifica le tre condizioni tecniche esistenti; aggiunge solo campi
+        # usati dalla card per la quarta riga V/X e per la sezione sotto LinReg.
+        try:
+            row.update(analyze_advanced_buy_zone(
+                sym,
+                current_price=row.get("last_price"),
+                currency=row.get("currency") or "",
+                weekly=w,
+                linreg_lower=row.get("linreg_lower_w"),
+                sma200w=row.get("sma200w"),
+            ))
+        except Exception as advanced_exc:
+            row.update({
+                "advanced_buyzone_available": False,
+                "advanced_buyzone_error": str(advanced_exc),
+                "advanced_signal_active": False,
+                "advanced_signal_label": "Buy Zone Avanzate N/D",
+                "advanced_signal_reason": "Dati avanzati non disponibili.",
+            })
         c=[bool(row["below_sma200w"]),bool(row["near_hist_min_w"]),bool(row["near_linreg_lower"])]
         row["confluence_count"]=sum(1 for v in c if v)
         row["technical_label"]="Buy Zone tecnica" if row["confluence_count"]==3 else "Watch tecnico" if row["confluence_count"]==2 else "Monitor tecnico"
@@ -295,6 +315,3 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
     return sorted(out,key=sort_priority)
 def scan_summary(records):
     return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==2]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
-
-
-
