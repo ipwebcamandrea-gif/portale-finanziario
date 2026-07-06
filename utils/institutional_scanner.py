@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -22,6 +23,45 @@ SMA200_HIST_MIN_DIST_LIMIT=0.0
 SLEEP_BETWEEN_TICKERS_SECONDS=float(os.getenv("INSTITUTIONAL_SCANNER_SLEEP","0.35"))
 YF_REPAIR=os.getenv("YF_REPAIR","false").strip().lower() in {"1","true","yes","y"}
 SYMBOLS=[{'ticker': 'TSLA', 'yahoo': 'TSLA', 'tv': 'NASDAQ:TSLA', 'name': 'Tesla'}, {'ticker': 'COST', 'yahoo': 'COST', 'tv': 'NASDAQ:COST', 'name': 'Costco'}, {'ticker': 'MSFT', 'yahoo': 'MSFT', 'tv': 'NASDAQ:MSFT', 'name': 'Microsoft'}, {'ticker': 'V', 'yahoo': 'V', 'tv': 'NYSE:V', 'name': 'Visa'}, {'ticker': 'MA', 'yahoo': 'MA', 'tv': 'NYSE:MA', 'name': 'Mastercard'}, {'ticker': 'ORCL', 'yahoo': 'ORCL', 'tv': 'NYSE:ORCL', 'name': 'Oracle'}, {'ticker': 'PG', 'yahoo': 'PG', 'tv': 'NYSE:PG', 'name': 'Procter & Gamble'}, {'ticker': 'JNJ', 'yahoo': 'JNJ', 'tv': 'NYSE:JNJ', 'name': 'Johnson & Johnson'}, {'ticker': 'KO', 'yahoo': 'KO', 'tv': 'NYSE:KO', 'name': 'Coca-Cola'}, {'ticker': 'PEP', 'yahoo': 'PEP', 'tv': 'NASDAQ:PEP', 'name': 'PepsiCo'}, {'ticker': 'MCD', 'yahoo': 'MCD', 'tv': 'NYSE:MCD', 'name': "McDonald's"}, {'ticker': 'ABT', 'yahoo': 'ABT', 'tv': 'NYSE:ABT', 'name': 'Abbott Laboratories'}, {'ticker': 'WMT', 'yahoo': 'WMT', 'tv': 'NYSE:WMT', 'name': 'Walmart'}, {'ticker': 'AAPL', 'yahoo': 'AAPL', 'tv': 'NASDAQ:AAPL', 'name': 'Apple'}, {'ticker': 'GOOG', 'yahoo': 'GOOG', 'tv': 'NASDAQ:GOOG', 'name': 'Alphabet Class C'}, {'ticker': 'BRK.B', 'yahoo': 'BRK-B', 'tv': 'NYSE:BRK.B', 'name': 'Berkshire Hathaway'}, {'ticker': 'NVDA', 'yahoo': 'NVDA', 'tv': 'NASDAQ:NVDA', 'name': 'NVIDIA'}, {'ticker': 'ASML', 'yahoo': 'ASML', 'tv': 'NASDAQ:ASML', 'name': 'ASML Holding'}, {'ticker': 'META', 'yahoo': 'META', 'tv': 'NASDAQ:META', 'name': 'Meta Platforms'}, {'ticker': 'IBM', 'yahoo': 'IBM', 'tv': 'NYSE:IBM', 'name': 'IBM'}, {'ticker': 'AVGO', 'yahoo': 'AVGO', 'tv': 'NASDAQ:AVGO', 'name': 'Broadcom'}, {'ticker': 'AXP', 'yahoo': 'AXP', 'tv': 'NYSE:AXP', 'name': 'American Express'}, {'ticker': 'AMZN', 'yahoo': 'AMZN', 'tv': 'NASDAQ:AMZN', 'name': 'Amazon'}, {'ticker': 'CRM', 'yahoo': 'CRM', 'tv': 'NYSE:CRM', 'name': 'Salesforce'}]
+
+SYMBOL_NAME_OVERRIDES={
+    "1MSFT.MI":"Microsoft su Milano",
+    "1MSFT":"Microsoft su Milano",
+    "MIL:1MSFT":"Microsoft su Milano",
+}
+
+def known_symbol_name(*values: str) -> str:
+    """Return a friendly company name for watchlist symbols when available.
+
+    Watchlists store plain symbols, not metadata. Without this lookup BUY ZONE
+    FINDER cards can show only the ticker even though the legacy scanner universe
+    already knows the company name.
+    """
+    keys=[]
+    for value in values:
+        raw=str(value or "").strip().upper()
+        if not raw:
+            continue
+        keys.append(raw)
+        if ":" in raw:
+            keys.append(raw.split(":",1)[1])
+        keys.append(raw.replace("-","."))
+        keys.append(raw.replace(".","-"))
+    for key in keys:
+        if key in SYMBOL_NAME_OVERRIDES:
+            return SYMBOL_NAME_OVERRIDES[key]
+    for item in SYMBOLS:
+        candidates={
+            str(item.get("ticker") or "").strip().upper(),
+            str(item.get("yahoo") or "").strip().upper(),
+            str(item.get("tv") or "").strip().upper(),
+        }
+        candidates |= {c.split(":",1)[1] for c in list(candidates) if ":" in c}
+        candidates |= {c.replace("-",".") for c in list(candidates)}
+        candidates |= {c.replace(".","-") for c in list(candidates)}
+        if any(key and key in candidates for key in keys):
+            return str(item.get("name") or "").strip()
+    return ""
 
 def now_rome(): return datetime.now(TIMEZONE)
 def safe_float(v):
@@ -159,7 +199,8 @@ def scanner_item_from_symbol(symbol: str) -> dict:
     tv = normalize_tradingview_symbol(raw)
     tv_ticker = strip_exchange_prefix(tv).strip().upper() if tv else ""
     ticker = tv_ticker or str(yahoo or raw).replace("-", ".")
-    return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": ""}
+    name = known_symbol_name(raw, yahoo, tv, ticker)
+    return {"ticker": ticker, "yahoo": yahoo, "tv": tv, "name": name}
 
 def scanner_items_from_symbols(symbols) -> list[dict]:
     """Normalize watchlist symbols/dicts into scanner item dictionaries."""
@@ -198,3 +239,6 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
     return sorted(out,key=sort_priority)
 def scan_summary(records):
     return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==2]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
+
+
+
