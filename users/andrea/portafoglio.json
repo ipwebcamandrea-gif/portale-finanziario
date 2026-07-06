@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-06T20:02:04+00:00",
+  "updated_at": "2026-07-06T20:03:03+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -131,19 +131,6 @@
       "prezzo_precedente": 279.7,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
-    },
-    {
-      "ticker": "BABA",
-      "titolo": "Alibaba Group Holding Limited",
-      "mercato": "NYSE",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 100.0,
-      "prezzo_medio": 97.49,
-      "prezzo_mercato": 97.91000366210938,
-      "prezzo_precedente": 96.31,
-      "yf_symbol": "BABA",
-      "tv_symbol": "NYSE:BABA"
     },
     {
       "ticker": "BABA",
