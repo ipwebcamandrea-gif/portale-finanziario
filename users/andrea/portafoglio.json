@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-06T20:00:43+00:00",
+  "updated_at": "2026-07-06T20:02:04+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 23.0,
       "prezzo_medio": 491.68,
-      "prezzo_mercato": 533.5499877929688,
+      "prezzo_mercato": 533.1950073242188,
       "prezzo_precedente": 538.9757,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 91.0,
       "prezzo_medio": 186.59,
-      "prezzo_mercato": 143.7949981689453,
+      "prezzo_mercato": 143.7899932861328,
       "prezzo_precedente": 141.0,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 390.0,
       "prezzo_medio": 18.73,
-      "prezzo_mercato": 16.905000686645508,
+      "prezzo_mercato": 16.885000228881836,
       "prezzo_precedente": 17.15,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 279.5050048828125,
+      "prezzo_mercato": 279.4700012207031,
       "prezzo_precedente": 279.7,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
@@ -140,7 +140,7 @@
       "valuta": "USD",
       "quantita": 100.0,
       "prezzo_medio": 97.49,
-      "prezzo_mercato": 97.91999816894531,
+      "prezzo_mercato": 97.91000366210938,
       "prezzo_precedente": 96.31,
       "yf_symbol": "BABA",
       "tv_symbol": "NYSE:BABA"
@@ -153,7 +153,7 @@
       "valuta": "USD",
       "quantita": 100.0,
       "prezzo_medio": 97.49,
-      "prezzo_mercato": 97.91999816894531,
+      "prezzo_mercato": 97.91000366210938,
       "prezzo_precedente": 96.31,
       "yf_symbol": "BABA",
       "tv_symbol": "NYSE:BABA"
