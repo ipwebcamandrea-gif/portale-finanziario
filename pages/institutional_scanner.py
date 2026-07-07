@@ -113,28 +113,29 @@ def filter_records_by_confluence(records: list[dict], selected_filter: str) -> l
 
 
 def render_condition_filter(records: list[dict]) -> str:
-    counts = {i: 0 for i in range(4)}
+    counts = {i: 0 for i in range(5)}
     for r in records:
         c = int(r.get("confluence_count") or 0)
         if c in counts:
             counts[c] += 1
 
-    options = ["3/3 Buy", "2/3 Watch", "1/3 Early", "0/3", "Tutte"]
+    options = ["4/4 Buy", "3/4 Watch", "2/4 Early", "1/4", "0/4", "Tutte"]
     labels = {
-        "3/3 Buy": f"3/3 Buy ({counts[3]})",
-        "2/3 Watch": f"2/3 Watch ({counts[2]})",
-        "1/3 Early": f"1/3 Early ({counts[1]})",
-        "0/3": f"0/3 ({counts[0]})",
+        "4/4 Buy": f"4/4 Buy ({counts[4]})",
+        "3/4 Watch": f"3/4 Watch ({counts[3]})",
+        "2/4 Early": f"2/4 Early ({counts[2]})",
+        "1/4": f"1/4 ({counts[1]})",
+        "0/4": f"0/4 ({counts[0]})",
         "Tutte": f"Tutte ({len(records)})",
     }
 
     if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
-        st.session_state["buy_zone_condition_filter"] = "2/3 Watch"
+        st.session_state["buy_zone_condition_filter"] = "3/4 Watch"
 
     st.markdown(
         '<div class="buyzone-filter-panel">'
         '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
-        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 2/3. Cambiare filtro non riesegue lo scanner.</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 3/4. Cambiare filtro non riesegue lo scanner.</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -191,6 +192,36 @@ def condition_metric(title: str, pct: str, value: str, active: bool, value_class
         f'<em>{yesno(active)}</em>'
         '</div>'
     )
+
+
+def advanced_zone_level(record: dict) -> tuple[str, object]:
+    """Return the advanced options level used for the fourth motivation box."""
+    zone_key = str(record.get("advanced_signal_zone") or "").strip()
+    mapping = {
+        "buy_zone_start": "START",
+        "buy_zone_strong": "STRONG",
+        "panic_zone": "PANIC",
+    }
+    level_key = zone_key if zone_key in mapping else "buy_zone_start"
+    label = mapping.get(level_key, "START")
+    return label, record.get(level_key)
+
+
+def advanced_zone_distance_pct(record: dict) -> object:
+    price = safe_float(record.get("last_price"))
+    _label, level = advanced_zone_level(record)
+    level_value = safe_float(level)
+    if price is None or level_value is None or level_value <= 0:
+        return None
+    return (price - level_value) / level_value * 100.0
+
+
+def advanced_condition_metric(record: dict, currency: str) -> str:
+    label, level = advanced_zone_level(record)
+    active = bool(record.get("advanced_signal_active"))
+    pct = fmt_pct(advanced_zone_distance_pct(record), 2)
+    value = f"{label} {fmt_price(level, currency)}" if safe_float(level) is not None else "N/D"
+    return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
 def reason_block(record: dict) -> str:
@@ -274,12 +305,15 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
     signal_class = "ok" if signal_active else "ko"
     icon = "✓" if signal_active else "×"
 
+    current_price = fmt_price(record.get("last_price"), currency)
+
     if not available:
         error = str(record.get("advanced_buyzone_error") or "Dati avanzati non disponibili per questo ticker.")
         return (
             '<div class="advanced-buyzone-box">'
             '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
             '<div class="advanced-buyzone-subtitle">Solo dati opzioni reali · nessun fallback tecnico/DCF</div>'
+            f'<div class="advanced-buyzone-current"><span>Prezzo attuale</span><strong>{escape(current_price)}</strong></div>'
             f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
             f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(error)}</div>'
             '</div>'
@@ -293,6 +327,7 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
         '<div class="advanced-buyzone-box">'
         '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
         '<div class="advanced-buyzone-subtitle">Put wall opzioni reali · nessun fallback tecnico/DCF</div>'
+        f'<div class="advanced-buyzone-current"><span>Prezzo attuale</span><strong>{escape(current_price)}</strong></div>'
         f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
         f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(signal_reason)}</div>'
         '<div class="advanced-buyzone-levels">'
@@ -553,16 +588,17 @@ def card(record: dict, rank: int) -> str:
     label = str(record.get("technical_label") or "Monitor tecnico")
     count = int(record.get("confluence_count") or 0)
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 3 else "is-watch" if count == 2 else "is-monitor"
-    badge_class = "badge-buy" if count == 3 else "badge-watch" if count == 2 else "badge-monitor"
+    card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
+    badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
 
     html = f'<div class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
+    html += advanced_condition_metric(record, currency)
     html += '</div>'
     html += linreg_section(record, currency)
     html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
@@ -595,8 +631,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_items = [
     ("Titoli", str(summary.get("count", 0)), selected_watchlist),
-    ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"),
-    ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "4/4 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "3/4 condizioni"),
     ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
 ]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
@@ -608,7 +644,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
         )
 
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
-selected_condition_filter = render_condition_filter(records) if records else "2/3 Watch"
+selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
 st.markdown(
     f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
