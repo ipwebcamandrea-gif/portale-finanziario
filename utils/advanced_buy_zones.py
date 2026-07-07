@@ -278,9 +278,9 @@ def buyzone_signal(price: float | None, start: float | None, strong: float | Non
         return abs(dist) <= tolerance_pct, dist
 
     for key, label, reason in [
-        ("panic_zone", "Prezzo nell'intorno della Panic Zone", "il prezzo attuale e' entro il +/-5% dalla zona estrema stimata dal modello avanzato."),
-        ("buy_zone_strong", "Prezzo nell'intorno della Strong Buy Zone", "il prezzo attuale e' entro il +/-5% dalla zona di accumulo piu' interessante calcolata dal modello avanzato."),
-        ("buy_zone_start", "Prezzo nell'intorno della Buy Zone Start", "il prezzo attuale e' entro il +/-5% dalla prima area operativa calcolata dal modello avanzato."),
+        ("panic_zone", "Panic Zone", "il prezzo attuale e' entro il +/-5% dalla zona estrema stimata dal modello avanzato."),
+        ("buy_zone_strong", "Strong Buy Zone", "il prezzo attuale e' entro il +/-5% dalla zona di accumulo piu' interessante calcolata dal modello avanzato."),
+        ("buy_zone_start", "Buy Zone Start", "il prezzo attuale e' entro il +/-5% dalla prima area operativa calcolata dal modello avanzato."),
     ]:
         level = {"panic_zone": panic, "buy_zone_strong": strong, "buy_zone_start": start}[key]
         ok, dist = near(level)
