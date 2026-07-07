@@ -3065,7 +3065,8 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 ===== FILE: css/institutional_scanner.css =====
 ====================================================================================================
 
-.summary-card{border-radius:15px;border:1px solid rgba(48,54,61,.78);background:linear-gradient(180deg,rgba(32,39,51,.74),rgba(21,27,36,.82));padding:.85rem;min-height:118px}.summary-label{color:#9fb3d1;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em;line-height:1.35}.summary-value{color:#fff;font-size:1.25rem;font-weight:950;margin-top:.16rem}.summary-note{color:#8bd3ff;font-size:.75rem;font-weight:800;margin-top:.12rem}.section-title{color:#fff;font-size:1.05rem;font-weight:950;margin:1rem 0}.redesign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.redesign-card{border-radius:20px;border:1px solid rgba(48,54,61,.84);background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98));padding:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.redesign-card.is-buy{border-color:rgba(88,214,141,.88)}.redesign-card.is-watch{border-color:rgba(255,174,61,.85)}.redesign-card.is-monitor{border-color:rgba(70,86,108,.90)}.card-top{display:flex;align-items:flex-start;gap:.70rem;margin-bottom:.85rem}.rank{display:flex;align-items:center;justify-content:center;min-width:2.15rem;height:2.15rem;border-radius:999px;background:#0d1117;color:#9ec5ff;font-weight:950}.identity{flex:1;min-width:0}.ticker-row strong{color:#fff;font-size:1.25rem;font-weight:950}.company-name{color:#9fb3d1;font-size:.78rem;margin-top:.12rem}.status-badge{border-radius:999px;padding:.38rem .58rem;font-size:.64rem;font-weight:950;white-space:nowrap}.status-badge span{opacity:.85;margin-left:.25rem}.badge-buy{border:1px solid #58d68d;color:#58d68d;background:#172c1d}.badge-watch{border:1px solid #ffae3d;color:#ffbf69;background:#2e2212}.badge-monitor{border:1px solid #46566c;color:#9fb3d1;background:#111826}.decision-row{display:grid;grid-template-columns:.72fr 1.28fr;gap:.62rem;margin-bottom:.72rem}.price-main,.decision-text{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.43);padding:.68rem}.price-main span,.decision-text>span{display:block;color:#9fb3d1;font-size:.56rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.price-main strong{display:block;color:#fff;font-size:1.13rem;font-weight:950;margin:.18rem 0}.price-main small{font-size:.74rem;font-weight:950}.reason-lines{margin-top:.30rem;display:grid;gap:.26rem}.reason-line{display:flex;align-items:center;gap:.38rem;font-size:.80rem;line-height:1.20}.reason-line span{display:inline-flex;width:1rem;color:inherit;font-weight:950}.reason-line strong{color:inherit;font-weight:900}.reason-ok{color:#41d67a}.reason-ko{color:#9fb3d1}.positive{color:#41d67a!important}.negative{color:#ff4d5a!important}.neutral{color:#d1d5db!important}.condition-metrics-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem;margin-bottom:.74rem}.condition-metric{border-radius:13px;padding:.56rem;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35);min-width:0}.condition-metric-on{border-color:rgba(88,214,141,.72);background:rgba(20,80,40,.18)}.condition-metric-off{border-color:rgba(70,86,108,.78);background:rgba(13,17,23,.30)}.condition-metric-label{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.condition-metric-value{display:block;font-size:1.02rem;font-weight:950;margin-top:.18rem;white-space:nowrap}.condition-metric-subvalue{display:block;color:#9ec5ff;font-size:.72rem;font-weight:900;margin-top:.16rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.condition-metric-state{display:block;color:#58d68d;font-size:.74rem;font-weight:950;margin-top:.30rem}.condition-metric-off .condition-metric-state{color:#9fb3d1}.compact-section{border-radius:16px;border:1px solid rgba(48,54,61,.78);background:rgba(13,17,23,.36);padding:.70rem;margin-bottom:.70rem}.section-head h4{color:#fff;font-size:.96rem;font-weight:950;margin:0 0 .36rem}.linreg-anchor{color:#dbeafe;font-size:.75rem;font-weight:800;line-height:1.32;margin:0 0 .55rem}.linreg-level-chart{position:relative;height:210px;margin:.65rem 0 .70rem;border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(8,13,21,.52);overflow:hidden}.linreg-level-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px solid rgba(255,255,255,.55);transform:translateY(-1px)}.linreg-level-line::before{content:"";position:absolute;left:0;right:0;top:-6px;height:12px;border-radius:999px;opacity:.52}.linreg-level-label{position:absolute;left:-5.8rem;top:-1.05rem;width:4.9rem;height:2.05rem;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:.62rem;font-weight:950;background:#0d1117}.linreg-level-value{position:absolute;right:.35rem;top:-1.0rem;padding:.22rem .42rem;border-radius:999px;background:#0d1117;border:1px solid rgba(255,255,255,.16);color:#f9fafb;font-size:.58rem;font-weight:950;white-space:nowrap}.level-lower{border-color:#41d67a}.level-lower::before{background:#41d67a}.level-lower .linreg-level-label{color:#41d67a;border:1px solid rgba(65,214,122,.58)}.level-mid{border-color:#8bd3ff}.level-mid::before{background:#2f9bff}.level-mid .linreg-level-label{color:#8bd3ff;border:1px solid rgba(139,211,255,.50)}.level-upper{border-color:#ff9aa4}.level-upper::before{background:#ff4d5a}.level-upper .linreg-level-label{color:#ff9aa4;border:1px solid rgba(255,77,90,.46)}.linreg-price-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px dashed #fff;transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(7,12,18,.95));z-index:6}.linreg-price-line::before{content:"";position:absolute;left:-.72rem;top:-.42rem;border-top:.42rem solid transparent;border-bottom:.42rem solid transparent;border-right:.58rem solid #fff}.linreg-price-badge{position:absolute;left:.65rem;top:-2.15rem;padding:.30rem .48rem;border-radius:999px;background:#fff;color:#0d1117;font-size:.58rem;font-weight:950;white-space:nowrap}.linreg-interpretation{padding:.58rem .65rem;border-radius:12px;border:1px solid rgba(48,54,61,.72);background:rgba(23,32,44,.72);color:#9fb3d1;font-size:.74rem;font-weight:850;line-height:1.30}.detail-item{border-radius:11px;border:1px solid rgba(48,54,61,.62);background:rgba(13,17,23,.30);padding:.45rem}.detail-label{display:block;color:#9fb3d1;font-size:.53rem;font-weight:950;text-transform:uppercase}.detail-value{display:block;color:#fff;font-size:.78rem;font-weight:930;margin-top:.10rem;line-height:1.15}.details-expander{border-radius:14px;border:1px solid rgba(48,54,61,.55);background:rgba(13,17,23,.22);padding:.58rem;margin-bottom:.68rem}.details-expander summary{cursor:pointer;color:#9ec5ff;font-weight:950;font-size:.74rem}.details-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin-top:.55rem}.card-actions a{color:#8bd3ff!important;text-decoration:none!important;border:1px solid rgba(139,211,255,.34);border-radius:999px;padding:.55rem .8rem;display:inline-flex;font-weight:900}.missing-box{color:#ffd8a8;font-weight:850;font-size:.78rem}@media(max-width:1320px){.redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:820px){.redesign-grid,.decision-row,.condition-metrics-row,.details-compact{grid-template-columns:1fr}.status-badge{white-space:normal;text-align:right}.linreg-level-line,.linreg-price-line{left:5.8rem}.linreg-level-label{left:-5.25rem;width:4.55rem}.linreg-level-value{right:.15rem;font-size:.54rem}}
+
+.summary-card{border-radius:15px;border:1px solid rgba(48,54,61,.78);background:linear-gradient(180deg,rgba(32,39,51,.74),rgba(21,27,36,.82));padding:.85rem;min-height:118px}.summary-label{color:#9fb3d1;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em;line-height:1.35}.summary-value{color:#fff;font-size:1.25rem;font-weight:950;margin-top:.16rem}.summary-note{color:#8bd3ff;font-size:.75rem;font-weight:800;margin-top:.12rem}.section-title{color:#fff;font-size:1.05rem;font-weight:950;margin:1rem 0}.redesign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.redesign-card{border-radius:20px;border:1px solid rgba(48,54,61,.84);background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98));padding:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.redesign-card.is-buy{border-color:rgba(88,214,141,.88)}.redesign-card.is-watch{border-color:rgba(255,174,61,.85)}.redesign-card.is-monitor{border-color:rgba(70,86,108,.90)}.card-top{display:flex;align-items:flex-start;gap:.70rem;margin-bottom:.85rem}.rank{display:flex;align-items:center;justify-content:center;min-width:2.15rem;height:2.15rem;border-radius:999px;background:#0d1117;color:#9ec5ff;font-weight:950}.identity{flex:1;min-width:0}.ticker-row strong{color:#fff;font-size:1.25rem;font-weight:950}.company-name{color:#9fb3d1;font-size:.78rem;margin-top:.12rem}.status-badge{border-radius:999px;padding:.38rem .58rem;font-size:.64rem;font-weight:950;white-space:nowrap}.status-badge span{opacity:.85;margin-left:.25rem}.badge-buy{border:1px solid #58d68d;color:#58d68d;background:#172c1d}.badge-watch{border:1px solid #ffae3d;color:#ffbf69;background:#2e2212}.badge-monitor{border:1px solid #46566c;color:#9fb3d1;background:#111826}.decision-row{display:grid;grid-template-columns:.72fr 1.28fr;gap:.62rem;margin-bottom:.72rem}.price-main,.decision-text{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.43);padding:.68rem}.price-main span,.decision-text>span{display:block;color:#9fb3d1;font-size:.56rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.price-main strong{display:block;color:#fff;font-size:1.13rem;font-weight:950;margin:.18rem 0}.price-main small{font-size:.74rem;font-weight:950}.reason-lines{margin-top:.30rem;display:grid;gap:.26rem}.reason-line{display:flex;align-items:center;gap:.38rem;font-size:.80rem;line-height:1.20}.reason-line span{display:inline-flex;width:1rem;color:inherit;font-weight:950}.reason-line strong{color:inherit;font-weight:900}.reason-ok{color:#41d67a}.reason-ko{color:#9fb3d1}.positive{color:#41d67a!important}.negative{color:#ff4d5a!important}.neutral{color:#d1d5db!important}.condition-metrics-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem;margin-bottom:.74rem}.condition-metric{border-radius:13px;padding:.56rem;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35);min-width:0}.condition-metric-on{border-color:rgba(88,214,141,.72);background:rgba(20,80,40,.18)}.condition-metric-off{border-color:rgba(70,86,108,.78);background:rgba(13,17,23,.30)}.condition-metric-label{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.condition-metric-value{display:block;font-size:1.02rem;font-weight:950;margin-top:.18rem;white-space:nowrap}.condition-metric-subvalue{display:block;color:#9ec5ff;font-size:.72rem;font-weight:900;margin-top:.16rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.condition-metric-state{display:block;color:#58d68d;font-size:.74rem;font-weight:950;margin-top:.30rem}.condition-metric-off .condition-metric-state{color:#9fb3d1}.compact-section{border-radius:16px;border:1px solid rgba(48,54,61,.78);background:rgba(13,17,23,.36);padding:.70rem;margin-bottom:.70rem}.section-head h4{color:#fff;font-size:.96rem;font-weight:950;margin:0 0 .36rem}.linreg-anchor{color:#dbeafe;font-size:.75rem;font-weight:800;line-height:1.32;margin:0 0 .55rem}.linreg-level-chart{position:relative;height:210px;margin:.65rem 0 .70rem;border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(8,13,21,.52);overflow:hidden}.linreg-level-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px solid rgba(255,255,255,.55);transform:translateY(-1px)}.linreg-level-line::before{content:"";position:absolute;left:0;right:0;top:-6px;height:12px;border-radius:999px;opacity:.52}.linreg-level-label{position:absolute;left:-5.8rem;top:-1.05rem;width:4.9rem;height:2.05rem;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:.62rem;font-weight:950;background:#0d1117}.linreg-level-value{position:absolute;right:.35rem;top:-1.0rem;padding:.22rem .42rem;border-radius:999px;background:#0d1117;border:1px solid rgba(255,255,255,.16);color:#f9fafb;font-size:.58rem;font-weight:950;white-space:nowrap}.level-lower{border-color:#41d67a}.level-lower::before{background:#41d67a}.level-lower .linreg-level-label{color:#41d67a;border:1px solid rgba(65,214,122,.58)}.level-mid{border-color:#8bd3ff}.level-mid::before{background:#2f9bff}.level-mid .linreg-level-label{color:#8bd3ff;border:1px solid rgba(139,211,255,.50)}.level-upper{border-color:#ff9aa4}.level-upper::before{background:#ff4d5a}.level-upper .linreg-level-label{color:#ff9aa4;border:1px solid rgba(255,77,90,.46)}.linreg-price-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px dashed #fff;transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(7,12,18,.95));z-index:6}.linreg-price-line::before{content:"";position:absolute;left:-.72rem;top:-.42rem;border-top:.42rem solid transparent;border-bottom:.42rem solid transparent;border-right:.58rem solid #fff}.linreg-price-badge{position:absolute;left:.65rem;top:-2.15rem;padding:.30rem .48rem;border-radius:999px;background:#fff;color:#0d1117;font-size:.58rem;font-weight:950;white-space:nowrap}.linreg-interpretation{padding:.58rem .65rem;border-radius:12px;border:1px solid rgba(48,54,61,.72);background:rgba(23,32,44,.72);color:#9fb3d1;font-size:.74rem;font-weight:850;line-height:1.30}.detail-item{border-radius:11px;border:1px solid rgba(48,54,61,.62);background:rgba(13,17,23,.30);padding:.45rem}.detail-label{display:block;color:#9fb3d1;font-size:.53rem;font-weight:950;text-transform:uppercase}.detail-value{display:block;color:#fff;font-size:.78rem;font-weight:930;margin-top:.10rem;line-height:1.15}.details-expander{border-radius:14px;border:1px solid rgba(48,54,61,.55);background:rgba(13,17,23,.22);padding:.58rem;margin-bottom:.68rem}.details-expander summary{cursor:pointer;color:#9ec5ff;font-weight:950;font-size:.74rem}.details-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin-top:.55rem}.card-actions a{color:#8bd3ff!important;text-decoration:none!important;border:1px solid rgba(139,211,255,.34);border-radius:999px;padding:.55rem .8rem;display:inline-flex;font-weight:900}.missing-box{color:#ffd8a8;font-weight:850;font-size:.78rem}@media(max-width:1320px){.redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:820px){.redesign-grid,.decision-row,.condition-metrics-row,.details-compact{grid-template-columns:1fr}.status-badge{white-space:normal;text-align:right}.linreg-level-line,.linreg-price-line{left:5.8rem}.linreg-level-label{left:-5.25rem;width:4.55rem}.linreg-level-value{right:.15rem;font-size:.54rem}}
 
 
 /* BUY ZONE FINDER - Watchlist selector and condition filter */
@@ -3215,7 +3216,7 @@ div[class*="st-key-buyzone_forecast_wrap_"] .reason-line span{
 /* KPI/condition cards: each piece on its own line, no visual concatenation. */
 div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row{
   display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:.56rem!important;
   margin:.10rem 0 .84rem 0!important;
 }
@@ -3349,7 +3350,7 @@ div[class*="st-key-buyzone_forecast_wrap_"] .card-actions a{
    Restore upper card typography + orange Watch cards.
    IMPORTANT: this block intentionally does NOT target .linreg-* or .forecast-* sections. */
 
-/* 1) Watch tecnico 2/3: orange outside frame/background only */
+/* 1) Watch tecnico 3/4: orange outside frame/background only */
 div[class*="st-key-buyzone_forecast_wrap_"]:has(.redesign-card.is-watch){
   border:1.5px solid rgba(245,158,11,.95)!important;
   background:
@@ -3540,7 +3541,7 @@ div[class*="st-key-buyzone_forecast_wrap_"] .reason-line.ko span,
 div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
 .redesign-card .condition-metrics-row{
   display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:.56rem!important;
   margin:.10rem 0 .84rem 0!important;
 }
@@ -3742,7 +3743,7 @@ div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
 }
 .advanced-buyzone-levels{
   display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:.46rem!important;
   margin:.12rem 0 .62rem 0!important;
 }
@@ -3800,6 +3801,134 @@ div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
 @media(max-width:820px){
   .advanced-buyzone-levels{grid-template-columns:1fr!important;}
   .advanced-buyzone-footer{grid-template-columns:1fr!important;}
+}
+
+/* ========================= BUY ZONE FINDER - V51 4 MOTIVAZIONI ========================= */
+.advanced-buyzone-current{
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:space-between!important;
+  gap:.55rem!important;
+  margin:.42rem 0 .62rem 0!important;
+  padding:.52rem .62rem!important;
+  border-radius:12px!important;
+  border:1px solid rgba(139,211,255,.26)!important;
+  background:rgba(13,17,23,.34)!important;
+}
+.advanced-buyzone-current span{
+  color:#9fb3d1!important;
+  font-size:.62rem!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.045em!important;
+}
+.advanced-buyzone-current strong{
+  color:#f9fafb!important;
+  font-size:.82rem!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+@media(max-width:1500px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:980px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:1fr!important;}
+}
+
+
+/* ========================= BUY ZONE FINDER - V52 ADVANCED LEVEL DISTANCE ========================= */
+.advanced-buyzone-level small{
+  display:block!important;
+  margin-top:.26rem!important;
+  font-size:.66rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+.advanced-buyzone-level small.positive{color:#41d67a!important;}
+.advanced-buyzone-level small.negative{color:#ff4d5a!important;}
+.advanced-buyzone-level small.neutral{color:#d1d5db!important;}
+
+/* =========================
+   BUY ZONE FINDER - V54 CONDITION BOX ACTIVE/NO SOFT BACKGROUNDS
+   Scope: only the four motivation boxes.
+   Does not touch LinReg, Price Target Forecast, Advanced Buy Zone section charts/levels.
+   ========================= */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active,
+.redesign-card .condition-metric.active{
+  border-color:rgba(34,197,94,.46)!important;
+  background:
+    radial-gradient(circle at top right, rgba(34,197,94,.12), transparent 42%),
+    linear-gradient(180deg, rgba(34,197,94,.115) 0%, rgba(13,17,23,.36) 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035), 0 0 10px rgba(34,197,94,.055)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive,
+.redesign-card .condition-metric.inactive{
+  border-color:rgba(239,68,68,.34)!important;
+  background:
+    radial-gradient(circle at top right, rgba(239,68,68,.105), transparent 42%),
+    linear-gradient(180deg, rgba(239,68,68,.085) 0%, rgba(13,17,23,.34) 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.030)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active em,
+.redesign-card .condition-metric.active em{
+  color:#58d68d!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
+.redesign-card .condition-metric.inactive em{
+  color:#ffb4b4!important;
+}
+
+/* =========================
+   BUY ZONE FINDER - V55 CONDITION BOX COLORS STRONGER
+   Stronger but still soft backgrounds for ATTIVO / NO motivation boxes.
+   Scope: only the four condition-metric boxes. LinReg and Forecast untouched.
+   ========================= */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active,
+.redesign-card .condition-metric.active{
+  border-color:rgba(34,197,94,.78)!important;
+  background:
+    radial-gradient(circle at top right, rgba(34,197,94,.30), transparent 42%),
+    linear-gradient(180deg, rgba(34,197,94,.245) 0%, rgba(22,82,45,.245) 42%, rgba(13,17,23,.42) 100%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 0 0 1px rgba(34,197,94,.18),
+    0 0 16px rgba(34,197,94,.13)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive,
+.redesign-card .condition-metric.inactive{
+  border-color:rgba(239,68,68,.64)!important;
+  background:
+    radial-gradient(circle at top right, rgba(239,68,68,.25), transparent 42%),
+    linear-gradient(180deg, rgba(239,68,68,.205) 0%, rgba(95,33,33,.22) 42%, rgba(13,17,23,.42) 100%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 0 0 1px rgba(239,68,68,.12),
+    0 0 14px rgba(239,68,68,.10)!important;
+}
+/* Keep labels readable on stronger backgrounds. */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active span,
+.redesign-card .condition-metric.active span,
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive span,
+.redesign-card .condition-metric.inactive span{
+  color:#9ec5ff!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active small,
+.redesign-card .condition-metric.active small,
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive small,
+.redesign-card .condition-metric.inactive small{
+  color:#ffffff!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active em,
+.redesign-card .condition-metric.active em{
+  color:#6dff9d!important;
+  text-shadow:0 0 8px rgba(34,197,94,.22)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
+.redesign-card .condition-metric.inactive em{
+  color:#ff9a9a!important;
 }
 
 
@@ -7132,6 +7261,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 ===== FILE: pages/institutional_scanner.py =====
 ====================================================================================================
 
+
 import html
 import math
 import re
@@ -7246,28 +7376,29 @@ def filter_records_by_confluence(records: list[dict], selected_filter: str) -> l
 
 
 def render_condition_filter(records: list[dict]) -> str:
-    counts = {i: 0 for i in range(4)}
+    counts = {i: 0 for i in range(5)}
     for r in records:
         c = int(r.get("confluence_count") or 0)
         if c in counts:
             counts[c] += 1
 
-    options = ["3/3 Buy", "2/3 Watch", "1/3 Early", "0/3", "Tutte"]
+    options = ["4/4 Buy", "3/4 Watch", "2/4 Early", "1/4", "0/4", "Tutte"]
     labels = {
-        "3/3 Buy": f"3/3 Buy ({counts[3]})",
-        "2/3 Watch": f"2/3 Watch ({counts[2]})",
-        "1/3 Early": f"1/3 Early ({counts[1]})",
-        "0/3": f"0/3 ({counts[0]})",
+        "4/4 Buy": f"4/4 Buy ({counts[4]})",
+        "3/4 Watch": f"3/4 Watch ({counts[3]})",
+        "2/4 Early": f"2/4 Early ({counts[2]})",
+        "1/4": f"1/4 ({counts[1]})",
+        "0/4": f"0/4 ({counts[0]})",
         "Tutte": f"Tutte ({len(records)})",
     }
 
     if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
-        st.session_state["buy_zone_condition_filter"] = "2/3 Watch"
+        st.session_state["buy_zone_condition_filter"] = "3/4 Watch"
 
     st.markdown(
         '<div class="buyzone-filter-panel">'
         '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
-        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 2/3. Cambiare filtro non riesegue lo scanner.</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 3/4. Cambiare filtro non riesegue lo scanner.</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -7324,6 +7455,57 @@ def condition_metric(title: str, pct: str, value: str, active: bool, value_class
         f'<em>{yesno(active)}</em>'
         '</div>'
     )
+
+
+def advanced_zone_level(record: dict) -> tuple[str, object]:
+    """Return the advanced options level used for the fourth motivation box."""
+    zone_key = str(record.get("advanced_signal_zone") or "").strip()
+    mapping = {
+        "buy_zone_start": "START",
+        "buy_zone_strong": "STRONG",
+        "panic_zone": "PANIC",
+    }
+    level_key = zone_key if zone_key in mapping else "buy_zone_start"
+    label = mapping.get(level_key, "START")
+    return label, record.get(level_key)
+
+
+def advanced_zone_distance_pct(record: dict) -> object:
+    price = safe_float(record.get("last_price"))
+    _label, level = advanced_zone_level(record)
+    level_value = safe_float(level)
+    if price is None or level_value is None or level_value <= 0:
+        return None
+    return (price - level_value) / level_value * 100.0
+
+
+def distance_from_current_pct(record: dict, level: object) -> object:
+    price = safe_float(record.get("last_price"))
+    level_value = safe_float(level)
+    if price is None or level_value is None or level_value <= 0:
+        return None
+    return (price - level_value) / level_value * 100.0
+
+
+def advanced_level_box(kind: str, label: str, value: object, record: dict, currency: str) -> str:
+    dist = distance_from_current_pct(record, value)
+    dist_text = fmt_pct(dist, 1) if safe_float(dist) is not None else "N/D"
+    dist_class = vclass(dist)
+    return (
+        f'<div class="advanced-buyzone-level {escape(kind)}">'
+        f'<span>{escape(label)}</span>'
+        f'<strong>{escape(fmt_price(value, currency))}</strong>'
+        f'<small class="{escape(dist_class)}">{escape(dist_text)}</small>'
+        '</div>'
+    )
+
+
+def advanced_condition_metric(record: dict, currency: str) -> str:
+    label, level = advanced_zone_level(record)
+    active = bool(record.get("advanced_signal_active"))
+    pct = fmt_pct(advanced_zone_distance_pct(record), 2)
+    value = f"{label} {fmt_price(level, currency)}" if safe_float(level) is not None else "N/D"
+    return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
 def reason_block(record: dict) -> str:
@@ -7407,37 +7589,41 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
     signal_class = "ok" if signal_active else "ko"
     icon = "✓" if signal_active else "×"
 
+    current_price = fmt_price(record.get("last_price"), currency)
+
     if not available:
         error = str(record.get("advanced_buyzone_error") or "Dati avanzati non disponibili per questo ticker.")
         return (
             '<div class="advanced-buyzone-box">'
             '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
-            '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+            '<div class="advanced-buyzone-subtitle">Solo dati opzioni reali · nessun fallback tecnico/DCF</div>'
+            f'<div class="advanced-buyzone-current"><span>Prezzo attuale</span><strong>{escape(current_price)}</strong></div>'
             f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
             f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(error)}</div>'
             '</div>'
         )
 
-    start = fmt_price(record.get("buy_zone_start"), currency)
-    strong = fmt_price(record.get("buy_zone_strong"), currency)
-    panic = fmt_price(record.get("panic_zone"), currency)
+    start = record.get("buy_zone_start")
+    strong = record.get("buy_zone_strong")
+    panic = record.get("panic_zone")
 
     return (
         '<div class="advanced-buyzone-box">'
         '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
-        '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+        '<div class="advanced-buyzone-subtitle">Put wall opzioni reali · nessun fallback tecnico/DCF</div>'
+        f'<div class="advanced-buyzone-current"><span>Prezzo attuale</span><strong>{escape(current_price)}</strong></div>'
         f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
         f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(signal_reason)}</div>'
         '<div class="advanced-buyzone-levels">'
-        f'<div class="advanced-buyzone-level start"><span>Start</span><strong>{escape(start)}</strong></div>'
-        f'<div class="advanced-buyzone-level strong"><span>Strong</span><strong>{escape(strong)}</strong></div>'
-        f'<div class="advanced-buyzone-level panic"><span>Panic</span><strong>{escape(panic)}</strong></div>'
-        '</div>'
-        '<div class="advanced-buyzone-footer">'
-        f'<span>Confidenza: <strong class="conf-{confidence_class}">{escape(confidence)}</strong></span>'
-        f'<span>Nota: {escape(confidence_note)}</span>'
-        '</div>'
-        '</div>'
+        + advanced_level_box("start", "Start", start, record, currency)
+        + advanced_level_box("strong", "Strong", strong, record, currency)
+        + advanced_level_box("panic", "Panic", panic, record, currency)
+        + '</div>'
+        + '<div class="advanced-buyzone-footer">'
+        + f'<span>Confidenza: <strong class="conf-{confidence_class}">{escape(confidence)}</strong></span>'
+        + f'<span>Nota: {escape(confidence_note)}</span>'
+        + '</div>'
+        + '</div>'
     )
 
 
@@ -7686,16 +7872,17 @@ def card(record: dict, rank: int) -> str:
     label = str(record.get("technical_label") or "Monitor tecnico")
     count = int(record.get("confluence_count") or 0)
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 3 else "is-watch" if count == 2 else "is-monitor"
-    badge_class = "badge-buy" if count == 3 else "badge-watch" if count == 2 else "badge-monitor"
+    card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
+    badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
 
     html = f'<div class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/3</span></div></div>'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
+    html += advanced_condition_metric(record, currency)
     html += '</div>'
     html += linreg_section(record, currency)
     html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
@@ -7728,8 +7915,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_items = [
     ("Titoli", str(summary.get("count", 0)), selected_watchlist),
-    ("Buy Zone", str(summary.get("buy_count", 0)), "3/3 condizioni"),
-    ("Watch", str(summary.get("watch_count", 0)), "2/3 condizioni"),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "4/4 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "3/4 condizioni"),
     ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
 ]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
@@ -7741,7 +7928,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
         )
 
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
-selected_condition_filter = render_condition_filter(records) if records else "2/3 Watch"
+selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
 st.markdown(
     f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
@@ -9823,6 +10010,7 @@ font = "sans serif"
 ===== FILE: utils/advanced_buy_zones.py =====
 ====================================================================================================
 
+
 from __future__ import annotations
 
 import math
@@ -10026,51 +10214,68 @@ def technical_levels_from_history(hist: pd.DataFrame | None, weekly: pd.DataFram
 
 
 def compute_buy_zones(price: float | None, technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None, linreg_lower: float | None = None, sma200w: float | None = None) -> dict[str, float | None]:
-    wall30 = safe_float(walls.get(30, {}).get("put_wall"))
-    wall90 = safe_float(walls.get(90, {}).get("put_wall"))
-    wall180 = safe_float(walls.get(180, {}).get("put_wall"))
-    low3 = safe_float(technical.get("low_3m"))
-    low6 = safe_float(technical.get("low_6m"))
-    low12 = safe_float(technical.get("low_12m"))
-    sma200 = safe_float(technical.get("sma200")) or safe_float(sma200w)
-    lower = safe_float(linreg_lower)
-    atr = safe_float(technical.get("atr14"))
+    """Build advanced buy zones from real option put-wall data only.
 
-    start = median_or_none([low3, low6, sma200, lower, wall30])
-    strong = median_or_none([low6, low12, lower, wall90, wall180, dcf_bear])
-    panic_candidates = [low12, wall180, dcf_bear]
-    if low12 is not None and atr is not None:
-        panic_candidates.append(low12 - 1.5 * atr)
-    if dcf_bear is not None:
-        panic_candidates.append(dcf_bear * 0.90)
-    panic = percentile_or_none(panic_candidates, 25)
+    IMPORTANT: this model intentionally does NOT use technical lows, SMA200W,
+    LinReg or DCF fallback levels. If real put-wall data is unavailable, no
+    advanced zone is returned. This prevents showing non-option-derived levels
+    as "Buy Zone Avanzate".
+    """
+    put_walls: list[float] = []
+    for item in walls.values():
+        wall = safe_float(item.get("put_wall"))
+        if wall is not None and wall > 0:
+            put_walls.append(float(wall))
 
-    # Keep the zones logically ordered when enough values are available.
-    if start is not None and strong is not None and strong > start:
-        start, strong = strong, start
-    if strong is not None and panic is not None and panic > strong:
-        panic = strong * 0.92
+    if not put_walls:
+        return {"buy_zone_start": None, "buy_zone_strong": None, "panic_zone": None}
+
+    # Deduplicate nearby/equal walls while preserving real strike values.
+    unique_walls = sorted(set(round(v, 4) for v in put_walls), reverse=True)
+
+    # START = nearest/upper put wall support below spot.
+    # STRONG = deeper put wall if available.
+    # PANIC = deepest available put wall if at least three distinct walls exist.
+    start = unique_walls[0]
+    strong = unique_walls[1] if len(unique_walls) >= 2 else None
+    panic = unique_walls[2] if len(unique_walls) >= 3 else None
 
     return {"buy_zone_start": start, "buy_zone_strong": strong, "panic_zone": panic}
 
 
-def confidence_note(technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None) -> tuple[str, str]:
-    score = 0
-    notes: list[str] = []
-    if any(safe_float(technical.get(k)) is not None for k in ("low_3m", "low_6m", "low_12m", "sma200")):
-        score += 1
-        notes.append("tecnico")
-    if any(safe_float(item.get("put_wall")) is not None for item in walls.values()):
-        score += 1
-        notes.append("put wall")
-    if safe_float(dcf_bear) is not None:
-        score += 1
-        notes.append("DCF bear")
-    label = "Alta" if score >= 3 else "Media" if score == 2 else "Bassa" if score == 1 else "N/D"
-    if notes:
-        return label, ", ".join(notes) + " disponibili per il modello avanzato."
-    return label, "Dati avanzati non sufficienti per una stima robusta."
+def real_put_wall_count(walls: dict[int, dict[str, Any]]) -> int:
+    return len([1 for item in walls.values() if safe_float(item.get("put_wall")) is not None and safe_float(item.get("put_wall")) > 0])
 
+
+def real_put_wall_note(walls: dict[int, dict[str, Any]]) -> str:
+    parts: list[str] = []
+    for days in sorted(walls.keys()):
+        item = walls.get(days, {})
+        wall = safe_float(item.get("put_wall"))
+        exp = item.get("expiration") or "scadenza n/d"
+        oi = item.get("put_wall_oi")
+        if wall is not None and wall > 0:
+            oi_text = f", OI {int(oi)}" if safe_float(oi) is not None else ""
+            parts.append(f"{days}gg: {wall:.2f} ({exp}{oi_text})")
+    if not parts:
+        return "Nessun put wall reale disponibile dalle catene opzioni."
+    return "Put wall reali: " + " · ".join(parts)
+
+def confidence_note(technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None) -> tuple[str, str]:
+    """Confidence for real-options advanced zones.
+
+    Confidence is based only on the availability of real put-wall data across
+    target expirations. Technical/DCF availability must not raise confidence for
+    this advanced options model.
+    """
+    count = real_put_wall_count(walls)
+    if count >= 3:
+        return "Alta", real_put_wall_note(walls)
+    if count == 2:
+        return "Media", real_put_wall_note(walls)
+    if count == 1:
+        return "Bassa", real_put_wall_note(walls)
+    return "N/D", "Dati opzioni / put wall reali non disponibili."
 
 def buyzone_signal(price: float | None, start: float | None, strong: float | None, panic: float | None, tolerance_pct: float = BUYZONE_TOLERANCE_PCT) -> dict[str, Any]:
     p = safe_float(price)
@@ -10085,9 +10290,9 @@ def buyzone_signal(price: float | None, start: float | None, strong: float | Non
         return abs(dist) <= tolerance_pct, dist
 
     for key, label, reason in [
-        ("panic_zone", "Prezzo nell'intorno della Panic Zone", "il prezzo attuale e' entro il +/-5% dalla zona estrema stimata dal modello avanzato."),
-        ("buy_zone_strong", "Prezzo nell'intorno della Strong Buy Zone", "il prezzo attuale e' entro il +/-5% dalla zona di accumulo piu' interessante calcolata dal modello avanzato."),
-        ("buy_zone_start", "Prezzo nell'intorno della Buy Zone Start", "il prezzo attuale e' entro il +/-5% dalla prima area operativa calcolata dal modello avanzato."),
+        ("panic_zone", "Panic Zone", "il prezzo attuale e' entro il +/-5% dalla zona estrema stimata dal modello avanzato."),
+        ("buy_zone_strong", "Strong Buy Zone", "il prezzo attuale e' entro il +/-5% dalla zona di accumulo piu' interessante calcolata dal modello avanzato."),
+        ("buy_zone_start", "Buy Zone Start", "il prezzo attuale e' entro il +/-5% dalla prima area operativa calcolata dal modello avanzato."),
     ]:
         level = {"panic_zone": panic, "buy_zone_strong": strong, "buy_zone_start": start}[key]
         ok, dist = near(level)
@@ -10127,19 +10332,29 @@ def analyze_advanced_buy_zone(symbol: str, current_price: float | None = None, c
             price = safe_float(hist["Close"].dropna().iloc[-1])
         technical = technical_levels_from_history(hist, weekly)
         walls = option_walls(ticker_obj, price, days_list)
-        info = {}
-        try:
-            info = ticker_obj.get_info()
-        except Exception:
-            try:
-                info = ticker_obj.info
-            except Exception:
-                info = {}
-        if not isinstance(info, dict):
-            info = {}
-        dcf = compute_dcf_bear_per_share(ticker_obj, info, yf_symbol)
+        # Buy Zone Avanzate must be based only on real option put-wall data.
+        # We deliberately do not use technical or DCF fallback levels here.
+        dcf = None
         zones = compute_buy_zones(price, technical, walls, dcf, linreg_lower=linreg_lower, sma200w=sma200w)
         conf, note = confidence_note(technical, walls, dcf)
+        has_real_options = real_put_wall_count(walls) > 0
+
+        if not has_real_options:
+            out.update({
+                "advanced_buyzone_available": False,
+                "advanced_buyzone_error": "Dati opzioni / put wall reali non disponibili per questo ticker.",
+                "advanced_confidence": "N/D",
+                "advanced_confidence_note": "Dati opzioni / put wall reali non disponibili.",
+                "advanced_signal_active": False,
+                "advanced_signal_zone": None,
+                "advanced_signal_label": "Buy Zone Avanzata non calcolabile",
+                "advanced_signal_reason": "Mancano dati opzioni reali; nessun livello fallback tecnico/DCF viene mostrato.",
+                "dcf_bear": None,
+            })
+            for days in days_list:
+                out[f"put_wall_{days}"] = safe_float(walls.get(days, {}).get("put_wall"))
+            return out
+
         signal = buyzone_signal(price, zones.get("buy_zone_start"), zones.get("buy_zone_strong"), zones.get("panic_zone"))
         out.update(zones)
         out.update({
@@ -10151,7 +10366,7 @@ def analyze_advanced_buy_zone(symbol: str, current_price: float | None = None, c
             "advanced_signal_label": signal.get("label"),
             "advanced_signal_reason": signal.get("reason"),
             "advanced_signal_distance_pct": signal.get("distance_pct"),
-            "dcf_bear": dcf,
+            "dcf_bear": None,
         })
         for days in days_list:
             out[f"put_wall_{days}"] = safe_float(walls.get(days, {}).get("put_wall"))
@@ -11756,6 +11971,7 @@ def test_github_storage_connection(watchlists_path=None):
 ===== FILE: utils/institutional_scanner.py =====
 ====================================================================================================
 
+
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -12016,9 +12232,22 @@ def technical_metrics(item):
                 "advanced_signal_label": "Buy Zone Avanzate N/D",
                 "advanced_signal_reason": "Dati avanzati non disponibili.",
             })
-        c=[bool(row["below_sma200w"]),bool(row["near_hist_min_w"]),bool(row["near_linreg_lower"])]
+        # BUY ZONE FINDER now has 4 motivations:
+        # 1) below SMA200W, 2) near historical Min W, 3) near/below LinReg Lower,
+        # 4) real-options Advanced Buy Zone signal.
+        c=[
+            bool(row["below_sma200w"]),
+            bool(row["near_hist_min_w"]),
+            bool(row["near_linreg_lower"]),
+            bool(row.get("advanced_signal_active")),
+        ]
         row["confluence_count"]=sum(1 for v in c if v)
-        row["technical_label"]="Buy Zone tecnica" if row["confluence_count"]==3 else "Watch tecnico" if row["confluence_count"]==2 else "Monitor tecnico"
+        row["technical_label"]=(
+            "Buy Zone tecnica" if row["confluence_count"]==4 else
+            "Watch tecnico" if row["confluence_count"]==3 else
+            "Early tecnico" if row["confluence_count"]==2 else
+            "Monitor tecnico"
+        )
         return row
     except Exception as e: row["error"]=str(e); return row
 
@@ -12072,7 +12301,7 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
         if i<total and SLEEP_BETWEEN_TICKERS_SECONDS>0: time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
     return sorted(out,key=sort_priority)
 def scan_summary(records):
-    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==2]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
+    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
 
 
 
