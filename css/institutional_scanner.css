@@ -783,3 +783,33 @@ div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
 .advanced-buyzone-level small.positive{color:#41d67a!important;}
 .advanced-buyzone-level small.negative{color:#ff4d5a!important;}
 .advanced-buyzone-level small.neutral{color:#d1d5db!important;}
+
+/* =========================
+   BUY ZONE FINDER - V54 CONDITION BOX ACTIVE/NO SOFT BACKGROUNDS
+   Scope: only the four motivation boxes.
+   Does not touch LinReg, Price Target Forecast, Advanced Buy Zone section charts/levels.
+   ========================= */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active,
+.redesign-card .condition-metric.active{
+  border-color:rgba(34,197,94,.46)!important;
+  background:
+    radial-gradient(circle at top right, rgba(34,197,94,.12), transparent 42%),
+    linear-gradient(180deg, rgba(34,197,94,.115) 0%, rgba(13,17,23,.36) 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035), 0 0 10px rgba(34,197,94,.055)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive,
+.redesign-card .condition-metric.inactive{
+  border-color:rgba(239,68,68,.34)!important;
+  background:
+    radial-gradient(circle at top right, rgba(239,68,68,.105), transparent 42%),
+    linear-gradient(180deg, rgba(239,68,68,.085) 0%, rgba(13,17,23,.34) 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.030)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active em,
+.redesign-card .condition-metric.active em{
+  color:#58d68d!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
+.redesign-card .condition-metric.inactive em{
+  color:#ffb4b4!important;
+}
