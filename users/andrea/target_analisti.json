@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-02T16:50:10+00:00",
+    "updated_at": "2026-07-07T08:36:23+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -357,6 +357,23 @@
             "analyst_count": 32,
             "rating": "buy",
             "updated_at": "2026-07-02T16:50:10+00:00"
+        },
+        "BABA": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "BABA",
+            "ticker": "BABA",
+            "tv_symbol": "NYSE:BABA",
+            "name": "Alibaba Group Holding Limited",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 97.91000366210938,
+            "target_low": 91.73863,
+            "target_mean": 191.16681,
+            "target_high": 257.64688,
+            "analyst_count": 39,
+            "rating": "strong_buy",
+            "updated_at": "2026-07-07T08:36:22+00:00"
         }
     }
 }
