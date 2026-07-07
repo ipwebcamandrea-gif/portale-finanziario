@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import math
@@ -201,51 +202,68 @@ def technical_levels_from_history(hist: pd.DataFrame | None, weekly: pd.DataFram
 
 
 def compute_buy_zones(price: float | None, technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None, linreg_lower: float | None = None, sma200w: float | None = None) -> dict[str, float | None]:
-    wall30 = safe_float(walls.get(30, {}).get("put_wall"))
-    wall90 = safe_float(walls.get(90, {}).get("put_wall"))
-    wall180 = safe_float(walls.get(180, {}).get("put_wall"))
-    low3 = safe_float(technical.get("low_3m"))
-    low6 = safe_float(technical.get("low_6m"))
-    low12 = safe_float(technical.get("low_12m"))
-    sma200 = safe_float(technical.get("sma200")) or safe_float(sma200w)
-    lower = safe_float(linreg_lower)
-    atr = safe_float(technical.get("atr14"))
+    """Build advanced buy zones from real option put-wall data only.
 
-    start = median_or_none([low3, low6, sma200, lower, wall30])
-    strong = median_or_none([low6, low12, lower, wall90, wall180, dcf_bear])
-    panic_candidates = [low12, wall180, dcf_bear]
-    if low12 is not None and atr is not None:
-        panic_candidates.append(low12 - 1.5 * atr)
-    if dcf_bear is not None:
-        panic_candidates.append(dcf_bear * 0.90)
-    panic = percentile_or_none(panic_candidates, 25)
+    IMPORTANT: this model intentionally does NOT use technical lows, SMA200W,
+    LinReg or DCF fallback levels. If real put-wall data is unavailable, no
+    advanced zone is returned. This prevents showing non-option-derived levels
+    as "Buy Zone Avanzate".
+    """
+    put_walls: list[float] = []
+    for item in walls.values():
+        wall = safe_float(item.get("put_wall"))
+        if wall is not None and wall > 0:
+            put_walls.append(float(wall))
 
-    # Keep the zones logically ordered when enough values are available.
-    if start is not None and strong is not None and strong > start:
-        start, strong = strong, start
-    if strong is not None and panic is not None and panic > strong:
-        panic = strong * 0.92
+    if not put_walls:
+        return {"buy_zone_start": None, "buy_zone_strong": None, "panic_zone": None}
+
+    # Deduplicate nearby/equal walls while preserving real strike values.
+    unique_walls = sorted(set(round(v, 4) for v in put_walls), reverse=True)
+
+    # START = nearest/upper put wall support below spot.
+    # STRONG = deeper put wall if available.
+    # PANIC = deepest available put wall if at least three distinct walls exist.
+    start = unique_walls[0]
+    strong = unique_walls[1] if len(unique_walls) >= 2 else None
+    panic = unique_walls[2] if len(unique_walls) >= 3 else None
 
     return {"buy_zone_start": start, "buy_zone_strong": strong, "panic_zone": panic}
 
 
-def confidence_note(technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None) -> tuple[str, str]:
-    score = 0
-    notes: list[str] = []
-    if any(safe_float(technical.get(k)) is not None for k in ("low_3m", "low_6m", "low_12m", "sma200")):
-        score += 1
-        notes.append("tecnico")
-    if any(safe_float(item.get("put_wall")) is not None for item in walls.values()):
-        score += 1
-        notes.append("put wall")
-    if safe_float(dcf_bear) is not None:
-        score += 1
-        notes.append("DCF bear")
-    label = "Alta" if score >= 3 else "Media" if score == 2 else "Bassa" if score == 1 else "N/D"
-    if notes:
-        return label, ", ".join(notes) + " disponibili per il modello avanzato."
-    return label, "Dati avanzati non sufficienti per una stima robusta."
+def real_put_wall_count(walls: dict[int, dict[str, Any]]) -> int:
+    return len([1 for item in walls.values() if safe_float(item.get("put_wall")) is not None and safe_float(item.get("put_wall")) > 0])
 
+
+def real_put_wall_note(walls: dict[int, dict[str, Any]]) -> str:
+    parts: list[str] = []
+    for days in sorted(walls.keys()):
+        item = walls.get(days, {})
+        wall = safe_float(item.get("put_wall"))
+        exp = item.get("expiration") or "scadenza n/d"
+        oi = item.get("put_wall_oi")
+        if wall is not None and wall > 0:
+            oi_text = f", OI {int(oi)}" if safe_float(oi) is not None else ""
+            parts.append(f"{days}gg: {wall:.2f} ({exp}{oi_text})")
+    if not parts:
+        return "Nessun put wall reale disponibile dalle catene opzioni."
+    return "Put wall reali: " + " · ".join(parts)
+
+def confidence_note(technical: dict[str, float | None], walls: dict[int, dict[str, Any]], dcf_bear: float | None) -> tuple[str, str]:
+    """Confidence for real-options advanced zones.
+
+    Confidence is based only on the availability of real put-wall data across
+    target expirations. Technical/DCF availability must not raise confidence for
+    this advanced options model.
+    """
+    count = real_put_wall_count(walls)
+    if count >= 3:
+        return "Alta", real_put_wall_note(walls)
+    if count == 2:
+        return "Media", real_put_wall_note(walls)
+    if count == 1:
+        return "Bassa", real_put_wall_note(walls)
+    return "N/D", "Dati opzioni / put wall reali non disponibili."
 
 def buyzone_signal(price: float | None, start: float | None, strong: float | None, panic: float | None, tolerance_pct: float = BUYZONE_TOLERANCE_PCT) -> dict[str, Any]:
     p = safe_float(price)
@@ -302,19 +320,29 @@ def analyze_advanced_buy_zone(symbol: str, current_price: float | None = None, c
             price = safe_float(hist["Close"].dropna().iloc[-1])
         technical = technical_levels_from_history(hist, weekly)
         walls = option_walls(ticker_obj, price, days_list)
-        info = {}
-        try:
-            info = ticker_obj.get_info()
-        except Exception:
-            try:
-                info = ticker_obj.info
-            except Exception:
-                info = {}
-        if not isinstance(info, dict):
-            info = {}
-        dcf = compute_dcf_bear_per_share(ticker_obj, info, yf_symbol)
+        # Buy Zone Avanzate must be based only on real option put-wall data.
+        # We deliberately do not use technical or DCF fallback levels here.
+        dcf = None
         zones = compute_buy_zones(price, technical, walls, dcf, linreg_lower=linreg_lower, sma200w=sma200w)
         conf, note = confidence_note(technical, walls, dcf)
+        has_real_options = real_put_wall_count(walls) > 0
+
+        if not has_real_options:
+            out.update({
+                "advanced_buyzone_available": False,
+                "advanced_buyzone_error": "Dati opzioni / put wall reali non disponibili per questo ticker.",
+                "advanced_confidence": "N/D",
+                "advanced_confidence_note": "Dati opzioni / put wall reali non disponibili.",
+                "advanced_signal_active": False,
+                "advanced_signal_zone": None,
+                "advanced_signal_label": "Buy Zone Avanzata non calcolabile",
+                "advanced_signal_reason": "Mancano dati opzioni reali; nessun livello fallback tecnico/DCF viene mostrato.",
+                "dcf_bear": None,
+            })
+            for days in days_list:
+                out[f"put_wall_{days}"] = safe_float(walls.get(days, {}).get("put_wall"))
+            return out
+
         signal = buyzone_signal(price, zones.get("buy_zone_start"), zones.get("buy_zone_strong"), zones.get("panic_zone"))
         out.update(zones)
         out.update({
@@ -326,7 +354,7 @@ def analyze_advanced_buy_zone(symbol: str, current_price: float | None = None, c
             "advanced_signal_label": signal.get("label"),
             "advanced_signal_reason": signal.get("reason"),
             "advanced_signal_distance_pct": signal.get("distance_pct"),
-            "dcf_bear": dcf,
+            "dcf_bear": None,
         })
         for days in days_list:
             out[f"put_wall_{days}"] = safe_float(walls.get(days, {}).get("put_wall"))
