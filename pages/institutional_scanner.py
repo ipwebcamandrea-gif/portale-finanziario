@@ -1,3 +1,4 @@
+
 import html
 import math
 import re
@@ -278,7 +279,7 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
         return (
             '<div class="advanced-buyzone-box">'
             '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
-            '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+            '<div class="advanced-buyzone-subtitle">Solo dati opzioni reali · nessun fallback tecnico/DCF</div>'
             f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
             f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(error)}</div>'
             '</div>'
@@ -291,7 +292,7 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
     return (
         '<div class="advanced-buyzone-box">'
         '<div class="advanced-buyzone-title">Buy Zone Avanzate</div>'
-        '<div class="advanced-buyzone-subtitle">Storico tecnico + put wall opzioni + DCF bear</div>'
+        '<div class="advanced-buyzone-subtitle">Put wall opzioni reali · nessun fallback tecnico/DCF</div>'
         f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
         f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(signal_reason)}</div>'
         '<div class="advanced-buyzone-levels">'
