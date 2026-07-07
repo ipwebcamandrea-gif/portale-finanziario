@@ -216,6 +216,27 @@ def advanced_zone_distance_pct(record: dict) -> object:
     return (price - level_value) / level_value * 100.0
 
 
+def distance_from_current_pct(record: dict, level: object) -> object:
+    price = safe_float(record.get("last_price"))
+    level_value = safe_float(level)
+    if price is None or level_value is None or level_value <= 0:
+        return None
+    return (price - level_value) / level_value * 100.0
+
+
+def advanced_level_box(kind: str, label: str, value: object, record: dict, currency: str) -> str:
+    dist = distance_from_current_pct(record, value)
+    dist_text = fmt_pct(dist, 1) if safe_float(dist) is not None else "N/D"
+    dist_class = vclass(dist)
+    return (
+        f'<div class="advanced-buyzone-level {escape(kind)}">'
+        f'<span>{escape(label)}</span>'
+        f'<strong>{escape(fmt_price(value, currency))}</strong>'
+        f'<small class="{escape(dist_class)}">{escape(dist_text)}</small>'
+        '</div>'
+    )
+
+
 def advanced_condition_metric(record: dict, currency: str) -> str:
     label, level = advanced_zone_level(record)
     active = bool(record.get("advanced_signal_active"))
@@ -319,9 +340,9 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
             '</div>'
         )
 
-    start = fmt_price(record.get("buy_zone_start"), currency)
-    strong = fmt_price(record.get("buy_zone_strong"), currency)
-    panic = fmt_price(record.get("panic_zone"), currency)
+    start = record.get("buy_zone_start")
+    strong = record.get("buy_zone_strong")
+    panic = record.get("panic_zone")
 
     return (
         '<div class="advanced-buyzone-box">'
@@ -331,15 +352,15 @@ def advanced_buyzone_section(record: dict, currency: str) -> str:
         f'<div class="advanced-buyzone-signal {signal_class}"><b>{icon}</b><span>{escape(signal_label)}</span></div>'
         f'<div class="advanced-buyzone-reason"><strong>Motivo principale:</strong> {escape(signal_reason)}</div>'
         '<div class="advanced-buyzone-levels">'
-        f'<div class="advanced-buyzone-level start"><span>Start</span><strong>{escape(start)}</strong></div>'
-        f'<div class="advanced-buyzone-level strong"><span>Strong</span><strong>{escape(strong)}</strong></div>'
-        f'<div class="advanced-buyzone-level panic"><span>Panic</span><strong>{escape(panic)}</strong></div>'
-        '</div>'
-        '<div class="advanced-buyzone-footer">'
-        f'<span>Confidenza: <strong class="conf-{confidence_class}">{escape(confidence)}</strong></span>'
-        f'<span>Nota: {escape(confidence_note)}</span>'
-        '</div>'
-        '</div>'
+        + advanced_level_box("start", "Start", start, record, currency)
+        + advanced_level_box("strong", "Strong", strong, record, currency)
+        + advanced_level_box("panic", "Panic", panic, record, currency)
+        + '</div>'
+        + '<div class="advanced-buyzone-footer">'
+        + f'<span>Confidenza: <strong class="conf-{confidence_class}">{escape(confidence)}</strong></span>'
+        + f'<span>Nota: {escape(confidence_note)}</span>'
+        + '</div>'
+        + '</div>'
     )
 
 
