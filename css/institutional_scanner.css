@@ -769,3 +769,17 @@ div[class*="st-key-buyzone_forecast_wrap_"] .technical-details-grid strong,
   div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
   .redesign-card .condition-metrics-row{grid-template-columns:1fr!important;}
 }
+
+
+/* ========================= BUY ZONE FINDER - V52 ADVANCED LEVEL DISTANCE ========================= */
+.advanced-buyzone-level small{
+  display:block!important;
+  margin-top:.26rem!important;
+  font-size:.66rem!important;
+  line-height:1.10!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+.advanced-buyzone-level small.positive{color:#41d67a!important;}
+.advanced-buyzone-level small.negative{color:#ff4d5a!important;}
+.advanced-buyzone-level small.neutral{color:#d1d5db!important;}
