@@ -7,7 +7,6 @@ import pandas as pd
 import yfinance as yf
 from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
 from utils.advanced_buy_zones import analyze_advanced_buy_zone
-from utils.defense_w import analyze_defense_w
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -218,7 +217,7 @@ def compute_linreg_w(weekly,current_price):
 
 def technical_metrics(item):
     sym=item["yahoo"]
-    row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":"", "defense_w_active":False, "defense_w_state":"NO", "defense_w_convergence":"N/D"}
+    row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":""}
     try:
         row.update(quote_data(sym)); w=normalize_df(yf_download(sym,period="20y",interval="1wk",auto_adjust=False))
         if w.empty or "Close" not in w.columns: row["error"]="weekly vuoto o Close mancante"; return row
@@ -259,41 +258,21 @@ def technical_metrics(item):
                 "advanced_signal_label": "Buy Zone Avanzate N/D",
                 "advanced_signal_reason": "Dati avanzati non disponibili.",
             })
-        # Area Difesa W: quinta motivazione additiva.
-        # Il supporto tecnico weekly e' calcolato in modo indipendente dalla Buy Zone;
-        # il confronto usa solo la Buy Zone START delle opzioni reali.
-        try:
-            row.update(analyze_defense_w(
-                current_price=row.get("last_price"),
-                weekly=w,
-                buy_zone_start=row.get("buy_zone_start"),
-            ))
-        except Exception as defense_exc:
-            row.update({
-                "defense_w_available": False,
-                "defense_w_active": False,
-                "defense_w_state": "NO",
-                "defense_w_convergence": "N/D",
-                "defense_w_reason": str(defense_exc),
-            })
-
-        # BUY ZONE FINDER now has 5 motivations:
+        # BUY ZONE FINDER now has 4 motivations:
         # 1) below SMA200W, 2) near historical Min W, 3) near/below LinReg Lower,
-        # 4) real-options Advanced Buy Zone signal,
-        # 5) Area Difesa W (technical weekly support + Buy Zone START convergence).
+        # 4) real-options Advanced Buy Zone signal.
         c=[
             bool(row["below_sma200w"]),
             bool(row["near_hist_min_w"]),
             bool(row["near_linreg_lower"]),
             bool(row.get("advanced_signal_active")),
-            bool(row.get("defense_w_active")),
         ]
         row["confluence_count"]=sum(1 for v in c if v)
         row["technical_label"]=(
-            "Buy Zone W" if row["confluence_count"]==5 else
-            "Watch W" if row["confluence_count"]==4 else
-            "Early W" if row["confluence_count"]==3 else
-            "Monitor W"
+            "Buy Zone tecnica" if row["confluence_count"]==4 else
+            "Watch tecnico" if row["confluence_count"]==3 else
+            "Early tecnico" if row["confluence_count"]==2 else
+            "Monitor tecnico"
         )
         return row
     except Exception as e: row["error"]=str(e); return row
@@ -348,4 +327,4 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
         if i<total and SLEEP_BETWEEN_TICKERS_SECONDS>0: time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
     return sorted(out,key=sort_priority)
 def scan_summary(records):
-    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==5]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
+    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
