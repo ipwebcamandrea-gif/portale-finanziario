@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-08T15:34:34+00:00",
+  "updated_at": "2026-07-08T15:34:44+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -144,6 +144,19 @@
       "prezzo_precedente": 98.02,
       "yf_symbol": "BABA",
       "tv_symbol": "NYSE:BABA"
+    },
+    {
+      "ticker": "PFE",
+      "titolo": "Pfizer, Inc.",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 420.0,
+      "prezzo_medio": 24.1,
+      "prezzo_mercato": 24.309999465942383,
+      "prezzo_precedente": 24.0804,
+      "yf_symbol": "PFE",
+      "tv_symbol": "NYSE:PFE"
     },
     {
       "ticker": "PFE",
