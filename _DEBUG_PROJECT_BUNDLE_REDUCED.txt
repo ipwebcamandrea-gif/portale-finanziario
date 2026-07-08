@@ -4,7 +4,7 @@
 # Included roots: pages, utils, components, css, portfolio, main/app files
 # Excluded: .git, .github, secrets, env, backups, zips, releases, pycache
 
-# Files included: 65
+# Files included: 66
 
 
 
@@ -3065,7 +3065,6 @@ div[class*="st-key-grafico_tv_back_watchlist"] .stButton > button:hover {
 ===== FILE: css/institutional_scanner.css =====
 ====================================================================================================
 
-
 .summary-card{border-radius:15px;border:1px solid rgba(48,54,61,.78);background:linear-gradient(180deg,rgba(32,39,51,.74),rgba(21,27,36,.82));padding:.85rem;min-height:118px}.summary-label{color:#9fb3d1;font-size:.58rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em;line-height:1.35}.summary-value{color:#fff;font-size:1.25rem;font-weight:950;margin-top:.16rem}.summary-note{color:#8bd3ff;font-size:.75rem;font-weight:800;margin-top:.12rem}.section-title{color:#fff;font-size:1.05rem;font-weight:950;margin:1rem 0}.redesign-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.redesign-card{border-radius:20px;border:1px solid rgba(48,54,61,.84);background:linear-gradient(180deg,rgba(21,27,36,.96),rgba(16,22,31,.98));padding:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.redesign-card.is-buy{border-color:rgba(88,214,141,.88)}.redesign-card.is-watch{border-color:rgba(255,174,61,.85)}.redesign-card.is-monitor{border-color:rgba(70,86,108,.90)}.card-top{display:flex;align-items:flex-start;gap:.70rem;margin-bottom:.85rem}.rank{display:flex;align-items:center;justify-content:center;min-width:2.15rem;height:2.15rem;border-radius:999px;background:#0d1117;color:#9ec5ff;font-weight:950}.identity{flex:1;min-width:0}.ticker-row strong{color:#fff;font-size:1.25rem;font-weight:950}.company-name{color:#9fb3d1;font-size:.78rem;margin-top:.12rem}.status-badge{border-radius:999px;padding:.38rem .58rem;font-size:.64rem;font-weight:950;white-space:nowrap}.status-badge span{opacity:.85;margin-left:.25rem}.badge-buy{border:1px solid #58d68d;color:#58d68d;background:#172c1d}.badge-watch{border:1px solid #ffae3d;color:#ffbf69;background:#2e2212}.badge-monitor{border:1px solid #46566c;color:#9fb3d1;background:#111826}.decision-row{display:grid;grid-template-columns:.72fr 1.28fr;gap:.62rem;margin-bottom:.72rem}.price-main,.decision-text{border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.43);padding:.68rem}.price-main span,.decision-text>span{display:block;color:#9fb3d1;font-size:.56rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.price-main strong{display:block;color:#fff;font-size:1.13rem;font-weight:950;margin:.18rem 0}.price-main small{font-size:.74rem;font-weight:950}.reason-lines{margin-top:.30rem;display:grid;gap:.26rem}.reason-line{display:flex;align-items:center;gap:.38rem;font-size:.80rem;line-height:1.20}.reason-line span{display:inline-flex;width:1rem;color:inherit;font-weight:950}.reason-line strong{color:inherit;font-weight:900}.reason-ok{color:#41d67a}.reason-ko{color:#9fb3d1}.positive{color:#41d67a!important}.negative{color:#ff4d5a!important}.neutral{color:#d1d5db!important}.condition-metrics-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem;margin-bottom:.74rem}.condition-metric{border-radius:13px;padding:.56rem;border:1px solid rgba(48,54,61,.72);background:rgba(13,17,23,.35);min-width:0}.condition-metric-on{border-color:rgba(88,214,141,.72);background:rgba(20,80,40,.18)}.condition-metric-off{border-color:rgba(70,86,108,.78);background:rgba(13,17,23,.30)}.condition-metric-label{display:block;color:#9fb3d1;font-size:.55rem;font-weight:950;text-transform:uppercase;letter-spacing:.045em}.condition-metric-value{display:block;font-size:1.02rem;font-weight:950;margin-top:.18rem;white-space:nowrap}.condition-metric-subvalue{display:block;color:#9ec5ff;font-size:.72rem;font-weight:900;margin-top:.16rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.condition-metric-state{display:block;color:#58d68d;font-size:.74rem;font-weight:950;margin-top:.30rem}.condition-metric-off .condition-metric-state{color:#9fb3d1}.compact-section{border-radius:16px;border:1px solid rgba(48,54,61,.78);background:rgba(13,17,23,.36);padding:.70rem;margin-bottom:.70rem}.section-head h4{color:#fff;font-size:.96rem;font-weight:950;margin:0 0 .36rem}.linreg-anchor{color:#dbeafe;font-size:.75rem;font-weight:800;line-height:1.32;margin:0 0 .55rem}.linreg-level-chart{position:relative;height:210px;margin:.65rem 0 .70rem;border-radius:14px;border:1px solid rgba(48,54,61,.72);background:rgba(8,13,21,.52);overflow:hidden}.linreg-level-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px solid rgba(255,255,255,.55);transform:translateY(-1px)}.linreg-level-line::before{content:"";position:absolute;left:0;right:0;top:-6px;height:12px;border-radius:999px;opacity:.52}.linreg-level-label{position:absolute;left:-5.8rem;top:-1.05rem;width:4.9rem;height:2.05rem;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:.62rem;font-weight:950;background:#0d1117}.linreg-level-value{position:absolute;right:.35rem;top:-1.0rem;padding:.22rem .42rem;border-radius:999px;background:#0d1117;border:1px solid rgba(255,255,255,.16);color:#f9fafb;font-size:.58rem;font-weight:950;white-space:nowrap}.level-lower{border-color:#41d67a}.level-lower::before{background:#41d67a}.level-lower .linreg-level-label{color:#41d67a;border:1px solid rgba(65,214,122,.58)}.level-mid{border-color:#8bd3ff}.level-mid::before{background:#2f9bff}.level-mid .linreg-level-label{color:#8bd3ff;border:1px solid rgba(139,211,255,.50)}.level-upper{border-color:#ff9aa4}.level-upper::before{background:#ff4d5a}.level-upper .linreg-level-label{color:#ff9aa4;border:1px solid rgba(255,77,90,.46)}.linreg-price-line{position:absolute;left:6.4rem;right:1rem;height:0;border-top:2px dashed #fff;transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(7,12,18,.95));z-index:6}.linreg-price-line::before{content:"";position:absolute;left:-.72rem;top:-.42rem;border-top:.42rem solid transparent;border-bottom:.42rem solid transparent;border-right:.58rem solid #fff}.linreg-price-badge{position:absolute;left:.65rem;top:-2.15rem;padding:.30rem .48rem;border-radius:999px;background:#fff;color:#0d1117;font-size:.58rem;font-weight:950;white-space:nowrap}.linreg-interpretation{padding:.58rem .65rem;border-radius:12px;border:1px solid rgba(48,54,61,.72);background:rgba(23,32,44,.72);color:#9fb3d1;font-size:.74rem;font-weight:850;line-height:1.30}.detail-item{border-radius:11px;border:1px solid rgba(48,54,61,.62);background:rgba(13,17,23,.30);padding:.45rem}.detail-label{display:block;color:#9fb3d1;font-size:.53rem;font-weight:950;text-transform:uppercase}.detail-value{display:block;color:#fff;font-size:.78rem;font-weight:930;margin-top:.10rem;line-height:1.15}.details-expander{border-radius:14px;border:1px solid rgba(48,54,61,.55);background:rgba(13,17,23,.22);padding:.58rem;margin-bottom:.68rem}.details-expander summary{cursor:pointer;color:#9ec5ff;font-weight:950;font-size:.74rem}.details-compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin-top:.55rem}.card-actions a{color:#8bd3ff!important;text-decoration:none!important;border:1px solid rgba(139,211,255,.34);border-radius:999px;padding:.55rem .8rem;display:inline-flex;font-weight:900}.missing-box{color:#ffd8a8;font-weight:850;font-size:.78rem}@media(max-width:1320px){.redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:820px){.redesign-grid,.decision-row,.condition-metrics-row,.details-compact{grid-template-columns:1fr}.status-badge{white-space:normal;text-align:right}.linreg-level-line,.linreg-price-line{left:5.8rem}.linreg-level-label{left:-5.25rem;width:4.55rem}.linreg-level-value{right:.15rem;font-size:.54rem}}
 
 
@@ -3929,6 +3928,158 @@ div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.active em,
 div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
 .redesign-card .condition-metric.inactive em{
   color:#ff9a9a!important;
+}
+
+/* ========================= BUY ZONE FINDER - V56 AREA DIFESA W + 5 MOTIVAZIONI =========================
+   Append-only: fifth motivation box, Area Difesa W section, and compact collapsible detail sections.
+   ========================= */
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+.redesign-card .condition-metrics-row{
+  grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important;
+  align-items:stretch!important;
+}
+@media(min-width:1501px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+}
+@media(max-width:1500px) and (min-width:981px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.watch,
+.redesign-card .condition-metric.watch{
+  border-color:rgba(245,158,11,.72)!important;
+  background:
+    radial-gradient(circle at top right, rgba(245,158,11,.25), transparent 42%),
+    linear-gradient(180deg, rgba(245,158,11,.18) 0%, rgba(83,55,18,.22) 42%, rgba(13,17,23,.42) 100%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 0 0 1px rgba(245,158,11,.13),
+    0 0 14px rgba(245,158,11,.085)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.watch em,
+.redesign-card .condition-metric.watch em{color:#ffcf78!important;}
+
+.redesign-card .details-expander{
+  overflow:hidden!important;
+}
+.redesign-card .details-expander[open]{
+  background:rgba(13,17,23,.30)!important;
+}
+.redesign-card .details-expander summary{
+  list-style:none!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:.48rem!important;
+}
+.redesign-card .details-expander summary::-webkit-details-marker{display:none!important;}
+.redesign-card .details-expander summary::before{
+  content:"›"!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:1rem!important;
+  height:1rem!important;
+  color:#ffffff!important;
+  font-weight:950!important;
+  transform:rotate(0deg)!important;
+  transition:transform .16s ease!important;
+}
+.redesign-card .details-expander[open] summary::before{transform:rotate(90deg)!important;}
+.redesign-card .details-expander .linreg-box,
+.redesign-card .details-expander .advanced-buyzone-box,
+.redesign-card .details-expander .defense-w-box{
+  margin:.62rem 0 0 0!important;
+}
+
+.defense-w-box{
+  margin:.50rem 0 .90rem 0!important;
+  padding:.74rem .78rem!important;
+  border-radius:14px!important;
+  border:1px solid rgba(48,54,61,.70)!important;
+  background:rgba(13,17,23,.34)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.030)!important;
+}
+.defense-w-box.defense-w-active{
+  border-color:rgba(65,214,122,.58)!important;
+  background:
+    radial-gradient(circle at top right, rgba(65,214,122,.14), transparent 42%),
+    rgba(13,17,23,.40)!important;
+}
+.defense-w-box.defense-w-watch{
+  border-color:rgba(245,158,11,.58)!important;
+  background:
+    radial-gradient(circle at top right, rgba(245,158,11,.13), transparent 42%),
+    rgba(13,17,23,.40)!important;
+}
+.defense-w-title{
+  color:#8fb9ff!important;
+  font-size:.72rem!important;
+  line-height:1.14!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.060em!important;
+  margin-bottom:.24rem!important;
+}
+.defense-w-subtitle{
+  color:#cfe7ff!important;
+  font-size:.70rem!important;
+  line-height:1.22!important;
+  font-weight:780!important;
+  margin-bottom:.58rem!important;
+}
+.defense-w-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:.46rem!important;
+  margin:.12rem 0 .62rem 0!important;
+}
+.defense-w-grid div{
+  min-width:0!important;
+  padding:.52rem .56rem!important;
+  border-radius:12px!important;
+  border:1px solid rgba(139,211,255,.18)!important;
+  background:rgba(8,13,21,.46)!important;
+}
+.defense-w-grid span{
+  display:block!important;
+  color:#9fb3d1!important;
+  font-size:.58rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.045em!important;
+  margin-bottom:.22rem!important;
+}
+.defense-w-grid strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.76rem!important;
+  line-height:1.14!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.defense-w-reason{
+  color:#cfe7ff!important;
+  font-size:.70rem!important;
+  line-height:1.34!important;
+  font-weight:760!important;
+  margin-top:.48rem!important;
+}
+.defense-w-reason strong{color:#f9fafb!important;font-weight:950!important;}
+.defense-w-note{
+  margin-top:.40rem!important;
+  padding-top:.46rem!important;
+  border-top:1px solid rgba(48,54,61,.42)!important;
+  color:#9fb3d1!important;
+  font-size:.66rem!important;
+  line-height:1.26!important;
+  font-weight:820!important;
+}
+@media(max-width:820px){
+  .defense-w-grid{grid-template-columns:1fr!important;}
 }
 
 
@@ -7261,7 +7412,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 ===== FILE: pages/institutional_scanner.py =====
 ====================================================================================================
 
-
 import html
 import math
 import re
@@ -7376,29 +7526,30 @@ def filter_records_by_confluence(records: list[dict], selected_filter: str) -> l
 
 
 def render_condition_filter(records: list[dict]) -> str:
-    counts = {i: 0 for i in range(5)}
+    counts = {i: 0 for i in range(6)}
     for r in records:
         c = int(r.get("confluence_count") or 0)
         if c in counts:
             counts[c] += 1
 
-    options = ["4/4 Buy", "3/4 Watch", "2/4 Early", "1/4", "0/4", "Tutte"]
+    options = ["5/5 Buy", "4/5 Watch", "3/5 Early", "2/5", "1/5", "0/5", "Tutte"]
     labels = {
-        "4/4 Buy": f"4/4 Buy ({counts[4]})",
-        "3/4 Watch": f"3/4 Watch ({counts[3]})",
-        "2/4 Early": f"2/4 Early ({counts[2]})",
-        "1/4": f"1/4 ({counts[1]})",
-        "0/4": f"0/4 ({counts[0]})",
+        "5/5 Buy": f"5/5 Buy ({counts[5]})",
+        "4/5 Watch": f"4/5 Watch ({counts[4]})",
+        "3/5 Early": f"3/5 Early ({counts[3]})",
+        "2/5": f"2/5 ({counts[2]})",
+        "1/5": f"1/5 ({counts[1]})",
+        "0/5": f"0/5 ({counts[0]})",
         "Tutte": f"Tutte ({len(records)})",
     }
 
     if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
-        st.session_state["buy_zone_condition_filter"] = "3/4 Watch"
+        st.session_state["buy_zone_condition_filter"] = "3/5 Early"
 
     st.markdown(
         '<div class="buyzone-filter-panel">'
         '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
-        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 3/4. Cambiare filtro non riesegue lo scanner.</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Early W 3/5. Cambiare filtro non riesegue lo scanner.</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -7445,14 +7596,15 @@ def yesno(active: bool) -> str:
     return "ATTIVO" if active else "NO"
 
 
-def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral") -> str:
-    state_class = "active" if active else "inactive"
+def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral", state_text: str | None = None, state_class_override: str | None = None) -> str:
+    state_class = state_class_override or ("active" if active else "inactive")
+    state = state_text or yesno(active)
     return (
-        f'<div class="condition-metric {state_class}">'
+        f'<div class="condition-metric {escape(state_class)}">'
         f'<span>{escape(title)}</span>'
         f'<strong class="{escape(value_class)}">{escape(pct)}</strong>'
         f'<small>{escape(value)}</small>'
-        f'<em>{yesno(active)}</em>'
+        f'<em>{escape(state)}</em>'
         '</div>'
     )
 
@@ -7508,6 +7660,82 @@ def advanced_condition_metric(record: dict, currency: str) -> str:
     return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
+def defense_w_state_class(record: dict) -> str:
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    if state == "ATTIVO":
+        return "active"
+    if state == "WATCH":
+        return "watch"
+    return "inactive"
+
+
+def defense_w_condition_metric(record: dict, currency: str) -> str:
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    area_low = record.get("defense_w_area_low")
+    area_high = record.get("defense_w_area_high")
+    if safe_float(area_low) is not None and safe_float(area_high) is not None:
+        value = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
+    else:
+        value = "N/D"
+    pct = "CONV. " + str(record.get("defense_w_convergence") or "N/D").upper()
+    value_class = "positive" if state == "ATTIVO" else "neutral" if state == "WATCH" else "negative"
+    return condition_metric(
+        "Area Difesa W",
+        pct,
+        value,
+        bool(record.get("defense_w_active")),
+        value_class,
+        state_text=state,
+        state_class_override=defense_w_state_class(record),
+    )
+
+
+def defense_w_section(record: dict, currency: str) -> str:
+    available = bool(record.get("defense_w_available"))
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    state_class = defense_w_state_class(record)
+    area_low = record.get("defense_w_area_low")
+    area_high = record.get("defense_w_area_high")
+    support = record.get("support_w")
+    start = record.get("buy_zone_start")
+    reason = str(record.get("defense_w_reason") or "Dati Area Difesa W non disponibili.")
+    support_note = str(record.get("support_w_note") or "")
+    if safe_float(area_low) is not None and safe_float(area_high) is not None:
+        area_text = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
+    else:
+        area_text = "N/D"
+    if not available:
+        return (
+            '<div class="defense-w-box defense-w-no">'
+            '<div class="defense-w-title">Area di Difesa W</div>'
+            '<div class="defense-w-subtitle">Conferma tecnica indipendente basata su supporto weekly.</div>'
+            f'<div class="defense-w-reason">{escape(reason)}</div>'
+            '</div>'
+        )
+
+    return (
+        f'<div class="defense-w-box defense-w-{escape(state_class)}">'
+        '<div class="defense-w-title">Area di Difesa W</div>'
+        '<div class="defense-w-subtitle">Supporto weekly indipendente confrontato con Buy Zone START opzioni.</div>'
+        '<div class="defense-w-grid">'
+        f'<div><span>Supporto tecnico W</span><strong>{escape(fmt_price(support, currency))}</strong></div>'
+        f'<div><span>Buy Zone START</span><strong>{escape(fmt_price(start, currency))}</strong></div>'
+        f'<div><span>Area accumulo W</span><strong>{escape(area_text)}</strong></div>'
+        f'<div><span>Convergenza</span><strong>{escape(str(record.get("defense_w_convergence") or "N/D"))}</strong></div>'
+        f'<div><span>Scostamento</span><strong>{escape(fmt_pct(record.get("defense_w_gap_pct"), 1))}</strong></div>'
+        f'<div><span>Stato</span><strong>{escape(state)}</strong></div>'
+        '</div>'
+        f'<div class="defense-w-reason"><strong>Motivo:</strong> {escape(reason)}</div>'
+        f'<div class="defense-w-note">{escape(support_note)}</div>'
+        '</div>'
+    )
+
+
+def collapsible_section(title: str, body: str, expanded: bool = False) -> str:
+    open_attr = " open" if expanded else ""
+    return f'<details class="details-expander"{open_attr}><summary>{escape(title)}</summary>{body}</details>'
+
+
 def reason_block(record: dict) -> str:
     rows = []
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
@@ -7516,6 +7744,9 @@ def reason_block(record: dict) -> str:
 
     advanced_label = str(record.get("advanced_signal_label") or "Buy Zone Avanzate N/D")
     rows.append((bool(record.get("advanced_signal_active")), advanced_label))
+    defense_state = str(record.get("defense_w_state") or "NO").strip().upper()
+    defense_label = "Area Difesa W" if defense_state == "ATTIVO" else "Area Difesa W " + defense_state
+    rows.append((bool(record.get("defense_w_active")), defense_label))
 
     html_rows = []
     for ok, label in rows:
@@ -7872,28 +8103,30 @@ def card(record: dict, rank: int) -> str:
     label = str(record.get("technical_label") or "Monitor tecnico")
     count = int(record.get("confluence_count") or 0)
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
-    badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
+    card_class = "is-buy" if count == 5 else "is-watch" if count == 4 else "is-monitor"
+    badge_class = "badge-buy" if count == 5 else "badge-watch" if count == 4 else "badge-monitor"
 
     html = f'<div class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/5</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
     html += advanced_condition_metric(record, currency)
+    html += defense_w_condition_metric(record, currency)
     html += '</div>'
-    html += linreg_section(record, currency)
-    html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
-    html += advanced_buyzone_section(record, currency)
+    html += collapsible_section("LinReg W", linreg_section(record, currency), expanded=False)
+    html += collapsible_section("Dettagli SMA200W / Storico", technical_details(record, currency), expanded=False)
+    html += collapsible_section("Buy Zone Avanzate", advanced_buyzone_section(record, currency), expanded=bool(record.get("advanced_signal_active")))
+    html += collapsible_section("Area di Difesa W", defense_w_section(record, currency), expanded=bool(record.get("defense_w_active")))
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
 
 render_standard_page_header(
     title="BUY ZONE FINDER",
-    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W e Forecast on demand.",
+    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W, Buy Zone opzioni e Area Difesa W.",
     toggle_label="Vista compatta",
     toggle_key="linreg_compact_mode",
     toggle_default=True,
@@ -7915,8 +8148,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_items = [
     ("Titoli", str(summary.get("count", 0)), selected_watchlist),
-    ("Buy Zone", str(summary.get("buy_count", 0)), "4/4 condizioni"),
-    ("Watch", str(summary.get("watch_count", 0)), "3/4 condizioni"),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "5/5 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "4/5 condizioni"),
     ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
 ]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
@@ -7928,7 +8161,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
         )
 
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
-selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
+selected_condition_filter = render_condition_filter(records) if records else "3/5 Early"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
 st.markdown(
     f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
@@ -11693,6 +11926,169 @@ def render_auto_refresh_timer(*, key: str, interval_seconds: int = 120, enabled:
 
 
 ====================================================================================================
+===== FILE: utils/defense_w.py =====
+====================================================================================================
+
+from __future__ import annotations
+
+import math
+from typing import Any
+
+import pandas as pd
+
+
+DEFENSE_W_HIGH_MAX_GAP_PCT = 7.5
+DEFENSE_W_MEDIUM_MAX_GAP_PCT = 15.0
+DEFENSE_W_PRICE_NEAR_ZONE_PCT = 10.0
+DEFENSE_W_LOOKBACK_WEEKS = 156
+
+
+def safe_float(value: Any, default: float | None = None) -> float | None:
+    try:
+        if value is None:
+            return default
+        x = float(value)
+        if pd.isna(x) or math.isinf(x):
+            return default
+        return x
+    except Exception:
+        return default
+
+
+def normalize_weekly(df: pd.DataFrame | None) -> pd.DataFrame:
+    if df is None or df.empty:
+        return pd.DataFrame()
+    out = df.copy()
+    if isinstance(out.columns, pd.MultiIndex):
+        if "Low" in out.columns.get_level_values(0):
+            out.columns = out.columns.get_level_values(0)
+        elif "Low" in out.columns.get_level_values(-1):
+            out.columns = out.columns.get_level_values(-1)
+    return out.dropna(how="all")
+
+
+def technical_weekly_support(weekly: pd.DataFrame | None, current_price: float | None = None) -> dict[str, Any]:
+    """Return an independent weekly technical support level.
+
+    The level is intentionally calculated from the weekly price history only.
+    It does not use options, DCF, targets, SMA200W or LinReg. For the first
+    version of Area Difesa W we use the most visible structural floor: the
+    lowest valid weekly low in the last 156 weeks, constrained to a sensible
+    band below the current price when the current price is available.
+    """
+    out: dict[str, Any] = {
+        "support_w": None,
+        "support_w_date": None,
+        "support_w_method": "Minimo weekly strutturale 156 settimane",
+        "support_w_note": "Supporto tecnico weekly non disponibile.",
+    }
+    h = normalize_weekly(weekly)
+    if h.empty or "Low" not in h.columns:
+        return out
+
+    lows = pd.to_numeric(h["Low"], errors="coerce").dropna()
+    lows = lows[lows > 0]
+    if lows.empty:
+        return out
+
+    window = lows.tail(min(len(lows), DEFENSE_W_LOOKBACK_WEEKS))
+    price = safe_float(current_price)
+    if price is not None and price > 0:
+        # Keep the support technically relevant: below spot, but not an old
+        # collapse level too far away to be useful for a W area defense card.
+        filtered = window[(window <= price * 0.995) & (window >= price * 0.50)]
+        if not filtered.empty:
+            window = filtered
+
+    idx = window.idxmin()
+    support = safe_float(window.loc[idx])
+    if support is None or support <= 0:
+        return out
+
+    date_text = idx.strftime("%Y-%m-%d") if hasattr(idx, "strftime") else str(idx)
+    out.update({
+        "support_w": float(support),
+        "support_w_date": date_text,
+        "support_w_note": f"Minimo weekly nel lookback: {date_text}",
+    })
+    return out
+
+
+def analyze_defense_w(
+    *,
+    current_price: float | None,
+    weekly: pd.DataFrame | None,
+    buy_zone_start: float | None,
+) -> dict[str, Any]:
+    """Analyze Area Difesa W.
+
+    Area Difesa W compares an independent weekly technical support with the
+    first real-options Buy Zone level (START). STRONG/PANIC are deliberately not
+    used for the main convergence score.
+    """
+    support = technical_weekly_support(weekly, current_price=current_price)
+    support_level = safe_float(support.get("support_w"))
+    start = safe_float(buy_zone_start)
+    price = safe_float(current_price)
+
+    out: dict[str, Any] = {
+        **support,
+        "defense_w_available": False,
+        "defense_w_active": False,
+        "defense_w_state": "NO",
+        "defense_w_convergence": "N/D",
+        "defense_w_gap_pct": None,
+        "defense_w_price_distance_pct": None,
+        "defense_w_area_low": None,
+        "defense_w_area_high": None,
+        "defense_w_reason": "Servono supporto tecnico weekly e Buy Zone START opzioni.",
+    }
+
+    if support_level is None or support_level <= 0 or start is None or start <= 0:
+        return out
+
+    low = min(support_level, start)
+    high = max(support_level, start)
+    gap = abs(start - support_level) / start * 100.0
+    price_distance = ((price - high) / high * 100.0) if price is not None and high > 0 else None
+
+    if gap <= DEFENSE_W_HIGH_MAX_GAP_PCT:
+        convergence = "Alta"
+    elif gap <= DEFENSE_W_MEDIUM_MAX_GAP_PCT:
+        convergence = "Media"
+    else:
+        convergence = "Bassa"
+
+    price_near = price_distance is not None and price_distance <= DEFENSE_W_PRICE_NEAR_ZONE_PCT
+    if convergence == "Alta" and price_near:
+        state = "ATTIVO"
+        active = True
+        reason = "Supporto tecnico weekly e Buy Zone START sono vicini; il prezzo e' ancora vicino all'area combinata."
+    elif convergence in {"Alta", "Media"}:
+        state = "WATCH"
+        active = False
+        reason = "Esiste convergenza tra tecnica e opzioni, ma il prezzo non e' abbastanza vicino all'area combinata."
+    else:
+        state = "NO"
+        active = False
+        reason = "Supporto tecnico weekly e Buy Zone START sono troppo distanti."
+
+    out.update({
+        "defense_w_available": True,
+        "defense_w_active": active,
+        "defense_w_state": state,
+        "defense_w_convergence": convergence,
+        "defense_w_gap_pct": gap,
+        "defense_w_price_distance_pct": price_distance,
+        "defense_w_area_low": low,
+        "defense_w_area_high": high,
+        "defense_w_reason": reason,
+    })
+    return out
+
+
+
+====================================================================================================
 ===== FILE: utils/formatting.py =====
 ====================================================================================================
 
@@ -11971,7 +12367,6 @@ def test_github_storage_connection(watchlists_path=None):
 ===== FILE: utils/institutional_scanner.py =====
 ====================================================================================================
 
-
 from __future__ import annotations
 import math, os, time, urllib.parse
 from datetime import datetime
@@ -11981,6 +12376,7 @@ import pandas as pd
 import yfinance as yf
 from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
 from utils.advanced_buy_zones import analyze_advanced_buy_zone
+from utils.defense_w import analyze_defense_w
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -12191,7 +12587,7 @@ def compute_linreg_w(weekly,current_price):
 
 def technical_metrics(item):
     sym=item["yahoo"]
-    row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":""}
+    row={"ticker":item["ticker"],"yahoo":sym,"tv":item.get("tv",""),"name":item.get("name",""),"last_price":None,"previous_close":None,"daily_change_pct":None,"currency":"","sma200w":None,"dist_pct":None,"hist_min_w_pct":None,"hist_min_w_date":None,"hist_min_w_low":None,"hist_min_equivalent":None,"hist_max_w_pct":None,"hist_max_w_date":None,"hist_max_w_high":None,"hist_max_equivalent":None,"gap_points":None,"below_sma200w":False,"orange_zone":False,"near_hist_min_w":False,"near_linreg_lower":False,"confluence_count":0,"technical_label":"Monitor tecnico","error":"", "defense_w_active":False, "defense_w_state":"NO", "defense_w_convergence":"N/D"}
     try:
         row.update(quote_data(sym)); w=normalize_df(yf_download(sym,period="20y",interval="1wk",auto_adjust=False))
         if w.empty or "Close" not in w.columns: row["error"]="weekly vuoto o Close mancante"; return row
@@ -12232,21 +12628,41 @@ def technical_metrics(item):
                 "advanced_signal_label": "Buy Zone Avanzate N/D",
                 "advanced_signal_reason": "Dati avanzati non disponibili.",
             })
-        # BUY ZONE FINDER now has 4 motivations:
+        # Area Difesa W: quinta motivazione additiva.
+        # Il supporto tecnico weekly e' calcolato in modo indipendente dalla Buy Zone;
+        # il confronto usa solo la Buy Zone START delle opzioni reali.
+        try:
+            row.update(analyze_defense_w(
+                current_price=row.get("last_price"),
+                weekly=w,
+                buy_zone_start=row.get("buy_zone_start"),
+            ))
+        except Exception as defense_exc:
+            row.update({
+                "defense_w_available": False,
+                "defense_w_active": False,
+                "defense_w_state": "NO",
+                "defense_w_convergence": "N/D",
+                "defense_w_reason": str(defense_exc),
+            })
+
+        # BUY ZONE FINDER now has 5 motivations:
         # 1) below SMA200W, 2) near historical Min W, 3) near/below LinReg Lower,
-        # 4) real-options Advanced Buy Zone signal.
+        # 4) real-options Advanced Buy Zone signal,
+        # 5) Area Difesa W (technical weekly support + Buy Zone START convergence).
         c=[
             bool(row["below_sma200w"]),
             bool(row["near_hist_min_w"]),
             bool(row["near_linreg_lower"]),
             bool(row.get("advanced_signal_active")),
+            bool(row.get("defense_w_active")),
         ]
         row["confluence_count"]=sum(1 for v in c if v)
         row["technical_label"]=(
-            "Buy Zone tecnica" if row["confluence_count"]==4 else
-            "Watch tecnico" if row["confluence_count"]==3 else
-            "Early tecnico" if row["confluence_count"]==2 else
-            "Monitor tecnico"
+            "Buy Zone W" if row["confluence_count"]==5 else
+            "Watch W" if row["confluence_count"]==4 else
+            "Early W" if row["confluence_count"]==3 else
+            "Monitor W"
         )
         return row
     except Exception as e: row["error"]=str(e); return row
@@ -12301,7 +12717,7 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
         if i<total and SLEEP_BETWEEN_TICKERS_SECONDS>0: time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
     return sorted(out,key=sort_priority)
 def scan_summary(records):
-    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
+    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==5]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
 
 
 
