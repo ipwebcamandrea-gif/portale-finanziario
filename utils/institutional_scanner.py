@@ -7,6 +7,7 @@ import pandas as pd
 import yfinance as yf
 from utils.symbols import normalize_tradingview_symbol, normalize_yfinance_symbol, strip_exchange_prefix
 from utils.advanced_buy_zones import analyze_advanced_buy_zone
+from utils.anchor_low_w import analyze_anchor_low_w
 
 TIMEZONE=ZoneInfo("Europe/Rome")
 SMA_WEEKS=200
@@ -257,6 +258,19 @@ def technical_metrics(item):
                 "advanced_signal_active": False,
                 "advanced_signal_label": "Buy Zone Avanzate N/D",
                 "advanced_signal_reason": "Dati avanzati non disponibili.",
+            })
+        # Punto Ripartenza W / Anchor Low W: informativo, non entra nello score 4/4.
+        try:
+            row.update(analyze_anchor_low_w(
+                sym,
+                current_price=row.get("last_price"),
+                currency=row.get("currency") or "",
+                weekly=w,
+            ))
+        except Exception as anchor_exc:
+            row.update({
+                "anchor_w_available": False,
+                "anchor_w_note": str(anchor_exc),
             })
         # BUY ZONE FINDER now has 4 motivations:
         # 1) below SMA200W, 2) near historical Min W, 3) near/below LinReg Lower,
