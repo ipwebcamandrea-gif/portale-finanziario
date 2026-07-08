@@ -257,13 +257,9 @@ def defense_w_state_class(record: dict) -> str:
 
 def defense_w_condition_metric(record: dict, currency: str) -> str:
     state = str(record.get("defense_w_state") or "NO").strip().upper()
-    area_low = record.get("defense_w_area_low")
-    area_high = record.get("defense_w_area_high")
-    if safe_float(area_low) is not None and safe_float(area_high) is not None:
-        value = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
-    else:
-        value = "N/D"
-    pct = "CONV. " + str(record.get("defense_w_convergence") or "N/D").upper()
+    support = record.get("support_w")
+    value = fmt_price(support, currency) if safe_float(support) is not None else "N/D"
+    pct = "TECNICA" if safe_float(support) is not None else "N/D"
     value_class = "positive" if state == "ATTIVO" else "neutral" if state == "WATCH" else "negative"
     return condition_metric(
         "Area Difesa W",
@@ -280,38 +276,37 @@ def defense_w_section(record: dict, currency: str) -> str:
     available = bool(record.get("defense_w_available"))
     state = str(record.get("defense_w_state") or "NO").strip().upper()
     state_class = defense_w_state_class(record)
-    area_low = record.get("defense_w_area_low")
-    area_high = record.get("defense_w_area_high")
     support = record.get("support_w")
     start = record.get("buy_zone_start")
     reason = str(record.get("defense_w_reason") or "Dati Area Difesa W non disponibili.")
     support_note = str(record.get("support_w_note") or "")
-    if safe_float(area_low) is not None and safe_float(area_high) is not None:
-        area_text = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
-    else:
-        area_text = "N/D"
+    option_convergence = str(record.get("defense_w_option_convergence") or "N/D")
+    option_gap = record.get("defense_w_option_gap_pct")
     if not available:
         return (
             '<div class="defense-w-box defense-w-no">'
             '<div class="defense-w-title">Area di Difesa W</div>'
-            '<div class="defense-w-subtitle">Conferma tecnica indipendente basata su supporto weekly.</div>'
+            '<div class="defense-w-subtitle">Supporto tecnico weekly indipendente. Non usa dati opzioni.</div>'
             f'<div class="defense-w-reason">{escape(reason)}</div>'
             '</div>'
         )
 
+    option_note = "Disponibile" if safe_float(start) is not None else "N/D"
     return (
         f'<div class="defense-w-box defense-w-{escape(state_class)}">'
         '<div class="defense-w-title">Area di Difesa W</div>'
-        '<div class="defense-w-subtitle">Supporto weekly indipendente confrontato con Buy Zone START opzioni.</div>'
+        '<div class="defense-w-subtitle">Supporto tecnico weekly indipendente. La convergenza opzioni e solo informativa.</div>'
         '<div class="defense-w-grid">'
         f'<div><span>Supporto tecnico W</span><strong>{escape(fmt_price(support, currency))}</strong></div>'
+        f'<div><span>Distanza prezzo/supporto</span><strong>{escape(fmt_pct(record.get("defense_w_price_distance_pct"), 1))}</strong></div>'
+        f'<div><span>Metodo</span><strong>{escape(str(record.get("support_w_method") or "Weekly"))}</strong></div>'
+        f'<div><span>Stato tecnico</span><strong>{escape(state)}</strong></div>'
         f'<div><span>Buy Zone START</span><strong>{escape(fmt_price(start, currency))}</strong></div>'
-        f'<div><span>Area accumulo W</span><strong>{escape(area_text)}</strong></div>'
-        f'<div><span>Convergenza</span><strong>{escape(str(record.get("defense_w_convergence") or "N/D"))}</strong></div>'
-        f'<div><span>Scostamento</span><strong>{escape(fmt_pct(record.get("defense_w_gap_pct"), 1))}</strong></div>'
-        f'<div><span>Stato</span><strong>{escape(state)}</strong></div>'
+        f'<div><span>Convergenza opzioni</span><strong>{escape(option_convergence)}</strong></div>'
+        f'<div><span>Scostamento opzionale</span><strong>{escape(fmt_pct(option_gap, 1))}</strong></div>'
+        f'<div><span>Opzioni</span><strong>{escape(option_note)}</strong></div>'
         '</div>'
-        f'<div class="defense-w-reason"><strong>Motivo:</strong> {escape(reason)}</div>'
+        f'<div class="defense-w-reason"><strong>Motivo tecnico:</strong> {escape(reason)}</div>'
         f'<div class="defense-w-note">{escape(support_note)}</div>'
         '</div>'
     )
