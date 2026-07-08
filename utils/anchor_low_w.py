@@ -80,7 +80,7 @@ def eurusd_rate_for_date(date_value: str | pd.Timestamp) -> float | None:
         return None
 
 
-def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, Any]:
+def find_last_under_sma200w_episode(weekly: pd.DataFrame | None, current_price: float | None = None) -> dict[str, Any]:
     """Find the latest meaningful under-SMA200W reset and its lowest weekly low."""
     out = {
         "available": False,
@@ -123,6 +123,7 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, An
             start = None
 
     candidates = []
+    current = safe_float(current_price)
     for start_i, end_i in episodes:
         seg = h.iloc[start_i:end_i + 1]
         if seg.empty:
@@ -130,6 +131,11 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, An
         min_idx = pd.to_numeric(seg["Low"], errors="coerce").idxmin()
         min_low = safe_float(seg.loc[min_idx, "Low"])
         if min_low is None or min_low <= 0:
+            continue
+        # A valid current-cycle anchor cannot be above the current price.
+        # If price has already broken below that low, the supposed restart is invalid
+        # and we must look for an earlier W restart point.
+        if current is not None and current > 0 and min_low > current * 1.001:
             continue
         after = h.loc[min_idx:]
         max_after = safe_float(pd.to_numeric(after["Close"], errors="coerce").max())
@@ -145,6 +151,7 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, An
         })
 
     if not candidates:
+        out["reason"] = "Nessun anchor valido: le fasi sotto SMA200W trovate sono sopra il prezzo attuale o non sono utilizzabili."
         return out
 
     # Do not simply take the last under-SMA200W episode: a recent small pullback
@@ -233,7 +240,7 @@ def analyze_anchor_low_w(
     source_currency = "USD" if converted else cur
 
     source_weekly = download_weekly(source_symbol) if converted else weekly
-    episode = find_last_under_sma200w_episode(source_weekly)
+    episode = find_last_under_sma200w_episode(source_weekly, current_price=None if converted else current_price)
     if not episode.get("available"):
         reason = str(episode.get("reason") or "Punto Ripartenza W non disponibile.")
         if converted:
