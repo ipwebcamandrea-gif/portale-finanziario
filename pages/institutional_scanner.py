@@ -244,6 +244,50 @@ def advanced_condition_metric(record: dict, currency: str) -> str:
     return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
+def anchor_low_w_section(record: dict, currency: str) -> str:
+    available = bool(record.get("anchor_w_available"))
+    note = str(record.get("anchor_w_note") or "Punto Ripartenza W non disponibile.")
+    if not available:
+        return (
+            '<div class="anchor-w-box">'
+            '<div class="anchor-w-title">Punto Ripartenza W</div>'
+            '<div class="anchor-w-subtitle">Minimo sotto SMA200W da cui parte il ciclo rialzista weekly.</div>'
+            f'<div class="anchor-w-empty">{escape(note)}</div>'
+            '</div>'
+        )
+
+    is_converted = bool(record.get("anchor_w_converted"))
+    source_symbol = str(record.get("anchor_w_source_symbol") or record.get("yahoo") or "")
+    source_currency = str(record.get("anchor_w_source_currency") or "")
+    source_price = record.get("anchor_w_source_price")
+    fx_rate = record.get("anchor_w_fx_rate")
+    method = str(record.get("anchor_w_method") or "Ticker diretto")
+    items = [
+        ("Anchor Low W", fmt_price(record.get("anchor_w_price"), currency)),
+        ("Data", str(record.get("anchor_w_date") or "N/D")),
+        ("Distanza dal prezzo", fmt_pct(record.get("anchor_w_distance_pct"), 1)),
+        ("Metodo", method),
+        ("Sottostante", source_symbol or "N/D"),
+        ("Low originale", fmt_price(source_price, source_currency)),
+    ]
+    if is_converted:
+        items.append(("Cambio EUR/USD", f"{safe_float(fx_rate):.4f}" if safe_float(fx_rate) is not None else "N/D"))
+    items.append(("Rialzo max dal minimo", fmt_pct(record.get("anchor_w_recovery_pct"), 1)))
+    grid = ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items)
+    return (
+        '<div class="anchor-w-box">'
+        '<div class="anchor-w-title">Punto Ripartenza W / Anchor Low W</div>'
+        '<div class="anchor-w-subtitle">Minimo sotto SMA200W da cui parte il ciclo rialzista weekly. Dato informativo: non entra nello score 4/4.</div>'
+        f'<div class="anchor-w-grid">{grid}</div>'
+        f'<div class="anchor-w-note">{escape(note)}</div>'
+        '</div>'
+    )
+
+
+def collapsible_section(title: str, body: str) -> str:
+    return f'<details class="details-expander"><summary>{escape(title)}</summary>{body}</details>'
+
+
 def reason_block(record: dict) -> str:
     rows = []
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
@@ -620,9 +664,10 @@ def card(record: dict, rank: int) -> str:
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
     html += advanced_condition_metric(record, currency)
     html += '</div>'
-    html += linreg_section(record, currency)
-    html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
-    html += advanced_buyzone_section(record, currency)
+    html += collapsible_section("LinReg W", linreg_section(record, currency))
+    html += collapsible_section("Dettagli SMA200W / Storico", technical_details(record, currency))
+    html += collapsible_section("Buy Zone Avanzate", advanced_buyzone_section(record, currency))
+    html += collapsible_section("Punto Ripartenza W", anchor_low_w_section(record, currency))
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
