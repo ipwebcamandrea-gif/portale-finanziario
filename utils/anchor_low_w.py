@@ -8,7 +8,7 @@ import pandas as pd
 import yfinance as yf
 
 SMA_WEEKS = 200
-DEFAULT_MIN_RECOVERY_PCT = 25.0
+DEFAULT_MIN_RECOVERY_PCT = 40.0
 
 
 def safe_float(value: Any, default: float | None = None) -> float | None:
@@ -147,8 +147,20 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, An
     if not candidates:
         return out
 
-    confirmed = [c for c in candidates if safe_float(c.get("recovery_pct")) is not None and float(c["recovery_pct"]) >= DEFAULT_MIN_RECOVERY_PCT]
-    chosen = (confirmed or candidates)[-1]
+    # Do not simply take the last under-SMA200W episode: a recent small pullback
+    # can go marginally below SMA200W but is not a true W restart point.
+    # We require a meaningful subsequent recovery. Then we take the latest
+    # confirmed restart. This keeps MSFT/1MSFT.MI anchored to Jan 2023 instead
+    # of a recent shallow 2026 correction.
+    confirmed = [
+        c for c in candidates
+        if safe_float(c.get("recovery_pct")) is not None
+        and float(c["recovery_pct"]) >= DEFAULT_MIN_RECOVERY_PCT
+    ]
+    chosen = confirmed[-1] if confirmed else max(
+        candidates,
+        key=lambda c: safe_float(c.get("recovery_pct"), -999.0) or -999.0,
+    )
     out.update({
         "available": True,
         "weekly_low": chosen["weekly_low"],
@@ -156,7 +168,7 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None) -> dict[str, An
         "episode_start": chosen["episode_start"],
         "episode_end": chosen["episode_end"],
         "recovery_pct": chosen["recovery_pct"],
-        "reason": "Ultima fase sotto SMA200W con ripartenza successiva.",
+        "reason": "Ultima fase sotto SMA200W con ripartenza W significativa.",
     })
     return out
 
