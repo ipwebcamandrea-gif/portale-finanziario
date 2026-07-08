@@ -1,4 +1,3 @@
-
 import html
 import math
 import re
@@ -113,29 +112,30 @@ def filter_records_by_confluence(records: list[dict], selected_filter: str) -> l
 
 
 def render_condition_filter(records: list[dict]) -> str:
-    counts = {i: 0 for i in range(5)}
+    counts = {i: 0 for i in range(6)}
     for r in records:
         c = int(r.get("confluence_count") or 0)
         if c in counts:
             counts[c] += 1
 
-    options = ["4/4 Buy", "3/4 Watch", "2/4 Early", "1/4", "0/4", "Tutte"]
+    options = ["5/5 Buy", "4/5 Watch", "3/5 Early", "2/5", "1/5", "0/5", "Tutte"]
     labels = {
-        "4/4 Buy": f"4/4 Buy ({counts[4]})",
-        "3/4 Watch": f"3/4 Watch ({counts[3]})",
-        "2/4 Early": f"2/4 Early ({counts[2]})",
-        "1/4": f"1/4 ({counts[1]})",
-        "0/4": f"0/4 ({counts[0]})",
+        "5/5 Buy": f"5/5 Buy ({counts[5]})",
+        "4/5 Watch": f"4/5 Watch ({counts[4]})",
+        "3/5 Early": f"3/5 Early ({counts[3]})",
+        "2/5": f"2/5 ({counts[2]})",
+        "1/5": f"1/5 ({counts[1]})",
+        "0/5": f"0/5 ({counts[0]})",
         "Tutte": f"Tutte ({len(records)})",
     }
 
     if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
-        st.session_state["buy_zone_condition_filter"] = "3/4 Watch"
+        st.session_state["buy_zone_condition_filter"] = "3/5 Early"
 
     st.markdown(
         '<div class="buyzone-filter-panel">'
         '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
-        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 3/4. Cambiare filtro non riesegue lo scanner.</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Early W 3/5. Cambiare filtro non riesegue lo scanner.</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -182,14 +182,15 @@ def yesno(active: bool) -> str:
     return "ATTIVO" if active else "NO"
 
 
-def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral") -> str:
-    state_class = "active" if active else "inactive"
+def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral", state_text: str | None = None, state_class_override: str | None = None) -> str:
+    state_class = state_class_override or ("active" if active else "inactive")
+    state = state_text or yesno(active)
     return (
-        f'<div class="condition-metric {state_class}">'
+        f'<div class="condition-metric {escape(state_class)}">'
         f'<span>{escape(title)}</span>'
         f'<strong class="{escape(value_class)}">{escape(pct)}</strong>'
         f'<small>{escape(value)}</small>'
-        f'<em>{yesno(active)}</em>'
+        f'<em>{escape(state)}</em>'
         '</div>'
     )
 
@@ -245,6 +246,82 @@ def advanced_condition_metric(record: dict, currency: str) -> str:
     return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
+def defense_w_state_class(record: dict) -> str:
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    if state == "ATTIVO":
+        return "active"
+    if state == "WATCH":
+        return "watch"
+    return "inactive"
+
+
+def defense_w_condition_metric(record: dict, currency: str) -> str:
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    area_low = record.get("defense_w_area_low")
+    area_high = record.get("defense_w_area_high")
+    if safe_float(area_low) is not None and safe_float(area_high) is not None:
+        value = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
+    else:
+        value = "N/D"
+    pct = "CONV. " + str(record.get("defense_w_convergence") or "N/D").upper()
+    value_class = "positive" if state == "ATTIVO" else "neutral" if state == "WATCH" else "negative"
+    return condition_metric(
+        "Area Difesa W",
+        pct,
+        value,
+        bool(record.get("defense_w_active")),
+        value_class,
+        state_text=state,
+        state_class_override=defense_w_state_class(record),
+    )
+
+
+def defense_w_section(record: dict, currency: str) -> str:
+    available = bool(record.get("defense_w_available"))
+    state = str(record.get("defense_w_state") or "NO").strip().upper()
+    state_class = defense_w_state_class(record)
+    area_low = record.get("defense_w_area_low")
+    area_high = record.get("defense_w_area_high")
+    support = record.get("support_w")
+    start = record.get("buy_zone_start")
+    reason = str(record.get("defense_w_reason") or "Dati Area Difesa W non disponibili.")
+    support_note = str(record.get("support_w_note") or "")
+    if safe_float(area_low) is not None and safe_float(area_high) is not None:
+        area_text = f"{fmt_price(area_low, currency)} → {fmt_price(area_high, currency)}"
+    else:
+        area_text = "N/D"
+    if not available:
+        return (
+            '<div class="defense-w-box defense-w-no">'
+            '<div class="defense-w-title">Area di Difesa W</div>'
+            '<div class="defense-w-subtitle">Conferma tecnica indipendente basata su supporto weekly.</div>'
+            f'<div class="defense-w-reason">{escape(reason)}</div>'
+            '</div>'
+        )
+
+    return (
+        f'<div class="defense-w-box defense-w-{escape(state_class)}">'
+        '<div class="defense-w-title">Area di Difesa W</div>'
+        '<div class="defense-w-subtitle">Supporto weekly indipendente confrontato con Buy Zone START opzioni.</div>'
+        '<div class="defense-w-grid">'
+        f'<div><span>Supporto tecnico W</span><strong>{escape(fmt_price(support, currency))}</strong></div>'
+        f'<div><span>Buy Zone START</span><strong>{escape(fmt_price(start, currency))}</strong></div>'
+        f'<div><span>Area accumulo W</span><strong>{escape(area_text)}</strong></div>'
+        f'<div><span>Convergenza</span><strong>{escape(str(record.get("defense_w_convergence") or "N/D"))}</strong></div>'
+        f'<div><span>Scostamento</span><strong>{escape(fmt_pct(record.get("defense_w_gap_pct"), 1))}</strong></div>'
+        f'<div><span>Stato</span><strong>{escape(state)}</strong></div>'
+        '</div>'
+        f'<div class="defense-w-reason"><strong>Motivo:</strong> {escape(reason)}</div>'
+        f'<div class="defense-w-note">{escape(support_note)}</div>'
+        '</div>'
+    )
+
+
+def collapsible_section(title: str, body: str, expanded: bool = False) -> str:
+    open_attr = " open" if expanded else ""
+    return f'<details class="details-expander"{open_attr}><summary>{escape(title)}</summary>{body}</details>'
+
+
 def reason_block(record: dict) -> str:
     rows = []
     rows.append((bool(record.get("below_sma200w")), "Sotto SMA200W"))
@@ -253,6 +330,9 @@ def reason_block(record: dict) -> str:
 
     advanced_label = str(record.get("advanced_signal_label") or "Buy Zone Avanzate N/D")
     rows.append((bool(record.get("advanced_signal_active")), advanced_label))
+    defense_state = str(record.get("defense_w_state") or "NO").strip().upper()
+    defense_label = "Area Difesa W" if defense_state == "ATTIVO" else "Area Difesa W " + defense_state
+    rows.append((bool(record.get("defense_w_active")), defense_label))
 
     html_rows = []
     for ok, label in rows:
@@ -609,28 +689,30 @@ def card(record: dict, rank: int) -> str:
     label = str(record.get("technical_label") or "Monitor tecnico")
     count = int(record.get("confluence_count") or 0)
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
-    badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
+    card_class = "is-buy" if count == 5 else "is-watch" if count == 4 else "is-monitor"
+    badge_class = "badge-buy" if count == 5 else "badge-watch" if count == 4 else "badge-monitor"
 
     html = f'<div class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/5</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
     html += advanced_condition_metric(record, currency)
+    html += defense_w_condition_metric(record, currency)
     html += '</div>'
-    html += linreg_section(record, currency)
-    html += '<details class="details-expander"><summary>Dettagli SMA200W / Storico</summary>' + technical_details(record, currency) + '</details>'
-    html += advanced_buyzone_section(record, currency)
+    html += collapsible_section("LinReg W", linreg_section(record, currency), expanded=False)
+    html += collapsible_section("Dettagli SMA200W / Storico", technical_details(record, currency), expanded=False)
+    html += collapsible_section("Buy Zone Avanzate", advanced_buyzone_section(record, currency), expanded=bool(record.get("advanced_signal_active")))
+    html += collapsible_section("Area di Difesa W", defense_w_section(record, currency), expanded=bool(record.get("defense_w_active")))
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
 
 render_standard_page_header(
     title="BUY ZONE FINDER",
-    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W e Forecast on demand.",
+    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W, Buy Zone opzioni e Area Difesa W.",
     toggle_label="Vista compatta",
     toggle_key="linreg_compact_mode",
     toggle_default=True,
@@ -652,8 +734,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_items = [
     ("Titoli", str(summary.get("count", 0)), selected_watchlist),
-    ("Buy Zone", str(summary.get("buy_count", 0)), "4/4 condizioni"),
-    ("Watch", str(summary.get("watch_count", 0)), "3/4 condizioni"),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "5/5 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "4/5 condizioni"),
     ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
 ]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
@@ -665,7 +747,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
         )
 
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
-selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
+selected_condition_filter = render_condition_filter(records) if records else "3/5 Early"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
 st.markdown(
     f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
