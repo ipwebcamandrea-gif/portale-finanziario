@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "MEGA CAP USA",
+    "active_watchlist": "TEST",
     "watchlists": {
         "MEGA CAP USA": [
             "MIL:SWDA",
@@ -33,41 +33,41 @@
             "NYSE:AXP",
             "NASDAQ:AMZN",
             "NYSE:CRM",
-            "NYSE:BABA"        
+            "NYSE:BABA"
         ],
         "TLI TOP 10": [
-        "NYSE:ZETA",
-        "NASDAQ:BIDU",
-        "NASDAQ:SOFI",
-        "NYSE:NVO",
-        "NASDAQ:PEP",
-        "NYSE:UNH",
-        "NYSE:HIMS",
-        "NYSE:SE"
+            "NYSE:ZETA",
+            "NASDAQ:BIDU",
+            "NASDAQ:SOFI",
+            "NYSE:NVO",
+            "NASDAQ:PEP",
+            "NYSE:UNH",
+            "NYSE:HIMS",
+            "NYSE:SE"
         ],
         "EDGAR": [
-        "NASDAQ:WVE",
-        "NASDAQ:PERI",
-        "NYSE:MIR",
-        "NYSE:TALO",
-        "NYSE:GAP",
-        "NASDAQ:MBLY",
-        "NYSE:PFE"
+            "NASDAQ:WVE",
+            "NASDAQ:PERI",
+            "NYSE:MIR",
+            "NYSE:TALO",
+            "NYSE:GAP",
+            "NASDAQ:MBLY",
+            "NYSE:PFE"
         ],
         "ITA": [
-        "MIL:UCG",
-        "MIL:ENI"
+            "MIL:UCG",
+            "MIL:ENI"
         ],
         "TEST": [
-        "NASDAQ:PLTR",
-        "NASDAQ:WVE",
-        "NASDAQ:PERI",
-        "NASDAQ:SOFI",
-        "NYSE:MIR",
-        "NASDAQ:INTU",
-        "NYSE:BABA",
-        "NYSE:NKE",
-        "NYSE:ABT"
+            "NASDAQ:PLTR",
+            "NASDAQ:WVE",
+            "NASDAQ:PERI",
+            "NASDAQ:SOFI",
+            "NYSE:MIR",
+            "NASDAQ:INTU",
+            "NYSE:BABA",
+            "NYSE:NKE",
+            "NYSE:ABT"
         ]
     }
 }
