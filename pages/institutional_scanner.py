@@ -313,6 +313,7 @@ def anchor_low_w_section(record: dict, currency: str) -> str:
     if is_converted:
         items.append(("Cambio EUR/USD", f"{safe_float(fx_rate):.4f}" if safe_float(fx_rate) is not None else "N/D"))
     items.append(("Rialzo max dal minimo", fmt_pct(record.get("anchor_w_recovery_pct"), 1)))
+    items.append(("Max raggiunto", fmt_price(record.get("anchor_w_max_price"), currency)))
     grid = ''.join(f'<div><span>{escape(k)}</span><strong>{escape(v)}</strong></div>' for k, v in items)
     return (
         '<div class="anchor-w-box">'
