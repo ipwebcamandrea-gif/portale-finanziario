@@ -88,10 +88,8 @@ def render_watchlist_selector_panel(data: dict) -> tuple[str, tuple[str, ...]]:
             unsafe_allow_html=True,
         )
 
-    preview = list(symbols[:8])
+    preview = list(symbols)
     chips = "".join(f"<span>{escape(sym)}</span>" for sym in preview)
-    if len(symbols) > len(preview):
-        chips += f'<span class="more">+{len(symbols) - len(preview)}</span>'
 
     if chips:
         st.markdown(f'<div class="buyzone-watchlist-chips">{chips}</div>', unsafe_allow_html=True)
@@ -175,6 +173,48 @@ def vclass(value) -> str:
     if v is None:
         return "neutral"
     return "positive" if v >= 0 else "negative"
+
+
+def market_label(record: dict) -> str:
+    tv = str(record.get("tv") or "").strip().upper()
+    if ":" in tv:
+        market = tv.split(":", 1)[0].strip()
+        if market:
+            return market
+    yahoo = str(record.get("yahoo") or "").strip().upper()
+    if yahoo.endswith(".MI"):
+        return "MIL"
+    if yahoo.endswith(".PA"):
+        return "EURONEXT"
+    if yahoo.endswith(".L"):
+        return "LSE"
+    return ""
+
+
+def card_anchor_id(record: dict, fallback: object = "") -> str:
+    raw = str(record.get("yahoo") or record.get("ticker") or record.get("tv") or fallback or "").strip().upper()
+    safe = re.sub(r"[^A-Z0-9]+", "_", raw).strip("_")
+    return "card_" + (safe or "TICKER")
+
+
+def render_visible_ticker_nav(records: list[dict], selected_filter: str) -> None:
+    if not records:
+        return
+    chips = []
+    for idx, record in enumerate(records, 1):
+        ticker = str(record.get("ticker") or record.get("yahoo") or "-").strip().upper()
+        market = market_label(record)
+        href = "#" + card_anchor_id(record, idx)
+        market_html = f'<em>{escape(market)}</em>' if market else ""
+        chips.append(f'<a href="{escape(href, quote=True)}"><strong>{escape(ticker)}</strong>{market_html}</a>')
+    st.markdown(
+        '<div class="visible-ticker-nav">'
+        '<div class="visible-ticker-nav-title">Ticker visibili</div>'
+        f'<div class="visible-ticker-nav-subtitle">Filtro attivo: {escape(selected_filter)} · clicca un ticker per andare alla card.</div>'
+        '<div class="visible-ticker-nav-chips">' + ''.join(chips) + '</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def yesno(active: bool) -> str:
@@ -655,8 +695,12 @@ def card(record: dict, rank: int) -> str:
     card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
     badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
 
-    html = f'<div class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong></div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
+    anchor_id = card_anchor_id(record, rank)
+    market = market_label(record)
+    market_badge = f'<span class="ticker-market-badge">{escape(market)}</span>' if market else ""
+
+    html = f'<div id="{escape(anchor_id, quote=True)}" class="redesign-card {card_class}">'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong>{market_badge}</div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
@@ -711,6 +755,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
 selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
+render_visible_ticker_nav(filtered_records, selected_condition_filter)
 st.markdown(
     f'<div class="section-title">Scanner tecnico <span class="section-watchlist-name">· {escape(selected_watchlist)} · {escape(selected_condition_filter)}</span></div>',
     unsafe_allow_html=True,
