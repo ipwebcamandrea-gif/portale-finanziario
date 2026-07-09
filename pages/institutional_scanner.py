@@ -335,6 +335,14 @@ def fibonacci_w_section(record: dict, currency: str) -> str:
             '</div>'
         )
 
+    current_price = safe_float(record.get("last_price"))
+    current_price_html = (
+        '<div class="fib-w-current">'
+        '<span>Prezzo attuale</span>'
+        f'<strong>{escape(fmt_price(current_price, currency))}</strong>'
+        '</div>'
+    )
+
     rows = [
         ("Ritracciamento normale", "Fib 0,382", record.get("anchor_w_fib_382")),
         ("Zona mediana", "Fib 0,500", record.get("anchor_w_fib_500")),
@@ -344,18 +352,24 @@ def fibonacci_w_section(record: dict, currency: str) -> str:
     ]
     items = []
     for label, fib_label, value in rows:
+        fib_value = safe_float(value)
+        distance_pct = ((fib_value - current_price) / current_price * 100.0) if fib_value is not None and current_price not in (None, 0) else None
+        distance_class = vclass(distance_pct)
+        distance_text = fmt_pct(distance_pct, 1) if safe_float(distance_pct) is not None else "N/D"
         items.append(
             '<div class="fib-w-row">'
             f'<span>{escape(label)}</span>'
             f'<strong>{escape(fmt_price(value, currency))}</strong>'
             f'<em>{escape(fib_label)}</em>'
+            f'<small class="{escape(distance_class)}">{escape(distance_text)}</small>'
             '</div>'
         )
 
     return (
         '<div class="fib-w-box">'
         '<div class="fib-w-title">Fibonacci W</div>'
-        '<div class="fib-w-subtitle">Ritracciamenti calcolati tra Anchor Low W e Max raggiunto.</div>'
+        '<div class="fib-w-subtitle">Ritracciamenti calcolati tra Anchor Low W e Max raggiunto. La distanza indica lo scostamento del livello rispetto al prezzo attuale.</div>'
+        + current_price_html +
         '<div class="fib-w-rows">' + ''.join(items) + '</div>'
         '</div>'
     )
