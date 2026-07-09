@@ -36,38 +36,38 @@
             "NYSE:BABA"        
         ],
         "TLI TOP 10": [
-            "ZETA",
-            "BIDU",
-            "SOFI",
-            "NVO",
-            "PEP",
-            "UNH",
-            "HIMS",
-            "SE"
+        "NYSE:ZETA",
+        "NASDAQ:BIDU",
+        "NASDAQ:SOFI",
+        "NYSE:NVO",
+        "NASDAQ:PEP",
+        "NYSE:UNH",
+        "NYSE:HIMS",
+        "NYSE:SE"
         ],
         "EDGAR": [
-            "WVE",
-            "PERI",
-            "MIR",
-            "TALO",
-            "GAP",
-            "MBLY",
-            "PFE"
+        "NASDAQ:WVE",
+        "NASDAQ:PERI",
+        "NYSE:MIR",
+        "NYSE:TALO",
+        "NYSE:GAP",
+        "NASDAQ:MBLY",
+        "NYSE:PFE"
         ],
         "ITA": [
-            "UCG.MI",
-            "ENI.MI"
+        "MIL:UCG",
+        "MIL:ENI"
         ],
         "TEST": [
-            "PLTR",
-            "WVE",
-            "PERI",
-            "SOFI",
-            "MIR",
-            "INTU",
-            "BABA",
-            "NKE",
-            "ABT"
+        "NASDAQ:PLTR",
+        "NASDAQ:WVE",
+        "NASDAQ:PERI",
+        "NASDAQ:SOFI",
+        "NYSE:MIR",
+        "NASDAQ:INTU",
+        "NYSE:BABA",
+        "NYSE:NKE",
+        "NYSE:ABT"
         ]
     }
 }
