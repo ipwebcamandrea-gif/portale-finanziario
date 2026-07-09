@@ -148,6 +148,7 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None, current_price: 
             "episode_start": h.index[start_i],
             "episode_end": h.index[end_i],
             "recovery_pct": recovery,
+            "max_after": max_after,
         })
 
     if not candidates:
@@ -175,6 +176,7 @@ def find_last_under_sma200w_episode(weekly: pd.DataFrame | None, current_price: 
         "episode_start": chosen["episode_start"],
         "episode_end": chosen["episode_end"],
         "recovery_pct": chosen["recovery_pct"],
+        "max_after": chosen.get("max_after"),
         "reason": "Ultima fase sotto SMA200W con ripartenza W significativa.",
     })
     return out
@@ -205,6 +207,8 @@ def empty_anchor(reason: str) -> dict[str, Any]:
         "anchor_w_close": None,
         "anchor_w_distance_pct": None,
         "anchor_w_recovery_pct": None,
+        "anchor_w_max_price": None,
+        "anchor_w_source_max_price": None,
         "anchor_w_method": "N/D",
         "anchor_w_source_symbol": None,
         "anchor_w_source_price": None,
@@ -275,6 +279,11 @@ def analyze_anchor_low_w(
 
     price_now = safe_float(current_price)
     distance = ((price_now - anchor_price) / anchor_price * 100.0) if price_now is not None and anchor_price not in (None, 0) else None
+    recovery_pct = safe_float(episode.get("recovery_pct"))
+    source_max_price = safe_float(episode.get("max_after"))
+    anchor_max_price = None
+    if anchor_price not in (None, 0) and recovery_pct is not None:
+        anchor_max_price = float(anchor_price) * (1.0 + recovery_pct / 100.0)
 
     return {
         "anchor_w_available": anchor_price is not None and anchor_price > 0,
@@ -282,7 +291,9 @@ def analyze_anchor_low_w(
         "anchor_w_date": anchor_date,
         "anchor_w_close": None if converted else source_close,
         "anchor_w_distance_pct": distance,
-        "anchor_w_recovery_pct": episode.get("recovery_pct"),
+        "anchor_w_recovery_pct": recovery_pct,
+        "anchor_w_max_price": anchor_max_price,
+        "anchor_w_source_max_price": source_max_price,
         "anchor_w_method": method,
         "anchor_w_source_symbol": source_symbol,
         "anchor_w_source_price": source_low,
