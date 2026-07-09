@@ -6,6 +6,7 @@ from components.ticker_lookup_selector import (
     reset_ticker_lookup,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
+from utils.symbols import normalize_tradingview_symbol
 
 
 # =========================
@@ -17,13 +18,18 @@ def _add_candidate_to_watchlist(current: str, candidate: dict | None) -> None:
         st.warning("Cerca e seleziona un titolo valido.")
         return
 
-    symbol_to_save = str(candidate.get("yf_symbol") or "").strip().upper()
+    # Salviamo il simbolo TradingView completo, non solo il ticker/yfinance.
+    # Esempi: NYSE:BABA, NASDAQ:MSFT, MIL:1MSFT, MIL:SWDA.
+    symbol_to_save = str(candidate.get("tv_symbol") or "").strip().upper()
     if not symbol_to_save:
-        st.warning("Simbolo yfinance non valido.")
+        symbol_to_save = normalize_tradingview_symbol(candidate.get("yf_symbol") or candidate.get("ticker") or "")
+    if not symbol_to_save:
+        st.warning("Simbolo TradingView non valido.")
         return
 
     watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
-    if symbol_to_save in watchlists[current]:
+    existing_normalized = {normalize_tradingview_symbol(item) for item in watchlists[current]}
+    if symbol_to_save in watchlists[current] or symbol_to_save in existing_normalized:
         st.warning("Simbolo gia presente nella watchlist.")
         return
 
