@@ -325,6 +325,42 @@ def anchor_low_w_section(record: dict, currency: str) -> str:
     )
 
 
+def fibonacci_w_section(record: dict, currency: str) -> str:
+    available = bool(record.get("anchor_w_available")) and safe_float(record.get("anchor_w_price")) is not None and safe_float(record.get("anchor_w_max_price")) is not None
+    if not available:
+        return (
+            '<div class="fib-w-box">'
+            '<div class="fib-w-title">Fibonacci W</div>'
+            '<div class="fib-w-subtitle">Servono Anchor Low W e Max raggiunto per calcolare i ritracciamenti.</div>'
+            '</div>'
+        )
+
+    rows = [
+        ("Ritracciamento normale", "Fib 0,382", record.get("anchor_w_fib_382")),
+        ("Zona mediana", "Fib 0,500", record.get("anchor_w_fib_500")),
+        ("Golden zone", "Fib 0,618", record.get("anchor_w_fib_618")),
+        ("Ritracciamento profondo", "Fib 0,786", record.get("anchor_w_fib_786")),
+        ("Quasi reset", "Fib 0,886", record.get("anchor_w_fib_886")),
+    ]
+    items = []
+    for label, fib_label, value in rows:
+        items.append(
+            '<div class="fib-w-row">'
+            f'<span>{escape(label)}</span>'
+            f'<strong>{escape(fmt_price(value, currency))}</strong>'
+            f'<em>{escape(fib_label)}</em>'
+            '</div>'
+        )
+
+    return (
+        '<div class="fib-w-box">'
+        '<div class="fib-w-title">Fibonacci W</div>'
+        '<div class="fib-w-subtitle">Ritracciamenti calcolati tra Anchor Low W e Max raggiunto.</div>'
+        '<div class="fib-w-rows">' + ''.join(items) + '</div>'
+        '</div>'
+    )
+
+
 def collapsible_section(title: str, body: str) -> str:
     return f'<details class="details-expander"><summary>{escape(title)}</summary>{body}</details>'
 
@@ -713,6 +749,7 @@ def card(record: dict, rank: int) -> str:
     html += collapsible_section("Dettagli SMA200W / Storico", technical_details(record, currency))
     html += collapsible_section("Buy Zone Avanzate", advanced_buyzone_section(record, currency))
     html += collapsible_section("Punto Ripartenza W", anchor_low_w_section(record, currency))
+    html += collapsible_section("Fibonacci W", fibonacci_w_section(record, currency))
     html += f'<div class="card-actions"><a href="{tv_url}" target="_blank" rel="noopener noreferrer">Apri TradingView</a></div></div>'
     return html
 
