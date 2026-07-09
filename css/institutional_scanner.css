@@ -1059,3 +1059,11 @@ div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
   .visible-ticker-nav{padding:.68rem .70rem!important;}
   .visible-ticker-nav-chips a{font-size:.68rem!important;padding:.34rem .50rem!important;}
 }
+
+/* ========================= BUY ZONE FINDER - V60 ANCHOR SCROLL OFFSET =========================
+   When clicking a ticker chip in the visible ticker navigation, keep the top
+   of the target card visible instead of landing too low inside the card.
+   ========================= */
+.redesign-card[id^="card_"]{
+  scroll-margin-top:120px!important;
+}
