@@ -209,6 +209,11 @@ def empty_anchor(reason: str) -> dict[str, Any]:
         "anchor_w_recovery_pct": None,
         "anchor_w_max_price": None,
         "anchor_w_source_max_price": None,
+        "anchor_w_fib_382": None,
+        "anchor_w_fib_500": None,
+        "anchor_w_fib_618": None,
+        "anchor_w_fib_786": None,
+        "anchor_w_fib_886": None,
         "anchor_w_method": "N/D",
         "anchor_w_source_symbol": None,
         "anchor_w_source_price": None,
@@ -285,6 +290,12 @@ def analyze_anchor_low_w(
     if anchor_price not in (None, 0) and recovery_pct is not None:
         anchor_max_price = float(anchor_price) * (1.0 + recovery_pct / 100.0)
 
+    fib_levels = {}
+    if anchor_price not in (None, 0) and anchor_max_price not in (None, 0) and anchor_max_price > anchor_price:
+        move_range = float(anchor_max_price) - float(anchor_price)
+        for ratio in (0.382, 0.500, 0.618, 0.786, 0.886):
+            fib_levels[ratio] = float(anchor_max_price) - move_range * ratio
+
     return {
         "anchor_w_available": anchor_price is not None and anchor_price > 0,
         "anchor_w_price": anchor_price,
@@ -294,6 +305,11 @@ def analyze_anchor_low_w(
         "anchor_w_recovery_pct": recovery_pct,
         "anchor_w_max_price": anchor_max_price,
         "anchor_w_source_max_price": source_max_price,
+        "anchor_w_fib_382": fib_levels.get(0.382),
+        "anchor_w_fib_500": fib_levels.get(0.500),
+        "anchor_w_fib_618": fib_levels.get(0.618),
+        "anchor_w_fib_786": fib_levels.get(0.786),
+        "anchor_w_fib_886": fib_levels.get(0.886),
         "anchor_w_method": method,
         "anchor_w_source_symbol": source_symbol,
         "anchor_w_source_price": source_low,
