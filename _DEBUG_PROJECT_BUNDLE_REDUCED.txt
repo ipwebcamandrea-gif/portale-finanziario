@@ -1006,6 +1006,7 @@ from components.ticker_lookup_selector import (
     reset_ticker_lookup,
 )
 from utils.watchlist_storage import salva_sessione_su_disco
+from utils.symbols import normalize_tradingview_symbol
 
 
 # =========================
@@ -1017,13 +1018,18 @@ def _add_candidate_to_watchlist(current: str, candidate: dict | None) -> None:
         st.warning("Cerca e seleziona un titolo valido.")
         return
 
-    symbol_to_save = str(candidate.get("yf_symbol") or "").strip().upper()
+    # Salviamo il simbolo TradingView completo, non solo il ticker/yfinance.
+    # Esempi: NYSE:BABA, NASDAQ:MSFT, MIL:1MSFT, MIL:SWDA.
+    symbol_to_save = str(candidate.get("tv_symbol") or "").strip().upper()
     if not symbol_to_save:
-        st.warning("Simbolo yfinance non valido.")
+        symbol_to_save = normalize_tradingview_symbol(candidate.get("yf_symbol") or candidate.get("ticker") or "")
+    if not symbol_to_save:
+        st.warning("Simbolo TradingView non valido.")
         return
 
     watchlists = st.session_state["tv_watchlists_data"]["watchlists"]
-    if symbol_to_save in watchlists[current]:
+    existing_normalized = {normalize_tradingview_symbol(item) for item in watchlists[current]}
+    if symbol_to_save in watchlists[current] or symbol_to_save in existing_normalized:
         st.warning("Simbolo gia presente nella watchlist.")
         return
 
@@ -4125,6 +4131,14 @@ div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
 @media(max-width:820px){
   .visible-ticker-nav{padding:.68rem .70rem!important;}
   .visible-ticker-nav-chips a{font-size:.68rem!important;padding:.34rem .50rem!important;}
+}
+
+/* ========================= BUY ZONE FINDER - V60 ANCHOR SCROLL OFFSET =========================
+   When clicking a ticker chip in the visible ticker navigation, keep the top
+   of the target card visible instead of landing too low inside the card.
+   ========================= */
+.redesign-card[id^="card_"]{
+  scroll-margin-top:120px!important;
 }
 
 
@@ -15531,6 +15545,13 @@ def normalize_yfinance_symbol(symbol):
     if symbol in aliases:
         return aliases[symbol]
 
+    if ":" in symbol:
+        market, raw_ticker = symbol.split(":", 1)
+        market = market.strip().upper()
+        raw_ticker = raw_ticker.strip().upper()
+        if market in {"MIL", "BIT"}:
+            return raw_ticker if raw_ticker.endswith(".MI") else raw_ticker + ".MI"
+
     no_exchange = strip_exchange_prefix(symbol)
 
     if no_exchange in aliases:
@@ -15575,7 +15596,10 @@ def normalize_tradingview_symbol(symbol):
         return aliases[symbol]
 
     if ":" in symbol:
-        return symbol
+        market, raw_ticker = symbol.split(":", 1)
+        market = "MIL" if market.strip().upper() == "BIT" else market.strip().upper()
+        raw_ticker = raw_ticker.strip().upper()
+        return f"{market}:{raw_ticker}"
 
     if symbol.endswith(".MI"):
         return "MIL:" + symbol.replace(".MI", "")
@@ -15591,13 +15615,13 @@ def normalize_tradingview_symbol(symbol):
     nasdaq_symbols = {
         "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "NFLX", "ADBE",
         "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN", "PEP", "COST", "AMAT", "MU",
-        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI"
+        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI", "WMT"
     }
 
     nyse_symbols = {
         "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "BRK-B", "BRK-A", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "ABT", "NKE", "CAT",
-        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "MCD", "ABT", "NKE", "CAT",
+        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY", "BABA"
     }
 
     if symbol in nasdaq_symbols:
@@ -16247,11 +16271,12 @@ SECURITY_MASTER = {
     "CRM": {"name": "Salesforce, Inc.", "market": "NYSE", "aliases": ["SALESFORCE"]},
     "XOM": {"name": "Exxon Mobil Corporation", "market": "NYSE", "aliases": ["EXXON", "EXXON MOBIL"]},
     "CVX": {"name": "Chevron Corporation", "market": "NYSE", "aliases": ["CHEVRON"]},
-    "WMT": {"name": "Walmart Inc.", "market": "NYSE", "aliases": ["WALMART"]},
+    "WMT": {"name": "Walmart Inc.", "market": "NASDAQ", "aliases": ["WALMART"]},
     "MCD": {"name": "McDonald's Corporation", "market": "NYSE", "aliases": ["MCDONALD", "MCDONALDS"]},
     "NKE": {"name": "NIKE, Inc.", "market": "NYSE", "aliases": ["NIKE"]},
     "LLY": {"name": "Eli Lilly and Company", "market": "NYSE", "aliases": ["ELI LILLY", "LILLY"]},
     "UBER": {"name": "Uber Technologies, Inc.", "market": "NYSE", "aliases": ["UBER"]},
+    "BABA": {"name": "Alibaba Group Holding Limited", "market": "NYSE", "aliases": ["ALIBABA"]},
     "ENEL": {"name": "Enel S.p.A.", "market": "MIL", "aliases": ["ENEL"]},
     "ENI": {"name": "Eni S.p.A.", "market": "MIL", "aliases": ["ENI"]},
     "ISP": {"name": "Intesa Sanpaolo S.p.A.", "market": "MIL", "aliases": ["INTESA", "INTESA SANPAOLO"]},
