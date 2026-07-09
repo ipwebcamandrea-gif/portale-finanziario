@@ -57,6 +57,13 @@ def normalize_yfinance_symbol(symbol):
     if symbol in aliases:
         return aliases[symbol]
 
+    if ":" in symbol:
+        market, raw_ticker = symbol.split(":", 1)
+        market = market.strip().upper()
+        raw_ticker = raw_ticker.strip().upper()
+        if market in {"MIL", "BIT"}:
+            return raw_ticker if raw_ticker.endswith(".MI") else raw_ticker + ".MI"
+
     no_exchange = strip_exchange_prefix(symbol)
 
     if no_exchange in aliases:
@@ -101,7 +108,10 @@ def normalize_tradingview_symbol(symbol):
         return aliases[symbol]
 
     if ":" in symbol:
-        return symbol
+        market, raw_ticker = symbol.split(":", 1)
+        market = "MIL" if market.strip().upper() == "BIT" else market.strip().upper()
+        raw_ticker = raw_ticker.strip().upper()
+        return f"{market}:{raw_ticker}"
 
     if symbol.endswith(".MI"):
         return "MIL:" + symbol.replace(".MI", "")
@@ -117,13 +127,13 @@ def normalize_tradingview_symbol(symbol):
     nasdaq_symbols = {
         "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "NFLX", "ADBE",
         "AMD", "INTC", "CSCO", "AVGO", "QCOM", "TXN", "PEP", "COST", "AMAT", "MU",
-        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI"
+        "PYPL", "SBUX", "ISRG", "BKNG", "LRCX", "PANW", "CRWD", "SHOP", "ARM", "SMCI", "WMT"
     }
 
     nyse_symbols = {
         "JPM", "BAC", "V", "MA", "BRK.B", "BRK.A", "BRK-B", "BRK-A", "KO", "PG", "JNJ", "UNH", "HD",
-        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "WMT", "MCD", "ABT", "NKE", "CAT",
-        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY"
+        "DIS", "IBM", "ORCL", "CRM", "CVX", "XOM", "MCD", "ABT", "NKE", "CAT",
+        "BA", "GS", "MS", "AXP", "GE", "T", "VZ", "PFE", "MRK", "LLY", "BABA"
     }
 
     if symbol in nasdaq_symbols:
