@@ -259,7 +259,7 @@ def technical_metrics(item):
                 "advanced_signal_label": "Buy Zone Avanzate N/D",
                 "advanced_signal_reason": "Dati avanzati non disponibili.",
             })
-        # Punto Ripartenza W / Anchor Low W: informativo, non entra nello score 4/4.
+        # Punto Ripartenza W / Anchor Low W: base informativa per la motivazione Fibonacci W.
         try:
             row.update(analyze_anchor_low_w(
                 sym,
@@ -272,20 +272,22 @@ def technical_metrics(item):
                 "anchor_w_available": False,
                 "anchor_w_note": str(anchor_exc),
             })
-        # BUY ZONE FINDER now has 4 motivations:
+        # BUY ZONE FINDER now has 5 motivations:
         # 1) below SMA200W, 2) near historical Min W, 3) near/below LinReg Lower,
-        # 4) real-options Advanced Buy Zone signal.
+        # 4) real-options Advanced Buy Zone signal,
+        # 5) Fibonacci W near an important retracement level.
         c=[
             bool(row["below_sma200w"]),
             bool(row["near_hist_min_w"]),
             bool(row["near_linreg_lower"]),
             bool(row.get("advanced_signal_active")),
+            bool(row.get("anchor_w_fib_active")),
         ]
         row["confluence_count"]=sum(1 for v in c if v)
         row["technical_label"]=(
-            "Buy Zone tecnica" if row["confluence_count"]==4 else
-            "Watch tecnico" if row["confluence_count"]==3 else
-            "Early tecnico" if row["confluence_count"]==2 else
+            "Buy Zone tecnica" if row["confluence_count"]==5 else
+            "Watch tecnico" if row["confluence_count"]==4 else
+            "Early tecnico" if row["confluence_count"]==3 else
             "Monitor tecnico"
         )
         return row
@@ -341,4 +343,4 @@ def scan_symbols(symbols=None, limit=None, progress_callback:Callable[[int,int,d
         if i<total and SLEEP_BETWEEN_TICKERS_SECONDS>0: time.sleep(SLEEP_BETWEEN_TICKERS_SECONDS)
     return sorted(out,key=sort_priority)
 def scan_summary(records):
-    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==3]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
+    return {"count":len(records),"buy_count":len([r for r in records if int(r.get("confluence_count") or 0)==5]),"watch_count":len([r for r in records if int(r.get("confluence_count") or 0)==4]),"orange_count":len([r for r in records if bool(r.get("orange_zone"))]),"errors_count":len([r for r in records if str(r.get("error") or "").strip()]),"last_update":now_rome().strftime("%d/%m/%Y %H:%M:%S")}
