@@ -1202,3 +1202,86 @@ div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
   .fib-w-row{grid-template-columns:1fr!important;gap:.20rem!important;}
   .fib-w-row small{text-align:left!important;}
 }
+
+/* ========================= BUY ZONE FINDER - V63 FIBONACCI W 5A MOTIVAZIONE =========================
+   Adds fifth condition metric and desktop 3+2 layout.
+   ========================= */
+@media(min-width:981px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row .condition-metric:nth-child(4),
+  .redesign-card .condition-metrics-row .condition-metric:nth-child(4){
+    grid-column:1 / 2!important;
+  }
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row .condition-metric:nth-child(5),
+  .redesign-card .condition-metrics-row .condition-metric:nth-child(5){
+    grid-column:2 / 3!important;
+  }
+}
+@media(max-width:980px){
+  div[class*="st-key-buyzone_forecast_wrap_"] .condition-metrics-row,
+  .redesign-card .condition-metrics-row{grid-template-columns:1fr!important;}
+}
+
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.watch,
+.redesign-card .condition-metric.watch{
+  border-color:rgba(255,174,61,.82)!important;
+  background:
+    radial-gradient(circle at top right, rgba(255,174,61,.22), transparent 36%),
+    linear-gradient(180deg,rgba(72,48,20,.78),rgba(22,18,12,.74))!important;
+  box-shadow:0 0 18px rgba(255,174,61,.26), inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.watch em,
+.redesign-card .condition-metric.watch em{
+  color:#ffbf69!important;
+}
+
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric,
+.redesign-card .condition-metric.fib-condition-metric{
+  min-height:128px!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric strong,
+.redesign-card .condition-metric.fib-condition-metric strong{
+  font-size:.92rem!important;
+  line-height:1.12!important;
+  white-space:nowrap!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric small,
+.redesign-card .condition-metric.fib-condition-metric small{
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1.18!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-main,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-main{
+  color:#f9fafb!important;
+  font-size:.72rem!important;
+  font-weight:950!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-main.positive,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-main.positive{
+  color:#41d67a!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-main.negative,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-main.negative{
+  color:#ff4d5a!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-secondary,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-secondary{
+  display:block!important;
+  margin-top:.22rem!important;
+  color:#cfe7ff!important;
+  font-size:.66rem!important;
+  font-weight:900!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-secondary.positive,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-secondary.positive{
+  color:#41d67a!important;
+}
+div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.fib-condition-metric .fib-condition-secondary.negative,
+.redesign-card .condition-metric.fib-condition-metric .fib-condition-secondary.negative{
+  color:#ff4d5a!important;
+}
