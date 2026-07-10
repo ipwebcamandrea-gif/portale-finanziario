@@ -4221,6 +4221,61 @@ div[class*="st-key-buyzone_forecast_wrap_"] .condition-metric.inactive em,
   .fib-w-row strong,.fib-w-row em{text-align:left!important;}
 }
 
+/* ========================= BUY ZONE FINDER - V62 FIBONACCI W PREZZO + DISTANZA =========================
+   Add current price and distance from current price for each Fibonacci retracement.
+   ========================= */
+.fib-w-current{
+  display:inline-grid!important;
+  min-width:180px!important;
+  margin:0 0 .58rem 0!important;
+  padding:.52rem .56rem!important;
+  border-radius:12px!important;
+  border:1px solid rgba(139,211,255,.22)!important;
+  background:rgba(8,13,21,.52)!important;
+}
+.fib-w-current span{
+  display:block!important;
+  color:#9fb3d1!important;
+  font-size:.58rem!important;
+  line-height:1.12!important;
+  font-weight:950!important;
+  text-transform:uppercase!important;
+  letter-spacing:.045em!important;
+  margin-bottom:.22rem!important;
+}
+.fib-w-current strong{
+  display:block!important;
+  color:#f9fafb!important;
+  font-size:.82rem!important;
+  line-height:1.14!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+}
+.fib-w-row{
+  grid-template-columns:minmax(0,1.18fr) minmax(88px,.58fr) minmax(76px,.48fr) minmax(76px,.42fr)!important;
+}
+.fib-w-row small{
+  color:#9fb3d1!important;
+  font-size:.66rem!important;
+  line-height:1.14!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+  text-align:right!important;
+}
+.fib-w-row small::before{
+  content:"Dist. ";
+  color:#9fb3d1!important;
+  font-weight:850!important;
+}
+.fib-w-row small.positive{color:#41d67a!important;}
+.fib-w-row small.negative{color:#ff4d5a!important;}
+.fib-w-row small.neutral{color:#d1d5db!important;}
+@media(max-width:820px){
+  .fib-w-current{width:100%!important;box-sizing:border-box!important;}
+  .fib-w-row{grid-template-columns:1fr!important;gap:.20rem!important;}
+  .fib-w-row small{text-align:left!important;}
+}
+
 
 
 ====================================================================================================
@@ -7888,6 +7943,14 @@ def fibonacci_w_section(record: dict, currency: str) -> str:
             '</div>'
         )
 
+    current_price = safe_float(record.get("last_price"))
+    current_price_html = (
+        '<div class="fib-w-current">'
+        '<span>Prezzo attuale</span>'
+        f'<strong>{escape(fmt_price(current_price, currency))}</strong>'
+        '</div>'
+    )
+
     rows = [
         ("Ritracciamento normale", "Fib 0,382", record.get("anchor_w_fib_382")),
         ("Zona mediana", "Fib 0,500", record.get("anchor_w_fib_500")),
@@ -7897,18 +7960,24 @@ def fibonacci_w_section(record: dict, currency: str) -> str:
     ]
     items = []
     for label, fib_label, value in rows:
+        fib_value = safe_float(value)
+        distance_pct = ((fib_value - current_price) / current_price * 100.0) if fib_value is not None and current_price not in (None, 0) else None
+        distance_class = vclass(distance_pct)
+        distance_text = fmt_pct(distance_pct, 1) if safe_float(distance_pct) is not None else "N/D"
         items.append(
             '<div class="fib-w-row">'
             f'<span>{escape(label)}</span>'
             f'<strong>{escape(fmt_price(value, currency))}</strong>'
             f'<em>{escape(fib_label)}</em>'
+            f'<small class="{escape(distance_class)}">{escape(distance_text)}</small>'
             '</div>'
         )
 
     return (
         '<div class="fib-w-box">'
         '<div class="fib-w-title">Fibonacci W</div>'
-        '<div class="fib-w-subtitle">Ritracciamenti calcolati tra Anchor Low W e Max raggiunto.</div>'
+        '<div class="fib-w-subtitle">Ritracciamenti calcolati tra Anchor Low W e Max raggiunto. La distanza indica lo scostamento del livello rispetto al prezzo attuale.</div>'
+        + current_price_html +
         '<div class="fib-w-rows">' + ''.join(items) + '</div>'
         '</div>'
     )
