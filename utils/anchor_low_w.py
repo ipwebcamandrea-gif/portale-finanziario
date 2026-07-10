@@ -214,6 +214,14 @@ def empty_anchor(reason: str) -> dict[str, Any]:
         "anchor_w_fib_618": None,
         "anchor_w_fib_786": None,
         "anchor_w_fib_886": None,
+        "anchor_w_fib_nearest_ratio": None,
+        "anchor_w_fib_nearest_price": None,
+        "anchor_w_fib_nearest_distance_pct": None,
+        "anchor_w_fib_below_ratio": None,
+        "anchor_w_fib_below_price": None,
+        "anchor_w_fib_below_distance_pct": None,
+        "anchor_w_fib_state": "NO",
+        "anchor_w_fib_active": False,
         "anchor_w_method": "N/D",
         "anchor_w_source_symbol": None,
         "anchor_w_source_price": None,
@@ -296,6 +304,36 @@ def analyze_anchor_low_w(
         for ratio in (0.382, 0.500, 0.618, 0.786, 0.886):
             fib_levels[ratio] = float(anchor_max_price) - move_range * ratio
 
+    fib_nearest_ratio = None
+    fib_nearest_price = None
+    fib_nearest_distance_pct = None
+    fib_below_ratio = None
+    fib_below_price = None
+    fib_below_distance_pct = None
+    fib_state = "NO"
+    fib_active = False
+    if price_now is not None and price_now > 0 and fib_levels:
+        fib_distances = []
+        for ratio, level in fib_levels.items():
+            level_value = safe_float(level)
+            if level_value is None or level_value <= 0:
+                continue
+            dist = (level_value - price_now) / price_now * 100.0
+            fib_distances.append((ratio, level_value, dist, abs(dist)))
+        if fib_distances:
+            nearest = min(fib_distances, key=lambda x: x[3])
+            fib_nearest_ratio, fib_nearest_price, fib_nearest_distance_pct, _abs_dist = nearest
+            below_candidates = [item for item in fib_distances if item[1] < price_now and item[0] != fib_nearest_ratio]
+            if below_candidates:
+                below = min(below_candidates, key=lambda x: x[3])
+                fib_below_ratio, fib_below_price, fib_below_distance_pct, _below_abs = below
+            abs_nearest = abs(fib_nearest_distance_pct)
+            if abs_nearest <= 3.0:
+                fib_state = "ATTIVO"
+                fib_active = True
+            elif abs_nearest <= 6.0:
+                fib_state = "WATCH"
+
     return {
         "anchor_w_available": anchor_price is not None and anchor_price > 0,
         "anchor_w_price": anchor_price,
@@ -310,6 +348,14 @@ def analyze_anchor_low_w(
         "anchor_w_fib_618": fib_levels.get(0.618),
         "anchor_w_fib_786": fib_levels.get(0.786),
         "anchor_w_fib_886": fib_levels.get(0.886),
+        "anchor_w_fib_nearest_ratio": fib_nearest_ratio,
+        "anchor_w_fib_nearest_price": fib_nearest_price,
+        "anchor_w_fib_nearest_distance_pct": fib_nearest_distance_pct,
+        "anchor_w_fib_below_ratio": fib_below_ratio,
+        "anchor_w_fib_below_price": fib_below_price,
+        "anchor_w_fib_below_distance_pct": fib_below_distance_pct,
+        "anchor_w_fib_state": fib_state,
+        "anchor_w_fib_active": fib_active,
         "anchor_w_method": method,
         "anchor_w_source_symbol": source_symbol,
         "anchor_w_source_price": source_low,
