@@ -110,29 +110,30 @@ def filter_records_by_confluence(records: list[dict], selected_filter: str) -> l
 
 
 def render_condition_filter(records: list[dict]) -> str:
-    counts = {i: 0 for i in range(5)}
+    counts = {i: 0 for i in range(6)}
     for r in records:
         c = int(r.get("confluence_count") or 0)
         if c in counts:
             counts[c] += 1
 
-    options = ["4/4 Buy", "3/4 Watch", "2/4 Early", "1/4", "0/4", "Tutte"]
+    options = ["5/5 Buy", "4/5 Watch", "3/5 Early", "2/5", "1/5", "0/5", "Tutte"]
     labels = {
-        "4/4 Buy": f"4/4 Buy ({counts[4]})",
-        "3/4 Watch": f"3/4 Watch ({counts[3]})",
-        "2/4 Early": f"2/4 Early ({counts[2]})",
-        "1/4": f"1/4 ({counts[1]})",
-        "0/4": f"0/4 ({counts[0]})",
+        "5/5 Buy": f"5/5 Buy ({counts[5]})",
+        "4/5 Watch": f"4/5 Watch ({counts[4]})",
+        "3/5 Early": f"3/5 Early ({counts[3]})",
+        "2/5": f"2/5 ({counts[2]})",
+        "1/5": f"1/5 ({counts[1]})",
+        "0/5": f"0/5 ({counts[0]})",
         "Tutte": f"Tutte ({len(records)})",
     }
 
     if "buy_zone_condition_filter" not in st.session_state or st.session_state.get("buy_zone_condition_filter") not in options:
-        st.session_state["buy_zone_condition_filter"] = "3/4 Watch"
+        st.session_state["buy_zone_condition_filter"] = "3/5 Early"
 
     st.markdown(
         '<div class="buyzone-filter-panel">'
         '<div class="buyzone-filter-title">Filtro condizioni attive</div>'
-        '<div class="buyzone-filter-subtitle">Default: mostra solo Watch tecnico 3/4. Cambiare filtro non riesegue lo scanner.</div>'
+        '<div class="buyzone-filter-subtitle">Default: mostra solo Early W 3/5. Cambiare filtro non riesegue lo scanner.</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -221,14 +222,15 @@ def yesno(active: bool) -> str:
     return "ATTIVO" if active else "NO"
 
 
-def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral") -> str:
-    state_class = "active" if active else "inactive"
+def condition_metric(title: str, pct: str, value: str, active: bool, value_class: str = "neutral", state_text: str | None = None, state_class_override: str | None = None) -> str:
+    state_class = state_class_override or ("active" if active else "inactive")
+    state = state_text or yesno(active)
     return (
-        f'<div class="condition-metric {state_class}">'
+        f'<div class="condition-metric {escape(state_class)}">'
         f'<span>{escape(title)}</span>'
         f'<strong class="{escape(value_class)}">{escape(pct)}</strong>'
         f'<small>{escape(value)}</small>'
-        f'<em>{yesno(active)}</em>'
+        f'<em>{escape(state)}</em>'
         '</div>'
     )
 
@@ -284,6 +286,61 @@ def advanced_condition_metric(record: dict, currency: str) -> str:
     return condition_metric("Buy Zone Avanzata", pct, value, active, vclass(advanced_zone_distance_pct(record)))
 
 
+def fib_ratio_text(value) -> str:
+    ratio = safe_float(value)
+    if ratio is None:
+        return "N/D"
+    return f"{ratio:.3f}".replace(".", ",")
+
+
+def fibonacci_condition_metric(record: dict, currency: str) -> str:
+    state = str(record.get("anchor_w_fib_state") or "NO").strip().upper()
+    active = bool(record.get("anchor_w_fib_active"))
+    if state == "ATTIVO":
+        state_class = "active"
+    elif state == "WATCH":
+        state_class = "watch"
+    else:
+        state_class = "inactive"
+
+    nearest_ratio = record.get("anchor_w_fib_nearest_ratio")
+    nearest_price = record.get("anchor_w_fib_nearest_price")
+    nearest_dist = record.get("anchor_w_fib_nearest_distance_pct")
+    below_ratio = record.get("anchor_w_fib_below_ratio")
+    below_price = record.get("anchor_w_fib_below_price")
+    below_dist = record.get("anchor_w_fib_below_distance_pct")
+
+    if safe_float(nearest_price) is None:
+        return condition_metric(
+            "Fibonacci W",
+            "N/D",
+            "Livelli non disponibili",
+            False,
+            "neutral",
+            state_text="NO",
+            state_class_override="inactive",
+        )
+
+    nearest_line = f"{fmt_price(nearest_price, currency)} · {fmt_pct(nearest_dist, 1)}"
+    secondary_line = ""
+    if safe_float(below_price) is not None:
+        secondary_line = (
+            f'<small class="fib-condition-secondary {escape(vclass(below_dist))}">'
+            f'Fib {escape(fib_ratio_text(below_ratio))} · {escape(fmt_price(below_price, currency))} · {escape(fmt_pct(below_dist, 1))}'
+            '</small>'
+        )
+
+    return (
+        f'<div class="condition-metric {escape(state_class)} fib-condition-metric">'
+        '<span>Fibonacci W</span>'
+        f'<strong class="{escape(vclass(nearest_dist))}">Fib {escape(fib_ratio_text(nearest_ratio))}</strong>'
+        f'<small class="fib-condition-main {escape(vclass(nearest_dist))}">{escape(nearest_line)}</small>'
+        f'{secondary_line}'
+        f'<em>{escape(state)}</em>'
+        '</div>'
+    )
+
+
 def anchor_low_w_section(record: dict, currency: str) -> str:
     available = bool(record.get("anchor_w_available"))
     note = str(record.get("anchor_w_note") or "Punto Ripartenza W non disponibile.")
@@ -318,7 +375,7 @@ def anchor_low_w_section(record: dict, currency: str) -> str:
     return (
         '<div class="anchor-w-box">'
         '<div class="anchor-w-title">Punto Ripartenza W / Anchor Low W</div>'
-        '<div class="anchor-w-subtitle">Minimo sotto SMA200W da cui parte il ciclo rialzista weekly. Dato informativo: non entra nello score 4/4.</div>'
+        '<div class="anchor-w-subtitle">Minimo sotto SMA200W da cui parte il ciclo rialzista weekly. Dato informativo: la motivazione usa i livelli Fibonacci W derivati da questi dati.</div>'
         f'<div class="anchor-w-grid">{grid}</div>'
         f'<div class="anchor-w-note">{escape(note)}</div>'
         '</div>'
@@ -387,6 +444,9 @@ def reason_block(record: dict) -> str:
 
     advanced_label = str(record.get("advanced_signal_label") or "Buy Zone Avanzate N/D")
     rows.append((bool(record.get("advanced_signal_active")), advanced_label))
+    fib_state = str(record.get("anchor_w_fib_state") or "NO").strip().upper()
+    fib_label = "Fibonacci W" if fib_state == "ATTIVO" else "Fibonacci W " + fib_state
+    rows.append((bool(record.get("anchor_w_fib_active")), fib_label))
 
     html_rows = []
     for ok, label in rows:
@@ -743,21 +803,22 @@ def card(record: dict, rank: int) -> str:
     label = str(record.get("technical_label") or "Monitor tecnico")
     count = int(record.get("confluence_count") or 0)
     tv_url = escape(str(record.get("tradingview_url") or "#"), quote=True)
-    card_class = "is-buy" if count == 4 else "is-watch" if count == 3 else "is-monitor"
-    badge_class = "badge-buy" if count == 4 else "badge-watch" if count == 3 else "badge-monitor"
+    card_class = "is-buy" if count == 5 else "is-watch" if count == 4 else "is-monitor"
+    badge_class = "badge-buy" if count == 5 else "badge-watch" if count == 4 else "badge-monitor"
 
     anchor_id = card_anchor_id(record, rank)
     market = market_label(record)
     market_badge = f'<span class="ticker-market-badge">{escape(market)}</span>' if market else ""
 
     html = f'<div id="{escape(anchor_id, quote=True)}" class="redesign-card {card_class}">'
-    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong>{market_badge}</div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/4</span></div></div>'
+    html += f'<div class="card-top"><div class="rank">#{rank}</div><div class="identity"><div class="ticker-row"><strong>{escape(ticker)}</strong>{market_badge}</div><div class="company-name">{escape(name)}</div></div><div class="status-badge {badge_class}">{escape(label)} <span>{count}/5</span></div></div>'
     html += f'<div class="decision-row"><div class="price-main"><span>Prezzo</span><strong>{escape(fmt_price(record.get("last_price"), currency))}</strong><small class="{vclass(record.get("daily_change_pct"))}">Daily {escape(fmt_pct(record.get("daily_change_pct"), 2))}</small></div><div class="decision-text"><span>Motivo principale</span>{reason_block(record)}</div></div>'
     html += '<div class="condition-metrics-row">'
     html += condition_metric("Distanza SMA200W", fmt_pct(record.get("dist_pct"), 2), fmt_price(record.get("sma200w"), currency), bool(record.get("below_sma200w")), vclass(record.get("dist_pct")))
     html += condition_metric("Scarto Min W Hist", fmt_pct(record.get("gap_points"), 1), fmt_price(record.get("hist_min_equivalent"), currency), bool(record.get("near_hist_min_w")), "neutral")
     html += condition_metric("LinReg Lower", fmt_pct(record.get("linreg_dist_lower_pct"), 2), fmt_price(record.get("linreg_lower_w"), currency), bool(record.get("near_linreg_lower")), vclass(record.get("linreg_dist_lower_pct")))
     html += advanced_condition_metric(record, currency)
+    html += fibonacci_condition_metric(record, currency)
     html += '</div>'
     html += collapsible_section("LinReg W", linreg_section(record, currency))
     html += collapsible_section("Dettagli SMA200W / Storico", technical_details(record, currency))
@@ -770,7 +831,7 @@ def card(record: dict, rank: int) -> str:
 
 render_standard_page_header(
     title="BUY ZONE FINDER",
-    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W e Forecast on demand.",
+    subtitle="Scanner tecnico weekly: SMA200W, Min W storico, LinReg Lower W, Buy Zone opzioni e Fibonacci W.",
     toggle_label="Vista compatta",
     toggle_key="linreg_compact_mode",
     toggle_default=True,
@@ -792,8 +853,8 @@ summary = scan_summary(records)
 cols = st.columns(4)
 summary_items = [
     ("Titoli", str(summary.get("count", 0)), selected_watchlist),
-    ("Buy Zone", str(summary.get("buy_count", 0)), "4/4 condizioni"),
-    ("Watch", str(summary.get("watch_count", 0)), "3/4 condizioni"),
+    ("Buy Zone", str(summary.get("buy_count", 0)), "5/5 condizioni"),
+    ("Watch", str(summary.get("watch_count", 0)), "4/5 condizioni"),
     ("Sotto SMA200W +\nVicino al Min W\nStorico", str(summary.get("orange_count", 0)), "SMA200W + Min W"),
 ]
 for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items):
@@ -805,7 +866,7 @@ for col, (summary_label, summary_value, summary_note) in zip(cols, summary_items
         )
 
 st.caption(f"Ultimo aggiornamento: {summary.get('last_update', '-')}. Cache 15 minuti. Forecast scaricato solo su richiesta della singola card.")
-selected_condition_filter = render_condition_filter(records) if records else "3/4 Watch"
+selected_condition_filter = render_condition_filter(records) if records else "3/5 Early"
 filtered_records = filter_records_by_confluence(records, selected_condition_filter)
 render_visible_ticker_nav(filtered_records, selected_condition_filter)
 st.markdown(
