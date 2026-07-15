@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-15T13:57:36+00:00",
+  "updated_at": "2026-07-15T13:58:25+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -66,19 +66,6 @@
       "prezzo_precedente": 337.45001220703125,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
-    },
-    {
-      "ticker": "PYPL",
-      "titolo": "PAYPAL HOLDINGS",
-      "mercato": "NASDAQ",
-      "strumento": "",
-      "valuta": "USD",
-      "quantita": 157.0,
-      "prezzo_medio": 56.64,
-      "prezzo_mercato": 54.275001525878906,
-      "prezzo_precedente": 47.45,
-      "yf_symbol": "PYPL",
-      "tv_symbol": "NASDAQ:PYPL"
     },
     {
       "ticker": "ORCL",
