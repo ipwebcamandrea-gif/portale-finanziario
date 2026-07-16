@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-09T07:48:17+00:00",
+    "updated_at": "2026-07-16T12:04:53+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -391,6 +391,23 @@
             "analyst_count": 27,
             "rating": "buy",
             "updated_at": "2026-07-09T07:48:16+00:00"
+        },
+        "MSTR": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "MSTR",
+            "ticker": "MSTR",
+            "tv_symbol": "NASDAQ:MSTR",
+            "name": "Strategy Inc",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 97.47000122070312,
+            "target_low": 130.0,
+            "target_mean": 303.64285,
+            "target_high": 570.0,
+            "analyst_count": 14,
+            "rating": "strong_buy",
+            "updated_at": "2026-07-16T12:04:52+00:00"
         }
     }
 }
