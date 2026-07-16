@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-16T12:02:56+00:00",
+  "updated_at": "2026-07-16T12:03:43+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -144,6 +144,19 @@
       "prezzo_precedente": 24.7998,
       "yf_symbol": "PFE",
       "tv_symbol": "NYSE:PFE"
+    },
+    {
+      "ticker": "MSTR",
+      "titolo": "MicroStrategy Incorporated",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 92.0,
+      "prezzo_medio": 95.94,
+      "prezzo_mercato": 97.47000122070312,
+      "prezzo_precedente": 97.5,
+      "yf_symbol": "MSTR",
+      "tv_symbol": "NASDAQ:MSTR"
     }
   ]
 }
