@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-17T12:47:32+00:00",
+  "updated_at": "2026-07-17T12:51:15+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -164,7 +164,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 92.0,
+      "quantita": 160.0,
       "prezzo_medio": 94.57,
       "prezzo_mercato": 55.0099983215332,
       "prezzo_precedente": 54.1768,
