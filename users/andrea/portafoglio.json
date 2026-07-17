@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-17T12:46:35+00:00",
+  "updated_at": "2026-07-17T12:47:14+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -157,6 +157,19 @@
       "prezzo_precedente": 92.87,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
+    },
+    {
+      "ticker": "ASTS",
+      "titolo": "AST SpaceMobile, Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 92.0,
+      "prezzo_medio": 94.57,
+      "prezzo_mercato": 55.0099983215332,
+      "prezzo_precedente": 54.1768,
+      "yf_symbol": "ASTS",
+      "tv_symbol": "NASDAQ:ASTS"
     }
   ]
 }
