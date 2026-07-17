@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-17T06:16:18+00:00",
+  "updated_at": "2026-07-17T12:46:35+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -11,7 +11,7 @@
       "quantita": 1900.0,
       "prezzo_medio": 6.53,
       "prezzo_mercato": 5.670000076293945,
-      "prezzo_precedente": 5.9782,
+      "prezzo_precedente": 5.79,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -24,7 +24,7 @@
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
       "prezzo_mercato": 294.7900085449219,
-      "prezzo_precedente": 280.2187,
+      "prezzo_precedente": 294.06,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
     },
@@ -50,7 +50,7 @@
       "quantita": 23.0,
       "prezzo_medio": 491.68,
       "prezzo_mercato": 551.5399780273438,
-      "prezzo_precedente": 539.2576,
+      "prezzo_precedente": 550.5,
       "yf_symbol": "MA",
       "tv_symbol": "NYSE:MA"
     },
@@ -62,8 +62,8 @@
       "valuta": "EUR",
       "quantita": 150.0,
       "prezzo_medio": 325.06,
-      "prezzo_mercato": 348.7,
-      "prezzo_precedente": 347.45001220703125,
+      "prezzo_mercato": 344.29998779296875,
+      "prezzo_precedente": 349.29998779296875,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
     },
@@ -76,7 +76,7 @@
       "quantita": 91.0,
       "prezzo_medio": 186.59,
       "prezzo_mercato": 124.20999908447266,
-      "prezzo_precedente": 133.08,
+      "prezzo_precedente": 123.58,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
     },
@@ -89,7 +89,7 @@
       "quantita": 390.0,
       "prezzo_medio": 18.73,
       "prezzo_mercato": 16.15999984741211,
-      "prezzo_precedente": 16.6,
+      "prezzo_precedente": 16.16,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
     },
@@ -102,7 +102,7 @@
       "quantita": 72.0,
       "prezzo_medio": 157.22,
       "prezzo_mercato": 172.67999267578125,
-      "prezzo_precedente": 167.6,
+      "prezzo_precedente": 171.95,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
     },
@@ -115,7 +115,7 @@
       "quantita": 38.0,
       "prezzo_medio": 276.4,
       "prezzo_mercato": 273.4599914550781,
-      "prezzo_precedente": 265.29,
+      "prezzo_precedente": 272.42,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
     },
@@ -128,7 +128,7 @@
       "quantita": 100.0,
       "prezzo_medio": 97.49,
       "prezzo_mercato": 117.48999786376953,
-      "prezzo_precedente": 118.6423,
+      "prezzo_precedente": 117.42,
       "yf_symbol": "BABA",
       "tv_symbol": "NYSE:BABA"
     },
@@ -141,7 +141,7 @@
       "quantita": 420.0,
       "prezzo_medio": 24.1,
       "prezzo_mercato": 25.139999389648438,
-      "prezzo_precedente": 24.7998,
+      "prezzo_precedente": 25.13,
       "yf_symbol": "PFE",
       "tv_symbol": "NYSE:PFE"
     },
@@ -154,7 +154,7 @@
       "quantita": 92.0,
       "prezzo_medio": 95.94,
       "prezzo_mercato": 94.02999877929688,
-      "prezzo_precedente": 97.5,
+      "prezzo_precedente": 92.87,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
     }
