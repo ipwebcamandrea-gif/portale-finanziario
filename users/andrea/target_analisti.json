@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-27T16:33:20+00:00",
+    "updated_at": "2026-07-27T16:33:46+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -163,13 +163,13 @@
             "name": "Perion Network Ltd",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 8.569999694824219,
+            "current_price": 9.5600004196167,
             "target_low": 12.0,
             "target_mean": 13.0,
             "target_high": 14.0,
             "analyst_count": 3,
-            "rating": "none",
-            "updated_at": "2026-06-18T17:25:49+00:00"
+            "rating": "buy",
+            "updated_at": "2026-07-27T16:33:46+00:00"
         },
         "WVE": {
             "ok": true,
