@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-27T12:37:46+00:00",
+  "updated_at": "2026-07-27T12:38:02+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -40,19 +40,6 @@
       "prezzo_precedente": 9.32,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
-    },
-    {
-      "ticker": "MA",
-      "titolo": "MASTERCARD RG-A",
-      "mercato": "NYSE",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 23.0,
-      "prezzo_medio": 491.68,
-      "prezzo_mercato": 539.66,
-      "prezzo_precedente": 538.93,
-      "yf_symbol": "MA",
-      "tv_symbol": "NYSE:MA"
     },
     {
       "ticker": "MSFT",
