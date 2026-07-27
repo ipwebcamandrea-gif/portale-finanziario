@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-27T16:30:49+00:00",
+    "updated_at": "2026-07-27T16:31:45+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -367,13 +367,13 @@
             "name": "Alibaba Group Holding Limited",
             "market": "NYSE",
             "currency": "USD",
-            "current_price": 97.91000366210938,
-            "target_low": 91.73863,
-            "target_mean": 191.16681,
-            "target_high": 257.64688,
+            "current_price": 114.37999725341797,
+            "target_low": 92.3202,
+            "target_mean": 190.65468,
+            "target_high": 242.28865,
             "analyst_count": 39,
             "rating": "strong_buy",
-            "updated_at": "2026-07-07T08:36:22+00:00"
+            "updated_at": "2026-07-27T16:31:45+00:00"
         },
         "PFE": {
             "ok": true,
