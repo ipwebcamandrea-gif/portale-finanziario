@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-16T12:04:53+00:00",
+    "updated_at": "2026-07-27T16:30:49+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -197,13 +197,13 @@
             "name": "AST SpaceMobile, Inc.",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 73.19000244140625,
+            "current_price": 57.59000015258789,
             "target_low": 41.2,
-            "target_mean": 81.46667,
+            "target_mean": 83.32,
             "target_high": 108.0,
-            "analyst_count": 9,
+            "analyst_count": 10,
             "rating": "hold",
-            "updated_at": "2026-06-23T12:37:33+00:00"
+            "updated_at": "2026-07-27T16:30:48+00:00"
         },
         "NOW": {
             "ok": true,
