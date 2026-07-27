@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-27T18:53:43+00:00",
+    "updated_at": "2026-07-27T18:54:19+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -408,6 +408,23 @@
             "analyst_count": 14,
             "rating": "strong_buy",
             "updated_at": "2026-07-27T16:36:50+00:00"
+        },
+        "LUNR": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "LUNR",
+            "ticker": "LUNR",
+            "tv_symbol": "NASDAQ:LUNR",
+            "name": "Intuitive Machines, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 13.130000114440918,
+            "target_low": 11.0,
+            "target_mean": 40.77778,
+            "target_high": 75.0,
+            "analyst_count": 9,
+            "rating": "buy",
+            "updated_at": "2026-07-27T18:54:19+00:00"
         }
     }
 }
