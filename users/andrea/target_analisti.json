@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-27T16:38:13+00:00",
+    "updated_at": "2026-07-27T16:39:02+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -96,13 +96,13 @@
             "name": "Intuit Inc.",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 261.92999267578125,
-            "target_low": 276.0,
-            "target_mean": 491.29718,
+            "current_price": 306.55999755859375,
+            "target_low": 250.0,
+            "target_mean": 462.53333,
             "target_high": 921.0,
-            "analyst_count": 32,
+            "analyst_count": 33,
             "rating": "buy",
-            "updated_at": "2026-06-18T13:37:06+00:00"
+            "updated_at": "2026-07-27T16:39:02+00:00"
         },
         "META": {
             "ok": true,
