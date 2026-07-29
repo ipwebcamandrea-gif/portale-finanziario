@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-27T18:54:19+00:00",
+    "updated_at": "2026-07-29T13:40:41+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -62,13 +62,13 @@
             "name": "SoFi Technologies, Inc.",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 17.996400833129883,
+            "current_price": 15.085000038146973,
             "target_low": 12.0,
-            "target_mean": 20.9,
-            "target_high": 31.0,
-            "analyst_count": 20,
+            "target_mean": 20.63158,
+            "target_high": 30.0,
+            "analyst_count": 19,
             "rating": "hold",
-            "updated_at": "2026-06-24T15:46:47+00:00"
+            "updated_at": "2026-07-29T13:40:40+00:00"
         },
         "ORCL": {
             "ok": true,
