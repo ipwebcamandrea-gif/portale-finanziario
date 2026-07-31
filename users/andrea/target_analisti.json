@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-29T18:35:44+00:00",
+    "updated_at": "2026-07-31T12:56:05+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -425,6 +425,23 @@
             "analyst_count": 9,
             "rating": "buy",
             "updated_at": "2026-07-27T18:54:19+00:00"
+        },
+        "TSLA": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "TSLA",
+            "ticker": "TSLA",
+            "tv_symbol": "NASDAQ:TSLA",
+            "name": "Tesla, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 308.8500061035156,
+            "target_low": 125.0,
+            "target_mean": 398.29776,
+            "target_high": 600.0,
+            "analyst_count": 40,
+            "rating": "buy",
+            "updated_at": "2026-07-31T12:56:04+00:00"
         }
     }
 }
