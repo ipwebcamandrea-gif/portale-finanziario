@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-04T14:23:39+00:00",
+  "updated_at": "2026-08-05T21:10:47+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,8 +10,8 @@
       "valuta": "USD",
       "quantita": 1900.0,
       "prezzo_medio": 6.53,
-      "prezzo_mercato": 5.684999942779541,
-      "prezzo_precedente": 5.69,
+      "prezzo_mercato": 5.929999828338623,
+      "prezzo_precedente": 5.95,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -23,8 +23,8 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 319.239990234375,
-      "prezzo_precedente": 316.5,
+      "prezzo_mercato": 327.94000244140625,
+      "prezzo_precedente": 323.0,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
     },
@@ -36,8 +36,8 @@
       "valuta": "USD",
       "quantita": 1000.0,
       "prezzo_medio": 8.65,
-      "prezzo_mercato": 9.895000457763672,
-      "prezzo_precedente": 9.65,
+      "prezzo_mercato": 9.619999885559082,
+      "prezzo_precedente": 9.81,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
     },
@@ -49,8 +49,8 @@
       "valuta": "EUR",
       "quantita": 150.0,
       "prezzo_medio": 325.06,
-      "prezzo_mercato": 427.45001220703125,
-      "prezzo_precedente": 421.79998779296875,
+      "prezzo_mercato": 424.95001220703125,
+      "prezzo_precedente": 433.1000061035156,
       "yf_symbol": "1MSFT.MI",
       "tv_symbol": "MIL:1MSFT"
     },
@@ -62,8 +62,8 @@
       "valuta": "USD",
       "quantita": 121.0,
       "prezzo_medio": 169.15,
-      "prezzo_mercato": 143.8350067138672,
-      "prezzo_precedente": 142.64,
+      "prezzo_mercato": 144.38999938964844,
+      "prezzo_precedente": 145.0696,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
     },
@@ -75,8 +75,8 @@
       "valuta": "USD",
       "quantita": 390.0,
       "prezzo_medio": 18.73,
-      "prezzo_mercato": 15.850000381469727,
-      "prezzo_precedente": 15.5,
+      "prezzo_mercato": 15.40999984741211,
+      "prezzo_precedente": 16.17,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
     },
@@ -88,8 +88,8 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.22,
-      "prezzo_mercato": 188.57000732421875,
-      "prezzo_precedente": 184.79,
+      "prezzo_mercato": 192.97999572753906,
+      "prezzo_precedente": 190.2678,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
     },
@@ -101,8 +101,8 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 269.4678955078125,
-      "prezzo_precedente": 266.96,
+      "prezzo_mercato": 274.0,
+      "prezzo_precedente": 268.49,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
     },
@@ -114,8 +114,8 @@
       "valuta": "USD",
       "quantita": 92.0,
       "prezzo_medio": 95.94,
-      "prezzo_mercato": 94.06099700927734,
-      "prezzo_precedente": 94.05,
+      "prezzo_mercato": 98.37000274658203,
+      "prezzo_precedente": 97.5221,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
     },
@@ -127,8 +127,8 @@
       "valuta": "USD",
       "quantita": 160.0,
       "prezzo_medio": 55.05,
-      "prezzo_mercato": 67.17500305175781,
-      "prezzo_precedente": 63.96,
+      "prezzo_mercato": 68.37999725341797,
+      "prezzo_precedente": 70.12,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
     },
@@ -140,8 +140,8 @@
       "valuta": "USD",
       "quantita": 700.0,
       "prezzo_medio": 13.09,
-      "prezzo_mercato": 13.668800354003906,
-      "prezzo_precedente": 13.26,
+      "prezzo_mercato": 13.989999771118164,
+      "prezzo_precedente": 14.05,
       "yf_symbol": "LUNR",
       "tv_symbol": "NASDAQ:LUNR"
     },
@@ -153,8 +153,8 @@
       "valuta": "USD",
       "quantita": 450.0,
       "prezzo_medio": 15.2,
-      "prezzo_mercato": 18.304399490356445,
-      "prezzo_precedente": 17.9915,
+      "prezzo_mercato": 18.25,
+      "prezzo_precedente": 18.4598,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
     }
