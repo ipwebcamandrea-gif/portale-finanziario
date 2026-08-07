@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-07-31T12:56:05+00:00",
+    "updated_at": "2026-08-07T18:17:37+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -442,6 +442,23 @@
             "analyst_count": 40,
             "rating": "buy",
             "updated_at": "2026-07-31T12:56:04+00:00"
+        },
+        "RKLB": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "RKLB",
+            "ticker": "RKLB",
+            "tv_symbol": "NASDAQ:RKLB",
+            "name": "Rocket Lab Corporation",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 81.42500305175781,
+            "target_low": 64.0,
+            "target_mean": 111.3125,
+            "target_high": 150.0,
+            "analyst_count": 16,
+            "rating": "buy",
+            "updated_at": "2026-08-07T18:17:36+00:00"
         }
     }
 }
