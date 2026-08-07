@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-07T10:09:12+00:00",
+  "updated_at": "2026-08-07T10:09:36+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -40,19 +40,6 @@
       "prezzo_precedente": 9.67,
       "yf_symbol": "PERI",
       "tv_symbol": "NASDAQ:PERI"
-    },
-    {
-      "ticker": "MSFT",
-      "titolo": "MICROSOFT",
-      "mercato": "NASDAQ",
-      "strumento": "",
-      "valuta": "EUR",
-      "quantita": 150.0,
-      "prezzo_medio": 325.06,
-      "prezzo_mercato": 431.54998779296875,
-      "prezzo_precedente": 430.45001220703125,
-      "yf_symbol": "1MSFT.MI",
-      "tv_symbol": "MIL:1MSFT"
     },
     {
       "ticker": "ORCL",
