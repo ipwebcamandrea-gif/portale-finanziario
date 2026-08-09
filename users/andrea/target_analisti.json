@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-09T06:50:09+00:00",
+    "updated_at": "2026-08-09T06:50:59+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -401,13 +401,13 @@
             "name": "Strategy Inc",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 98.0,
-            "target_low": 130.0,
-            "target_mean": 303.64285,
-            "target_high": 570.0,
+            "current_price": 100.01000213623047,
+            "target_low": 125.0,
+            "target_mean": 232.5,
+            "target_high": 450.0,
             "analyst_count": 14,
             "rating": "strong_buy",
-            "updated_at": "2026-07-27T16:36:50+00:00"
+            "updated_at": "2026-08-09T06:50:59+00:00"
         },
         "LUNR": {
             "ok": true,
