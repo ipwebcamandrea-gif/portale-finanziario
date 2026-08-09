@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-09T06:51:41+00:00",
+    "updated_at": "2026-08-09T06:52:59+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -180,13 +180,13 @@
             "name": "Wave Life Sciences Ltd.",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 5.992499828338623,
+            "current_price": 6.099999904632568,
             "target_low": 12.0,
-            "target_mean": 21.9375,
-            "target_high": 43.0,
+            "target_mean": 19.375,
+            "target_high": 42.0,
             "analyst_count": 16,
-            "rating": "none",
-            "updated_at": "2026-07-27T16:38:12+00:00"
+            "rating": "strong_buy",
+            "updated_at": "2026-08-09T06:52:59+00:00"
         },
         "ASTS": {
             "ok": true,
