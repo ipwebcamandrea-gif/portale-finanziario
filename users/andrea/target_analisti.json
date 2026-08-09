@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-09T06:50:59+00:00",
+    "updated_at": "2026-08-09T06:51:41+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -350,13 +350,13 @@
             "name": "McDonald's Corporation",
             "market": "NYSE",
             "currency": "USD",
-            "current_price": 270.57000732421875,
+            "current_price": 274.4800109863281,
             "target_low": 250.0,
-            "target_mean": 324.7097,
+            "target_mean": 316.0645,
             "target_high": 407.0,
             "analyst_count": 31,
             "rating": "buy",
-            "updated_at": "2026-07-27T18:53:43+00:00"
+            "updated_at": "2026-08-09T06:51:41+00:00"
         },
         "BABA": {
             "ok": true,
