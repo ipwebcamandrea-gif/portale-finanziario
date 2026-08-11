@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-11T18:50:53+00:00",
+  "updated_at": "2026-08-11T18:51:03+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 121.0,
       "prezzo_medio": 169.15,
-      "prezzo_mercato": 144.8404998779297,
+      "prezzo_mercato": 144.86500549316406,
       "prezzo_precedente": 149.5501,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 272.57000732421875,
+      "prezzo_mercato": 272.5450134277344,
       "prezzo_precedente": 273.76,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 92.0,
       "prezzo_medio": 95.94,
-      "prezzo_mercato": 95.47000122070312,
+      "prezzo_mercato": 95.44000244140625,
       "prezzo_precedente": 96.8,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 160.0,
       "prezzo_medio": 55.05,
-      "prezzo_mercato": 70.16000366210938,
+      "prezzo_mercato": 70.1050033569336,
       "prezzo_precedente": 68.039,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 700.0,
       "prezzo_medio": 13.09,
-      "prezzo_mercato": 16.450000762939453,
+      "prezzo_mercato": 16.454999923706055,
       "prezzo_precedente": 15.57,
       "yf_symbol": "LUNR",
       "tv_symbol": "NASDAQ:LUNR"
@@ -140,7 +140,7 @@
       "valuta": "USD",
       "quantita": 450.0,
       "prezzo_medio": 15.2,
-      "prezzo_mercato": 17.968700408935547,
+      "prezzo_mercato": 17.96500015258789,
       "prezzo_precedente": 18.08,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
@@ -153,7 +153,7 @@
       "valuta": "USD",
       "quantita": 150.0,
       "prezzo_medio": 80.17,
-      "prezzo_mercato": 80.17990112304688,
+      "prezzo_mercato": 80.16999816894531,
       "prezzo_precedente": 74.24,
       "yf_symbol": "RKLB",
       "tv_symbol": "NASDAQ:RKLB"
