@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-11T14:46:27+00:00",
+    "updated_at": "2026-08-11T14:48:24+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -316,13 +316,13 @@
             "name": "Salesforce, Inc.",
             "market": "NYSE",
             "currency": "USD",
-            "current_price": 174.1699981689453,
+            "current_price": 199.10000610351562,
             "target_low": 160.0,
             "target_mean": 241.7198,
             "target_high": 475.0,
             "analyst_count": 53,
             "rating": "buy",
-            "updated_at": "2026-07-27T16:33:19+00:00"
+            "updated_at": "2026-08-11T14:48:23+00:00"
         },
         "ABT": {
             "ok": true,
