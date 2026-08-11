@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-11T14:44:36+00:00",
+  "updated_at": "2026-08-11T14:46:00+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -157,6 +157,19 @@
       "prezzo_precedente": 74.24,
       "yf_symbol": "RKLB",
       "tv_symbol": "NASDAQ:RKLB"
+    },
+    {
+      "ticker": "CENX",
+      "titolo": "Century Aluminum Company",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 127.0,
+      "prezzo_medio": 52.75,
+      "prezzo_mercato": 53.560001373291016,
+      "prezzo_precedente": 52.6,
+      "yf_symbol": "CENX",
+      "tv_symbol": "NASDAQ:CENX"
     }
   ]
 }
