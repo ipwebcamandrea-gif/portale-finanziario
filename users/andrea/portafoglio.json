@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-14T07:46:05+00:00",
+  "updated_at": "2026-08-14T07:46:51+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -131,19 +131,6 @@
       "prezzo_precedente": 17.24,
       "yf_symbol": "LUNR",
       "tv_symbol": "NASDAQ:LUNR"
-    },
-    {
-      "ticker": "SOFI",
-      "titolo": "SoFi Technologies, Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 450.0,
-      "prezzo_medio": 15.2,
-      "prezzo_mercato": 18.43000030517578,
-      "prezzo_precedente": 17.8392,
-      "yf_symbol": "SOFI",
-      "tv_symbol": "NASDAQ:SOFI"
     },
     {
       "ticker": "RKLB",
