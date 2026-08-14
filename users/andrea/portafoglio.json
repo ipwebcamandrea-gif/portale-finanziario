@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-14T15:00:11+00:00",
+  "updated_at": "2026-08-14T15:00:31+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -118,19 +118,6 @@
       "prezzo_precedente": 71.6,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
-    },
-    {
-      "ticker": "LUNR",
-      "titolo": "Intuitive Machines, Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 700.0,
-      "prezzo_medio": 13.09,
-      "prezzo_mercato": 19.19499969482422,
-      "prezzo_precedente": 17.69,
-      "yf_symbol": "LUNR",
-      "tv_symbol": "NASDAQ:LUNR"
     },
     {
       "ticker": "RKLB",
