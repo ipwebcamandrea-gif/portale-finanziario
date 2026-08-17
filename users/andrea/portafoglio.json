@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-17T18:17:42+00:00",
+  "updated_at": "2026-08-17T18:18:10+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -27,19 +27,6 @@
       "prezzo_precedente": 346.24,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
-    },
-    {
-      "ticker": "PERI",
-      "titolo": "PERION NETWORK",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 1000.0,
-      "prezzo_medio": 8.65,
-      "prezzo_mercato": 9.635000228881836,
-      "prezzo_precedente": 9.79,
-      "yf_symbol": "PERI",
-      "tv_symbol": "NASDAQ:PERI"
     },
     {
       "ticker": "ORCL",
