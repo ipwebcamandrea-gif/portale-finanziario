@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-17T18:22:47+00:00",
+  "updated_at": "2026-08-17T18:24:15+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -139,7 +139,7 @@
       "strumento": "Azione",
       "valuta": "EUR",
       "quantita": 250.0,
-      "prezzo_medio": 43.67,
+      "prezzo_medio": 43.47,
       "prezzo_mercato": 46.88999938964844,
       "prezzo_precedente": 45.869998931884766,
       "yf_symbol": "SLVR.MI",
