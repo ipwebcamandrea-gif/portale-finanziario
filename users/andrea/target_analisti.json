@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-11T14:48:24+00:00",
+    "updated_at": "2026-08-17T18:24:56+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -476,6 +476,23 @@
             "analyst_count": 3,
             "rating": "strong_buy",
             "updated_at": "2026-08-11T14:46:27+00:00"
+        },
+        "RUM": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "RUM",
+            "ticker": "RUM",
+            "tv_symbol": "NASDAQ:RUM",
+            "name": "RUM Group Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 8.279999732971191,
+            "target_low": 22.0,
+            "target_mean": 22.0,
+            "target_high": 22.0,
+            "analyst_count": 1,
+            "rating": "none",
+            "updated_at": "2026-08-17T18:24:55+00:00"
         }
     }
 }
