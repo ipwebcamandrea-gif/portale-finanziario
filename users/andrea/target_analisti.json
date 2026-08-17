@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-17T18:24:56+00:00",
+    "updated_at": "2026-08-17T18:25:33+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -493,6 +493,23 @@
             "analyst_count": 1,
             "rating": "none",
             "updated_at": "2026-08-17T18:24:55+00:00"
+        },
+        "SLVR.MI": {
+            "source": "manuale",
+            "yf_symbol": "SLVR.MI",
+            "ticker": "SLVR",
+            "tv_symbol": "MIL:SLVR",
+            "name": "WISDOMTREE SILVER",
+            "market": "MIL",
+            "currency": "EUR",
+            "current_price": 46.88999938964844,
+            "quote_error": "",
+            "target_low": 67.0,
+            "target_mean": null,
+            "target_high": null,
+            "analyst_count": null,
+            "rating": "",
+            "updated_at": "2026-08-17T18:25:33+00:00"
         }
     }
 }
