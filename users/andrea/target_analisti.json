@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-17T18:25:33+00:00",
+    "updated_at": "2026-08-17T18:29:35+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -505,11 +505,11 @@
             "current_price": 46.88999938964844,
             "quote_error": "",
             "target_low": 67.0,
-            "target_mean": null,
-            "target_high": null,
+            "target_mean": 100.0,
+            "target_high": 160.0,
             "analyst_count": null,
             "rating": "",
-            "updated_at": "2026-08-17T18:25:33+00:00"
+            "updated_at": "2026-08-17T18:29:35+00:00"
         }
     }
 }
