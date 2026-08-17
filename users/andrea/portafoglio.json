@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-17T18:22:18+00:00",
+  "updated_at": "2026-08-17T18:22:47+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 1900.0,
       "prezzo_medio": 6.53,
-      "prezzo_mercato": 5.150000095367432,
+      "prezzo_mercato": 5.15500020980835,
       "prezzo_precedente": 5.4,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 40.0,
       "prezzo_medio": 364.05947,
-      "prezzo_mercato": 334.2699890136719,
+      "prezzo_mercato": 334.3999938964844,
       "prezzo_precedente": 346.24,
       "yf_symbol": "INTU",
       "tv_symbol": "NASDAQ:INTU"
@@ -36,7 +36,7 @@
       "valuta": "USD",
       "quantita": 121.0,
       "prezzo_medio": 169.15,
-      "prezzo_mercato": 147.44580078125,
+      "prezzo_mercato": 147.625,
       "prezzo_precedente": 150.76,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 390.0,
       "prezzo_medio": 18.73,
-      "prezzo_mercato": 15.6850004196167,
+      "prezzo_mercato": 15.704999923706055,
       "prezzo_precedente": 15.9,
       "yf_symbol": "MIR",
       "tv_symbol": "NYSE:MIR"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 266.1600036621094,
+      "prezzo_mercato": 266.1700134277344,
       "prezzo_precedente": 273.28,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 92.0,
       "prezzo_medio": 95.94,
-      "prezzo_mercato": 97.75,
+      "prezzo_mercato": 98.14440155029297,
       "prezzo_precedente": 93.0999,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 160.0,
       "prezzo_medio": 55.05,
-      "prezzo_mercato": 71.1050033569336,
+      "prezzo_mercato": 71.1500015258789,
       "prezzo_precedente": 70.92,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 127.0,
       "prezzo_medio": 52.75,
-      "prezzo_mercato": 47.0099983215332,
+      "prezzo_mercato": 46.970001220703125,
       "prezzo_precedente": 46.72,
       "yf_symbol": "CENX",
       "tv_symbol": "NASDAQ:CENX"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 800.0,
       "prezzo_medio": 7.61,
-      "prezzo_mercato": 8.298999786376953,
+      "prezzo_mercato": 8.29010009765625,
       "prezzo_precedente": 7.5,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
