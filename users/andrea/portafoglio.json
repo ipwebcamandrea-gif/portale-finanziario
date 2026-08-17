@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-17T18:21:23+00:00",
+  "updated_at": "2026-08-17T18:22:18+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -131,6 +131,19 @@
       "prezzo_precedente": 7.5,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
+    },
+    {
+      "ticker": "SLVR",
+      "titolo": "WISDOMTREE SILVER",
+      "mercato": "MIL",
+      "strumento": "Azione",
+      "valuta": "EUR",
+      "quantita": 250.0,
+      "prezzo_medio": 43.67,
+      "prezzo_mercato": 46.88999938964844,
+      "prezzo_precedente": 45.869998931884766,
+      "yf_symbol": "SLVR.MI",
+      "tv_symbol": "MIL:SLVR"
     }
   ]
 }
