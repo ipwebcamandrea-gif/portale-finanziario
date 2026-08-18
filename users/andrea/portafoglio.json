@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-18T15:22:19+00:00",
+  "updated_at": "2026-08-18T15:23:03+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -14,19 +14,6 @@
       "prezzo_precedente": 5.1638,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
-    },
-    {
-      "ticker": "INTU",
-      "titolo": "INTUIT",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 40.0,
-      "prezzo_medio": 364.05947,
-      "prezzo_mercato": 351.0400085449219,
-      "prezzo_precedente": 335.94,
-      "yf_symbol": "INTU",
-      "tv_symbol": "NASDAQ:INTU"
     },
     {
       "ticker": "ORCL",
