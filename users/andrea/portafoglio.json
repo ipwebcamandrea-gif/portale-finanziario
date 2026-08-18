@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-18T15:23:50+00:00",
+  "updated_at": "2026-08-18T15:24:04+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 121.0,
       "prezzo_medio": 169.15,
-      "prezzo_mercato": 143.7299041748047,
+      "prezzo_mercato": 143.69500732421875,
       "prezzo_precedente": 146.76,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.22,
-      "prezzo_mercato": 197.39500427246094,
+      "prezzo_mercato": 197.41799926757812,
       "prezzo_precedente": 190.7082,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.4,
-      "prezzo_mercato": 269.17999267578125,
+      "prezzo_mercato": 269.1099853515625,
       "prezzo_precedente": 265.99,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 92.0,
       "prezzo_medio": 95.94,
-      "prezzo_mercato": 95.30000305175781,
+      "prezzo_mercato": 95.37760162353516,
       "prezzo_precedente": 97.9,
       "yf_symbol": "MSTR",
       "tv_symbol": "NASDAQ:MSTR"
