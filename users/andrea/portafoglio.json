@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-18T15:23:03+00:00",
+  "updated_at": "2026-08-18T15:23:22+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -92,19 +92,6 @@
       "prezzo_precedente": 71.14,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
-    },
-    {
-      "ticker": "CENX",
-      "titolo": "Century Aluminum Company",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 127.0,
-      "prezzo_medio": 52.75,
-      "prezzo_mercato": 44.53499984741211,
-      "prezzo_precedente": 47.0153,
-      "yf_symbol": "CENX",
-      "tv_symbol": "NASDAQ:CENX"
     },
     {
       "ticker": "RUM",
