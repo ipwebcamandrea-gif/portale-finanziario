@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-19T16:25:56+00:00",
+  "updated_at": "2026-08-19T16:27:20+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -131,6 +131,19 @@
       "prezzo_precedente": 21.6404,
       "yf_symbol": "WYFI",
       "tv_symbol": "NASDAQ:WYFI"
+    },
+    {
+      "ticker": "COIN",
+      "titolo": "Coinbase Global, Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 75.0,
+      "prezzo_medio": 162.13,
+      "prezzo_mercato": 165.19619750976562,
+      "prezzo_precedente": 146.77,
+      "yf_symbol": "COIN",
+      "tv_symbol": "NASDAQ:COIN"
     }
   ]
 }
