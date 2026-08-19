@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-19T15:03:13+00:00",
+    "updated_at": "2026-08-19T16:29:26+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -527,6 +527,23 @@
             "analyst_count": null,
             "rating": "",
             "updated_at": "2026-08-19T15:03:13+00:00"
+        },
+        "COIN": {
+            "source": "manuale",
+            "yf_symbol": "COIN",
+            "ticker": "COIN",
+            "tv_symbol": "NASDAQ:COIN",
+            "name": "Coinbase Global, Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 165.08999633789062,
+            "quote_error": "",
+            "target_low": 194.0,
+            "target_mean": null,
+            "target_high": null,
+            "analyst_count": null,
+            "rating": "",
+            "updated_at": "2026-08-19T16:29:26+00:00"
         }
     }
 }
