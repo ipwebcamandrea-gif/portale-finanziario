@@ -1,1 +1,123 @@
-
+{
+  "version": 1,
+  "updated_at": "2026-08-19T06:59:49+00:00",
+  "positions": [
+    {
+      "ticker": "WVE",
+      "titolo": "WAVE LIFE SCI",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 1900.0,
+      "prezzo_medio": 6.53,
+      "prezzo_mercato": 5.289999961853027,
+      "prezzo_precedente": 5.1638,
+      "yf_symbol": "WVE",
+      "tv_symbol": "NASDAQ:WVE"
+    },
+    {
+      "ticker": "ORCL",
+      "titolo": "ORACLE CORPORATION",
+      "mercato": "",
+      "strumento": "",
+      "valuta": "USD",
+      "quantita": 121.0,
+      "prezzo_medio": 169.15,
+      "prezzo_mercato": 142.7899932861328,
+      "prezzo_precedente": 146.76,
+      "yf_symbol": "ORCL",
+      "tv_symbol": "NYSE:ORCL"
+    },
+    {
+      "ticker": "MIR",
+      "titolo": "Mirion Technologies, Inc.",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 390.0,
+      "prezzo_medio": 18.73,
+      "prezzo_mercato": 15.329999923706055,
+      "prezzo_precedente": 16.2,
+      "yf_symbol": "MIR",
+      "tv_symbol": "NYSE:MIR"
+    },
+    {
+      "ticker": "CRM",
+      "titolo": "Salesforce, Inc.",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 72.0,
+      "prezzo_medio": 157.22,
+      "prezzo_mercato": 196.13999938964844,
+      "prezzo_precedente": 190.7082,
+      "yf_symbol": "CRM",
+      "tv_symbol": "NYSE:CRM"
+    },
+    {
+      "ticker": "MCD",
+      "titolo": "McDonald's Corporation",
+      "mercato": "NYSE",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 38.0,
+      "prezzo_medio": 276.4,
+      "prezzo_mercato": 266.989990234375,
+      "prezzo_precedente": 265.99,
+      "yf_symbol": "MCD",
+      "tv_symbol": "NYSE:MCD"
+    },
+    {
+      "ticker": "MSTR",
+      "titolo": "MicroStrategy Incorporated",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 92.0,
+      "prezzo_medio": 95.94,
+      "prezzo_mercato": 92.5199966430664,
+      "prezzo_precedente": 97.9,
+      "yf_symbol": "MSTR",
+      "tv_symbol": "NASDAQ:MSTR"
+    },
+    {
+      "ticker": "ASTS",
+      "titolo": "AST SpaceMobile, Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 160.0,
+      "prezzo_medio": 55.05,
+      "prezzo_mercato": 67.06999969482422,
+      "prezzo_precedente": 71.14,
+      "yf_symbol": "ASTS",
+      "tv_symbol": "NASDAQ:ASTS"
+    },
+    {
+      "ticker": "RUM",
+      "titolo": "RUM Group Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 800.0,
+      "prezzo_medio": 7.61,
+      "prezzo_mercato": 8.100000381469727,
+      "prezzo_precedente": 8.22,
+      "yf_symbol": "RUM",
+      "tv_symbol": "NASDAQ:RUM"
+    },
+    {
+      "ticker": "SLVR",
+      "titolo": "WISDOMTREE SILVER",
+      "mercato": "MIL",
+      "strumento": "Azione",
+      "valuta": "EUR",
+      "quantita": 250.0,
+      "prezzo_medio": 43.47,
+      "prezzo_mercato": 44.85,
+      "prezzo_precedente": 46.88999938964844,
+      "yf_symbol": "SLVR.MI",
+      "tv_symbol": "MIL:SLVR"
+    }
+  ]
+}
