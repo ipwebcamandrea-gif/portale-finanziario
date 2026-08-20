@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-20T10:02:39+00:00",
+  "updated_at": "2026-08-20T10:03:21+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -112,8 +112,8 @@
       "mercato": "MIL",
       "strumento": "ETC",
       "valuta": "EUR",
-      "quantita": 250.0,
-      "prezzo_medio": 43.476,
+      "quantita": 350.0,
+      "prezzo_medio": 44.48,
       "prezzo_mercato": 46.42499923706055,
       "prezzo_precedente": 45.82500076293945,
       "yf_symbol": "SLVR.MI",
