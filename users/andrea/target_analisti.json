@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-22T14:46:54+00:00",
+    "updated_at": "2026-08-22T14:47:30+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -561,6 +561,23 @@
             "analyst_count": 32,
             "rating": "buy",
             "updated_at": "2026-08-22T14:46:54+00:00"
+        },
+        "PG": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "PG",
+            "ticker": "PG",
+            "tv_symbol": "NYSE:PG",
+            "name": "Procter & Gamble Company (The)",
+            "market": "NYSE",
+            "currency": "USD",
+            "current_price": 144.67999267578125,
+            "target_low": 143.0,
+            "target_mean": 160.56522,
+            "target_high": 186.0,
+            "analyst_count": 23,
+            "rating": "buy",
+            "updated_at": "2026-08-22T14:47:29+00:00"
         }
     }
 }
