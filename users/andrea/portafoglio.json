@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-27T16:29:32+00:00",
+  "updated_at": "2026-08-27T16:30:27+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -66,19 +66,6 @@
       "prezzo_precedente": 266.75,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
-    },
-    {
-      "ticker": "MSTR",
-      "titolo": "MicroStrategy Incorporated",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 92.0,
-      "prezzo_medio": 96.08897,
-      "prezzo_mercato": 137.92909240722656,
-      "prezzo_precedente": 125.1909,
-      "yf_symbol": "MSTR",
-      "tv_symbol": "NASDAQ:MSTR"
     },
     {
       "ticker": "ASTS",
