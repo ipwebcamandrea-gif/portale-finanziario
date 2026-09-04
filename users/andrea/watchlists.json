@@ -44,6 +44,11 @@
             "NYSE:HIMS",
             "NYSE:SE"
         ],
+        "ALTO BETA": [
+            "NASDAQ:PLTR",
+            "NASDAQ:WVE",
+            "NASDAQ:SOFI"
+        ],
         "EDGAR": [
             "NASDAQ:WVE",
             "NASDAQ:PERI",
@@ -52,11 +57,6 @@
             "NYSE:GAP",
             "NASDAQ:MBLY",
             "NYSE:PFE"
-        ],
-        "ALTO BETA": [
-            "NASDAQ:PLTR",
-            "NASDAQ:WVE",
-            "NASDAQ:SOFI"
         ],
         "ITA": [
             "MIL:UCG",
