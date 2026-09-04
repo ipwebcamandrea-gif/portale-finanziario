@@ -53,14 +53,14 @@
             "NASDAQ:MBLY",
             "NYSE:PFE"
         ],
-        "ITA": [
-            "MIL:UCG",
-            "MIL:ENI"
-        ],
         "ALTO BETA": [
             "NASDAQ:PLTR",
             "NASDAQ:WVE",
             "NASDAQ:SOFI"
+        ],
+        "ITA": [
+            "MIL:UCG",
+            "MIL:ENI"
         ]
     }
 }
