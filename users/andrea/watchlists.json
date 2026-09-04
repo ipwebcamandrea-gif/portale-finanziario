@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TLI TOP 10",
+    "active_watchlist": "ALTO BETA",
     "watchlists": {
         "MEGA CAP USA": [
             "MIL:SWDA",
@@ -33,16 +33,6 @@
             "NASDAQ:AMZN",
             "NYSE:CRM",
             "NYSE:BABA"
-        ],
-        "TLI TOP 10": [
-            "NYSE:ZETA",
-            "NASDAQ:BIDU",
-            "NASDAQ:SOFI",
-            "NYSE:NVO",
-            "NASDAQ:PEP",
-            "NYSE:UNH",
-            "NYSE:HIMS",
-            "NYSE:SE"
         ],
         "ALTO BETA": [
             "NASDAQ:PLTR",
