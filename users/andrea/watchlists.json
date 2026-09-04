@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "ALTO BETA",
+    "active_watchlist": "ALTO BETA + EDGAR",
     "watchlists": {
         "MEGA CAP USA": [
             "MIL:SWDA",
@@ -34,7 +34,7 @@
             "NYSE:CRM",
             "NYSE:BABA"
         ],
-        "ALTO BETA": [
+        "ALTO BETA + EDGAR": [
             "NASDAQ:PLTR",
             "NASDAQ:WVE",
             "NASDAQ:SOFI"
