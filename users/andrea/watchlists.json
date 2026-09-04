@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "EDGAR",
+    "active_watchlist": "ITA",
     "watchlists": {
         "MEGA CAP USA": [
             "MIL:SWDA",
@@ -48,15 +48,6 @@
             "NASDAQ:PLTR",
             "NASDAQ:WVE",
             "NASDAQ:SOFI"
-        ],
-        "EDGAR": [
-            "NASDAQ:WVE",
-            "NASDAQ:PERI",
-            "NYSE:MIR",
-            "NYSE:TALO",
-            "NYSE:GAP",
-            "NASDAQ:MBLY",
-            "NYSE:PFE"
         ],
         "ITA": [
             "MIL:UCG",
