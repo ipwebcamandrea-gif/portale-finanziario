@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "active_watchlist": "TEST",
+    "active_watchlist": "ALTO BETA",
     "watchlists": {
         "MEGA CAP USA": [
             "MIL:SWDA",
@@ -57,7 +57,7 @@
             "MIL:UCG",
             "MIL:ENI"
         ],
-        "TEST": [
+        "ALTO BETA": [
             "NASDAQ:PLTR",
             "NASDAQ:WVE",
             "NASDAQ:PERI",
