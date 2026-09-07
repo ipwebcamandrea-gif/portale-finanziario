@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-04T18:24:27+00:00",
+  "updated_at": "2026-09-07T06:30:56+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 2100.0,
       "prezzo_medio": 6.41842,
-      "prezzo_mercato": 4.835000038146973,
+      "prezzo_mercato": 4.860000133514404,
       "prezzo_precedente": 4.7,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 148.0,
       "prezzo_medio": 164.78672,
-      "prezzo_mercato": 157.7949981689453,
+      "prezzo_mercato": 158.77999877929688,
       "prezzo_precedente": 154.3,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -36,7 +36,7 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.39986,
-      "prezzo_mercato": 261.2699890136719,
+      "prezzo_mercato": 259.2300109863281,
       "prezzo_precedente": 264.39,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.74064,
-      "prezzo_mercato": 256.82000732421875,
+      "prezzo_mercato": 255.69000244140625,
       "prezzo_precedente": 259.8,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 211.0,
       "prezzo_medio": 58.25907,
-      "prezzo_mercato": 61.88999938964844,
+      "prezzo_mercato": 62.310001373291016,
       "prezzo_precedente": 62.14,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 800.0,
       "prezzo_medio": 7.61619,
-      "prezzo_mercato": 8.774999618530273,
+      "prezzo_mercato": 8.600000381469727,
       "prezzo_precedente": 9.02,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 45.0,
       "prezzo_medio": 162.13,
-      "prezzo_mercato": 184.44000244140625,
+      "prezzo_mercato": 184.63999938964844,
       "prezzo_precedente": 191.5,
       "yf_symbol": "COIN",
       "tv_symbol": "NASDAQ:COIN"
