@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-07T06:30:56+00:00",
+  "updated_at": "2026-09-07T06:31:25+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -79,19 +79,6 @@
       "prezzo_precedente": 9.02,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
-    },
-    {
-      "ticker": "COIN",
-      "titolo": "Coinbase Global, Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 45.0,
-      "prezzo_medio": 162.13,
-      "prezzo_mercato": 184.63999938964844,
-      "prezzo_precedente": 191.5,
-      "yf_symbol": "COIN",
-      "tv_symbol": "NASDAQ:COIN"
     }
   ]
 }
