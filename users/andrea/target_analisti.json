@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-08-22T14:47:30+00:00",
+    "updated_at": "2026-09-09T12:26:29+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -578,6 +578,23 @@
             "analyst_count": 23,
             "rating": "buy",
             "updated_at": "2026-08-22T14:47:29+00:00"
+        },
+        "GRRR": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "GRRR",
+            "ticker": "GRRR",
+            "tv_symbol": "NASDAQ:GRRR",
+            "name": "Gorilla Technology Group Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 14.579999923706055,
+            "target_low": 24.0,
+            "target_mean": 34.4,
+            "target_high": 44.0,
+            "analyst_count": 5,
+            "rating": "strong_buy",
+            "updated_at": "2026-09-09T12:26:28+00:00"
         }
     }
 }
