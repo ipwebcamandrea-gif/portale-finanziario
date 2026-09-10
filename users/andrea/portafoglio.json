@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T16:56:45+00:00",
+  "updated_at": "2026-09-10T16:59:03+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -92,6 +92,19 @@
       "prezzo_precedente": 5.09,
       "yf_symbol": "PTON",
       "tv_symbol": "NASDAQ:PTON"
+    },
+    {
+      "ticker": "APLD",
+      "titolo": "Applied Digital Corporation",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 301.0,
+      "prezzo_medio": 25.36,
+      "prezzo_mercato": 26.139999389648438,
+      "prezzo_precedente": 26.94,
+      "yf_symbol": "APLD",
+      "tv_symbol": "NASDAQ:APLD"
     }
   ]
 }
