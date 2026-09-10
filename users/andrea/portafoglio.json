@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T16:55:57+00:00",
+  "updated_at": "2026-09-10T16:56:34+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -79,6 +79,19 @@
       "prezzo_precedente": 7.56,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
+    },
+    {
+      "ticker": "PTON",
+      "titolo": "Peloton Interactive, Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 1200.0,
+      "prezzo_medio": 4.99,
+      "prezzo_mercato": 5.019999980926514,
+      "prezzo_precedente": 5.09,
+      "yf_symbol": "PTON",
+      "tv_symbol": "NASDAQ:PTON"
     }
   ]
 }
