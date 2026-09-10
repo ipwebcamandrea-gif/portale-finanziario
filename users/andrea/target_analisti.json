@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-09-10T17:06:40+00:00",
+    "updated_at": "2026-09-10T17:07:30+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -629,6 +629,23 @@
             "analyst_count": 11,
             "rating": "strong_buy",
             "updated_at": "2026-09-10T17:06:40+00:00"
+        },
+        "WULF": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "WULF",
+            "ticker": "WULF",
+            "tv_symbol": "NASDAQ:WULF",
+            "name": "TeraWulf Inc.",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 16.475000381469727,
+            "target_low": 19.0,
+            "target_mean": 35.475,
+            "target_high": 62.5,
+            "analyst_count": 20,
+            "rating": "strong_buy",
+            "updated_at": "2026-09-10T17:07:29+00:00"
         }
     }
 }
