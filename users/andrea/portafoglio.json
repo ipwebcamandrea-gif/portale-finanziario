@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-09T12:26:01+00:00",
+  "updated_at": "2026-09-10T16:55:25+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -10,8 +10,8 @@
       "valuta": "USD",
       "quantita": 2100.0,
       "prezzo_medio": 6.41842,
-      "prezzo_mercato": 4.909999847412109,
-      "prezzo_precedente": 4.9381,
+      "prezzo_mercato": 4.710000038146973,
+      "prezzo_precedente": 4.86,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -23,8 +23,8 @@
       "valuta": "USD",
       "quantita": 148.0,
       "prezzo_medio": 164.78672,
-      "prezzo_mercato": 162.52000427246094,
-      "prezzo_precedente": 163.6267,
+      "prezzo_mercato": 156.71859741210938,
+      "prezzo_precedente": 161.88,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
     },
@@ -36,8 +36,8 @@
       "valuta": "USD",
       "quantita": 72.0,
       "prezzo_medio": 157.39986,
-      "prezzo_mercato": 249.1199951171875,
-      "prezzo_precedente": 248.4,
+      "prezzo_mercato": 244.83999633789062,
+      "prezzo_precedente": 244.2029,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
     },
@@ -49,8 +49,8 @@
       "valuta": "USD",
       "quantita": 38.0,
       "prezzo_medio": 276.74064,
-      "prezzo_mercato": 255.80999755859375,
-      "prezzo_precedente": 256.12,
+      "prezzo_mercato": 254.1199951171875,
+      "prezzo_precedente": 253.61,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
     },
@@ -62,8 +62,8 @@
       "valuta": "USD",
       "quantita": 211.0,
       "prezzo_medio": 58.25907,
-      "prezzo_mercato": 66.12000274658203,
-      "prezzo_precedente": 66.19,
+      "prezzo_mercato": 62.029998779296875,
+      "prezzo_precedente": 62.3,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
     },
@@ -75,8 +75,8 @@
       "valuta": "USD",
       "quantita": 800.0,
       "prezzo_medio": 7.61619,
-      "prezzo_mercato": 8.390000343322754,
-      "prezzo_precedente": 8.26,
+      "prezzo_mercato": 7.414999961853027,
+      "prezzo_precedente": 7.56,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
     },
@@ -88,8 +88,8 @@
       "valuta": "USD",
       "quantita": 500.0,
       "prezzo_medio": 14.5,
-      "prezzo_mercato": 14.579999923706055,
-      "prezzo_precedente": 14.7,
+      "prezzo_mercato": 13.90999984741211,
+      "prezzo_precedente": 14.5,
       "yf_symbol": "GRRR",
       "tv_symbol": "NASDAQ:GRRR"
     }
