@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T17:02:14+00:00",
+  "updated_at": "2026-09-10T17:03:31+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -118,6 +118,19 @@
       "prezzo_precedente": 17.1067,
       "yf_symbol": "WULF",
       "tv_symbol": "NASDAQ:WULF"
+    },
+    {
+      "ticker": "RUM",
+      "titolo": "RUM Group Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 1200.0,
+      "prezzo_medio": 8.23,
+      "prezzo_mercato": 7.394999980926514,
+      "prezzo_precedente": 7.56,
+      "yf_symbol": "RUM",
+      "tv_symbol": "NASDAQ:RUM"
     }
   ]
 }
