@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T16:59:03+00:00",
+  "updated_at": "2026-09-10T17:00:01+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -34,8 +34,8 @@
       "mercato": "NYSE",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 72.0,
-      "prezzo_medio": 157.39986,
+      "quantita": 67.0,
+      "prezzo_medio": 180.04,
       "prezzo_mercato": 244.9199981689453,
       "prezzo_precedente": 244.2029,
       "yf_symbol": "CRM",
