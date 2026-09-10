@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-09-10T16:57:13+00:00",
+    "updated_at": "2026-09-10T17:06:40+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -612,6 +612,23 @@
             "analyst_count": 15,
             "rating": "buy",
             "updated_at": "2026-09-10T16:57:13+00:00"
+        },
+        "APLD": {
+            "ok": true,
+            "source": "yfinance",
+            "yf_symbol": "APLD",
+            "ticker": "APLD",
+            "tv_symbol": "NASDAQ:APLD",
+            "name": "Applied Digital Corporation",
+            "market": "NASDAQ",
+            "currency": "USD",
+            "current_price": 26.149999618530273,
+            "target_low": 37.5,
+            "target_mean": 74.22727,
+            "target_high": 109.0,
+            "analyst_count": 11,
+            "rating": "strong_buy",
+            "updated_at": "2026-09-10T17:06:40+00:00"
         }
     }
 }
