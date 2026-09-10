@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T17:00:01+00:00",
+  "updated_at": "2026-09-10T17:01:42+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -105,6 +105,19 @@
       "prezzo_precedente": 26.94,
       "yf_symbol": "APLD",
       "tv_symbol": "NASDAQ:APLD"
+    },
+    {
+      "ticker": "WULF",
+      "titolo": "TeraWulf Inc.",
+      "mercato": "NASDAQ",
+      "strumento": "Azione",
+      "valuta": "USD",
+      "quantita": 550.0,
+      "prezzo_medio": 16.65,
+      "prezzo_mercato": 16.450000762939453,
+      "prezzo_precedente": 17.1067,
+      "yf_symbol": "WULF",
+      "tv_symbol": "NASDAQ:WULF"
     }
   ]
 }
