@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "updated_at": "2026-09-10T17:07:30+00:00",
+    "updated_at": "2026-09-10T17:08:18+00:00",
     "targets": {
         "MSFT": {
             "ok": true,
@@ -486,13 +486,13 @@
             "name": "RUM Group Inc.",
             "market": "NASDAQ",
             "currency": "USD",
-            "current_price": 8.279999732971191,
+            "current_price": 7.394999980926514,
             "target_low": 22.0,
             "target_mean": 22.0,
             "target_high": 22.0,
             "analyst_count": 1,
             "rating": "none",
-            "updated_at": "2026-08-17T18:24:55+00:00"
+            "updated_at": "2026-09-10T17:08:18+00:00"
         },
         "SLVR.MI": {
             "source": "manuale",
