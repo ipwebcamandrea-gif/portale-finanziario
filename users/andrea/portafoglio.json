@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10T16:55:25+00:00",
+  "updated_at": "2026-09-10T16:55:57+00:00",
   "positions": [
     {
       "ticker": "WVE",
@@ -79,19 +79,6 @@
       "prezzo_precedente": 7.56,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
-    },
-    {
-      "ticker": "GRRR",
-      "titolo": "Gorilla Technology Group Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 500.0,
-      "prezzo_medio": 14.5,
-      "prezzo_mercato": 13.90999984741211,
-      "prezzo_precedente": 14.5,
-      "yf_symbol": "GRRR",
-      "tv_symbol": "NASDAQ:GRRR"
     }
   ]
 }
