@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-30T12:35:23+00:00",
+  "updated_at": "2026-09-30T12:35:46+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -138,8 +138,8 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 376.0,
-      "prezzo_medio": 15.99,
+      "quantita": 567.0,
+      "prezzo_medio": 15.88,
       "prezzo_mercato": 15.90999984741211,
       "prezzo_precedente": 15.93,
       "yf_symbol": "SOFI",
