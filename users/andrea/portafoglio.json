@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-30T10:19:45+00:00",
+  "updated_at": "2026-09-30T12:35:23+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -89,7 +89,7 @@
       "quantita": 2100.0,
       "prezzo_medio": 6.41842,
       "prezzo_mercato": 3.640000104904175,
-      "prezzo_precedente": 3.73,
+      "prezzo_precedente": 3.66,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
