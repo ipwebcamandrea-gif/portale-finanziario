@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-06T06:57:37+00:00",
+  "updated_at": "2026-10-08T10:55:26+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -10,8 +10,8 @@
       "valuta": "USD",
       "quantita": 301.0,
       "prezzo_medio": 25.36121,
-      "prezzo_mercato": 24.700000762939453,
-      "prezzo_precedente": 25.4916,
+      "prezzo_mercato": 23.809999465942383,
+      "prezzo_precedente": 23.81,
       "yf_symbol": "APLD",
       "tv_symbol": "NASDAQ:APLD"
     },
@@ -23,8 +23,8 @@
       "valuta": "USD",
       "quantita": 550.0,
       "prezzo_medio": 16.65355,
-      "prezzo_mercato": 14.789999961853027,
-      "prezzo_precedente": 15.53,
+      "prezzo_mercato": 14.399999618530273,
+      "prezzo_precedente": 14.4,
       "yf_symbol": "WULF",
       "tv_symbol": "NASDAQ:WULF"
     },
@@ -36,8 +36,8 @@
       "valuta": "USD",
       "quantita": 1200.0,
       "prezzo_medio": 5.00079,
-      "prezzo_mercato": 5.010000228881836,
-      "prezzo_precedente": 4.9,
+      "prezzo_mercato": 4.849999904632568,
+      "prezzo_precedente": 4.86,
       "yf_symbol": "PTON",
       "tv_symbol": "NASDAQ:PTON"
     },
@@ -49,8 +49,8 @@
       "valuta": "USD",
       "quantita": 800.0,
       "prezzo_medio": 13.51619,
-      "prezzo_mercato": 14.289999961853027,
-      "prezzo_precedente": 14.7497,
+      "prezzo_mercato": 14.40999984741211,
+      "prezzo_precedente": 14.41,
       "yf_symbol": "LUNR",
       "tv_symbol": "NASDAQ:LUNR"
     },
@@ -62,8 +62,8 @@
       "valuta": "USD",
       "quantita": 1200.0,
       "prezzo_medio": 8.23824,
-      "prezzo_mercato": 7.380000114440918,
-      "prezzo_precedente": 7.56,
+      "prezzo_mercato": 7.519999980926514,
+      "prezzo_precedente": 7.52,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
     },
@@ -75,8 +75,8 @@
       "valuta": "USD",
       "quantita": 171.0,
       "prezzo_medio": 59.21326,
-      "prezzo_mercato": 58.439998626708984,
-      "prezzo_precedente": 58.47,
+      "prezzo_mercato": 60.650001525878906,
+      "prezzo_precedente": 60.65,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
     },
@@ -88,8 +88,8 @@
       "valuta": "USD",
       "quantita": 2100.0,
       "prezzo_medio": 6.41842,
-      "prezzo_mercato": 3.75,
-      "prezzo_precedente": 3.869,
+      "prezzo_mercato": 3.5399999618530273,
+      "prezzo_precedente": 3.54,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
     },
@@ -101,8 +101,8 @@
       "valuta": "USD",
       "quantita": 67.0,
       "prezzo_medio": 180.04126,
-      "prezzo_mercato": 229.7899932861328,
-      "prezzo_precedente": 233.9708,
+      "prezzo_mercato": 224.55999755859375,
+      "prezzo_precedente": 225.13,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
     },
@@ -114,8 +114,8 @@
       "valuta": "USD",
       "quantita": 148.0,
       "prezzo_medio": 164.78672,
-      "prezzo_mercato": 142.47999572753906,
-      "prezzo_precedente": 142.37,
+      "prezzo_mercato": 143.55999755859375,
+      "prezzo_precedente": 143.93,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
     },
@@ -127,8 +127,8 @@
       "valuta": "USD",
       "quantita": 50.0,
       "prezzo_medio": 266.71,
-      "prezzo_mercato": 233.0399932861328,
-      "prezzo_precedente": 232.28,
+      "prezzo_mercato": 230.8800048828125,
+      "prezzo_precedente": 230.88,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
     },
@@ -140,8 +140,8 @@
       "valuta": "USD",
       "quantita": 567.0,
       "prezzo_medio": 15.88,
-      "prezzo_mercato": 15.920000076293945,
-      "prezzo_precedente": 15.7593,
+      "prezzo_mercato": 15.65999984741211,
+      "prezzo_precedente": 15.66,
       "yf_symbol": "SOFI",
       "tv_symbol": "NASDAQ:SOFI"
     }
