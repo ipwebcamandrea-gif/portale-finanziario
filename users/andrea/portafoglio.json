@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:21:52+00:00",
+  "updated_at": "2026-10-22T15:22:29+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -27,19 +27,6 @@
       "prezzo_precedente": 12.48,
       "yf_symbol": "WULF",
       "tv_symbol": "NASDAQ:WULF"
-    },
-    {
-      "ticker": "PTON",
-      "titolo": "Peloton Interactive, Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 1200.0,
-      "prezzo_medio": 5.00079,
-      "prezzo_mercato": 5.389999866485596,
-      "prezzo_precedente": 5.25,
-      "yf_symbol": "PTON",
-      "tv_symbol": "NASDAQ:PTON"
     },
     {
       "ticker": "LUNR",
