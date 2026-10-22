@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:24:47+00:00",
+  "updated_at": "2026-10-22T15:26:43+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -73,7 +73,7 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 2700.0,
+      "quantita": 1000.0,
       "prezzo_medio": 5.83,
       "prezzo_mercato": 3.4149999618530273,
       "prezzo_precedente": 3.351,
