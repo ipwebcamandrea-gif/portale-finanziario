@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:26:43+00:00",
+  "updated_at": "2026-10-22T15:27:43+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 301.0,
       "prezzo_medio": 25.36121,
-      "prezzo_mercato": 19.290000915527344,
+      "prezzo_mercato": 19.257400512695312,
       "prezzo_precedente": 20.63,
       "yf_symbol": "APLD",
       "tv_symbol": "NASDAQ:APLD"
@@ -23,7 +23,7 @@
       "valuta": "USD",
       "quantita": 550.0,
       "prezzo_medio": 16.65355,
-      "prezzo_mercato": 11.795000076293945,
+      "prezzo_mercato": 11.739999771118164,
       "prezzo_precedente": 12.48,
       "yf_symbol": "WULF",
       "tv_symbol": "NASDAQ:WULF"
@@ -49,7 +49,7 @@
       "valuta": "USD",
       "quantita": 1200.0,
       "prezzo_medio": 8.23824,
-      "prezzo_mercato": 5.619999885559082,
+      "prezzo_mercato": 5.605000019073486,
       "prezzo_precedente": 5.87,
       "yf_symbol": "RUM",
       "tv_symbol": "NASDAQ:RUM"
@@ -62,7 +62,7 @@
       "valuta": "USD",
       "quantita": 255.0,
       "prezzo_medio": 54.99,
-      "prezzo_mercato": 38.724998474121094,
+      "prezzo_mercato": 38.70500183105469,
       "prezzo_precedente": 40.2,
       "yf_symbol": "ASTS",
       "tv_symbol": "NASDAQ:ASTS"
@@ -75,7 +75,7 @@
       "valuta": "USD",
       "quantita": 1000.0,
       "prezzo_medio": 5.83,
-      "prezzo_mercato": 3.4149999618530273,
+      "prezzo_mercato": 3.4100000858306885,
       "prezzo_precedente": 3.351,
       "yf_symbol": "WVE",
       "tv_symbol": "NASDAQ:WVE"
@@ -88,7 +88,7 @@
       "valuta": "USD",
       "quantita": 67.0,
       "prezzo_medio": 180.04126,
-      "prezzo_mercato": 247.89999389648438,
+      "prezzo_mercato": 247.5749969482422,
       "prezzo_precedente": 242.13,
       "yf_symbol": "CRM",
       "tv_symbol": "NYSE:CRM"
@@ -101,7 +101,7 @@
       "valuta": "USD",
       "quantita": 148.0,
       "prezzo_medio": 164.78672,
-      "prezzo_mercato": 126.4000015258789,
+      "prezzo_mercato": 126.30000305175781,
       "prezzo_precedente": 127.8999,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 50.0,
       "prezzo_medio": 266.71,
-      "prezzo_mercato": 249.75999450683594,
+      "prezzo_mercato": 250.4149932861328,
       "prezzo_precedente": 246.42,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
