@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:27:43+00:00",
+  "updated_at": "2026-10-22T15:28:19+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -21,8 +21,8 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 550.0,
-      "prezzo_medio": 16.65355,
+      "quantita": 800.0,
+      "prezzo_medio": 14.84,
       "prezzo_mercato": 11.739999771118164,
       "prezzo_precedente": 12.48,
       "yf_symbol": "WULF",
