@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:28:19+00:00",
+  "updated_at": "2026-10-22T15:29:45+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -47,8 +47,8 @@
       "mercato": "NASDAQ",
       "strumento": "Azione",
       "valuta": "USD",
-      "quantita": 1200.0,
-      "prezzo_medio": 8.23824,
+      "quantita": 1500.0,
+      "prezzo_medio": 7.78,
       "prezzo_mercato": 5.605000019073486,
       "prezzo_precedente": 5.87,
       "yf_symbol": "RUM",
