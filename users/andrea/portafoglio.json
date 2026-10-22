@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:29:45+00:00",
+  "updated_at": "2026-10-22T15:30:37+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -118,19 +118,6 @@
       "prezzo_precedente": 246.42,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
-    },
-    {
-      "ticker": "SOFI",
-      "titolo": "SoFi Technologies, Inc.",
-      "mercato": "NASDAQ",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 567.0,
-      "prezzo_medio": 15.88,
-      "prezzo_mercato": 14.805000305175781,
-      "prezzo_precedente": 14.7601,
-      "yf_symbol": "SOFI",
-      "tv_symbol": "NASDAQ:SOFI"
     }
   ]
 }
