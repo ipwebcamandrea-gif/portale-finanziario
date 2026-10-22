@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-22T15:21:49+00:00",
+  "updated_at": "2026-10-22T15:21:52+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -10,7 +10,7 @@
       "valuta": "USD",
       "quantita": 301.0,
       "prezzo_medio": 25.36121,
-      "prezzo_mercato": 19.299999237060547,
+      "prezzo_mercato": 19.290000915527344,
       "prezzo_precedente": 20.63,
       "yf_symbol": "APLD",
       "tv_symbol": "NASDAQ:APLD"
@@ -114,7 +114,7 @@
       "valuta": "USD",
       "quantita": 148.0,
       "prezzo_medio": 164.78672,
-      "prezzo_mercato": 126.38500213623047,
+      "prezzo_mercato": 126.4000015258789,
       "prezzo_precedente": 127.8999,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
@@ -127,7 +127,7 @@
       "valuta": "USD",
       "quantita": 50.0,
       "prezzo_medio": 266.71,
-      "prezzo_mercato": 249.77999877929688,
+      "prezzo_mercato": 249.75999450683594,
       "prezzo_precedente": 246.42,
       "yf_symbol": "MCD",
       "tv_symbol": "NYSE:MCD"
