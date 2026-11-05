@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-11-05T08:03:18+00:00",
+  "updated_at": "2026-11-05T08:03:36+00:00",
   "positions": [
     {
       "ticker": "APLD",
@@ -105,19 +105,6 @@
       "prezzo_precedente": 126.2,
       "yf_symbol": "ORCL",
       "tv_symbol": "NYSE:ORCL"
-    },
-    {
-      "ticker": "MCD",
-      "titolo": "McDonald's Corporation",
-      "mercato": "NYSE",
-      "strumento": "Azione",
-      "valuta": "USD",
-      "quantita": 50.0,
-      "prezzo_medio": 266.71,
-      "prezzo_mercato": 280.2200012207031,
-      "prezzo_precedente": 261.0827,
-      "yf_symbol": "MCD",
-      "tv_symbol": "NYSE:MCD"
     }
   ]
 }
